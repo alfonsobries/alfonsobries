@@ -1,8 +1,9 @@
 import type { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
+// import Image from "next/image";
+import Image from "next/future/image";
 import ArticleListItem from "../components/ArticleListItem";
-import imageMe from "../public/images/me.png";
+import imageMe from "../public/images/me.svg";
 import imageMeDark from "../public/images/me-dark.png";
 import imageThisGuy from "../public/images/this-guy.png";
 const Home: NextPage = () => {
@@ -27,12 +28,13 @@ const Home: NextPage = () => {
       <main className="py-8 space-y-4">
         <div className="flex space-x-8 items-end justify-center ">
           <div className="flex-shrink-0">
-            <div className="dark:hidden">
-              <Image src={imageMe} alt="Alfonso Bribiesca" />
+            {/* <img src={imageMe} alt="Alfonso Bribiesca" /> */}
+            <Image src={imageMe} alt="Alfonso Bribiesca" width={100} />
+            {/* <div className="dark:hidden">
+              <Image src={c} alt="Alfonso Bribiesca" width={} />
             </div>
             <div className="hidden dark:block">
-              <Image src={imageMeDark} alt="Alfonso Bribiesca" />
-            </div>
+            </div> */}
           </div>
           <div className="space-y-4 flex-grow">
             <h1 className="text-6xl font-bold font-cursive text-gray-700 dark:text-gray-300">
