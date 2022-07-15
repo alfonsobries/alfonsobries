@@ -4,7 +4,7 @@ import Head from "next/head";
 import Image from "next/future/image";
 import ArticleListItem from "../components/ArticleListItem";
 import imageMe from "../public/images/me.svg";
-import imageMeDark from "../public/images/me-dark.png";
+import imageMeDark from "../public/images/me-dark.svg";
 import imageThisGuy from "../public/images/this-guy.png";
 const Home: NextPage = () => {
   const toggleDarkMode = (e: any) => {
@@ -29,12 +29,18 @@ const Home: NextPage = () => {
         <div className="flex space-x-8 items-end justify-center ">
           <div className="flex-shrink-0">
             {/* <img src={imageMe} alt="Alfonso Bribiesca" /> */}
-            <Image src={imageMe} alt="Alfonso Bribiesca" width={100} />
-            {/* <div className="dark:hidden">
-              <Image src={c} alt="Alfonso Bribiesca" width={} />
-            </div>
-            <div className="hidden dark:block">
-            </div> */}
+            <Image
+              src={imageMe}
+              alt="Alfonso Bribiesca"
+              width={100}
+              className="dark:hidden"
+            />
+            <Image
+              src={imageMeDark}
+              alt="Alfonso Bribiesca"
+              width={100}
+              className="hidden dark:block -mt-[8px]"
+            />
           </div>
           <div className="space-y-4 flex-grow">
             <h1 className="text-6xl font-bold font-cursive text-gray-700 dark:text-gray-300">
