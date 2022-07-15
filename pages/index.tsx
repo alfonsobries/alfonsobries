@@ -5,7 +5,7 @@ import Image from "next/future/image";
 import ArticleListItem from "../components/ArticleListItem";
 import imageMe from "../public/images/me.svg";
 import imageMeDark from "../public/images/me-dark.svg";
-import imageThisGuy from "../public/images/this-guy.png";
+import imageThisGuy from "../public/images/this-guy.svg";
 const Home: NextPage = () => {
   const toggleDarkMode = (e: any) => {
     e.preventDefault();
@@ -38,14 +38,14 @@ const Home: NextPage = () => {
             <Image
               src={imageMe}
               alt="Alfonso Bribiesca"
-              width={100}
+              width={140}
               className="dark:hidden"
             />
             <Image
               src={imageMeDark}
               alt="Alfonso Bribiesca"
-              width={100}
-              className="hidden dark:block -mt-[7px]"
+              width={140}
+              className="hidden dark:block -mt-[10px]"
             />
           </div>
           <div className="space-y-4 flex-grow">
@@ -106,10 +106,10 @@ const Home: NextPage = () => {
       </main>
 
       <footer className="text-xs text-gray-600">
-        <div className="text-center flex flex-col space-y-2">
+        <div className="text-center flex flex-col space-y-2 items-center">
           <span>Idea, illustrations, design and development by</span>
           <span>
-            <Image src={imageThisGuy} alt="This guy" />
+            <Image src={imageThisGuy} alt="Alfonso Bribiesca" width={50} />
           </span>
         </div>
       </footer>
