@@ -6,7 +6,7 @@ import imageMe from "../public/images/me.png";
 import imageMeDark from "../public/images/me-dark.png";
 import imageThisGuy from "../public/images/this-guy.png";
 const Home: NextPage = () => {
-  const toggleDarkMode = (e) => {
+  const toggleDarkMode = (e: PointerEvent) => {
     e.preventDefault();
     const root = document.documentElement;
     if (root.classList.contains("dark")) {
