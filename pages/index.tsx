@@ -6,7 +6,7 @@ import imageMe from "../public/images/me.png";
 import imageMeDark from "../public/images/me-dark.png";
 import imageThisGuy from "../public/images/this-guy.png";
 const Home: NextPage = () => {
-  const toggleDarkMode = (e: PointerEvent) => {
+  const toggleDarkMode = (e: any) => {
     e.preventDefault();
     const root = document.documentElement;
     if (root.classList.contains("dark")) {
@@ -78,7 +78,7 @@ const Home: NextPage = () => {
           </div>
         </div>
 
-        <div className="border-t pt-4 border-gray-100">
+        <div className="border-t pt-4 border-gray-100 dark:border-gray-800">
           <h1 className="font-bold text-4xl dark:text-gray-200">
             Latest Articles
           </h1>
