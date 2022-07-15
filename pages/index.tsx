@@ -26,9 +26,15 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="py-8 space-y-4">
+        <button
+          type="button"
+          onClick={toggleDarkMode}
+          className="p-3 roudned bg-black text-white"
+        >
+          Toggle Dark mode
+        </button>
         <div className="flex space-x-8 items-end justify-center ">
           <div className="flex-shrink-0">
-            {/* <img src={imageMe} alt="Alfonso Bribiesca" /> */}
             <Image
               src={imageMe}
               alt="Alfonso Bribiesca"
@@ -39,7 +45,7 @@ const Home: NextPage = () => {
               src={imageMeDark}
               alt="Alfonso Bribiesca"
               width={100}
-              className="hidden dark:block -mt-[8px]"
+              className="hidden dark:block -mt-[7px]"
             />
           </div>
           <div className="space-y-4 flex-grow">
@@ -100,14 +106,6 @@ const Home: NextPage = () => {
       </main>
 
       <footer className="text-xs text-gray-600">
-        <button
-          type="button"
-          onClick={toggleDarkMode}
-          className="p-3 roudned bg-black text-white"
-        >
-          Toggle Dark mode
-        </button>
-
         <div className="text-center flex flex-col space-y-2">
           <span>Idea, illustrations, design and development by</span>
           <span>
