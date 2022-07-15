@@ -4,8 +4,9 @@ import Image from "next/future/image";
 import ArticleListItem from "../components/ArticleListItem";
 import imageThisGuy from "../public/images/this-guy.svg";
 import PageHeader from "../components/PageHeader";
+import imageIsThisA from "../public/images/is-this-a.svg";
 
-const Home: NextPage = () => {
+const Resume: NextPage = () => {
   return (
     <div className="mx-auto max-w-lg min-h-screen">
       <Head>
@@ -15,7 +16,7 @@ const Home: NextPage = () => {
       </Head>
 
       <main className="py-8 space-y-4">
-        <PageHeader />
+        <PageHeader small></PageHeader>
 
         <div className="border-t pt-4 border-gray-100 dark:border-gray-800">
           <h1 className="font-bold text-4xl dark:text-gray-200">
@@ -28,13 +29,21 @@ const Home: NextPage = () => {
             <ArticleListItem />
           </div>
         </div>
+
+        <div className="flex space-x-4 items-center justify-center">
+          <Image src={imageIsThisA} alt="Alfonso Bribiesca" width={140} />
+
+          <span className="font-cursive text-4xl mb-4 dark:text-gray-200">
+            Is this a Resume?
+          </span>
+        </div>
       </main>
 
-      <footer className="text-xs text-gray-600">
+      <footer className="text-xs text-gray-400">
         <div className="text-center flex flex-col space-y-2 items-center">
           <span>Idea, illustrations, design and development by</span>
           <span>
-            <Image src={imageThisGuy} alt="Alfonso Bribiesca" width={50} />
+            <Image src={imageThisGuy} alt="Alfonso Bribiesca" width={30} />
           </span>
         </div>
       </footer>
@@ -42,4 +51,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Resume;
