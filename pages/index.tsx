@@ -100,17 +100,20 @@ const Home: NextPage = () => {
       </main>
 
       <footer className="text-xs text-gray-600">
-        <div></div>
+        <button
+          type="button"
+          onClick={toggleDarkMode}
+          className="p-3 roudned bg-black text-white"
+        >
+          Toggle Dark mode
+        </button>
+
         <div className="text-center flex flex-col space-y-2">
           <span>Idea, illustrations, design and development by</span>
           <span>
             <Image src={imageThisGuy} alt="This guy" />
           </span>
         </div>
-
-        <a href="" onClick={toggleDarkMode}>
-          Dark mode
-        </a>
       </footer>
     </div>
   );
