@@ -2,6 +2,7 @@ import Image from "next/future/image";
 import imageMe from "../public/images/me.svg";
 import imageMeDark from "../public/images/me-dark.svg";
 import Link from "next/link";
+import Container from "./container";
 const PageHeader: React.FC<{
   small?: boolean;
   children?: React.ReactNode;
@@ -17,15 +18,15 @@ const PageHeader: React.FC<{
   };
 
   return (
-    <div>
+    <Container>
       <button
         type="button"
         onClick={toggleDarkMode}
-        className="p-3 roudned bg-black text-white"
+        className="p-3 roudned bg-black text-white fixed left-0 top-0 m-4"
       >
         Toggle Dark mode
       </button>
-      <div className="flex space-x-8 items-end justify-center ">
+      <div className="flex space-x-8 items-end justify-center border-b mb-8 pb-8 border-gray-100 dark:border-gray-800 ">
         <div className="flex-shrink-0">
           {children || (
             <>
@@ -46,37 +47,33 @@ const PageHeader: React.FC<{
           )}
         </div>
         <div className="space-y-4 flex-grow">
-          <h1 className="text-6xl font-bold font-cursive text-gray-700 dark:text-gray-300">
-            Alfonso Bribiesca
-          </h1>
+          <p className="text-6xl font-bold font-cursive text-gray-900 dark:text-gray-300">
+            Hello, I’m{" "}
+            <span className="relative after:content-[''] after:block after:absolute after:-mt-4 after:right-0 after:w-full after:h-2 after:bg-[#fbd68b] after:opacity-50">
+              Alfonso
+            </span>
+          </p>
 
           <nav className="pb-3">
             <ul className="flex -mx-2">
               <li className="px-2">
                 <Link href="/">
-                  <a className="text-blue-700 hover:text-blue-600 hover:underline">
-                    Home
-                  </a>
-                </Link>
-              </li>
-              <li className="px-2">
-                <Link href="/resume">
-                  <a className="text-blue-700 hover:text-blue-600 hover:underline">
-                    Resume
+                  <a className="text-sm font-semibold text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap">
+                    About
                   </a>
                 </Link>
               </li>
               <li className="px-2">
                 <a
-                  className="text-blue-700 hover:text-blue-600 hover:underline"
+                  className="text-sm font-semibold text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap"
                   href=""
                 >
-                  Blog
+                  Articles
                 </a>
               </li>
               <li className="px-2">
                 <a
-                  className="text-blue-700 hover:text-blue-600 hover:underline"
+                  className="text-sm font-semibold text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap"
                   href=""
                 >
                   Projects
@@ -84,17 +81,17 @@ const PageHeader: React.FC<{
               </li>
               <li className="px-2">
                 <a
-                  className="text-blue-700 hover:text-blue-600 hover:underline"
+                  className="text-sm font-semibold text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap"
                   href=""
                 >
-                  Contact me
+                  Contact
                 </a>
               </li>
             </ul>
           </nav>
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 
