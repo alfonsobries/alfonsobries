@@ -1,6 +1,7 @@
 import Link from "next/link";
 import cn from "classnames";
 import { useRouter } from "next/router";
+import { BORDER_COLOR } from "../lib/cssClasses";
 
 const links = [
   {
@@ -44,8 +45,13 @@ const MainMenu = () => {
   const router = useRouter();
 
   return (
-    <nav className=" dark:bg-black -mx-5 px-5 sm:bg-transparent sm:mx-0 sm:px-0 mt-8 sm:mt-0 dark:sm:bg-transparent">
-      <ul className="flex sm:-mx-2 justify-between sm:justify-start">
+    <nav
+      className={cn(
+        BORDER_COLOR,
+        "border-t border-b sm:border-0 -mx-5 px-5 sm:mx-0 sm:px-0 mt-8 sm:mt-0 "
+      )}
+    >
+      <ul className="flex justify-items-stretch  sm:-mx-2 justify-between sm:justify-start mb-[-1px]">
         {links.map(({ href, label }, index) => (
           <li
             className={cn({
@@ -55,7 +61,7 @@ const MainMenu = () => {
             <Link href={href}>
               <a
                 className={cn(
-                  "text-blue-700  dark:sm:text-blue-500  whitespace-nowrap px-2 py-3 block sm:py-0 dark:text-blue-200",
+                  "text-blue-700  dark:sm:text-blue-500  whitespace-nowrap px-2 py-3 block sm:py-0 dark:text-blue-200 h-full",
                   {
                     "border-b-2 border-blue-600 dark:border-blue-500":
                       router.pathname === href,

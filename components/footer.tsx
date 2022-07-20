@@ -1,12 +1,19 @@
 import Container from "./container";
 import Image from "next/future/image";
 import imageThisGuy from "../public/images/this-guy.svg";
+import classNames from "classnames";
+import { BORDER_COLOR } from "../lib/cssClasses";
 
 const Footer = () => {
   return (
     <footer className="text-xs text-gray-400 dark:text-gray-500 ">
       <Container>
-        <div className="border-t mt-8 pt-8 border-gray-100 dark:border-gray-800 flex flex-col space-y-4">
+        <div
+          className={classNames(
+            BORDER_COLOR,
+            "border-t mt-8 pt-8 flex flex-col space-y-4"
+          )}
+        >
           <div className="flex justify-center space-x-4 mb-2">
             <a
               href=""

@@ -3,6 +3,8 @@ import imageMe from "../public/images/me.svg";
 import imageMeDark from "../public/images/me-dark.svg";
 import Container from "./container";
 import MainMenu from "./main-menu";
+import classNames from "classnames";
+import { BORDER_COLOR } from "../lib/cssClasses";
 const PageHeader: React.FC<{
   small?: boolean;
   children?: React.ReactNode;
@@ -26,8 +28,13 @@ const PageHeader: React.FC<{
       >
         Toggle Dark mode
       </button>
-      <div className="flex flex-col sm:flex-row sm:space-x-8 space-y-4 sm:space-y-0 items-center sm:items-end sm:justify-center sm:border-b sm:mb-8 pb-8 border-gray-100 dark:border-gray-800">
-        <div className="flex-shrink-0">
+      <div
+        className={classNames(
+          BORDER_COLOR,
+          "flex flex-col sm:flex-row sm:space-x-8 space-y-4 sm:space-y-0 items-center sm:items-end sm:justify-center sm:border-b sm:mb-8 pb-8"
+        )}
+      >
+        <div className="flex-shrink-0 w-[130px] h-[171px]">
           {children || (
             <>
               <Image
