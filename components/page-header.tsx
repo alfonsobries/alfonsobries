@@ -26,7 +26,7 @@ const PageHeader: React.FC<{
       >
         Toggle Dark mode
       </button>
-      <div className="flex flex-col sm:flex-row sm:space-x-8 space-y-4 sm:space-y-0 items-center sm:items-end sm:justify-center border-b mb-8 pb-8 border-gray-100 dark:border-gray-800">
+      <div className="flex flex-col sm:flex-row sm:space-x-8 space-y-4 sm:space-y-0 items-center sm:items-end sm:justify-center sm:border-b sm:mb-8 pb-8 border-gray-100 dark:border-gray-800">
         <div className="flex-shrink-0">
           {children || (
             <>
@@ -46,42 +46,42 @@ const PageHeader: React.FC<{
             </>
           )}
         </div>
-        <div className="space-y-4 flex-grow">
-          <p className="text-6xl font-bold font-cursive text-gray-900 dark:text-gray-300">
+        <div className="sm:space-y-4 sm:flex-grow w-full sm:w-auto">
+          <p className="text-6xl font-bold font-cursive text-gray-900 dark:text-gray-300 text-center sm:text-left">
             Hello, I’m{" "}
             <span className="relative after:content-[''] after:block after:absolute after:-mt-5 after:-ml-[5%] after:left-0 after:w-[110%] after:h-4 after:bg-[#fbd68b] after:opacity-50">
               Alfonso
             </span>
           </p>
 
-          <nav>
-            <ul className="flex -mx-2">
-              <li className="px-2">
+          <nav className="bg-gray-900 -mx-5 px-5 sm:bg-transparent sm:mx-0 sm:px-0 mt-8 sm:mt-0">
+            <ul className="flex sm:-mx-2 justify-between sm:justify-start">
+              <li>
                 <Link href="/">
-                  <a className="text-sm font-semibold text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap">
+                  <a className="sm:text-sm sm:font-semibold sm:text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap px-2 py-3 block sm:py-0 text-white">
                     About
                   </a>
                 </Link>
               </li>
-              <li className="px-2">
+              <li>
                 <a
-                  className="text-sm font-semibold text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap"
+                  className="sm:text-sm sm:font-semibold sm:text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap px-2 py-3 block sm:py-0 text-white"
                   href=""
                 >
                   Articles
                 </a>
               </li>
-              <li className="px-2">
+              <li>
                 <a
-                  className="text-sm font-semibold text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap"
+                  className="sm:text-sm sm:font-semibold sm:text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap px-2 py-3 block sm:py-0 text-white"
                   href=""
                 >
                   Projects
                 </a>
               </li>
-              <li className="px-2">
+              <li>
                 <a
-                  className="text-sm font-semibold text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap"
+                  className="sm:text-sm sm:font-semibold sm:text-blue-700 hover:text-blue-600 hover:underline whitespace-nowrap px-2 py-3 block sm:py-0 text-white"
                   href=""
                 >
                   Contact
