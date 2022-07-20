@@ -14,7 +14,7 @@ const ArticleListItem: React.FC<{
       <p>
         <a
           href="#"
-          className="text-blue-700 hover:text-blue-600 hover:underline"
+          className="text-blue-700 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-600 hover:underline"
         >
           Read more →
         </a>
