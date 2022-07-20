@@ -26,7 +26,7 @@ const PageHeader: React.FC<{
       >
         Toggle Dark mode
       </button>
-      <div className="flex space-x-8 items-end justify-center border-b mb-8 pb-8 border-gray-100 dark:border-gray-800 ">
+      <div className="flex flex-col sm:flex-row sm:space-x-8 space-y-4 sm:space-y-0 items-center sm:items-end sm:justify-center border-b mb-8 pb-8 border-gray-100 dark:border-gray-800">
         <div className="flex-shrink-0">
           {children || (
             <>
@@ -49,12 +49,12 @@ const PageHeader: React.FC<{
         <div className="space-y-4 flex-grow">
           <p className="text-6xl font-bold font-cursive text-gray-900 dark:text-gray-300">
             Hello, I’m{" "}
-            <span className="relative after:content-[''] after:block after:absolute after:-mt-4 after:right-0 after:w-full after:h-2 after:bg-[#fbd68b] after:opacity-50">
+            <span className="relative after:content-[''] after:block after:absolute after:-mt-5 after:-ml-[5%] after:left-0 after:w-[110%] after:h-4 after:bg-[#fbd68b] after:opacity-50">
               Alfonso
             </span>
           </p>
 
-          <nav className="pb-3">
+          <nav>
             <ul className="flex -mx-2">
               <li className="px-2">
                 <Link href="/">
