@@ -45,7 +45,7 @@ const PageHeader: React.FC<{
         <button
           type="button"
           onClick={toggleDarkMode}
-          className="absolute right-0 top-0 -mt-2 w-12 p-2"
+          className="absolute right-0 top-0 -mt-2 w-12 p-1"
         >
           <Image
             src={isDark ? imageSwitchOff : imageSwitchOn}
