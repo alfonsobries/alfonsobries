@@ -23,11 +23,11 @@ export default function Index({ allPosts }: Props) {
           <title>Tech, Development, and more | {CMS_NAME}</title>
         </Head>
         <Container>
-          <h1 className="font-bold text-4xl dark:text-gray-200">
+          <h1 className="text-4xl font-bold dark:text-gray-200">
             Latest Posts
           </h1>
 
-          <div className="space-y-4 mt-6">
+          <div className="mt-6 space-y-4">
             {posts.map((post) => (
               <ArticleListItem key={post.slug} post={post} />
             ))}

@@ -11,10 +11,10 @@ const Footer = () => {
         <div
           className={classNames(
             BORDER_COLOR,
-            "border-t mt-8 pt-8 flex flex-col space-y-4"
+            "mt-8 flex flex-col space-y-4 border-t pt-8"
           )}
         >
-          <div className="flex justify-center space-x-4 mb-2">
+          <div className="mb-2 flex justify-center space-x-4">
             <a
               href=""
               className="text-blue-700 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-600"
@@ -38,12 +38,12 @@ const Footer = () => {
             </a>
           </div>
 
-          <div className="text-center flex flex-col space-y-2 items-center ">
+          <div className="flex flex-col items-center space-y-2 text-center ">
             <span>Idea, illustrations, design and development by</span>
             <span className="flex space-x-3">
               <Image src={imageThisGuy} alt="Alfonso Bribiesca" width={35} />
 
-              <span className="font-cursive text-2xl mt-2 text-gray-900 dark:text-gray-200">
+              <span className="mt-2 font-cursive text-2xl text-gray-900 dark:text-gray-200">
                 this guy
               </span>
             </span>

@@ -5,16 +5,16 @@ const ArticleListItem: React.FC<{
 }> = ({ post }) => {
   return (
     <div className="space-y-2">
-      <h3 className="font-semibold text-lg dark:text-gray-300">{post.title}</h3>
+      <h3 className="text-lg font-semibold dark:text-gray-300">{post.title}</h3>
 
-      <p className="text-gray-600 dark:text-gray-500 line-clamp-2 ">
+      <p className="text-gray-600 line-clamp-2 dark:text-gray-500 ">
         {post.excerpt}
       </p>
 
       <p>
         <a
           href="#"
-          className="text-blue-700 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-600 hover:underline"
+          className="text-blue-700 hover:text-blue-600 hover:underline dark:text-blue-500 dark:hover:text-blue-600"
         >
           Read more →
         </a>

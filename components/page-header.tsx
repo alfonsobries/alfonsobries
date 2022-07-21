@@ -24,17 +24,17 @@ const PageHeader: React.FC<{
       <button
         type="button"
         onClick={toggleDarkMode}
-        className="p-3 roudned bg-black text-white fixed left-0 top-0 m-4"
+        className="roudned fixed left-0 top-0 m-4 bg-black p-3 text-white"
       >
         Toggle Dark mode
       </button>
       <div
         className={classNames(
           BORDER_COLOR,
-          "flex flex-col sm:flex-row sm:space-x-8 space-y-4 sm:space-y-0 items-center sm:items-end sm:justify-center sm:border-b sm:mb-8 pb-8"
+          "flex flex-col items-center space-y-4 pb-8 sm:mb-8 sm:flex-row sm:items-end sm:justify-center sm:space-x-8 sm:space-y-0 sm:border-b"
         )}
       >
-        <div className="flex-shrink-0 w-[130px] h-[171px]">
+        <div className="h-[171px] w-[130px] flex-shrink-0">
           {children || (
             <>
               <Image
@@ -50,15 +50,15 @@ const PageHeader: React.FC<{
                 alt="Alfonso Bribiesca"
                 width={130}
                 height={171}
-                className="hidden dark:block -mt-[10px]"
+                className="-mt-[10px] hidden dark:block"
               />
             </>
           )}
         </div>
-        <div className="sm:space-y-4 sm:flex-grow w-full sm:w-auto">
-          <p className="text-6xl font-bold font-cursive text-gray-900 dark:text-gray-300 text-center sm:text-left">
+        <div className="w-full sm:w-auto sm:flex-grow sm:space-y-4">
+          <p className="text-center font-cursive text-6xl font-bold text-gray-900 dark:text-gray-300 sm:text-left">
             Hello, I’m{" "}
-            <span className="relative after:content-[''] after:block after:absolute after:-mt-[15px] after:-ml-[5%] after:left-0 after:w-[110%] after:h-3 after:bg-[#fbd68b] after:opacity-50">
+            <span className="relative after:absolute after:left-0 after:-mt-[15px] after:-ml-[5%] after:block after:h-3 after:w-[110%] after:bg-[#fbd68b] after:opacity-50 after:content-['']">
               Alfonso
             </span>
           </p>

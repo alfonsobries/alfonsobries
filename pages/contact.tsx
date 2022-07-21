@@ -11,7 +11,7 @@ export default function Contact() {
           <title>@TODO | {CMS_NAME}</title>
         </Head>
         <Container>
-          <h1 className="font-bold text-4xl dark:text-gray-200">Contact</h1>
+          <h1 className="text-4xl font-bold dark:text-gray-200">Contact</h1>
         </Container>
       </Layout>
     </>
