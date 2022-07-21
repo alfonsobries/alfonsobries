@@ -24,16 +24,13 @@ const PageHeader = () => {
             <button
               type="button"
               onClick={toggleDarkMode}
-              className="absolute right-0 top-0 -mt-2 w-10 p-1"
+              className="absolute right-0 top-0  w-10 p-1"
             >
-              <img
-                src={
-                  theme === "dark"
-                    ? "/images/switch-off.svg"
-                    : "/images/switch-on.svg"
-                }
-                alt="Tooggle Dark Mode"
-              />
+              {theme === "dark" ? (
+                <img src="/images/switch-off.svg" alt="Disable Dark Mode" />
+              ) : (
+                <img src="/images/switch-on.svg" alt="Enable Dark Mode" />
+              )}
             </button>
 
             <div className="h-[171px] w-[130px] flex-shrink-0">
