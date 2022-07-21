@@ -12,7 +12,7 @@ class MyDocument extends Document {
             rel="stylesheet"
           />
         </Head>
-        <body className="bg-white py-8 dark:bg-gray-900">
+        <body className="bg-white  dark:bg-gray-900">
           <Main />
           <NextScript />
         </body>

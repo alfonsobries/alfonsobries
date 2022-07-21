@@ -1,61 +1,62 @@
 import Image from "next/future/image";
 import imageMe from "../public/images/me.svg";
 import imageMeDark from "../public/images/me-dark.svg";
+
 import imageSwitchOn from "../public/images/switch-on.svg";
 import imageSwitchOff from "../public/images/switch-off.svg";
 import Container from "./container";
-import MainMenu from "./main-menu";
 import classNames from "classnames";
 import { BORDER_COLOR } from "../lib/cssClasses";
-import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 
-const PageHeader: React.FC<{
-  children?: React.ReactNode;
-}> = ({ children }) => {
-  const [isDark, setIsDark] = useState(false);
+const PageHeader = () => {
+  const { theme, setTheme } = useTheme();
 
   const toggleDarkMode = (e: any) => {
     e.preventDefault();
 
-    if (isDark) {
-      setIsDark(false);
+    if (theme === "dark") {
+      setTheme("light");
     } else {
-      setIsDark(true);
+      setTheme("dark");
     }
   };
-
-  useEffect(() => {
-    const root = document.documentElement;
-
-    if (isDark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }, [isDark]);
+  const useSmall = false;
 
   return (
-    <Container>
-      <div
-        className={classNames(
-          BORDER_COLOR,
-          "relative flex flex-col items-center space-y-4 pb-8 sm:mb-8 sm:flex-row sm:items-end sm:justify-center sm:space-x-8 sm:space-y-0 sm:border-b"
-        )}
-      >
-        <button
-          type="button"
-          onClick={toggleDarkMode}
-          className="absolute right-0 top-0 -mt-2 w-12 p-1"
+    <div className="z-50 mb-4">
+      <Container noPadding>
+        <div
+          className={classNames(BORDER_COLOR, "px-4", {
+            "py-4": !useSmall,
+            "py-3": useSmall,
+          })}
         >
-          <Image
-            src={isDark ? imageSwitchOff : imageSwitchOn}
-            alt="Tooggle Dark Mode"
-          />
-        </button>
+          <div
+            className={classNames(
+              "relative flex sm:flex-row  sm:justify-center sm:border-b",
+              {
+                "flex-col items-center space-y-4 sm:flex-row sm:items-end sm:space-y-0 sm:space-x-8  ":
+                  !useSmall,
+                "flex-row-reverse items-end justify-between": useSmall,
+              }
+            )}
+          >
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              className={classNames({
+                "absolute right-0 top-0 -mt-2 w-12 p-1": !useSmall,
+                "w-6": useSmall,
+              })}
+            >
+              <Image
+                src={theme === "dark" ? imageSwitchOff : imageSwitchOn}
+                alt="Tooggle Dark Mode"
+              />
+            </button>
 
-        <div className="h-[171px] w-[130px] flex-shrink-0">
-          {children || (
-            <>
+            <div className="h-[171px] w-[130px] flex-shrink-0">
               <Image
                 src={imageMe}
                 alt="Alfonso Bribiesca"
@@ -71,21 +72,22 @@ const PageHeader: React.FC<{
                 height={171}
                 className="-mt-[10px] hidden dark:block"
               />
-            </>
-          )}
-        </div>
-        <div className="w-full sm:w-auto sm:flex-grow sm:space-y-4">
-          <p className="text-center font-cursive text-6xl font-bold text-gray-900 dark:text-gray-300 sm:text-left">
-            Hello, I’m{" "}
-            <span className="relative after:absolute after:left-0 after:-mt-[15px] after:-ml-[5%] after:block after:h-3 after:w-[110%] after:bg-[#fbd68b] after:opacity-50 after:content-['']">
-              Alfonso
-            </span>
-          </p>
+            </div>
 
-          <MainMenu />
+            {!useSmall && (
+              <div className="w-full sm:w-auto sm:flex-grow sm:space-y-4">
+                <p className="text-center font-cursive text-6xl font-bold text-gray-900 dark:text-gray-300 sm:text-left">
+                  Hello, I’m{" "}
+                  <span className="relative after:absolute after:left-0 after:-mt-[15px] after:-ml-[5%] after:block after:h-3 after:w-[110%] after:bg-[#fbd68b] after:opacity-50 after:content-['']">
+                    Alfonso
+                  </span>
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </Container>
+      </Container>
+    </div>
   );
 };
 

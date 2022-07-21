@@ -23,7 +23,7 @@ export default function Index({ allPosts }: Props) {
           <title>Tech, Development, and more | {CMS_NAME}</title>
         </Head>
         <Container>
-          <h1 className="text-4xl font-bold dark:text-gray-200">
+          <h1 className="mt-8 text-4xl font-bold dark:text-gray-200">
             Latest Posts
           </h1>
 

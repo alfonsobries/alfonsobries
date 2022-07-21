@@ -1,4 +1,5 @@
 import Footer from "./footer";
+import MainMenu from "./main-menu";
 import Meta from "./meta";
 import PageHeader from "./page-header";
 
@@ -12,6 +13,8 @@ const Layout = ({ children }: Props) => {
       <Meta />
       <main>
         <PageHeader />
+
+        <MainMenu />
         <div>{children}</div>
       </main>
       <Footer />
