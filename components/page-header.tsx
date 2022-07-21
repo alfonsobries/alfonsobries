@@ -1,9 +1,3 @@
-import Image from "next/future/image";
-import imageMe from "../public/images/me.svg";
-import imageMeDark from "../public/images/me-dark.svg";
-
-import imageSwitchOn from "../public/images/switch-on.svg";
-import imageSwitchOff from "../public/images/switch-off.svg";
 import Container from "./container";
 import classNames from "classnames";
 import { BORDER_COLOR } from "../lib/cssClasses";
@@ -50,27 +44,27 @@ const PageHeader = () => {
                 "w-6": useSmall,
               })}
             >
-              <Image
-                src={theme === "dark" ? imageSwitchOff : imageSwitchOn}
+              <img
+                src={
+                  theme === "dark"
+                    ? "/images/switch-off.svg"
+                    : "/images/switch-on.svg"
+                }
                 alt="Tooggle Dark Mode"
               />
             </button>
 
             <div className="h-[171px] w-[130px] flex-shrink-0">
-              <Image
-                src={imageMe}
+              <img
+                src="/images/me.svg"
                 alt="Alfonso Bribiesca"
-                width={130}
-                height={171}
-                className="dark:hidden"
+                className="h-auto w-full dark:hidden"
               />
 
-              <Image
-                src={imageMeDark}
+              <img
+                src="/images/me-dark.svg"
                 alt="Alfonso Bribiesca"
-                width={130}
-                height={171}
-                className="-mt-[10px] hidden dark:block"
+                className="-mt-[10px] hidden h-auto w-full dark:block"
               />
             </div>
 

@@ -1,6 +1,4 @@
 import Container from "./container";
-import Image from "next/future/image";
-import imageThisGuy from "../public/images/this-guy.svg";
 import classNames from "classnames";
 import { BORDER_COLOR } from "../lib/cssClasses";
 
@@ -41,7 +39,11 @@ const Footer = () => {
           <div className="flex flex-col items-center space-y-2 text-center ">
             <span>Idea, illustrations, design and development by</span>
             <span className="flex space-x-3">
-              <Image src={imageThisGuy} alt="Alfonso Bribiesca" width={35} />
+              <img
+                src="/images/this-guy.svg"
+                alt="Alfonso Bribiesca"
+                width={35}
+              />
 
               <span className="mt-2 font-cursive text-2xl text-gray-900 dark:text-gray-200">
                 this guy

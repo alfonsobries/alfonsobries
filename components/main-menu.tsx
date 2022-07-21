@@ -1,11 +1,8 @@
-import Image from "next/future/image";
 import Link from "next/link";
 import cn from "classnames";
 import { useRouter } from "next/router";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import { useCallback, useEffect, useState } from "react";
-import imageMeFace from "../public/images/face-icon.svg";
-import imageMeFaceDark from "../public/images/face-icon-dark.svg";
 
 const links = [
   {
@@ -86,14 +83,14 @@ const MainMenu = () => {
                   }
                 )}
               >
-                <Image
-                  src={imageMeFace}
+                <img
+                  src="/images/face-icon.svg"
                   alt="Alfonso Bribiesca"
                   className="dark:hidden"
                 />
 
-                <Image
-                  src={imageMeFaceDark}
+                <img
+                  src="/images/face-icon.svg"
                   alt="Alfonso Bribiesca"
                   className="hidden dark:block"
                 />
