@@ -36,25 +36,24 @@ const MainMenu = () => {
 
     const { top } = nav.getBoundingClientRect();
 
-    if (isSticky && top > 0) {
-      setIsSticky(false);
-      return;
-    }
-
-    if (!isSticky && top === 0) {
+    if (top === 0 && !isSticky) {
       setIsSticky(true);
+    } else if (top > 0 && isSticky) {
+      setIsSticky(false);
     }
-  }, [isSticky, setIsSticky]);
+  }, [isSticky]);
 
   useEffect(() => {
     scrollListener();
 
-    window.addEventListener("scroll", scrollListener);
+    const scrollHandler = () => scrollListener();
+
+    window.addEventListener("scroll", scrollHandler);
 
     return () => {
-      window.removeEventListener("scroll", scrollListener);
+      window.removeEventListener("scroll", scrollHandler);
     };
-  }, []);
+  }, [scrollListener]);
 
   return (
     <nav
@@ -79,40 +78,42 @@ const MainMenu = () => {
                 }
               )}
             >
-              {isSticky ? (
-                <div
-                  className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full border border-blue-700 p-1 dark:border-blue-200"
-                  )}
-                >
-                  <Image
-                    src={imageMeFace}
-                    alt="Alfonso Bribiesca"
-                    className="dark:hidden"
-                  />
+              <div
+                className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-full  bg-blue-700 p-1 dark:bg-blue-200",
+                  {
+                    hidden: !isSticky,
+                  }
+                )}
+              >
+                <Image
+                  src={imageMeFace}
+                  alt="Alfonso Bribiesca"
+                  className="dark:hidden"
+                />
 
-                  <Image
-                    src={imageMeFaceDark}
-                    alt="Alfonso Bribiesca"
-                    className="hidden dark:block"
-                  />
-                </div>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                  />
-                </svg>
-              )}
+                <Image
+                  src={imageMeFaceDark}
+                  alt="Alfonso Bribiesca"
+                  className="hidden dark:block"
+                />
+              </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={cn("h-5 w-5", {
+                  hidden: isSticky,
+                })}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
             </a>
           </Link>
         </li>
