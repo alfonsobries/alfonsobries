@@ -59,7 +59,7 @@ const MainMenu = () => {
     <nav
       className={cn(
         BORDER_COLOR,
-        "sticky top-0 border-t border-b bg-white/30 px-5 backdrop-blur-lg dark:bg-gray-900/30 sm:mx-0 sm:mt-0 sm:border-0 sm:px-0"
+        "no-scrollbar sticky top-0 overflow-auto border-t border-b bg-white/30 px-5 backdrop-blur-lg dark:bg-gray-900/30 sm:mx-0 sm:mt-0 sm:border-0 sm:px-0"
       )}
     >
       <ul className="mb-[-1px] flex justify-between justify-items-stretch sm:-mx-2 sm:justify-start">
