@@ -1,14 +1,15 @@
 import Image from "next/future/image";
 import imageMe from "../public/images/me.svg";
 import imageMeDark from "../public/images/me-dark.svg";
+import imageSwitch from "../public/images/switch.svg";
 import Container from "./container";
 import MainMenu from "./main-menu";
 import classNames from "classnames";
 import { BORDER_COLOR } from "../lib/cssClasses";
+
 const PageHeader: React.FC<{
-  small?: boolean;
   children?: React.ReactNode;
-}> = ({ small = false, children }) => {
+}> = ({ children }) => {
   const toggleDarkMode = (e: any) => {
     e.preventDefault();
     const root = document.documentElement;
@@ -24,10 +25,11 @@ const PageHeader: React.FC<{
       <button
         type="button"
         onClick={toggleDarkMode}
-        className="roudned fixed left-0 top-0 m-4 bg-black p-3 text-white"
+        className="roudned fixed right-0 top-0 m-4 dark:rotate-180 "
       >
-        Toggle Dark mode
+        <Image src={imageSwitch} alt="Tooggle Dark Mode" width={30} />
       </button>
+
       <div
         className={classNames(
           BORDER_COLOR,
