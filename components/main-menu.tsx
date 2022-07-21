@@ -3,7 +3,7 @@ import Link from "next/link";
 import cn from "classnames";
 import { useRouter } from "next/router";
 import { BORDER_COLOR } from "../lib/cssClasses";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import imageMeFace from "../public/images/face-icon.svg";
 import imageMeFaceDark from "../public/images/face-icon-dark.svg";
 
@@ -31,13 +31,20 @@ const MainMenu = () => {
 
   const [isSticky, setIsSticky] = useState(false);
 
-  const scrollListener = () => {
+  const scrollListener = useCallback(() => {
     const nav = document.querySelector("nav")!;
 
     const { top } = nav.getBoundingClientRect();
 
-    setIsSticky(top === 0);
-  };
+    if (isSticky && top > 0) {
+      setIsSticky(false);
+      return;
+    }
+
+    if (!isSticky && top === 0) {
+      setIsSticky(true);
+    }
+  }, [isSticky, setIsSticky]);
 
   useEffect(() => {
     scrollListener();
