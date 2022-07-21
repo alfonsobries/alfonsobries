@@ -17,7 +17,7 @@ const PageHeader = () => {
   };
 
   return (
-    <div className="z-50 mb-4">
+    <div className={classNames(BORDER_COLOR, "border-b pb-4")}>
       <Container noPadding>
         <div className={classNames(BORDER_COLOR, "px-4 py-4")}>
           <div className="relative flex flex-col  items-center space-y-4 sm:flex-row sm:items-end sm:justify-center sm:space-y-0 sm:space-x-8 sm:border-b">
