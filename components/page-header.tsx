@@ -1,41 +1,58 @@
 import Image from "next/future/image";
 import imageMe from "../public/images/me.svg";
 import imageMeDark from "../public/images/me-dark.svg";
-import imageSwitch from "../public/images/switch.svg";
+import imageSwitchOn from "../public/images/switch-on.svg";
+import imageSwitchOff from "../public/images/switch-off.svg";
 import Container from "./container";
 import MainMenu from "./main-menu";
 import classNames from "classnames";
 import { BORDER_COLOR } from "../lib/cssClasses";
+import { useEffect, useState } from "react";
 
 const PageHeader: React.FC<{
   children?: React.ReactNode;
 }> = ({ children }) => {
+  const [isDark, setIsDark] = useState(false);
+
   const toggleDarkMode = (e: any) => {
     e.preventDefault();
-    const root = document.documentElement;
-    if (root.classList.contains("dark")) {
-      root.classList.remove("dark");
+
+    if (isDark) {
+      setIsDark(false);
     } else {
-      root.classList.add("dark");
+      setIsDark(true);
     }
   };
 
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isDark) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+  }, [isDark]);
+
   return (
     <Container>
-      <button
-        type="button"
-        onClick={toggleDarkMode}
-        className="roudned fixed right-0 top-0 m-4 dark:rotate-180 "
-      >
-        <Image src={imageSwitch} alt="Tooggle Dark Mode" width={30} />
-      </button>
-
       <div
         className={classNames(
           BORDER_COLOR,
-          "flex flex-col items-center space-y-4 pb-8 sm:mb-8 sm:flex-row sm:items-end sm:justify-center sm:space-x-8 sm:space-y-0 sm:border-b"
+          "relative flex flex-col items-center space-y-4 pb-8 sm:mb-8 sm:flex-row sm:items-end sm:justify-center sm:space-x-8 sm:space-y-0 sm:border-b"
         )}
       >
+        <button
+          type="button"
+          onClick={toggleDarkMode}
+          className="absolute right-0 top-0 -mt-2 w-12 p-2"
+        >
+          <Image
+            src={isDark ? imageSwitchOff : imageSwitchOn}
+            alt="Tooggle Dark Mode"
+          />
+        </button>
+
         <div className="h-[171px] w-[130px] flex-shrink-0">
           {children || (
             <>
