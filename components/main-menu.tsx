@@ -53,24 +53,48 @@ const MainMenu = () => {
 
   useEffect(() => {
     const nav = navRef.current;
+    let interval;
 
     const observer = new IntersectionObserver(
       ([e]) => {
         setIsSticky(e.intersectionRatio < 1);
       },
       {
+        rootMargin: "-1px 0px 0px 0px",
         threshold: [1],
       }
     );
 
     observer.observe(nav);
 
+    const scrollStart = () => {
+      interval = setInterval(() => {
+        const { top } = nav.getBoundingClientRect();
+
+        setIsSticky(top <= 0);
+      }, 100);
+    };
+
+    const scrollEnd = () => {
+      if (!interval) {
+        return;
+      }
+
+      clearInterval(interval);
+      interval = null;
+    };
+
+    // iOs alternative
+    document.addEventListener("touchmove", scrollStart);
+    document.addEventListener("scroll", scrollEnd);
+
     return () => {
       observer.unobserve(nav);
+
+      document.removeEventListener("touchmove", scrollStart);
+      document.removeEventListener("scroll", scrollEnd);
     };
   }, []);
-
-  useEffect(() => {}, []);
 
   const toggleMenu = useCallback(() => {
     setMenuOpened(!menuOpened);
@@ -88,7 +112,7 @@ const MainMenu = () => {
       ref={navRef}
       className={cn(
         BORDER_COLOR,
-        "no-scrollbar pt-[calc(1em + 1px)] top-[-1px] mb-8 flex w-full flex-col border-b",
+        "no-scrollbar top-0 mb-8 flex w-full flex-col border-b",
         {
           "overflow-auto": isSticky,
           "fixed h-screen w-screen bg-white dark:bg-gray-900": showDropdownMenu,
