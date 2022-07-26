@@ -45,9 +45,11 @@ const MainMenu = () => {
 
     const scrollHandler = () => scrollListener();
 
+    window.addEventListener("touchmove", scrollHandler);
     window.addEventListener("scroll", scrollHandler);
 
     return () => {
+      window.removeEventListener("touchmove", scrollHandler);
       window.removeEventListener("scroll", scrollHandler);
     };
   }, [scrollListener]);
