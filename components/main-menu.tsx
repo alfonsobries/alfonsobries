@@ -4,11 +4,8 @@ import { useRouter } from "next/router";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Container from "./container";
-import {
-  disableBodyScroll,
-  enableBodyScroll,
-  clearAllBodyScrollLocks,
-} from "body-scroll-lock";
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
+import useToggleTheme from "../hooks/useToggleTheme";
 
 const links = [
   {
@@ -50,7 +47,7 @@ const links = [
 
 const MainMenu = () => {
   const router = useRouter();
-
+  const { toggleTheme, theme } = useToggleTheme();
   const [isSticky, setIsSticky] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
   const scrollableRef = useRef<HTMLDivElement | null>(null);
@@ -109,14 +106,14 @@ const MainMenu = () => {
       })}
     >
       <Container
-        className={cn("flex h-11 items-center justify-between", {
+        className={cn("flex h-11 items-center justify-between space-x-4", {
           hidden: !isSticky,
         })}
       >
         <Link href="/">
           <a
             className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full  bg-blue-700 p-1 dark:bg-blue-200",
+              "flex h-8 w-8 items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200",
               {
                 hidden: !isSticky,
               }
@@ -135,38 +132,80 @@ const MainMenu = () => {
           </a>
         </Link>
 
-        <button
-          type="button"
-          aria-label="open menu"
-          onClick={toggleMenu}
-          className={cn(
-            "group relative flex h-11 flex-col items-center justify-center"
-          )}
-        >
-          <span
-            className={cn(
-              "top-0 block w-6 rounded-full border border-blue-700 transition-transform duration-100 ease-in-out group-hover:border-blue-600 dark:border-blue-200 dark:group-hover:border-blue-100",
-              {
-                "-translate-y-1": !menuOpened,
-                "translate-y-[2px] rotate-45": menuOpened,
-              }
+        <div className="flex items-center">
+          <button
+            type="button"
+            aria-label="Swith to dark mode"
+            className="flex h-8 items-center px-2 text-blue-700 hover:text-blue-600 dark:text-blue-200 dark:hover:text-blue-200"
+            onClick={toggleTheme}
+          >
+            {theme === "dark" ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
             )}
-          ></span>
-          <span
-            className={cn(
-              "block w-6 rounded-full border border-blue-700 transition-transform duration-100 ease-in-out group-hover:border-blue-600 dark:border-blue-200 dark:group-hover:border-blue-100",
-              {
-                "translate-y-1": !menuOpened,
-                "-rotate-45": menuOpened,
-              }
-            )}
-          ></span>
-        </button>
+          </button>
+
+          <span className={`border-l ${BORDER_COLOR} mx-2 h-5`}></span>
+
+          <button
+            type="button"
+            aria-label="Open menu"
+            onClick={toggleMenu}
+            className="group relative flex h-8 flex-col items-center justify-center px-2"
+          >
+            <span
+              className={cn(
+                "top-0 block w-6 rounded-full border border-blue-700 transition-transform duration-100 ease-in-out group-hover:border-blue-600 dark:border-blue-200 dark:group-hover:border-blue-100",
+                {
+                  "-translate-y-1": !menuOpened,
+                  "translate-y-[2px] rotate-45": menuOpened,
+                }
+              )}
+            ></span>
+            <span
+              className={cn(
+                "block w-6 rounded-full border border-blue-700 transition-transform duration-100 ease-in-out group-hover:border-blue-600 dark:border-blue-200 dark:group-hover:border-blue-100",
+                {
+                  "translate-y-1": !menuOpened,
+                  "-rotate-45": menuOpened,
+                }
+              )}
+            ></span>
+          </button>
+        </div>
       </Container>
 
       <div
         ref={scrollableRef}
-        className={cn("mx-auto flex max-w-xl flex-col overflow-auto px-4", {
+        className={cn("mx-auto flex max-w-xl flex-col  px-4", {
+          "overflow-auto": isSticky,
           hidden: isSticky && !menuOpened,
           "h-11": !isSticky,
         })}

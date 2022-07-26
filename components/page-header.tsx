@@ -1,20 +1,10 @@
 import Container from "./container";
 import classNames from "classnames";
 import { BORDER_COLOR } from "../lib/cssClasses";
-import { useTheme } from "next-themes";
+import useToggleTheme from "../hooks/useToggleTheme";
 
 const PageHeader = () => {
-  const { theme, setTheme } = useTheme();
-
-  const toggleDarkMode = (e: any) => {
-    e.preventDefault();
-
-    if (theme === "dark") {
-      setTheme("light");
-    } else {
-      setTheme("dark");
-    }
-  };
+  const { toggleTheme, theme } = useToggleTheme();
 
   return (
     <div className={classNames(BORDER_COLOR, "border-b pb-4")}>
@@ -23,7 +13,7 @@ const PageHeader = () => {
           <div className="relative flex flex-col  items-center space-y-4 sm:flex-row sm:items-end sm:justify-center sm:space-y-0 sm:space-x-8 ">
             <button
               type="button"
-              onClick={toggleDarkMode}
+              onClick={toggleTheme}
               className="absolute right-0 top-0  w-10 p-1"
             >
               {theme === "dark" ? (
