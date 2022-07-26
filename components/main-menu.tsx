@@ -56,11 +56,9 @@ const MainMenu = () => {
 
     const observer = new IntersectionObserver(
       ([e]) => {
-        console.log(":D", e.intersectionRatio < 1);
         setIsSticky(e.intersectionRatio < 1);
       },
       {
-        rootMargin: "-1px 0px 0px 0px",
         threshold: [1],
       }
     );
@@ -90,7 +88,7 @@ const MainMenu = () => {
       ref={navRef}
       className={cn(
         BORDER_COLOR,
-        "no-scrollbar top-0 mb-8 flex w-full flex-col border-b",
+        "no-scrollbar pt-[calc(1em + 1px)] top-[-1px] mb-8 flex w-full flex-col border-b",
         {
           "overflow-auto": isSticky,
           "fixed h-screen w-screen bg-white dark:bg-gray-900": showDropdownMenu,
