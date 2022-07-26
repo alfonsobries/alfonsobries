@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Container from "./container";
-import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import useToggleTheme from "../hooks/useToggleTheme";
 
 const links = [
@@ -50,7 +49,6 @@ const MainMenu = () => {
   const { toggleTheme, theme } = useToggleTheme();
   const [isSticky, setIsSticky] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
-  const scrollableRef = useRef<HTMLDivElement | null>(null);
   const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -86,14 +84,6 @@ const MainMenu = () => {
     () => useDropdownMenu && menuOpened,
     [menuOpened, useDropdownMenu]
   );
-
-  useEffect(() => {
-    if (menuOpened) {
-      disableBodyScroll(scrollableRef.current);
-    } else {
-      enableBodyScroll(scrollableRef.current);
-    }
-  }, [menuOpened]);
 
   return (
     <div
@@ -210,7 +200,6 @@ const MainMenu = () => {
       </Container>
 
       <nav
-        ref={scrollableRef}
         className={cn("mx-auto flex w-full max-w-xl flex-col px-4", {
           "flex-grow overflow-auto": isSticky,
           hidden: isSticky && !menuOpened,
