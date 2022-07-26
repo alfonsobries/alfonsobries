@@ -3,6 +3,7 @@ import cn from "classnames";
 import { useRouter } from "next/router";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import { useCallback, useEffect, useState } from "react";
+import Container from "./container";
 
 const links = [
   {
@@ -27,6 +28,7 @@ const MainMenu = () => {
   const router = useRouter();
 
   const [isSticky, setIsSticky] = useState(false);
+  const [menuOpened, setMenuOpened] = useState(false);
 
   const scrollListener = useCallback(() => {
     const nav = document.querySelector("nav")!;
@@ -54,54 +56,96 @@ const MainMenu = () => {
     };
   }, [scrollListener]);
 
+  const toggleMenu = useCallback(() => {
+    setMenuOpened(!menuOpened);
+  }, [menuOpened]);
+
   return (
     <nav
       className={cn(
         BORDER_COLOR,
-        "no-scrollbar sticky top-0 overflow-auto border-b bg-white/30 px-5 backdrop-blur-lg dark:bg-gray-900/30 sm:mx-0 sm:mt-0 sm:border-0 sm:px-0"
+        "no-scrollbar sticky top-0 overflow-auto border-b bg-white/30 backdrop-blur-lg dark:bg-gray-900/30"
       )}
     >
-      <ul className="mb-[-1px] flex justify-between justify-items-stretch sm:-mx-2 sm:justify-start">
-        <li className="sm:hidden">
+      <Container
+        className={cn("flex items-center justify-between", {
+          hidden: !isSticky,
+        })}
+      >
+        <div
+          className={cn(
+            "flex h-8 w-8 items-center justify-center rounded-full  bg-blue-700 p-1 dark:bg-blue-200",
+            {
+              hidden: !isSticky,
+            }
+          )}
+        >
+          <img
+            src="/images/face-icon.svg"
+            alt="Alfonso Bribiesca"
+            className="dark:hidden"
+          />
+
+          <img
+            src="/images/face-icon-dark.svg"
+            alt="Alfonso Bribiesca"
+            className="hidden dark:block"
+          />
+        </div>
+
+        <button
+          type="button"
+          aria-label="open menu"
+          onClick={toggleMenu}
+          className={cn(
+            "group relative flex h-11 flex-col items-center justify-center"
+          )}
+        >
+          <span
+            className={cn(
+              "top-0 block w-6 rounded-full border border-blue-700 transition-transform duration-100 ease-in-out group-hover:border-blue-600 dark:border-blue-200 dark:group-hover:border-blue-100",
+              {
+                "-translate-y-1": !menuOpened,
+                "translate-y-[2px] rotate-45": menuOpened,
+              }
+            )}
+          ></span>
+          <span
+            className={cn(
+              "block w-6 rounded-full border border-blue-700 transition-transform duration-100 ease-in-out group-hover:border-blue-600 dark:border-blue-200 dark:group-hover:border-blue-100",
+              {
+                "translate-y-1": !menuOpened,
+                "-rotate-45": menuOpened,
+              }
+            )}
+          ></span>
+        </button>
+      </Container>
+
+      <ul
+        className={cn(
+          "mx-auto mb-[-1px] flex max-w-xl justify-between justify-items-stretch px-4",
+          {
+            hidden: isSticky && !menuOpened,
+          }
+        )}
+      >
+        <li>
           <Link href="/">
             <a
               className={cn(
-                "block h-full whitespace-nowrap  text-blue-700 dark:text-blue-200 sm:py-0 dark:sm:text-blue-500",
+                "block h-full whitespace-nowrap px-2 py-3 text-blue-700 dark:text-blue-200",
                 {
-                  "px-2 py-3": !isSticky,
-                  "flex items-center pr-1": isSticky,
                   "border-b-2 border-blue-600 dark:border-blue-500":
-                    router.pathname === "/" && !isSticky,
-                  "hover:text-blue-600 hover:underline dark:sm:hover:text-blue-600 ":
-                    router.pathname !== "/" && !isSticky,
+                    router.pathname === "/",
+                  "hover:text-blue-600 hover:underline":
+                    router.pathname !== "/",
                 }
               )}
             >
-              <div
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full  bg-blue-700 p-1 dark:bg-blue-200",
-                  {
-                    hidden: !isSticky,
-                  }
-                )}
-              >
-                <img
-                  src="/images/face-icon.svg"
-                  alt="Alfonso Bribiesca"
-                  className="dark:hidden"
-                />
-
-                <img
-                  src="/images/face-icon-dark.svg"
-                  alt="Alfonso Bribiesca"
-                  className="hidden dark:block"
-                />
-              </div>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className={cn("h-5 w-5", {
-                  hidden: isSticky,
-                })}
+                className="h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -118,20 +162,15 @@ const MainMenu = () => {
         </li>
 
         {links.map(({ href, label }, index) => (
-          <li
-            className={cn({
-              "sm:hidden": index === 0,
-            })}
-            key={href}
-          >
+          <li key={href}>
             <Link href={href}>
               <a
                 className={cn(
-                  "block h-full whitespace-nowrap px-2 py-3 text-blue-700 dark:text-blue-200 sm:py-0 dark:sm:text-blue-500",
+                  "block h-full whitespace-nowrap px-2 py-3 text-blue-700 dark:text-blue-200",
                   {
                     "border-b-2 border-blue-600 dark:border-blue-500":
                       router.pathname === href,
-                    "hover:text-blue-600 hover:underline dark:sm:hover:text-blue-600 ":
+                    "hover:text-blue-600 hover:underline":
                       router.pathname !== href,
                   }
                 )}
