@@ -92,7 +92,7 @@ const MainMenu = () => {
                 />
 
                 <img
-                  src="/images/face-icon.svg"
+                  src="/images/face-icon-dark.svg"
                   alt="Alfonso Bribiesca"
                   className="hidden dark:block"
                 />
