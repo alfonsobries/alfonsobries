@@ -51,7 +51,7 @@ const MainMenu = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
   const scrollableRef = useRef<HTMLDivElement | null>(null);
-  const navRef = useRef<HTMLElement | null>(null);
+  const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const nav = navRef.current;
@@ -96,19 +96,26 @@ const MainMenu = () => {
   }, [menuOpened]);
 
   return (
-    <nav
+    <div
       ref={navRef}
-      className={cn(BORDER_COLOR, "no-scrollbar top-0 mb-8 border-b", {
-        "overflow-auto": isSticky,
-        "fixed h-screen w-screen bg-white dark:bg-gray-900": showDropdownMenu,
-        "sticky bg-white/30 backdrop-blur-lg dark:bg-gray-900/30":
-          !showDropdownMenu,
-      })}
+      className={cn(
+        BORDER_COLOR,
+        "no-scrollbar top-0 mb-8 flex w-full flex-col border-b",
+        {
+          "overflow-auto": isSticky,
+          "fixed h-screen w-screen bg-white dark:bg-gray-900": showDropdownMenu,
+          "sticky bg-white/30 backdrop-blur-lg dark:bg-gray-900/30":
+            !showDropdownMenu,
+        }
+      )}
     >
       <Container
-        className={cn("flex h-11 items-center justify-between space-x-4", {
-          hidden: !isSticky,
-        })}
+        className={cn(
+          "flex h-11 w-full items-center justify-between space-x-4",
+          {
+            hidden: !isSticky,
+          }
+        )}
       >
         <Link href="/">
           <a
@@ -202,21 +209,19 @@ const MainMenu = () => {
         </div>
       </Container>
 
-      <div
+      <nav
         ref={scrollableRef}
-        className={cn("mx-auto flex max-w-xl flex-col  px-4", {
-          "overflow-auto": isSticky,
+        className={cn("mx-auto flex w-full max-w-xl flex-col px-4", {
+          "flex-grow overflow-auto": isSticky,
           hidden: isSticky && !menuOpened,
           "h-11": !isSticky,
         })}
       >
         <ul
-          className={cn(
-            "mb-[-1px] flex flex-grow justify-between justify-items-stretch",
-            {
-              "flex-col": useDropdownMenu,
-            }
-          )}
+          className={cn("mb-[-1px] flex", {
+            "flex-grow justify-between justify-items-stretch": !isSticky,
+            "flex-col": useDropdownMenu,
+          })}
         >
           {links.map(({ href, label }, index) => (
             <li key={href}>
@@ -270,8 +275,8 @@ const MainMenu = () => {
             </svg>
           </a>
         </div>
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 };
 
