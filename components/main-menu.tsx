@@ -101,9 +101,9 @@ const MainMenu = () => {
   return (
     <nav
       ref={navRef}
-      className={cn(BORDER_COLOR, "no-scrollbar top-0 mb-8  border-b", {
+      className={cn(BORDER_COLOR, "no-scrollbar top-0 mb-8 border-b", {
         "overflow-auto": isSticky,
-        "fixed h-screen w-screen bg-white ": showDropdownMenu,
+        "fixed h-screen w-screen bg-white dark:bg-gray-900": showDropdownMenu,
         "sticky bg-white/30 backdrop-blur-lg dark:bg-gray-900/30":
           !showDropdownMenu,
       })}
@@ -191,7 +191,7 @@ const MainMenu = () => {
                       "hover:text-blue-600 hover:underline":
                         router.pathname !== href && !useDropdownMenu,
                       "px-2": !useDropdownMenu,
-                      "border-t py-3": useDropdownMenu,
+                      [`${BORDER_COLOR} border-t py-3`]: useDropdownMenu,
                       "font-semibold":
                         useDropdownMenu && router.pathname === href,
                     }
