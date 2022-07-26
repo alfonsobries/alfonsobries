@@ -54,32 +54,28 @@ const MainMenu = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
   const scrollableRef = useRef<HTMLDivElement | null>(null);
-
-  const scrollListener = useCallback(() => {
-    const nav = document.querySelector("nav")!;
-
-    const { top } = nav.getBoundingClientRect();
-
-    if (top === 0 && !isSticky) {
-      setIsSticky(true);
-    } else if (top > 0 && isSticky) {
-      setIsSticky(false);
-    }
-  }, [isSticky]);
+  const navRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    scrollListener();
+    const nav = navRef.current;
 
-    const scrollHandler = () => scrollListener();
+    const observer = new IntersectionObserver(
+      ([e]) => {
+        console.log(":D", e.intersectionRatio < 1);
+        setIsSticky(e.intersectionRatio < 1);
+      },
+      {
+        rootMargin: "-1px 0px 0px 0px",
+        threshold: [1],
+      }
+    );
 
-    window.addEventListener("touchmove", scrollHandler);
-    window.addEventListener("scroll", scrollHandler);
+    observer.observe(nav);
 
     return () => {
-      window.removeEventListener("touchmove", scrollHandler);
-      window.removeEventListener("scroll", scrollHandler);
+      observer.unobserve(nav);
     };
-  }, [scrollListener]);
+  }, []);
 
   useEffect(() => {}, []);
 
@@ -104,18 +100,16 @@ const MainMenu = () => {
 
   return (
     <nav
-      className={cn(
-        BORDER_COLOR,
-        "no-scrollbar top-0 mb-8 overflow-auto border-b",
-        {
-          "fixed h-screen w-screen bg-white ": showDropdownMenu,
-          "sticky bg-white/30 backdrop-blur-lg dark:bg-gray-900/30":
-            !showDropdownMenu,
-        }
-      )}
+      ref={navRef}
+      className={cn(BORDER_COLOR, "no-scrollbar top-0 mb-8  border-b", {
+        "overflow-auto": isSticky,
+        "fixed h-screen w-screen bg-white ": showDropdownMenu,
+        "sticky bg-white/30 backdrop-blur-lg dark:bg-gray-900/30":
+          !showDropdownMenu,
+      })}
     >
       <Container
-        className={cn("flex items-center justify-between", {
+        className={cn("flex h-11 items-center justify-between", {
           hidden: !isSticky,
         })}
       >
@@ -174,11 +168,12 @@ const MainMenu = () => {
         ref={scrollableRef}
         className={cn("mx-auto flex max-w-xl flex-col overflow-auto px-4", {
           hidden: isSticky && !menuOpened,
+          "h-11": !isSticky,
         })}
       >
         <ul
           className={cn(
-            "mb-[-1px] flex  justify-between justify-items-stretch ",
+            "mb-[-1px] flex flex-grow justify-between justify-items-stretch",
             {
               "flex-col": useDropdownMenu,
             }
@@ -189,14 +184,14 @@ const MainMenu = () => {
               <Link href={href}>
                 <a
                   className={cn(
-                    "block h-full whitespace-nowrap py-3 text-blue-700 dark:text-blue-200",
+                    "flex h-full items-center whitespace-nowrap text-blue-700 dark:text-blue-200",
                     {
                       "border-b-2 border-blue-600 dark:border-blue-500":
                         router.pathname === href && !useDropdownMenu,
                       "hover:text-blue-600 hover:underline":
                         router.pathname !== href && !useDropdownMenu,
                       "px-2": !useDropdownMenu,
-                      "border-t": useDropdownMenu,
+                      "border-t py-3": useDropdownMenu,
                       "font-semibold":
                         useDropdownMenu && router.pathname === href,
                     }
