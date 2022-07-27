@@ -72,14 +72,12 @@ const MainMenu = () => {
 
     observer.observe(nav);
 
-    window.addEventListener("resize", scrollListener);
-    window.addEventListener("scroll", scrollListener);
-    window.addEventListener("touchmove", scrollListener);
+    setInterval(scrollListener, 10);
 
     return () => {
-      window.removeEventListener("resize", scrollListener);
-      window.removeEventListener("touchmove", scrollListener);
-      window.removeEventListener("scroll", scrollListener);
+      // window.removeEventListener("resize", scrollListener);
+      // window.removeEventListener("touchmove", scrollListener);
+      // window.removeEventListener("scroll", scrollListener);
 
       observer.unobserve(nav);
     };
