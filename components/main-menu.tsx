@@ -50,13 +50,14 @@ const MainMenu = () => {
   const [isSticky, setIsSticky] = useState(false);
   const [observer, setObserver] = useState<IntersectionObserver>();
   const [menuOpened, setMenuOpened] = useState(false);
+  const [touchInterval, setTouchInterval] = useState<any>();
+  const [touchTimeout, setTouchTimeout] = useState<any>();
   const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setObserver(
       new IntersectionObserver(
         ([e]) => {
-          console.log("observing");
           setIsSticky(e.intersectionRatio < 1);
         },
         {
@@ -83,29 +84,71 @@ const MainMenu = () => {
     if (!observer) {
       return;
     }
+
     const nav = navRef.current;
-    document.addEventListener("touchstart", (e) => {
+
+    const touchstartListener = () => {
+      console.log("touchstart");
       observer.unobserve(nav);
-    });
 
-    document.addEventListener("touchmove", (e) => {
+      clearTimeout(touchTimeout);
+
+      clearInterval(touchInterval);
+
+      setTouchInterval(
+        setInterval(() => {
+          // console.log("observing");
+          const { top } = nav.getBoundingClientRect();
+          setIsSticky(top <= 0);
+        }, 10)
+      );
+    };
+
+    const touchmoveListener = () => {
+      // console.log("touchmove");
+    };
+
+    const touchendListener = () => {
+      console.log("touchend");
       const { top } = nav.getBoundingClientRect();
       setIsSticky(top <= 0);
-    });
 
-    document.addEventListener("touchend", (e) => {
-      const { top } = nav.getBoundingClientRect();
-      setIsSticky(top <= 0);
+      setTouchTimeout(
+        setTimeout(() => {
+          clearInterval(touchInterval);
 
-      observer.observe(nav);
-    });
+          observer.observe(nav);
+        }, 1000)
+      );
+    };
+
+    const resizeListener = () => {
+      console.log("resize");
+    };
+
+    document.addEventListener("touchstart", touchstartListener);
+
+    document.addEventListener("touchmove", touchmoveListener);
+
+    document.addEventListener("touchend", touchendListener);
+
+    window.addEventListener("resize", resizeListener);
 
     observer.observe(nav);
 
     return () => {
       observer.unobserve(nav);
+
+      document.removeEventListener("touchstart", touchstartListener);
+      document.removeEventListener("touchmove", touchmoveListener);
+      document.removeEventListener("touchend", touchendListener);
+      window.removeEventListener("resize", resizeListener);
+
+      clearInterval(touchInterval);
+
+      clearTimeout(touchTimeout);
     };
-  }, [observer]);
+  }, [observer, touchInterval, touchTimeout]);
 
   return (
     <div
