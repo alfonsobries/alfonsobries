@@ -8,6 +8,7 @@ import Head from "next/head";
 import { CMS_NAME } from "../lib/constants";
 import Post from "../interfaces/post";
 import ArticleListItem from "../components/article-list-item";
+import { useEffect } from "react";
 
 type Props = {
   allPosts: Post[];
@@ -15,6 +16,10 @@ type Props = {
 
 export default function Index({ allPosts }: Props) {
   const posts = allPosts.slice(0, 3);
+
+  useEffect(() => {
+    console.log("load index");
+  }, []);
 
   return (
     <>

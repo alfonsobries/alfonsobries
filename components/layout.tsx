@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Footer from "./footer";
 import MainMenu from "./main-menu";
 import Meta from "./meta";
@@ -8,6 +9,11 @@ type Props = {
 };
 
 const Layout = ({ children }: Props) => {
+  useEffect(() => {
+    console.log("load layout");
+  }, []);
+
+  console.log("load layout 2");
   return (
     <>
       <Meta />
