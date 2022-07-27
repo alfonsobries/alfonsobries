@@ -56,6 +56,7 @@ const MainMenu = () => {
 
     const observer = new IntersectionObserver(
       ([e]) => {
+        console.log(e.intersectionRatio);
         setIsSticky(e.intersectionRatio < 1);
       },
       {
