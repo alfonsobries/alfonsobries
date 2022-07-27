@@ -65,9 +65,18 @@ const MainMenu = () => {
       }
     );
 
+    const resizeListener = () => {
+      const { top } = nav.getBoundingClientRect();
+      setIsSticky(top <= 0);
+    };
+
     observer.observe(nav);
 
+    window.addEventListener("resize", resizeListener);
+
     return () => {
+      window.removeEventListener("resize", resizeListener);
+
       observer.unobserve(nav);
     };
   }, []);
