@@ -59,7 +59,7 @@ const MainMenu = () => {
         setIsSticky(e.intersectionRatio < 1);
       },
       {
-        // root: document.body,
+        root: document.querySelector("#scroll"),
         rootMargin: "-1px 0px 0px 0px",
         threshold: [1],
       }
