@@ -44,32 +44,31 @@ const links = [
   },
 ];
 
-let touchInterval: any;
-let touchTimeout: any;
-
 const MainMenu = () => {
   const router = useRouter();
   const { toggleTheme, theme } = useToggleTheme();
   const [isSticky, setIsSticky] = useState(false);
-  const [observer, setObserver] = useState<IntersectionObserver>();
   const [menuOpened, setMenuOpened] = useState(false);
-  // const [touchInterval, setTouchInterval] = useState<any>();
-  // const [touchTimeout, setTouchTimeout] = useState<any>();
   const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    setObserver(
-      new IntersectionObserver(
-        ([e]) => {
-          console.log("set 1", e.intersectionRatio < 1);
-          setIsSticky(e.intersectionRatio < 1);
-        },
-        {
-          rootMargin: "-1px 0px 0px 0px",
-          threshold: [1],
-        }
-      )
+    const nav = navRef.current;
+
+    const observer = new IntersectionObserver(
+      ([e]) => {
+        setIsSticky(e.intersectionRatio < 1);
+      },
+      {
+        rootMargin: "-1px 0px 0px 0px",
+        threshold: [1],
+      }
     );
+
+    observer.observe(nav);
+
+    return () => {
+      observer.unobserve(nav);
+    };
   }, [setIsSticky]);
 
   const toggleMenu = useCallback(() => {
@@ -82,86 +81,6 @@ const MainMenu = () => {
     () => useDropdownMenu && menuOpened,
     [menuOpened, useDropdownMenu]
   );
-
-  const touchstartListener = useCallback(() => {
-    console.log("touchstart");
-    observer.unobserve(navRef.current);
-    clearTimeout(touchTimeout);
-  }, [observer]);
-
-  const touchmoveListener = useCallback(() => {
-    console.log("touchmove");
-
-    clearInterval(touchInterval);
-
-    touchInterval = setInterval(() => {
-      const { top } = navRef.current.getBoundingClientRect();
-      console.log("set 2", top <= 0);
-      setIsSticky(top <= 0);
-    }, 100);
-  }, [navRef]);
-
-  const touchendListener = useCallback(() => {
-    clearInterval(touchInterval);
-    // clearTimeout(touchTimeout);
-
-    console.log("touchend");
-    const { top } = navRef.current.getBoundingClientRect();
-    setIsSticky(top <= 0);
-
-    observer.observe(navRef.current);
-    // touchTimeout = setTimeout(() => {
-    //   observer.observe(navRef.current);
-    // }, 3000);
-  }, [navRef, observer]);
-
-  const resizeListener = useCallback(() => {
-    console.log("resize");
-    clearInterval(touchInterval);
-    clearTimeout(touchTimeout);
-
-    const { top } = navRef.current.getBoundingClientRect();
-    console.log("set 3", top <= 0);
-    setIsSticky(top <= 0);
-
-    // observer.observe(navRef.current);
-  }, [navRef]);
-
-  useEffect(() => {
-    if (!observer) {
-      return;
-    }
-
-    document.addEventListener("touchstart", touchstartListener);
-
-    document.addEventListener("touchmove", touchmoveListener);
-
-    document.addEventListener("touchend", touchendListener);
-
-    // window.addEventListener("resize", resizeListener);
-
-    observer.observe(navRef.current);
-
-    return () => {
-      // observer.unobserve(navRef.current);
-
-      document.removeEventListener("touchstart", touchstartListener);
-      document.removeEventListener("touchmove", touchmoveListener);
-      document.removeEventListener("touchend", touchendListener);
-      window.removeEventListener("resize", resizeListener);
-
-      // clearInterval(touchInterval);
-
-      // clearTimeout(touchTimeout);
-    };
-  }, [
-    observer,
-    touchstartListener,
-    touchendListener,
-    resizeListener,
-    touchmoveListener,
-    navRef,
-  ]);
 
   return (
     <div
