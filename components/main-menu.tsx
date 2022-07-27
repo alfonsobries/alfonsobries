@@ -49,11 +49,33 @@ const MainMenu = () => {
   const { toggleTheme, theme } = useToggleTheme();
   const [isSticky, setIsSticky] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [scrollingInterval, setScrollingInterval] = useState(null);
   const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    console.log({ isSticky });
+  }, [isSticky]);
+
+  useEffect(() => {
+    clearInterval(scrollingInterval);
+
+    if (isScrolling) {
+      const nav = navRef.current;
+
+      setScrollingInterval(
+        setInterval(() => {
+          const { top } = nav.getBoundingClientRect();
+
+          setIsSticky(top <= 0);
+        }, 50)
+      );
+    }
+  }, [isScrolling, navRef]);
+
+  useEffect(() => {
     const nav = navRef.current;
-    let interval;
+    let scrollingTimeout: ReturnType<typeof setTimeout> | null;
 
     const observer = new IntersectionObserver(
       ([e]) => {
@@ -67,32 +89,37 @@ const MainMenu = () => {
 
     observer.observe(nav);
 
-    const scrollStart = () => {
-      interval = setInterval(() => {
-        const { top } = nav.getBoundingClientRect();
-
-        setIsSticky(top <= 0);
-      }, 100);
-    };
-
-    const scrollEnd = () => {
-      if (!interval) {
-        return;
+    const touchMoveHandler = () => {
+      if (scrollingTimeout) {
+        clearTimeout(scrollingTimeout);
+        scrollingTimeout = null;
       }
 
-      clearInterval(interval);
-      interval = null;
+      setIsScrolling(true);
+    };
+
+    const scrollHandler = () => {
+      if (scrollingTimeout) {
+        clearTimeout(scrollingTimeout);
+        scrollingTimeout = null;
+      }
+
+      setIsScrolling(true);
+
+      scrollingTimeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 50);
     };
 
     // iOs alternative
-    document.addEventListener("touchmove", scrollStart);
-    document.addEventListener("scroll", scrollEnd);
+    document.addEventListener("touchmove", touchMoveHandler);
+    document.addEventListener("scroll", scrollHandler);
 
     return () => {
       observer.unobserve(nav);
 
-      document.removeEventListener("touchmove", scrollStart);
-      document.removeEventListener("scroll", scrollEnd);
+      document.removeEventListener("touchmove", touchMoveHandler);
+      document.removeEventListener("scroll", scrollHandler);
     };
   }, []);
 
