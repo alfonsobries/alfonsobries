@@ -12,17 +12,3 @@
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
-
-html {
-  height: -webkit-fill-available;
-}
-
-body {
-  @apply flex h-screen flex-col overflow-hidden;
-  height: -webkit-fill-available;
-}
-
-#main {
-  flex: 1;
-  @apply overflow-auto;
-}

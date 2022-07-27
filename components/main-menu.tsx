@@ -48,32 +48,23 @@ const MainMenu = () => {
   const router = useRouter();
   const { toggleTheme, theme } = useToggleTheme();
   const [isSticky, setIsSticky] = useState(false);
-  // const [isScrolling, setIsScrolling] = useState(false);
-  // const [checkScrollingTimeout, setCheckScrollingTimeout] =
-  //   useState<ReturnType<typeof setTimeout>>();
-  // const [checkSickyInterval, setCheckStickyInterval] =
-  //   useState<ReturnType<typeof setInterval>>();
+  const [observer, setObserver] = useState<IntersectionObserver>();
   const [menuOpened, setMenuOpened] = useState(false);
   const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const nav = navRef.current;
-
-    const observer = new IntersectionObserver(
-      ([e]) => {
-        setIsSticky(e.intersectionRatio < 1);
-      },
-      {
-        rootMargin: "-1px 0px 0px 0px",
-        threshold: [1],
-      }
+    setObserver(
+      new IntersectionObserver(
+        ([e]) => {
+          console.log("observing");
+          setIsSticky(e.intersectionRatio < 1);
+        },
+        {
+          rootMargin: "-1px 0px 0px 0px",
+          threshold: [1],
+        }
+      )
     );
-
-    observer.observe(nav);
-
-    return () => {
-      observer.unobserve(nav);
-    };
   }, [setIsSticky]);
 
   const toggleMenu = useCallback(() => {
@@ -87,41 +78,34 @@ const MainMenu = () => {
     [menuOpened, useDropdownMenu]
   );
 
-  // useEffect(() => {
-  //   const nav = navRef.current;
-  //   clearInterval(checkSickyInterval);
-  //   if (isScrolling) {
-  //     setCheckStickyInterval(
-  //       setInterval(() => {
-  //         const { top } = nav.getBoundingClientRect();
-  //         setIsSticky(top <= 0);
-  //       }, 10)
-  //     );
-  //   }
-  // }, [isScrolling]);
+  //
+  useEffect(() => {
+    if (!observer) {
+      return;
+    }
+    const nav = navRef.current;
+    document.addEventListener("touchstart", (e) => {
+      observer.unobserve(nav);
+    });
 
-  // useEffect(() => {
-  //   const touchmoveListener = () => {
-  //     setIsScrolling(true);
-  //     clearTimeout(checkScrollingTimeout);
+    document.addEventListener("touchmove", (e) => {
+      const { top } = nav.getBoundingClientRect();
+      setIsSticky(top <= 0);
+    });
 
-  //     setCheckScrollingTimeout(
-  //       setTimeout(() => {
-  //         setIsScrolling(false);
-  //       }, 300)
-  //     );
-  //   };
+    document.addEventListener("touchend", (e) => {
+      const { top } = nav.getBoundingClientRect();
+      setIsSticky(top <= 0);
 
-  //   window.addEventListener("resize", () => {
-  //     setIsScrolling(false);
-  //   });
+      observer.observe(nav);
+    });
 
-  //   window.addEventListener("touchmove", touchmoveListener);
+    observer.observe(nav);
 
-  //   return () => {
-  //     window.removeEventListener("touchmove", touchmoveListener);
-  //   };
-  // }, []);
+    return () => {
+      observer.unobserve(nav);
+    };
+  }, [observer]);
 
   return (
     <div
