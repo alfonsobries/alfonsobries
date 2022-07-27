@@ -66,11 +66,8 @@ const MainMenu = () => {
     );
 
     const scrollListener = () => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        const { top } = nav.getBoundingClientRect();
-        setIsSticky(top <= 0);
-      }, 50);
+      const { top } = nav.getBoundingClientRect();
+      setIsSticky(top <= 0);
     };
 
     observer.observe(nav);
