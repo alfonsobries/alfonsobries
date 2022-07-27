@@ -54,10 +54,6 @@ const MainMenu = () => {
   const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    console.log({ isSticky });
-  }, [isSticky]);
-
-  useEffect(() => {
     clearInterval(scrollingInterval);
 
     if (isScrolling) {
