@@ -56,7 +56,9 @@ const MainMenu = () => {
 
     const observer = new IntersectionObserver(
       ([e]) => {
-        setIsSticky(e.intersectionRatio < 1);
+        const { top } = nav.getBoundingClientRect();
+        setIsSticky(top <= 0);
+        // setIsSticky(e.intersectionRatio < 1);
       },
       {
         rootMargin: "-1px 0px 0px 0px",
