@@ -53,6 +53,7 @@ const MainMenu = () => {
 
   useEffect(() => {
     const nav = navRef.current;
+    let timeout: ReturnType<typeof setTimeout> | null = null;
 
     const observer = new IntersectionObserver(
       ([e]) => {
@@ -64,21 +65,38 @@ const MainMenu = () => {
       }
     );
 
-    const resizeListener = () => {
+    const scrollListener = () => {
       const { top } = nav.getBoundingClientRect();
       setIsSticky(top <= 0);
     };
 
+    const resizeListener = () => {
+      clearTimeout(timeout);
+
+      window.removeEventListener("scroll", scrollListener);
+
+      const { top } = nav.getBoundingClientRect();
+      setIsSticky(top <= 0);
+
+      timeout = setTimeout(() => {
+        window.addEventListener("scroll", scrollListener);
+      }, 1000);
+    };
+
     observer.observe(nav);
 
+    window.addEventListener("scroll", scrollListener);
     window.addEventListener("resize", resizeListener);
 
     return () => {
+      clearTimeout(timeout);
+
+      window.removeEventListener("scroll", scrollListener);
       window.removeEventListener("resize", resizeListener);
 
       observer.unobserve(nav);
     };
-  }, []);
+  }, [setIsSticky]);
 
   const toggleMenu = useCallback(() => {
     setMenuOpened(!menuOpened);
