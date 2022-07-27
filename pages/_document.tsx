@@ -12,8 +12,8 @@ class MyDocument extends Document {
             rel="stylesheet"
           />
         </Head>
-        <body className="h-screen overflow-hidden bg-white dark:bg-gray-900">
-          <div id="scroll" className="h-screen   overflow-auto">
+        <body>
+          <div id="main" className="overflow-auto">
             <Main />
             <NextScript />
           </div>
