@@ -76,8 +76,10 @@ const MainMenu = () => {
     observer.observe(nav);
 
     window.addEventListener("scroll", scrollListener);
+    window.addEventListener("touchmove", scrollListener);
 
     return () => {
+      window.removeEventListener("touchmove", scrollListener);
       window.removeEventListener("scroll", scrollListener);
 
       observer.unobserve(nav);
