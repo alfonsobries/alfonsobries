@@ -49,35 +49,17 @@ const MainMenu = () => {
   const { toggleTheme, theme } = useToggleTheme();
   const [isSticky, setIsSticky] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
-  const [scrollingInterval, setScrollingInterval] = useState(null);
   const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    clearInterval(scrollingInterval);
-
-    if (isScrolling) {
-      const nav = navRef.current;
-
-      setScrollingInterval(
-        setInterval(() => {
-          const { top } = nav.getBoundingClientRect();
-
-          setIsSticky(top <= 0);
-        }, 50)
-      );
-    }
-  }, [isScrolling, navRef]);
-
-  useEffect(() => {
     const nav = navRef.current;
-    let scrollingTimeout: ReturnType<typeof setTimeout> | null;
 
     const observer = new IntersectionObserver(
       ([e]) => {
         setIsSticky(e.intersectionRatio < 1);
       },
       {
+        // root: document.body,
         rootMargin: "-1px 0px 0px 0px",
         threshold: [1],
       }
@@ -85,37 +67,8 @@ const MainMenu = () => {
 
     observer.observe(nav);
 
-    const touchMoveHandler = () => {
-      if (scrollingTimeout) {
-        clearTimeout(scrollingTimeout);
-        scrollingTimeout = null;
-      }
-
-      setIsScrolling(true);
-    };
-
-    const scrollHandler = () => {
-      if (scrollingTimeout) {
-        clearTimeout(scrollingTimeout);
-        scrollingTimeout = null;
-      }
-
-      setIsScrolling(true);
-
-      scrollingTimeout = setTimeout(() => {
-        setIsScrolling(false);
-      }, 50);
-    };
-
-    // iOs alternative
-    document.addEventListener("touchmove", touchMoveHandler);
-    document.addEventListener("scroll", scrollHandler);
-
     return () => {
       observer.unobserve(nav);
-
-      document.removeEventListener("touchmove", touchMoveHandler);
-      document.removeEventListener("scroll", scrollHandler);
     };
   }, []);
 
