@@ -89,7 +89,7 @@ const MainMenu = () => {
       ref={navRef}
       className={cn(
         BORDER_COLOR,
-        "no-scrollbar top-0 mb-8 flex w-full flex-col border-b",
+        "no-scrollbar top-[-1px] mb-8 flex w-full flex-col border-y",
         {
           "overflow-auto": isSticky,
           "fixed h-screen w-screen bg-white dark:bg-gray-900": showDropdownMenu,
