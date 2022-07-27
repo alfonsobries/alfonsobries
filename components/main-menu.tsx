@@ -48,6 +48,11 @@ const MainMenu = () => {
   const router = useRouter();
   const { toggleTheme, theme } = useToggleTheme();
   const [isSticky, setIsSticky] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [checkScrollingTimeout, setCheckScrollingTimeout] =
+    useState<ReturnType<typeof setTimeout>>();
+  const [checkSickyInterval, setCheckStickyInterval] =
+    useState<ReturnType<typeof setInterval>>();
   const [menuOpened, setMenuOpened] = useState(false);
   const navRef = useRef<HTMLDivElement | null>(null);
 
@@ -56,9 +61,7 @@ const MainMenu = () => {
 
     const observer = new IntersectionObserver(
       ([e]) => {
-        const { top } = nav.getBoundingClientRect();
-        setIsSticky(top <= 0);
-        // setIsSticky(e.intersectionRatio < 1);
+        setIsSticky(e.intersectionRatio < 1);
       },
       {
         rootMargin: "-1px 0px 0px 0px",
@@ -83,6 +86,42 @@ const MainMenu = () => {
     () => useDropdownMenu && menuOpened,
     [menuOpened, useDropdownMenu]
   );
+
+  useEffect(() => {
+    const nav = navRef.current;
+    clearInterval(checkSickyInterval);
+    if (isScrolling) {
+      setCheckStickyInterval(
+        setInterval(() => {
+          const { top } = nav.getBoundingClientRect();
+          setIsSticky(top <= 0);
+        }, 10)
+      );
+    }
+  }, [isScrolling]);
+
+  useEffect(() => {
+    const touchmoveListener = () => {
+      setIsScrolling(true);
+      clearTimeout(checkScrollingTimeout);
+
+      setCheckScrollingTimeout(
+        setTimeout(() => {
+          setIsScrolling(false);
+        }, 300)
+      );
+    };
+
+    window.addEventListener("resize", () => {
+      setIsScrolling(false);
+    });
+
+    window.addEventListener("touchmove", touchmoveListener);
+
+    return () => {
+      window.removeEventListener("touchmove", touchmoveListener);
+    };
+  }, []);
 
   return (
     <div
