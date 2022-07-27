@@ -12,11 +12,9 @@ class MyDocument extends Document {
             rel="stylesheet"
           />
         </Head>
-        <body>
-          <div id="main" className="overflow-auto">
-            <Main />
-            <NextScript />
-          </div>
+        <body className="bg-white dark:bg-gray-900">
+          <Main />
+          <NextScript />
         </body>
       </Html>
     );
