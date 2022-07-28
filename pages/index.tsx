@@ -17,10 +17,6 @@ type Props = {
 export default function Index({ allPosts }: Props) {
   const posts = allPosts.slice(0, 3);
 
-  useEffect(() => {
-    console.log("load index");
-  }, []);
-
   return (
     <>
       <Layout>

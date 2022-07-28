@@ -9,11 +9,6 @@ type Props = {
 };
 
 const Layout = ({ children }: Props) => {
-  useEffect(() => {
-    console.log("load layout");
-  }, []);
-
-  console.log("load layout 2");
   return (
     <>
       <Meta />

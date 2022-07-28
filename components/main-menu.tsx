@@ -90,17 +90,20 @@ const MainMenu = () => {
         "no-scrollbar top-[-1px] mb-8 flex w-full flex-col border-y",
         {
           "overflow-auto": isSticky,
+          "mx-auto max-w-xl before:absolute before:-my-1 before:hidden before:h-14 before:w-5 before:bg-gradient-to-r before:from-white/100 before:to-white/0 before:content-[''] after:absolute after:right-0 after:top-0 after:-my-1 after:hidden after:h-14 after:w-5 after:bg-gradient-to-l after:from-white/100 after:to-white/0 after:content-[''] dark:before:from-gray-900/100 dark:before:to-gray-900/0 dark:after:from-gray-900/100 dark:after:to-gray-900/0 sm:before:block sm:after:block":
+            !isSticky,
           "fixed h-screen w-screen bg-white dark:bg-gray-900": showDropdownMenu,
           "sticky bg-white/30 backdrop-blur-lg dark:bg-gray-900/30":
             !showDropdownMenu,
         }
       )}
     >
-      <Container
+      <div
         className={cn(
           "flex h-11 w-full items-center justify-between space-x-4",
           {
             hidden: !isSticky,
+            "mx-auto max-w-xl px-4": isSticky,
           }
         )}
       >
@@ -194,7 +197,7 @@ const MainMenu = () => {
             ></span>
           </button>
         </div>
-      </Container>
+      </div>
 
       <nav
         className={cn("mx-auto flex w-full max-w-xl flex-col px-4", {
