@@ -1,27 +1,15 @@
 import Container from "./container";
 import classNames from "classnames";
 import { BORDER_COLOR } from "../lib/cssClasses";
-import useToggleTheme from "../hooks/useToggleTheme";
+import SwitchButton from "./SwitchButton";
 
 const PageHeader = () => {
-  const { toggleTheme, theme } = useToggleTheme();
-
   return (
     <div className={classNames(BORDER_COLOR, " pb-4")}>
       <Container noPadding>
         <div className={classNames(BORDER_COLOR, "px-4 py-4")}>
           <div className="relative flex flex-col  items-center space-y-4 sm:flex-row sm:items-end sm:justify-center sm:space-y-0 sm:space-x-8 ">
-            <button
-              type="button"
-              onClick={toggleTheme}
-              className="absolute right-0 top-0  w-10 p-1"
-            >
-              {theme === "dark" ? (
-                <img src="/images/switch-off.svg" alt="Disable Dark Mode" />
-              ) : (
-                <img src="/images/switch-on.svg" alt="Enable Dark Mode" />
-              )}
-            </button>
+            <SwitchButton className="absolute right-0 top-0 w-10 p-1" />
 
             <div className="h-[171px] w-[130px] flex-shrink-0">
               <img

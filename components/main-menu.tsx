@@ -3,8 +3,7 @@ import cn from "classnames";
 import { useRouter } from "next/router";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Container from "./container";
-import useToggleTheme from "../hooks/useToggleTheme";
+import SwitchButton from "./SwitchButton";
 
 const links = [
   {
@@ -46,7 +45,6 @@ const links = [
 
 const MainMenu = () => {
   const router = useRouter();
-  const { toggleTheme, theme } = useToggleTheme();
   const [isSticky, setIsSticky] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
   const navRef = useRef<HTMLDivElement | null>(null);
@@ -130,44 +128,10 @@ const MainMenu = () => {
         </Link>
 
         <div className="flex items-center">
-          <button
-            type="button"
-            aria-label="Swith to dark mode"
+          <SwitchButton
             className="flex h-8 items-center px-2 text-blue-700 hover:text-blue-600 dark:text-blue-200 dark:hover:text-blue-200"
-            onClick={toggleTheme}
-          >
-            {theme === "dark" ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                />
-              </svg>
-            )}
-          </button>
+            icon
+          />
 
           <span className={`border-l ${BORDER_COLOR} mx-2 h-5`}></span>
 
