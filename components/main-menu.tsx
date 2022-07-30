@@ -105,27 +105,33 @@ const MainMenu = () => {
           }
         )}
       >
-        <Link href="/">
-          <a
-            className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200",
-              {
-                hidden: !isSticky,
-              }
-            )}
-          >
-            <img
-              src="/images/face-icon.svg"
-              alt="Alfonso Bribiesca"
-              className="dark:hidden"
-            />
-            <img
-              src="/images/face-icon-dark.svg"
-              alt="Alfonso Bribiesca"
-              className="hidden dark:block"
-            />
-          </a>
-        </Link>
+        <div className="flex items-center space-x-3">
+          <Link href="/">
+            <a
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200",
+                {
+                  hidden: !isSticky,
+                }
+              )}
+            >
+              <img
+                src="/images/face-icon.svg"
+                alt="Alfonso Bribiesca"
+                className="dark:hidden"
+              />
+              <img
+                src="/images/face-icon-dark.svg"
+                alt="Alfonso Bribiesca"
+                className="hidden dark:block"
+              />
+            </a>
+          </Link>
+
+          <span className="font-cursive text-2xl font-bold text-gray-900 dark:text-gray-300 ">
+            Alfonso&#x27;s Blog
+          </span>
+        </div>
 
         <div className="flex items-center">
           <SwitchButton
