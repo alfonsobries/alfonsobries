@@ -17,9 +17,9 @@ const addSvgClassesHandler = (item) => {
   }
 
   if (item.attributes?.id) {
-    if (item.attributes?.id.startsWith("Dia")) {
+    if (item.attributes?.id.startsWith("Light.")) {
       item.children.forEach((i) => addClasses(i, "dark:hidden"));
-    } else if (item.attributes?.id.startsWith("Noche")) {
+    } else if (item.attributes?.id.startsWith("Dark.")) {
       item.children.forEach((i) => addClasses(i, "hidden dark:block"));
     }
   }

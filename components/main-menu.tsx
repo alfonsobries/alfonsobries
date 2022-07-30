@@ -4,7 +4,8 @@ import { useRouter } from "next/router";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SwitchButton from "./SwitchButton";
-
+import Spinner from "./spinner";
+import { ReactSVG } from "react-svg";
 const links = [
   {
     href: "/",
@@ -115,15 +116,9 @@ const MainMenu = () => {
                 }
               )}
             >
-              <img
+              <ReactSVG
                 src="/images/face-icon.svg"
-                alt="Alfonso Bribiesca"
-                className="dark:hidden"
-              />
-              <img
-                src="/images/face-icon-dark.svg"
-                alt="Alfonso Bribiesca"
-                className="hidden dark:block"
+                loading={() => <Spinner />}
               />
             </a>
           </Link>

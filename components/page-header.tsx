@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import SwitchButton from "./SwitchButton";
 import { ReactSVG } from "react-svg";
+import Spinner from "./spinner";
 
 const PageHeader = () => {
   return (
@@ -10,27 +11,11 @@ const PageHeader = () => {
       <Container noPadding>
         <div className={classNames(BORDER_COLOR, "px-4 py-4")}>
           <div className="relative flex flex-col items-center sm:flex-row sm:items-end sm:justify-center">
-            <SwitchButton className="absolute right-0 top-0 w-10 p-1" />
+            <SwitchButton className="absolute right-0 top-0 flex w-10 items-center justify-center p-1" />
 
             <ReactSVG
-              src="/images/me-full.svg"
-              loading={() => (
-                <svg
-                  className="spinner h-10 w-10 text-gray-100 dark:text-gray-800"
-                  viewBox="0 0 50 50"
-                >
-                  <circle
-                    className="path"
-                    cx="25"
-                    cy="25"
-                    r="20"
-                    fill="none"
-                    strokeLinecap="round"
-                    stroke="currentColor"
-                    strokeWidth="5"
-                  ></circle>
-                </svg>
-              )}
+              src="/images/me.svg"
+              loading={() => <Spinner />}
               beforeInjection={(svg) => {
                 svg.style.height = "180px";
                 svg.style.width = "130px";
