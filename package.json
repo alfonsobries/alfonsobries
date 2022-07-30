@@ -6,8 +6,8 @@
     "start": "next start",
     "typecheck": "tsc",
     "lint": "next lint",
-    "optimze-svg": "svgo -f ./public/images -o ./public/images",
-    "prepare": "yarn optimze-svg && yarn typecheck && yarn lint"
+    "optimize-svg": "svgo -f ./public/images -o ./public/images",
+    "prepare": "yarn optimize-svg && yarn typecheck && yarn lint"
   },
   "dependencies": {
     "classnames": "^2.3.1",

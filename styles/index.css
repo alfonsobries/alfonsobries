@@ -13,16 +13,6 @@
   scrollbar-width: none; /* Firefox */
 }
 
-/* purgecss start ignore */
-svg [id^="Noche"] {
-  @apply hidden dark:block;
-}
-
-svg [id^="Dia"] {
-  @apply dark:hidden;
-}
-/* purgecss end ignore */
-
 .spinner {
   animation: rotate 2s linear infinite;
 }
