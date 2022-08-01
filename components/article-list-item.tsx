@@ -5,18 +5,18 @@ const ArticleListItem: React.FC<{
 }> = ({ post }) => {
   return (
     <article>
-      <h4>{post.title}</h4>
+      <h2>{post.title}</h2>
 
-      <p className="">{post.excerpt}</p>
+      <p>{post.excerpt}</p>
 
-      <div>
+      <p>
         <a
           href="#"
           className="text-blue-700 hover:text-blue-600 hover:underline dark:text-blue-500 dark:hover:text-blue-600"
         >
           Read more →
         </a>
-      </div>
+      </p>
     </article>
   );
 };
