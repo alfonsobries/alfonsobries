@@ -28,10 +28,7 @@ export default function Index({ allPosts }: Props) {
             Latest Posts
           </h1>
 
-          <div className="mt-6 space-y-4">
-            {posts.map((post) => (
-              <ArticleListItem key={post.slug} post={post} />
-            ))}
+          <div className="prose mt-6 dark:prose-invert">
             {posts.map((post) => (
               <ArticleListItem key={post.slug} post={post} />
             ))}
