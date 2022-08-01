@@ -1,8 +1,7 @@
 import classNames from "classnames";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useState } from "react";
-import { ReactSVG } from "react-svg";
-import Spinner from "./spinner";
+import LazySvg from "./lazy-svg";
 
 const SwitchButton: React.FC<{
   className?: string;
@@ -22,7 +21,7 @@ const SwitchButton: React.FC<{
   if (!icon) {
     return (
       <button type="button" onClick={toggleTheme} className={className}>
-        <ReactSVG src="/images/switch.svg" loading={() => <Spinner />} />
+        <LazySvg src="/images/switch.svg" />
       </button>
     );
   }

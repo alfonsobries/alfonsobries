@@ -3,7 +3,7 @@ import cn from "classnames";
 import { useRouter } from "next/router";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import SwitchButton from "./SwitchButton";
+import SwitchButton from "./switch-button";
 import Spinner from "./spinner";
 import { ReactSVG } from "react-svg";
 const links = [

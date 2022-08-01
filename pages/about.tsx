@@ -30,6 +30,30 @@ export default function About() {
             nesciunt nam porro beatae asperiores cumque in soluta unde
             laudantium vitae esse libero.
           </p>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cum,
+            magni laboriosam doloremque corporis ipsam perspiciatis saepe,
+            nesciunt nam porro beatae asperiores cumque in soluta unde
+            laudantium vitae esse libero.
+          </p>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cum,
+            magni laboriosam doloremque corporis ipsam perspiciatis saepe,
+            nesciunt nam porro beatae asperiores cumque in soluta unde
+            laudantium vitae esse libero.
+          </p>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cum,
+            magni laboriosam doloremque corporis ipsam perspiciatis saepe,
+            nesciunt nam porro beatae asperiores cumque in soluta unde
+            laudantium vitae esse libero.
+          </p>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quas cum,
+            magni laboriosam doloremque corporis ipsam perspiciatis saepe,
+            nesciunt nam porro beatae asperiores cumque in soluta unde
+            laudantium vitae esse libero.
+          </p>
         </Container>
       </Layout>
     </>
