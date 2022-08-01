@@ -48,7 +48,6 @@ const MainMenu = () => {
   const router = useRouter();
   const [isSticky, setIsSticky] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
-  const [showMenuAvatar, setShowMenuAvatar] = useState(false);
   const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -82,12 +81,6 @@ const MainMenu = () => {
     [menuOpened, useDropdownMenu]
   );
 
-  useEffect(() => {
-    setTimeout(() => {
-      setShowMenuAvatar(isSticky);
-    }, 50);
-  }, [isSticky]);
-
   return (
     <div
       ref={navRef}
@@ -115,14 +108,7 @@ const MainMenu = () => {
       >
         <div className="relative flex items-center space-x-3">
           <Link href="/">
-            <a
-              className={cn(
-                "flex h-8 w-8 origin-bottom items-center justify-center rounded-full bg-blue-700 p-1 transition-all duration-100 ease-in-out dark:bg-blue-200",
-                {
-                  "translate-y-10": !showMenuAvatar,
-                }
-              )}
-            >
+            <a className="flex h-8 w-8 origin-bottom items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200">
               <ReactSVG
                 src="/images/face-icon.svg"
                 loading={() => <Spinner />}
