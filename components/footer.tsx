@@ -36,7 +36,7 @@ const Footer = () => {
             </a>
           </div>
 
-          <div className="flex flex-col items-center space-y-2 text-center ">
+          <div className="flex flex-col items-center space-y-2 pb-8 text-center">
             <span>Idea, illustrations, design and development by</span>
             <span className="flex space-x-3">
               <img
