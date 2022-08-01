@@ -7,6 +7,7 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./lib/cssClasses.ts",
     "./public/images/**/*.svg",
+    "./_posts/**/*.md",
   ],
   theme: {
     extend: {

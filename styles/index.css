@@ -41,3 +41,19 @@
     stroke-dashoffset: -124;
   }
 }
+
+.twitter-wrapper > div {
+  @apply overflow-hidden rounded-2xl border border-gray-100 dark:border-gray-800;
+}
+
+.twitter-wrapper-light {
+  @apply dark:hidden;
+}
+
+.twitter-wrapper-dark {
+  @apply hidden dark:block;
+}
+
+.twitter-wrapper > div > iframe {
+  margin: -1px;
+}

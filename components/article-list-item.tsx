@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Post from "../interfaces/post";
 
 const ArticleListItem: React.FC<{
@@ -5,17 +6,20 @@ const ArticleListItem: React.FC<{
 }> = ({ post }) => {
   return (
     <article>
-      <h2>{post.title}</h2>
+      <h2>
+        <Link href={`/blog/${post.slug}`}>
+          <a className="no-underline hover:underline">{post.title}</a>
+        </Link>
+      </h2>
 
       <p>{post.excerpt}</p>
 
       <p>
-        <a
-          href="#"
-          className="text-blue-700 hover:text-blue-600 hover:underline dark:text-blue-500 dark:hover:text-blue-600"
-        >
-          Read more →
-        </a>
+        <Link href={`/blog/${post.slug}`}>
+          <a className="text-blue-700 hover:text-blue-600 hover:underline dark:text-blue-500 dark:hover:text-blue-600">
+            Read more →
+          </a>
+        </Link>
       </p>
     </article>
   );
