@@ -18,22 +18,13 @@ const PageHeader: React.FC<{
         <div className={classNames(BORDER_COLOR, "px-4 py-4")}>
           <div
             className={classNames(
-              "relative flex flex-col items-center sm:items-end sm:justify-center",
+              "relative flex items-center sm:items-end sm:justify-center",
               {
-                "sm:flex-row": !small,
-                "sm:flex-row-reverse": small,
+                "flex-col sm:flex-row": !small,
+                "flex-row": small,
               }
             )}
           >
-            <SwitchButton
-              className={classNames(
-                " flex w-10 items-center justify-center p-1",
-                {
-                  "absolute right-0 top-0": !small,
-                }
-              )}
-            />
-
             {small ? (
               <Link href="/">
                 <a className="flex w-full items-center space-x-4">
@@ -66,6 +57,15 @@ const PageHeader: React.FC<{
                 </div>
               </>
             )}
+
+            <SwitchButton
+              className={classNames(
+                " flex w-10 items-center justify-center p-1",
+                {
+                  "absolute right-0 top-0": !small,
+                }
+              )}
+            />
           </div>
         </div>
       </Container>
