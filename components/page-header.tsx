@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import SwitchButton from "./switch-button";
 import LazySvg from "./lazy-svg";
+import Link from "next/link";
 
 const PageHeader: React.FC<{
   small?: boolean;
@@ -34,16 +35,18 @@ const PageHeader: React.FC<{
             />
 
             {small ? (
-              <div className="flex w-full items-center space-x-4">
-                <LazySvg
-                  src="/images/me-face.svg"
-                  className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-700 p-2 dark:bg-blue-200"
-                />
+              <Link href="/">
+                <a className="flex w-full items-center space-x-4">
+                  <LazySvg
+                    src="/images/me-face.svg"
+                    className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200"
+                  />
 
-                <span className="font-cursive text-4xl font-bold text-gray-900 dark:text-gray-300 ">
-                  Alfonso&#x27;s Blog
-                </span>
-              </div>
+                  <span className="font-cursive text-4xl font-bold text-gray-900 dark:text-gray-300 ">
+                    Alfonso&#x27;s Blog
+                  </span>
+                </a>
+              </Link>
             ) : (
               <>
                 <LazySvg
