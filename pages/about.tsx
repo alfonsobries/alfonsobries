@@ -8,17 +8,15 @@ export default function About() {
     <>
       <Layout>
         <Head>
-          <title>@TODO | {CMS_NAME}</title>
+          <title>About me | {CMS_NAME}</title>
         </Head>
         <Container>
           <div className="prose dark:prose-invert">
-            <h1>About</h1>
+            <h1>About Me</h1>
 
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor
-              quod quae sequi nobis ex? Aspernatur cumque reiciendis doloribus
-              quod eveniet quas amet voluptas laboriosam, impedit possimus,
-              molestias qui incidunt harum.
+              Hi, my name is Alfonso I am a full-stack software developer from
+              Mexico City.
             </p>
 
             <h2>Subtitle</h2>
