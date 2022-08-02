@@ -97,7 +97,7 @@ final class Article extends Resource
         /** @var Model|null $model */
         $model = $request->findModel();
 
-        if ($model?->getFirstMedia() !== null) {
+        if ($model?->getFirstMedia('banner') !== null) {
             return;
         }
 
