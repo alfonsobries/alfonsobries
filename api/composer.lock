@@ -4,8 +4,44 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9fa3f4be9198b4101570a25360f98e88",
+    "content-hash": "8a2c5536be60fe86e6bfa53dc044f8f8",
     "packages": [
+        {
+            "name": "alfonsobries/enhanced-markdown",
+            "version": "dev-refactor/add-api",
+            "dist": {
+                "type": "path",
+                "url": "./nova-components/EnhancedMarkdown",
+                "reference": "85111bbb266d2148fed4fcee3d6cf8eefa97b1d1"
+            },
+            "require": {
+                "php": "^7.3|^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Alfonsobries\\EnhancedMarkdown\\FieldServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Alfonsobries\\EnhancedMarkdown\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "A Laravel Nova field.",
+            "keywords": [
+                "laravel",
+                "nova"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
         {
             "name": "box/spout",
             "version": "v3.3.0",

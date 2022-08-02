@@ -7,7 +7,7 @@ namespace App\Nova;
 use App\Models\Article as Model;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Markdown;
+use Alfonsobries\EnhancedMarkdown\EnhancedMarkdown;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -60,7 +60,8 @@ final class Article extends Resource
                 ->rules('nullable', 'string', 'max:155')
                 ->hideFromIndex(),
 
-            Markdown::make('Body')
+            EnhancedMarkdown::make('Body')
+                ->withFiles('public')
                 ->rules('required', 'string')
                 ->hideFromIndex(),
 

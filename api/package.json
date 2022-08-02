@@ -2,7 +2,9 @@
     "private": true,
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "vite build",
+        "build-enhanced-markdown": "cd nova-components/EnhancedMarkdown && npm run dev",
+        "build-enhanced-markdown-prod": "cd nova-components/EnhancedMarkdown && npm run prod"
     },
     "devDependencies": {
         "axios": "^0.27",
