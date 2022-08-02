@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -29,6 +30,7 @@ class Article extends Model implements HasMedia
      */
     protected $fillable = [
         'title',
+        'meta_description',
         'body',
         'published_at',
     ];
@@ -45,7 +47,7 @@ class Article extends Model implements HasMedia
 
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('is_published', true);
+        return $query->where('published_at', '<=', Carbon::now());
     }
 
     public function registerMediaCollections(): void
