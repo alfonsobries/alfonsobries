@@ -20,5 +20,9 @@ module.exports = {
   plugins: [
     require("@tailwindcss/line-clamp"),
     require("@tailwindcss/typography"),
+    require("@tailwindcss/forms")({
+      strategy: "base", // only generate global styles
+      // strategy: "class", // only generate classes
+    }),
   ],
 };
