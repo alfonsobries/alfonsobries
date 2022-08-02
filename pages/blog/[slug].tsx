@@ -34,9 +34,9 @@ export default function Post({ post, morePosts, preview }: Props) {
             <article className="prose dark:prose-invert">
               <Head>
                 <title>
-                  {post.title} | Next.js Blog Example with {CMS_NAME}
+                  {post.title} | {CMS_NAME}
                 </title>
-                <meta property="og:image" content={post.ogImage.url} />
+                {/* <meta property="og:image" content={post.ogImage.url} /> */}
               </Head>
               <PostHeader
                 title={post.title}
@@ -45,6 +45,13 @@ export default function Post({ post, morePosts, preview }: Props) {
                 author={post.author}
               />
               <PostBody content={post.content} />
+
+              {/* @TODO: Only add this script if needed */}
+              {/* <script
+                async
+                src="https://platform.twitter.com/widgets.js"
+                charSet="utf-8"
+              ></script> */}
             </article>
           </>
         )}
@@ -60,7 +67,7 @@ type Params = {
 };
 
 export async function getStaticProps({ params }: Params) {
-  const post = getPostBySlug(params.slug, [
+  const post = await getPostBySlug(params.slug, [
     "title",
     "date",
     "slug",
@@ -69,7 +76,8 @@ export async function getStaticProps({ params }: Params) {
     "ogImage",
     "coverImage",
   ]);
-  const content = await markdownToHtml(post.content || "");
+
+  const content = await markdownToHtml(post.body || "");
 
   return {
     props: {
@@ -82,7 +90,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const posts = getAllPosts(["slug"]);
+  const posts = await getAllPosts();
 
   return {
     paths: posts.map((post) => {

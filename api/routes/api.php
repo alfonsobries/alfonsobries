@@ -18,4 +18,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('/articles', ArticleController::class);
+
+Route::get('/articles', [ArticleController::class, 'index']);
+Route::get('/articles/{article:slug}', [ArticleController::class, 'show']);

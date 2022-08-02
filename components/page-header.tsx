@@ -34,7 +34,7 @@ const PageHeader: React.FC<{
                   />
 
                   <span className="font-cursive text-4xl font-bold text-gray-900 dark:text-gray-300 ">
-                    Alfonso&#x27;s Blog
+                    Alfonso&#x27;s Website
                   </span>
                 </a>
               </Link>

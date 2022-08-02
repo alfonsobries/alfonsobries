@@ -9,46 +9,48 @@ export function getPostSlugs() {
   return fs.readdirSync(postsDirectory);
 }
 
-export function getPostBySlug(slug: string, fields: string[] = []) {
-  const realSlug = slug.replace(/\.md$/, "");
-  const fullPath = join(postsDirectory, `${realSlug}.md`);
-  const fileContents = fs.readFileSync(fullPath, "utf8");
-  const { data, content } = matter(fileContents);
+const Api = axios.create({
+  baseURL: process.env.API_URL || "http://api.alfonsobries.test/api",
+  headers: {
+    Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+  },
+});
 
-  type Items = {
-    [key: string]: string;
-  };
+export async function getPostBySlug(slug: string, fields: string[] = []) {
+  const { data } = await Api.get(`/articles/${slug}`);
 
-  const items: Items = {};
+  return data;
 
-  // Ensure only the minimal needed data is exposed
-  fields.forEach((field) => {
-    if (field === "slug") {
-      items[field] = realSlug;
-    }
-    if (field === "content") {
-      items[field] = content;
-    }
+  //   const realSlug = slug.replace(/\.md$/, "");
+  //   const fullPath = join(postsDirectory, `${realSlug}.md`);
+  //   const fileContents = fs.readFileSync(fullPath, "utf8");
+  //   const { data, content } = matter(fileContents);
 
-    if (typeof data[field] !== "undefined") {
-      items[field] = data[field];
-    }
-  });
+  //   type Items = {
+  //     [key: string]: string;
+  //   };
 
-  return items;
+  //   const items: Items = {};
+
+  //   // Ensure only the minimal needed data is exposed
+  //   fields.forEach((field) => {
+  //     if (field === "slug") {
+  //       items[field] = realSlug;
+  //     }
+  //     if (field === "content") {
+  //       items[field] = content;
+  //     }
+
+  //     if (typeof data[field] !== "undefined") {
+  //       items[field] = data[field];
+  //     }
+  //   });
+
+  //   return items;
 }
 
 export async function getAllPosts(fields: string[] = []) {
-  const data = await axios.get("http://api.alfonsobries.test/api/articles");
+  const { data: posts } = await Api.get("/articles");
 
-  console.log(data);
-
-  return data.data;
-
-  const slugs = getPostSlugs();
-  const posts = slugs
-    .map((slug) => getPostBySlug(slug, fields))
-    // sort posts by date in descending order
-    .sort((post1, post2) => (post1.date > post2.date ? -1 : 1));
-  return data;
+  return posts;
 }

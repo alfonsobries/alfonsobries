@@ -6,8 +6,13 @@ use App\Models\Article;
 
 class ArticleController extends Controller
 {
-    public function __invoke()
+    public function index()
     {
-        return Article::published()->latest('published_at')->simplePaginate(10);
+        return Article::published()->latest('published_at')->get();
+    }
+
+    public function show(Article $article)
+    {
+        return $article;
     }
 }
