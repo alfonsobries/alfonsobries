@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ContactFormController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,3 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/articles/{article:slug}', [ArticleController::class, 'show']);
+
+
+Route::post('/contact', ContactFormController::class);

@@ -1,15 +1,9 @@
-import fs from "fs";
 import { join } from "path";
-import matter from "gray-matter";
 import axios from "axios";
 
 const postsDirectory = join(process.cwd(), "_posts");
 
-export function getPostSlugs() {
-  return fs.readdirSync(postsDirectory);
-}
-
-const Api = axios.create({
+export const Api = axios.create({
   baseURL: process.env.API_URL || "http://api.alfonsobries.test/api",
   headers: {
     Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
