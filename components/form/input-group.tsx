@@ -17,18 +17,16 @@ const InputGrup: React.FC<
         {label}
       </label>
 
-      <div className="relative mt-1 shadow-sm">
-        {children}
+      <div className="relative mt-1 shadow-sm">{children}</div>
 
-        {form.errors.has(inputName) && (
-          <span
-            className="text-xs leading-none text-red-500"
-            id={`${inputName}-error`}
-          >
-            {form.errors.get(inputName)}
-          </span>
-        )}
-      </div>
+      {form.errors.has(inputName) && (
+        <span
+          className="text-xs leading-none text-red-500"
+          id={`${inputName}-error`}
+        >
+          {form.errors.get(inputName)}
+        </span>
+      )}
     </div>
   );
 };

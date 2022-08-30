@@ -7,9 +7,9 @@ import LazySvg from "../components/lazy-svg";
 import React from "react";
 import Spinner from "../components/spinner";
 import useForm, { Form } from "@alfonsobries/react-use-form";
-import InputGrup from "../components/input-group";
-import FormInput from "../components/form-input";
-import FormTextarea from "../components/form-textarea";
+import InputGrup from "../components/form/input-group";
+import FormInput from "../components/form/form-input";
+import FormTextarea from "../components/form/form-textarea";
 
 export default function Contact() {
   const form: Form = useForm({
