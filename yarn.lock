@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@alfonsobries/react-use-form@^0.1.15":
+  version "0.1.15"
+  resolved "https://registry.npmjs.org/@alfonsobries/react-use-form/-/react-use-form-0.1.15.tgz#7c60bc2a02ee72edc34d00f5eb026edc270e36f6"
+  integrity sha512-U0kN7AXgf1fNzGaOJMToLXHtIZZTucY4QFsSKAR6XpgyUBy01uER/h8/lyI1dKFnMFmze+10YVfKsVN5edotyA==
+
 "@babel/runtime-corejs3@^7.10.2":
   version "7.18.9"
   resolved "https://registry.npmjs.org/@babel/runtime-corejs3/-/runtime-corejs3-7.18.9.tgz#7bacecd1cb2dd694eacd32a91fcf7021c20770ae"
