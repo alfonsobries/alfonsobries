@@ -38,15 +38,16 @@ export default function Contact() {
           <Alert show={errored}>Something went wrong. Please try again.</Alert>
           {form.successful ? (
             <div className="mx-auto flex max-w-md flex-col items-center justify-center space-y-6 text-center">
-              <span className="font-cursive text-6xl text-gray-900 dark:text-gray-200">
+              <span className="font-cursive text-5xl text-gray-900 dark:text-gray-200">
                 Thanks for reaching me!
               </span>
 
-              <LazySvg src="/images/crying.svg" width={250} height={250} />
+              <LazySvg src="/images/crying.svg" width={200} height={200} />
 
               <p>
-                Your message was sent correctly. If you are not a spam bot, you
-                should receive a response from me within a few hours.
+                Your message was successfully sent. If you are not a spam bot,
+                or you are a very good spam bot, you should receive a response
+                from me within a few hours.
               </p>
             </div>
           ) : (
