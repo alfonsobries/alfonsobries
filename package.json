@@ -7,7 +7,7 @@
     "typecheck": "tsc",
     "lint": "next lint",
     "svg-optimize": "svgo -f ./public/images -o ./public/images",
-    "svg-animate": "svgo --config ./svgo.animate.config.js -f ./public/images/animation/files -o ./public/images/animation/polygons",
+    "svg-animate": "svgo --config ./svgo.animate.config.js -f ./public/images/animations/source -o ./public/images/animations",
     "prepare": "yarn svg-optimize && yarn typecheck && yarn lint"
   },
   "dependencies": {

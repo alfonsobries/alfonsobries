@@ -4,71 +4,96 @@ const pathDataToPolysOptions = { tolerance: 5, decimals: 2 };
 
 const TRANSITION_DURATION = "400ms";
 
-const convertPathToPolygon = (item) => {
-  if (item.type !== "element") {
-    return;
-  }
-  if (item.name === "svg") {
-    const firstChildren = item.children[0];
-    const firstChildrenPoints = pathDataToPolys(
-      firstChildren.attributes.d,
-      pathDataToPolysOptions
-    )[0].join(" ");
+const convertChildPathToAnimate = (
+  elementId,
+  element,
+  index,
+  totalChildren
+) => {
+  const id = `${elementId}-${index + 1}`;
+  const begin =
+    index === 0
+      ? `0; ${elementId}-${totalChildren}.begin + ${TRANSITION_DURATION}`
+      : `${elementId}-${index}.begin + ${TRANSITION_DURATION}`;
+  const points = pathDataToPolys(
+    element.attributes.d,
+    pathDataToPolysOptions
+  )[0].join(" ");
 
-    const totalChildren = item.children.filter(
-      (ch) => ch.name === "path"
-    ).length;
+  element.name = "animate";
 
-    item.children = [
-      new item.constructor({
-        type: "element",
-        name: "polygon",
-        attributes: {
-          points: firstChildrenPoints,
-          style: firstChildren.style.styleValue,
-        },
-        children: item.children.map((c) => {
-          if (c.name === "path") {
-            const index = Number(c.attributes.id.split("-")[1]);
+  element.attributes = {
+    id,
+    begin,
+    fill: "freeze",
+    attributeName: "points",
+    dur: TRANSITION_DURATION,
+    to: points,
+  };
 
-            c.attributes.begin =
-              index === 1
-                ? `0; flama-${totalChildren}.begin + ${TRANSITION_DURATION}`
-                : `flama-${index - 1}.begin + ${TRANSITION_DURATION}`;
-          }
+  return element;
+};
 
-          return c;
-        }),
-      }),
-    ];
+const convertGroupToPolygon = (element) => {
+  // For getting the initial state
+  const firstChildren = element.children[0];
+  const firstChildrenPoints = pathDataToPolys(
+    firstChildren.attributes.d,
+    pathDataToPolysOptions
+  )[0].join(" ");
+  const totalChildren = element.children.filter(
+    (ch) => ch.name === "path"
+  ).length;
 
-    return;
-  }
+  const groupId = element.attributes.id;
 
-  if (item.name === "path") {
-    const points = pathDataToPolys(
-      item.attributes.d,
-      pathDataToPolysOptions
-    )[0];
+  // Make the element a polygon
+  element.name = "polygon";
 
-    item.name = "animate";
-    item.attributes = {
-      id: item.attributes.id,
-      begin: item.attributes.begin,
-      fill: "freeze",
-      attributeName: "points",
-      dur: TRANSITION_DURATION,
-      to: points.join(" "),
-    };
-  }
+  // Define the initial points and inherit the style from the first child
+  element.attributes = {
+    points: firstChildrenPoints,
+    style: firstChildren.style.styleValue,
+  };
+
+  // Add begin attribute to every child
+  element.children = element.children.map((child, index) => {
+    // If for some reason the children is not a path just return the element
+    if (child.name !== "path") {
+      return child;
+    }
+
+    return convertChildPathToAnimate(groupId, child, index, totalChildren);
+  });
+
+  return element;
+};
+
+const animateSvg = (root) => {
+  root.children = root.children.map((node) => {
+    if (node.type === "element" && node.name === "svg") {
+      node.children = node.children.map((child) => {
+        // Animate the svg groups
+        if (child.name === "g") {
+          return convertGroupToPolygon(child);
+        }
+
+        return child;
+      });
+    }
+
+    return node;
+  });
+
+  return root;
 };
 
 module.exports = {
   plugins: [
     {
-      name: "pathToPolygon",
-      type: "perItem",
-      fn: convertPathToPolygon,
+      name: "animateSvg",
+      type: "full",
+      fn: animateSvg,
     },
   ],
 };
