@@ -4,20 +4,24 @@ import Spinner from "./spinner";
 
 const LazySvg: React.FC<{
   src: string;
-  width?: number;
-  height?: number;
+  width?: number | string;
+  height?: number | string;
   className?: string;
-}> = ({ src, width, height, className }) => {
+  svgClassName?: string;
+}> = ({ src, width, height, className, svgClassName }) => {
   const beforeInjection = useMemo(() => {
-    if (!height || !width) {
-      return undefined;
-    }
-
     return (svg) => {
-      svg.style.height = `${height}px`;
-      svg.style.width = `${width}px`;
+      if (height) {
+        svg.style.height = typeof height === "number" ? `${height}px` : height;
+      }
+      if (width) {
+        svg.style.width = typeof width === "number" ? `${width}px` : width;
+      }
+      if (svgClassName) {
+        svg.classList.add(...svgClassName.split(" "));
+      }
     };
-  }, [height, width]);
+  }, [height, width, svgClassName]);
 
   return (
     <ReactSVG

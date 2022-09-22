@@ -11,6 +11,17 @@ module.exports = {
   ],
   theme: {
     extend: {
+      animation: {
+        "spin-cloud": "spin-inverse 140s linear infinite",
+        "spin-cloud-2": "spin-inverse 150s linear infinite",
+        "spin-cloud-3": "spin-inverse 160s linear infinite",
+      },
+      keyframes: {
+        "spin-inverse": {
+          "0%": { transform: "rotate(360deg)" },
+          "100%": { transform: "rotate(0deg)" },
+        },
+      },
       fontFamily: {
         sans: ["Open Sans", "sans-serif"],
         cursive: ["Square Peg", "cursive"],

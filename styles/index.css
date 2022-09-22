@@ -57,3 +57,7 @@
 .twitter-wrapper > div > iframe {
   margin: -1px;
 }
+
+.cloud-size {
+  @apply h-[calc(100vw*7)] w-[calc(100vw*7)];
+}
