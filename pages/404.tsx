@@ -17,12 +17,12 @@ export default function Error404() {
         />
 
         <LazySvg
-          className="absolute right-0 bottom-0 -mr-[140px]  w-[500px] max-w-full"
-          src="/images/animations/this-is-fine.svg"
+          className="absolute left-0 bottom-0  w-[500px] max-w-full"
+          src="/images/animations/test.svg"
         />
         <LazySvg
-          className="absolute left-0 bottom-0 -mr-[140px] w-[500px] max-w-full"
-          src="/images/animations/right-flame-loop.svg"
+          className="absolute right-0 bottom-0 -mr-[70px] -mb-[70px] w-[500px] max-w-full"
+          src="/images/animations/this-is-fine.svg"
         />
         {/* <LazySvg
           className="absolute left-0 bottom-0 -ml-[140px] -mb-[100px] w-[700px] max-w-full"
