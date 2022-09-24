@@ -21,10 +21,14 @@ export default function Error404() {
           src="/images/animations/flame-bottom-right.svg"
         />
 
-        <img
-          src="/images/temp-this-fine.png"
-          className="relative z-10 h-auto w-[650px]"
+        <LazySvg
+          className="relative z-10 h-auto w-[600px]"
+          src="/images/dog-me.svg"
         />
+        {/* <img
+          src="/images/temp-this-fine.png"
+          
+        /> */}
 
         <div className="absolute bottom-0 left-0 z-0 h-[50%] w-full border-2 border-black bg-[#AD8665]"></div>
 
