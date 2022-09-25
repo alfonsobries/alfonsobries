@@ -37,8 +37,8 @@ export default function Error404() {
           src="/images/animations/flame-bottom-right.svg"
         />
         <LazySvg
-          className="absolute left-0 bottom-0 z-20  -ml-[100px]  w-[500px] max-w-full  skew-x-[180deg]"
-          src="/images/animations/flame-bottom-right.svg"
+          className="absolute left-0 bottom-0 z-20 w-[400px] max-w-full"
+          src="/images/animations/flame-bottom-left.svg"
         />
       </div>
     </>

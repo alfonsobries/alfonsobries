@@ -60,10 +60,23 @@ const convertGroupToPolygon = (group, options) => {
   // Make the element a polygon
   group.name = "polygon";
 
+  const style = firstChildren.style.styleValue
+    .split(";")
+    .filter(Boolean)
+    .reduce((obj, st) => {
+      const [property, value] = st.split(":");
+
+      obj[property] = value;
+      return obj;
+    }, {});
+
+  style["stroke-width"] = "3px";
+  style["vector-effect"] = "non-scaling-stroke";
+
   // Define the initial points and inherit the style from the first child
   group.attributes = {
     points: firstChildrenPoints,
-    style: firstChildren.style.styleValue,
+    ...style,
     ...group.attributes,
   };
 
