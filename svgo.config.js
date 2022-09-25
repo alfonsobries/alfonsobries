@@ -12,6 +12,26 @@ const addClasses = (item, classes) => {
 };
 
 const addSvgClassesHandler = (item) => {
+  if (item.type === "element" && item.name === "svg") {
+    const style = item.style.styleValue
+      .split(";")
+      .filter(Boolean)
+      .reduce((obj, st) => {
+        const [property, value] = st.split(":");
+        obj[property] = value;
+        return obj;
+      }, {});
+
+    delete item.style;
+
+    style["vector-effect"] = "non-scaling-stroke";
+
+    item.attributes = {
+      ...item.attributes,
+      ...style,
+    };
+  }
+
   if (Array.isArray(item.children)) {
     item.children.forEach(addSvgClassesHandler);
   }
