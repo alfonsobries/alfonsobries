@@ -4,10 +4,10 @@ import axios from "axios";
 const postsDirectory = join(process.cwd(), "_posts");
 
 export const Api = axios.create({
-  baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
-  // headers: {
-  //   Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-  // },
+  baseURL: process.env.API_URL || "http://api.alfonsobries.test/api",
+  headers: {
+    // Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+  },
 });
 
 export async function getPostBySlug(slug: string, fields: string[] = []) {
