@@ -5,9 +5,9 @@ const postsDirectory = join(process.cwd(), "_posts");
 
 export const Api = axios.create({
   baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
-  headers: {
-    Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-  },
+  // headers: {
+  //   Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+  // },
 });
 
 export async function getPostBySlug(slug: string, fields: string[] = []) {
