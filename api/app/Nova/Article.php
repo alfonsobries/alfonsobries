@@ -12,7 +12,7 @@ use Ardenthq\EnhancedTextarea\EnhancedTextarea;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
-use Laravel\Nova\Fields\Image;
+// use Laravel\Nova\Fields\Image;
 
 final class Article extends Resource
 {
@@ -46,8 +46,8 @@ final class Article extends Resource
      */
     public function fields(NovaRequest $request)
     {
-        /** @var Model */
-        $resource = $this->resource;
+        // /** @var Model */
+        // $resource = $this->resource;
 
         return [
             ID::make()->sortable(),
@@ -94,23 +94,23 @@ final class Article extends Resource
         ];
     }
 
-    protected static function afterValidation(NovaRequest $request, $validator) : void
-    {
-        /** @var Model|null $model */
-        $model = $request->findModel();
+    // protected static function afterValidation(NovaRequest $request, $validator) : void
+    // {
+    //     /** @var Model|null $model */
+    //     $model = $request->findModel();
 
-        if ($model?->getFirstMedia('banner') !== null) {
-            return;
-        }
+    //     if ($model?->getFirstMedia('banner') !== null) {
+    //         return;
+    //     }
 
-        if ($request->input('published_at') === null) {
-            return;
-        }
+    //     if ($request->input('published_at') === null) {
+    //         return;
+    //     }
 
-        if ($request->has('banner')) {
-            return;
-        }
+    //     if ($request->has('banner')) {
+    //         return;
+    //     }
 
-        $validator->errors()->add('banner', 'The banner is required when the article is set to be published');
-    }
+    //     $validator->errors()->add('banner', 'The banner is required when the article is set to be published');
+    // }
 }
