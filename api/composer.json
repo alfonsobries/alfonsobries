@@ -9,7 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
-        "alfonsobries/enhanced-markdown": "*",
+        "ardenthq/nova-enhanced-markdown": "^1.0",
         "davidbadura/faker-markdown-generator": "^1.1",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
