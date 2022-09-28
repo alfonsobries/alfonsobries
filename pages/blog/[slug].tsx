@@ -46,7 +46,7 @@ export default function Post({ post, morePosts, preview }: Props) {
                   property="og:image"
                   content={`https://og.alfonsobries.com/${encodeURI(
                     post.title
-                  )}`}
+                  )}.png`}
                 />
                 <meta name="twitter:card" content="summary_large_image" />
                 <meta name="twitter:title" content={post.title} />
@@ -58,7 +58,7 @@ export default function Post({ post, morePosts, preview }: Props) {
                   name="twitter:image"
                   content={`https://og.alfonsobries.com/${encodeURI(
                     post.title
-                  )}`}
+                  )}.png`}
                 />
                 <meta name="author" content="reece" />
                 <meta
