@@ -36,7 +36,37 @@ export default function Post({ post, morePosts, preview }: Props) {
                 <title>
                   {post.title} | {CMS_NAME}
                 </title>
-                {/* <meta property="og:image" content={post.ogImage.url} /> */}
+                <meta name="description" content={post.meta_description} />
+                <meta property="og:title" content={post.title} />
+                <meta
+                  property="og:description"
+                  content={post.meta_description}
+                />
+                <meta
+                  property="og:image"
+                  content={`https://og.alfonsobries.com/${encodeURI(
+                    post.title
+                  )}`}
+                />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={post.title} />
+                <meta
+                  name="twitter:description"
+                  content={post.meta_description}
+                />
+                <meta
+                  name="twitter:image"
+                  content={`https://og.alfonsobries.com/${encodeURI(
+                    post.title
+                  )}`}
+                />
+                <meta name="author" content="reece" />
+                <meta
+                  property="og:url"
+                  content={`https://www.alfonsobries.com/blog/${post.slug}`}
+                />
+                <meta property="og:type" content="article" />
+                <meta name="twitter:site" content="@alfonsobries" />
               </Head>
 
               <PostHeader
@@ -45,6 +75,8 @@ export default function Post({ post, morePosts, preview }: Props) {
                 date={post.date}
                 author={post.author}
               />
+
+              <pre>{JSON.stringify(post)}</pre>
 
               <PostBody content={post.content} />
             </article>
@@ -64,6 +96,7 @@ type Params = {
 export async function getStaticProps({ params }: Params) {
   const post = await getPostBySlug(params.slug, [
     "title",
+    "meta_description",
     "date",
     "slug",
     "author",
