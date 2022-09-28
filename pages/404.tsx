@@ -13,12 +13,12 @@ export default function Error404() {
         <LazySvg
           className="absolute right-0 top-0 z-50 w-full"
           svgClassName="object-cover"
-          src="/images/animations/cloud.svg"
+          src="/images/cloud.svg"
         />
 
         <LazySvg
           className="relative z-10 h-auto w-[600px]"
-          src="/images/animations/this-is-fine.svg"
+          src="/images/this-is-fine.svg"
         />
         {/* <img
           src="/images/temp-this-fine.png"
@@ -36,11 +36,11 @@ export default function Error404() {
 
         <LazySvg
           className="absolute right-0 bottom-0 z-20 w-[500px] max-w-full"
-          src="/images/animations/flame-bottom-right.svg"
+          src="/images/flame-bottom-right.svg"
         />
         <LazySvg
           className="absolute left-0 bottom-0 z-20 w-[400px] max-w-full"
-          src="/images/animations/flame-bottom-left.svg"
+          src="/images/flame-bottom-left.svg"
         />
       </div>
     </>
