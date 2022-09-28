@@ -117,7 +117,7 @@ const MainMenu = () => {
           </Link>
 
           <span className="font-cursive text-2xl font-bold text-gray-900 dark:text-gray-300 ">
-            Alfonso&#x27;s Blog
+            Alfonso&#x27;s Website
           </span>
         </div>
 
