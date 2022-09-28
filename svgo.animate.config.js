@@ -94,7 +94,7 @@ const animateGroup = (group, options) => {
   ).length;
 
   // Make the element a polygon
-  group.name = "polygon";
+  group.name = options.type === "Line" ? "polyline" : "polygon";
 
   const style = firstChildren.style.styleValue
     .split(";")
@@ -173,9 +173,17 @@ const getOptionsFromId = (groupId) => {
     .find(Boolean)
     ?.split(":")[1];
 
+  const type = idParts
+    .filter((part) => part.startsWith("Type"))
+    .find(Boolean)
+    ?.split(":")[1];
+
   const id = idParts
     .filter(
-      (part) => !part.startsWith("Effect") && !part.startsWith("Duration")
+      (part) =>
+        !part.startsWith("Effect") &&
+        !part.startsWith("Duration") &&
+        !part.startsWith("Type")
     )
     .find(Boolean);
 
@@ -185,6 +193,10 @@ const getOptionsFromId = (groupId) => {
 
   if (effect) {
     options.effect = effect;
+  }
+
+  if (type) {
+    options.type = type;
   }
 
   if (id) {
@@ -200,6 +212,7 @@ const animateSvg = (root) => {
       node.children = node.children.map((child) => {
         const options = {
           duration: TRANSITION_DURATION,
+          type: "Polygon",
           ...getOptionsFromId(child?.attributes?.id),
         };
 
