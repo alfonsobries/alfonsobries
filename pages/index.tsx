@@ -19,10 +19,15 @@ export default function Index({ allPosts }: Props) {
 
   return (
     <>
-      <Layout>
-        <Head>
-          <title>Tech, Development, and more | {CMS_NAME}</title>
-        </Head>
+      <Layout
+        meta={{
+          title: "Tech, Development, and more",
+          description: "@TODO: TBD",
+          image: `https://og.alfonsobries.com/@TODO.png`,
+          // path: ``,
+          // ogType: "article",
+        }}
+      >
         <Container>
           <div className="prose prose-h2:text-lg dark:prose-invert">
             <h1>Latest Posts</h1>

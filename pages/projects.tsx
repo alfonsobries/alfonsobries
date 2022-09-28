@@ -6,10 +6,15 @@ import { CMS_NAME } from "../lib/constants";
 export default function Projects() {
   return (
     <>
-      <Layout>
-        <Head>
-          <title>@TODO | {CMS_NAME}</title>
-        </Head>
+      <Layout
+        meta={{
+          title: "Projects",
+          description: "@TODO: TBD",
+          image: `https://og.alfonsobries.com/@TODO.png`,
+          // path: ``,
+          // ogType: "article",
+        }}
+      >
         <Container>
           <h1 className="text-4xl font-bold dark:text-gray-200">Projects</h1>
         </Container>

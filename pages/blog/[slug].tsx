@@ -25,50 +25,21 @@ export default function Post({ post, morePosts, preview }: Props) {
   }
 
   return (
-    <Layout>
+    <Layout
+      meta={{
+        title: post.title,
+        description: post.meta_description,
+        image: `https://og.alfonsobries.com/${encodeURI(post.title)}.png`,
+        path: `/blog/${post.slug}`,
+        ogType: "article",
+      }}
+    >
       <Container>
         {router.isFallback ? (
           <PostTitle>Loading…</PostTitle>
         ) : (
           <>
             <article className="prose dark:prose-invert">
-              <Head>
-                <title>
-                  {post.title} | {CMS_NAME}
-                </title>
-                <meta name="description" content={post.meta_description} />
-                <meta property="og:title" content={post.title} />
-                <meta
-                  property="og:description"
-                  content={post.meta_description}
-                />
-                <meta
-                  property="og:image"
-                  content={`https://og.alfonsobries.com/${encodeURI(
-                    post.title
-                  )}.png`}
-                />
-                <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={post.title} />
-                <meta
-                  name="twitter:description"
-                  content={post.meta_description}
-                />
-                <meta
-                  name="twitter:image"
-                  content={`https://og.alfonsobries.com/${encodeURI(
-                    post.title
-                  )}.png`}
-                />
-                <meta name="author" content="reece" />
-                <meta
-                  property="og:url"
-                  content={`https://www.alfonsobries.com/blog/${post.slug}`}
-                />
-                <meta property="og:type" content="article" />
-                <meta name="twitter:site" content="@alfonsobries" />
-              </Head>
-
               <PostHeader
                 title={post.title}
                 coverImage={post.coverImage}

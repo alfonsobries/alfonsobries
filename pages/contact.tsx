@@ -30,10 +30,15 @@ export default function Contact() {
 
   return (
     <>
-      <Layout>
-        <Head>
-          <title>Contact Me | {CMS_NAME}</title>
-        </Head>
+      <Layout
+        meta={{
+          title: "Contact me",
+          description: "@TODO: TBD",
+          image: `https://og.alfonsobries.com/@TODO.png`,
+          // path: ``,
+          // ogType: "article",
+        }}
+      >
         <Container>
           <Alert show={errored}>Something went wrong. Please try again.</Alert>
           {form.successful ? (
