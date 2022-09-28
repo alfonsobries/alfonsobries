@@ -27,62 +27,62 @@ const convertChildPathToAnimate = (element, index, totalChildren, options) => {
     begin = `${options.id}-${index}.begin + ${options.duration}`;
   }
 
-  // const points = pathDataToPolys(
-  //   element.attributes.d,
-  //   pathDataToPolysOptions
-  // )[0].join(" ");
+  const points = pathDataToPolys(
+    element.attributes.d,
+    pathDataToPolysOptions
+  )[0].join(" ");
 
-  // element.name = "animate";
+  element.name = "animate";
 
   element.attributes = {
     id,
     begin,
-    // fill: "freeze",
-    attributeName: "display",
+    fill: "freeze",
+    attributeName: "points",
     dur: options.duration,
-    // to: points,
+    to: points,
   };
 
   return element;
 };
 
-const animateGroup = (group, options) => {
-  if (options.effect === "Frame") {
-    const frames = Array.from({ length: group.children.length + 1 }).map(
-      (_, i) => i
-    );
+const animateGroupByFrame = (group, options) => {
+  const frames = Array.from({ length: group.children.length + 1 }).map(
+    (_, i) => i
+  );
 
-    const seconds = 1;
-    const frameTime = seconds / group.children.length;
+  const seconds = 1;
+  const frameTime = seconds / group.children.length;
 
-    group.attributes.id = options.id;
-    group.children.map((child, index) => {
-      const keyTimes = frames.map((i) => i * frameTime).join(";");
-      const values = frames
-        .map((i) => (i === index ? "inline" : "none"))
-        .join(";");
+  group.attributes.id = options.id;
+  group.children.map((child, index) => {
+    const keyTimes = frames.map((i) => i * frameTime).join(";");
+    const values = frames
+      .map((i) => (i === index ? "inline" : "none"))
+      .join(";");
 
-      const animateChild = new group.constructor({
-        type: "element",
-        name: "animate",
-        attributes: {
-          id: `${options.id}-${index + 1}`,
-          attributeName: "display",
-          values,
-          keyTimes,
-          dur: options.duration,
-          begin: `0s;${options.id}.click`,
-          restart: "always",
-          fill: index > 0 ? "freeze" : "remove",
-        },
-      });
-
-      child.children.push(animateChild);
+    const animateChild = new group.constructor({
+      type: "element",
+      name: "animate",
+      attributes: {
+        id: `${options.id}-${index + 1}`,
+        attributeName: "display",
+        values,
+        keyTimes,
+        dur: options.duration,
+        begin: `0s;${options.id}.click`,
+        restart: "always",
+        fill: index > 0 ? "freeze" : "remove",
+      },
     });
 
-    return group;
-  }
+    child.children.push(animateChild);
+  });
 
+  return group;
+};
+
+const animateGroup = (group, options) => {
   // For getting the initial state
   const firstChildren = group.children[0];
   const firstChildrenPoints = pathDataToPolys(
@@ -137,12 +137,16 @@ const handleChildren = (child, options) => {
     );
     const isGroupOfGroups = child.children.every((child) => child.name === "g");
 
+    const childOptions = getOptionsFromId(child?.attributes?.id);
+
     const localOptions = {
+      ...childOptions,
       ...options,
-      ...getOptionsFromId(child?.attributes?.id),
     };
 
-    if ((isGroupOfPaths || isGroupOfGroups) && localOptions.effect) {
+    if (localOptions.effect === "Frame" && isGroupOfGroups) {
+      child = animateGroupByFrame(child, localOptions);
+    } else if (isGroupOfPaths && childOptions.effect) {
       child = animateGroup(child, localOptions);
     } else {
       child.children = child.children.map((ch) =>
