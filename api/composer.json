@@ -10,6 +10,7 @@
     "require": {
         "php": "^8.0.2",
         "ardenthq/nova-enhanced-markdown": "^1.0",
+        "ardenthq/nova-enhanced-textarea": "^1.0",
         "davidbadura/faker-markdown-generator": "^1.1",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
@@ -71,10 +72,6 @@
         "nova": {
             "type": "composer",
             "url": "https://nova.laravel.com"
-        },
-        "0": {
-            "type": "path",
-            "url": "./nova-components/EnhancedMarkdown"
         }
     }
 }

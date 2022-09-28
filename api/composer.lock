@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eae0cfa6e4d519ca9abf44b815fc0b35",
+    "content-hash": "cf044ba637a7df64723c375c434037d4",
     "packages": [
         {
             "name": "ardenthq/nova-enhanced-markdown",
@@ -63,6 +63,62 @@
                 "source": "https://github.com/ArdentHQ/nova-enhanced-markdown/tree/1.0.2"
             },
             "time": "2022-09-22T09:35:23+00:00"
+        },
+        {
+            "name": "ardenthq/nova-enhanced-textarea",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ArdentHQ/nova-enhanced-textarea.git",
+                "reference": "b1b29523e436e27d3cddcab324d1c5efb002f6b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ArdentHQ/nova-enhanced-textarea/zipball/b1b29523e436e27d3cddcab324d1c5efb002f6b5",
+                "reference": "b1b29523e436e27d3cddcab324d1c5efb002f6b5",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "^9.30",
+                "laravel/nova": "^4.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.10",
+                "orchestra/testbench": "^7.7",
+                "pestphp/pest": "^1.21",
+                "phpstan/phpstan": "^1.8",
+                "rector/rector": "^0.14"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Ardenthq\\EnhancedTextarea\\FieldServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ardenthq\\EnhancedTextarea\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alfonso",
+                    "email": "alfonso@ardenthq.com"
+                }
+            ],
+            "description": "Custom textarea field with character count",
+            "support": {
+                "issues": "https://github.com/ArdentHQ/nova-enhanced-textarea/issues",
+                "source": "https://github.com/ArdentHQ/nova-enhanced-textarea/tree/1.0.2"
+            },
+            "time": "2022-09-22T09:24:26+00:00"
         },
         {
             "name": "brick/math",

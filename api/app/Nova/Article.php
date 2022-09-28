@@ -7,9 +7,9 @@ namespace App\Nova;
 use App\Models\Article as Model;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\ID;
-use Alfonsobries\EnhancedMarkdown\EnhancedMarkdown;
+use Ardenthq\EnhancedMarkdown\EnhancedMarkdown;
+use Ardenthq\EnhancedTextarea\EnhancedTextarea;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
 use Laravel\Nova\Fields\Image;
@@ -56,9 +56,10 @@ final class Article extends Resource
                 ->sortable()
                 ->rules('required', 'string', 'max:120'),
 
-            Textarea::make('Meta description', 'meta_description')
+            EnhancedTextarea::make('Meta description', 'meta_description')
                 ->rules('nullable', 'string', 'max:155')
-                ->hideFromIndex(),
+                ->hideFromIndex()
+                ->maxLength(155),
 
             EnhancedMarkdown::make('Body')
                 ->withFiles('public')
