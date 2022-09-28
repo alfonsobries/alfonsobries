@@ -31,4 +31,8 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'vercel' => [
+        'deployment_url' => env('VERCEL_DEPLOYMENT_URL'),
+    ],
+
 ];

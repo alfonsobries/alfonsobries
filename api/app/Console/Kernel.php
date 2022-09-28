@@ -19,6 +19,8 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             (new PruneStaleAttachments)();
         })->daily();
+
+        $schedule->command('alfonsobries:deploy')->everyMinute();
     }
 
     /**

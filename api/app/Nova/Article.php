@@ -66,26 +66,26 @@ final class Article extends Resource
                 ->rules('required', 'string')
                 ->hideFromIndex(),
 
-            Image::make('Banner', 'banner')
-                ->rules('image', 'max:2048')
-                ->store(function ($request, $model) {
-                    $model
-                        ->addMedia($request->file('banner'))
-                        ->toMediaCollection('banner');
+            // Image::make('Banner', 'banner')
+            //     ->rules('image', 'max:2048')
+            //     ->store(function ($request, $model) {
+            //         $model
+            //             ->addMedia($request->file('banner'))
+            //             ->toMediaCollection('banner');
 
-                    return [];
-                })
-                ->deletable(false)
-                ->thumbnail(function () use ($resource) {
-                    /** @var Article $resource */
-                    return $resource->getFirstMediaUrl('banner');
-                })
-                ->preview(function () use ($resource) {
-                    info($resource->getFirstMediaUrl('banner'));
-                    /** @var Article $resource */
-                    return $resource->getFirstMediaUrl('banner');
-                })
-                ->disableDownload(),
+            //         return [];
+            //     })
+            //     ->deletable(false)
+            //     ->thumbnail(function () use ($resource) {
+            //         /** @var Article $resource */
+            //         return $resource->getFirstMediaUrl('banner');
+            //     })
+            //     ->preview(function () use ($resource) {
+            //         info($resource->getFirstMediaUrl('banner'));
+            //         /** @var Article $resource */
+            //         return $resource->getFirstMediaUrl('banner');
+            //     })
+            //     ->disableDownload(),
 
             DateTime::make('Published at')
                 ->sortable()

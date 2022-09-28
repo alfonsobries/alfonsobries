@@ -43,7 +43,6 @@ const Meta = ({ meta }: Props) => {
       <meta name="theme-color" content="#000" />
       <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
       <meta name="viewport" content="initial-scale=1, viewport-fit=cover" />
-
       <meta property="og:title" content={meta.title} />
       <meta property="og:description" content={meta.description} />
       <meta property="og:image" content={meta.image} />
