@@ -18,7 +18,7 @@ export default function Error404() {
 
         <LazySvg
           className="relative z-10 h-auto w-[600px]"
-          src="/images/dog-me.svg"
+          src="/images/animations/this-is-fine.svg"
         />
         {/* <img
           src="/images/temp-this-fine.png"
