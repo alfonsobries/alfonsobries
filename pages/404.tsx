@@ -9,7 +9,7 @@ export default function Error404() {
       <Head>
         <title>Error 404 - Page not Found! | {CMS_NAME}</title>
       </Head>
-      <div className="absolute inset-0 flex h-screen w-full items-center justify-center overflow-hidden bg-[#BFD57B]">
+      <div className="absolute inset-0 flex h-full w-full items-center justify-center overflow-hidden bg-[#BFD57B]">
         <LazySvg
           className="absolute right-0 top-0 z-50 w-full"
           svgClassName="object-cover"
@@ -17,7 +17,12 @@ export default function Error404() {
         />
 
         <LazySvg
-          className="absolute right-0 bottom-[40%] z-20 w-[600px] max-w-full"
+          className="absolute left-[10%] bottom-[50%] z-20 h-auto w-[600px]"
+          src="/images/door.svg"
+        />
+
+        <LazySvg
+          className="absolute right-[-50%] bottom-[40%] z-20 w-[500px] max-w-full sm:right-[-30%] md:right-0"
           src="/images/flame-top-right.svg"
         />
 
@@ -29,13 +34,20 @@ export default function Error404() {
         <div className="absolute bottom-0 left-0 z-0 h-[50%] w-full border-2 border-black bg-[#AD8665]"></div>
 
         <LazySvg
-          className="absolute right-0 bottom-0 z-30 w-[500px] max-w-full"
+          className="absolute left-[70%] bottom-0 z-30 w-[500px] max-w-full md:left-auto md:right-0"
           src="/images/flame-bottom-right.svg"
         />
+
         <LazySvg
-          className="absolute left-0 bottom-0 z-30 w-[400px] max-w-full"
+          className="absolute left-[-30%] bottom-[-30%] z-30 w-[400px] max-w-full sm:bottom-0 md:left-0"
           src="/images/flame-bottom-left.svg"
         />
+
+        <div className="absolute top-0 left-0 z-50 flex w-full justify-center ">
+          <span className="rounded-b-xl border-2 border-t-0 border-black bg-white px-10 py-5 text-5xl font-bold leading-none text-black shadow-lg">
+            Error 404
+          </span>
+        </div>
       </div>
     </>
   );
