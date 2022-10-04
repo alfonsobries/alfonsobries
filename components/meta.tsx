@@ -7,7 +7,7 @@ type Props = {
   meta: {
     title: string;
     description: string;
-    image: string;
+    image?: string;
     ogType?: string;
   };
 };
@@ -59,7 +59,13 @@ const Meta = ({ meta, children }: Props) => {
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={meta.title} />
       <meta name="twitter:description" content={meta.description} />
-      <meta name="twitter:image" content={meta.image} />
+      <meta
+        name="twitter:image"
+        content={
+          meta.image ||
+          `https://og.alfonsobries.com/${encodeURIComponent(meta.title)}`
+        }
+      />
       <meta name="author" content="Alfonso Bribiesca" />
       <meta property="og:url" content={`${SITE_URL}${asPath}`} />
       <meta property="og:type" content={meta.ogType || "website"} />

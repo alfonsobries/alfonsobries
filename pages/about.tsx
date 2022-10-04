@@ -10,7 +10,6 @@ export default function About() {
           title: "About me and this site",
           description:
             "Created this site to discuss the topics that interest me, share some of the projects I am working and to hopefully teach and learn something along the way.",
-          image: `https://og.alfonsobries.com/@TODO.png`,
           ogType: "profile",
         }}
       >
