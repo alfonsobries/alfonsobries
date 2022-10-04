@@ -72,7 +72,7 @@ export default function Error404() {
         </style>
       </Meta>
 
-      <div className="absolute inset-0 flex h-screen w-screen items-center justify-center overflow-hidden bg-[#BFD57B]">
+      <div className="absolute inset-0 flex h-full w-full items-center justify-center overflow-hidden bg-[#BFD57B]">
         <LazySvg
           className="absolute right-0 top-0 z-30 w-full"
           svgClassName="object-cover"
