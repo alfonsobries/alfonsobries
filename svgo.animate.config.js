@@ -93,8 +93,9 @@ const animateGroup = (group, options) => {
     (ch) => ch.name === "path"
   ).length;
 
+  const isLine = options.type === "Line";
   // Make the element a polygon
-  group.name = options.type === "Line" ? "polyline" : "polygon";
+  group.name = isLine ? "polyline" : "polygon";
 
   const style = firstChildren.style.styleValue
     .split(";")
@@ -116,15 +117,40 @@ const animateGroup = (group, options) => {
     ...group.attributes,
   };
 
-  // Add begin attribute to every child
-  group.children = group.children.map((child, index) => {
-    // If for some reason the children is not a path just return the element
-    if (child.name !== "path") {
-      return child;
-    }
+  if (isLine) {
+    const values = group.children.map((child) => {
+      return pathDataToPolys(
+        child.attributes.d,
+        pathDataToPolysOptions
+      )[0].join(" ");
+    });
 
-    return convertChildPathToAnimate(child, index, totalChildren, options);
-  });
+    const lineAnimateChild = new group.constructor({
+      type: "element",
+      name: "animate",
+      attributes: {
+        attributeName: "points",
+        values: values.join(";") + ";" + values[0],
+        dur: options.duration,
+        begin: `0s`,
+        fill: "freeze",
+        repeatCount: "indefinite",
+      },
+    });
+
+    // Add begin attribute to every child
+    group.children = [lineAnimateChild];
+  } else {
+    // Add begin attribute to every child
+    group.children = group.children.map((child, index) => {
+      // If for some reason the children is not a path just return the element
+      if (child.name !== "path") {
+        return child;
+      }
+
+      return convertChildPathToAnimate(child, index, totalChildren, options);
+    });
+  }
 
   return group;
 };
