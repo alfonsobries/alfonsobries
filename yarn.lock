@@ -182,6 +182,11 @@
     lodash.isplainobject "^4.0.6"
     lodash.merge "^4.6.2"
 
+"@tailwindui/react@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@tailwindui/react/-/react-0.1.1.tgz#0376d4080bb260e3e8dd116349d85dfaa7628ec6"
+  integrity sha512-2VoUokHT/EYHaWQjH49gwKqYtwii7snb1SIp93ewfuI9fSy4x6DYocs4v4WNfyiE971ixc/PT+cs6tCi+zabSA==
+
 "@tanem/svg-injector@^10.1.28":
   version "10.1.29"
   resolved "https://registry.npmjs.org/@tanem/svg-injector/-/svg-injector-10.1.29.tgz#e9f6623c8763ebbb5d70712757bb1660b75fbca3"
