@@ -24,8 +24,6 @@ export default function Index({ allPosts }: Props) {
           title: "Tech, Development, and more",
           description: "@TODO: TBD",
           image: `https://og.alfonsobries.com/@TODO.png`,
-          // path: ``,
-          // ogType: "article",
         }}
       >
         <Container>

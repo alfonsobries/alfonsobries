@@ -30,7 +30,6 @@ export default function Post({ post, morePosts, preview }: Props) {
         title: post.title,
         description: post.meta_description,
         image: `https://og.alfonsobries.com/${encodeURI(post.title)}.png`,
-        path: `/blog/${post.slug}`,
         ogType: "article",
       }}
     >

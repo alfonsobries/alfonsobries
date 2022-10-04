@@ -9,7 +9,6 @@ export default function About() {
           title: "About me",
           description: "@TODO: TBD",
           image: `https://og.alfonsobries.com/@TODO.png`,
-          // path: ``,
           // ogType: "article",
         }}
       >

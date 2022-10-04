@@ -35,8 +35,6 @@ export default function Contact() {
           title: "Contact me",
           description: "@TODO: TBD",
           image: `https://og.alfonsobries.com/@TODO.png`,
-          // path: ``,
-          // ogType: "article",
         }}
       >
         <Container>

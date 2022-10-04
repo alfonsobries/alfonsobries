@@ -9,8 +9,6 @@ export default function Articles() {
           title: "Articles",
           description: "@TODO: TBD",
           image: `https://og.alfonsobries.com/@TODO.png`,
-          // path: ``,
-          // ogType: "article",
         }}
       >
         <Container>

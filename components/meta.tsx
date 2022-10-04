@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { CMS_NAME, SITE_URL } from "../lib/constants";
 
 type Props = {
@@ -7,12 +8,13 @@ type Props = {
     title: string;
     description: string;
     image: string;
-    path?: string;
     ogType?: string;
   };
 };
 
 const Meta = ({ meta, children }: Props) => {
+  const { asPath } = useRouter();
+
   return (
     <Head>
       <title>
@@ -55,7 +57,7 @@ const Meta = ({ meta, children }: Props) => {
       <meta name="twitter:description" content={meta.description} />
       <meta name="twitter:image" content={meta.image} />
       <meta name="author" content="Alfonso Bribiesca" />
-      <meta property="og:url" content={`${SITE_URL}${meta.path || ""}`} />
+      <meta property="og:url" content={`${SITE_URL}${asPath}`} />
       <meta property="og:type" content={meta.ogType || "website"} />
       <meta name="twitter:site" content="@alfonsobries" />
       {children}
