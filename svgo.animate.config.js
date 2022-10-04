@@ -70,7 +70,7 @@ const animateGroupByFrame = (group, options) => {
         values,
         keyTimes,
         dur: options.duration,
-        begin: `0s;${options.id}.click`,
+        begin: `0s`,
         restart: "always",
         fill: index > 0 ? "freeze" : "remove",
       },

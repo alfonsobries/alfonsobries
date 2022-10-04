@@ -8,7 +8,13 @@ const LazySvg: React.FC<{
   height?: number | string;
   className?: string;
   svgClassName?: string;
-}> = ({ src, width, height, className, svgClassName }) => {
+  onReady?: (
+    error: {
+      cause?: unknown;
+    } | null,
+    svg?: SVGElement
+  ) => void;
+}> = ({ src, width, height, className, svgClassName, onReady }) => {
   const beforeInjection = useMemo(() => {
     return (svg) => {
       if (height) {
@@ -29,6 +35,7 @@ const LazySvg: React.FC<{
       loading={() => <Spinner />}
       beforeInjection={beforeInjection}
       className={className}
+      afterInjection={onReady}
     />
   );
 };
