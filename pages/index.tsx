@@ -36,9 +36,6 @@ export default function Index({ allPosts }: Props) {
               {posts.map((post) => (
                 <ArticleListItem key={post.slug} post={post} />
               ))}
-              {posts.map((post) => (
-                <ArticleListItem key={post.slug} post={post} />
-              ))}
             </div>
           </div>
 
