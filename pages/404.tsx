@@ -51,6 +51,7 @@ export default function Error404() {
   useEffect(() => {
     return () => clearTimeout(resetTimeout);
   }, []);
+
   return (
     <>
       <Head>
