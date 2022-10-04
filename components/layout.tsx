@@ -9,7 +9,7 @@ type Props = {
   meta: {
     title: string;
     description: string;
-    image: string;
+    image?: string;
     path?: string;
     ogType?: string;
   };
