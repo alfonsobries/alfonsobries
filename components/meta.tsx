@@ -18,6 +18,9 @@ const Meta = ({ meta, children }: Props) => {
   if (meta.description.length > 155) {
     throw new Error("Meta Description is too long");
   }
+  const image =
+    meta.image ||
+    `https://og.alfonsobries.com/${encodeURIComponent(meta.title)}.png`;
 
   return (
     <Head>
@@ -55,17 +58,11 @@ const Meta = ({ meta, children }: Props) => {
       />
       <meta property="og:title" content={meta.title} />
       <meta property="og:description" content={meta.description} />
-      <meta property="og:image" content={meta.image} />
+      <meta property="og:image" content={image} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={meta.title} />
       <meta name="twitter:description" content={meta.description} />
-      <meta
-        name="twitter:image"
-        content={
-          meta.image ||
-          `https://og.alfonsobries.com/${encodeURIComponent(meta.title)}.png`
-        }
-      />
+      <meta name="twitter:image" content={image} />
       <meta name="author" content="Alfonso Bribiesca" />
       <meta property="og:url" content={`${SITE_URL}${asPath}`} />
       <meta property="og:type" content={meta.ogType || "website"} />
