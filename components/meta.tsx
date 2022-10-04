@@ -2,6 +2,7 @@ import Head from "next/head";
 import { CMS_NAME, SITE_URL } from "../lib/constants";
 
 type Props = {
+  children?: React.ReactNode;
   meta: {
     title: string;
     description: string;
@@ -11,7 +12,7 @@ type Props = {
   };
 };
 
-const Meta = ({ meta }: Props) => {
+const Meta = ({ meta, children }: Props) => {
   return (
     <Head>
       <title>
@@ -57,6 +58,7 @@ const Meta = ({ meta }: Props) => {
       <meta property="og:url" content={`${SITE_URL}${meta.path || ""}`} />
       <meta property="og:type" content={meta.ogType || "website"} />
       <meta name="twitter:site" content="@alfonsobries" />
+      {children}
     </Head>
   );
 };

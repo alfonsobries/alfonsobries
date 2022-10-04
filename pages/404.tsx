@@ -1,8 +1,6 @@
-import Head from "next/head";
-import { CMS_NAME } from "../lib/constants";
 import LazySvg from "../components/lazy-svg";
 import React, { useEffect } from "react";
-
+import Meta from "../components/meta";
 let resetTimeout: NodeJS.Timeout | null = null;
 let messageIndex = 0;
 
@@ -54,9 +52,28 @@ export default function Error404() {
 
   return (
     <>
-      <Head>
-        <title>Error 404 - Page not Found! | {CMS_NAME}</title>
-      </Head>
+      <Meta
+        meta={{
+          title: "Error 404 - Page Not Found!",
+          description: "",
+          image: "",
+        }}
+      >
+        <style>
+          {`
+            html, body {
+              height: 100%;
+              width: 100%;
+              height: 100vh;
+              width: 100vw;
+              margin:0;
+              padding:0;
+              overflow: hidden;
+          }
+        `}
+        </style>
+      </Meta>
+
       <div className="absolute inset-0 flex h-full w-full items-center justify-center overflow-hidden bg-[#BFD57B]">
         <LazySvg
           className="absolute right-0 top-0 z-30 w-full"
@@ -86,7 +103,7 @@ export default function Error404() {
         >
           <div
             id="globe"
-            className="flex-0 absolute inset-0 z-50 mt-[-40px] ml-[35%] flex aspect-video max-h-[35vh] w-[220px] flex-col items-center justify-center bg-[url('/images/globe.svg')] bg-contain bg-center bg-no-repeat text-center text-black opacity-0 transition-opacity duration-200 ease-in-out sm:w-[300px]"
+            className="flex-0 absolute inset-0 z-50 mt-[-40px] ml-[40%] flex aspect-video max-h-[34vh] w-[220px] max-w-[60vw] flex-col items-center justify-center bg-[url('/images/globe.svg')] bg-contain bg-center bg-no-repeat text-center text-black opacity-0 transition-opacity duration-200 ease-in-out sm:w-[300px]"
           >
             <span id="message" className="font-cursive text-4xl sm:text-5xl">
               Error 404
@@ -97,7 +114,7 @@ export default function Error404() {
           </div>
 
           <LazySvg
-            svgClassName="max-h-[80vh]"
+            svgClassName="max-h-[65vh]"
             src="/images/this-is-fine.svg"
             onReady={toggleGlobe}
           />
