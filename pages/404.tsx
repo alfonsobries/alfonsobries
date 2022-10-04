@@ -96,7 +96,7 @@ export default function Error404() {
         />
 
         <LazySvg
-          className="absolute right-[-50%] bottom-[35%] z-20 w-[500px] max-w-full sm:right-[-30%] md:right-0"
+          className="absolute right-[-50%] bottom-[40%] z-20 w-[500px] max-w-full sm:bottom-[30%] sm:right-[-30%] md:right-0"
           src="/images/flame-top-right.svg"
           showLoading={false}
         />
