@@ -7,8 +7,9 @@ export default function Error404Page() {
     <>
       <Meta
         meta={{
-          title: "Error 404 - Page Not Found!",
-          description: "The page you're looking for doesn't exist ¯\\_(ツ)_/¯",
+          title: "Error 404 - This is fine!",
+          description:
+            "A copy of the custom 404 page of this site featuring the this is fine meme. Share it with your friends and check out the source code on GitHub.",
           image: "https://www.alfonsobries.com/images/og/this-is-fine.png",
         }}
       >
