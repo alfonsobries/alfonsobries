@@ -9,7 +9,7 @@ export default function Error404Page() {
         meta={{
           title: "Error 404 - This is fine!",
           description:
-            "A copy of the custom 404 page of this site featuring the this is fine meme. Share it with your friends and check out the source code on GitHub.",
+            "This is Fine! A copy of the 404 page of this site featuring one of my favorite memes for sharing purposes. Check out the source code on GitHub.",
           image: "https://www.alfonsobries.com/images/og/this-is-fine.png",
         }}
       >

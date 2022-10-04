@@ -15,6 +15,10 @@ type Props = {
 const Meta = ({ meta, children }: Props) => {
   const { asPath } = useRouter();
 
+  if (meta.description.length > 155) {
+    throw new Error("Meta Description is too long");
+  }
+
   return (
     <Head>
       <title>
