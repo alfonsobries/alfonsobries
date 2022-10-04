@@ -63,7 +63,7 @@ const Meta = ({ meta, children }: Props) => {
         name="twitter:image"
         content={
           meta.image ||
-          `https://og.alfonsobries.com/${encodeURIComponent(meta.title)}`
+          `https://og.alfonsobries.com/${encodeURIComponent(meta.title)}.png`
         }
       />
       <meta name="author" content="Alfonso Bribiesca" />

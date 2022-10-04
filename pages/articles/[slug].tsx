@@ -6,8 +6,6 @@ import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
 import { getPostBySlug, getAllPosts } from "../../lib/api";
 import PostTitle from "../../components/post-title";
-import Head from "next/head";
-import { CMS_NAME } from "../../lib/constants";
 import markdownToHtml from "../../lib/markdownToHtml";
 import type PostType from "../../interfaces/post";
 
@@ -29,7 +27,6 @@ export default function Post({ post, morePosts, preview }: Props) {
       meta={{
         title: post.title,
         description: post.meta_description,
-        image: `https://og.alfonsobries.com/${encodeURI(post.title)}.png`,
         ogType: "article",
       }}
     >
@@ -45,8 +42,6 @@ export default function Post({ post, morePosts, preview }: Props) {
                 date={post.date}
                 author={post.author}
               />
-
-              <pre>{JSON.stringify(post)}</pre>
 
               <PostBody content={post.content} />
             </article>
