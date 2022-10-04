@@ -3,6 +3,7 @@ import { ReactSVG } from "react-svg";
 import Spinner from "./spinner";
 
 const LazySvg: React.FC<{
+  showLoading?: boolean;
   src: string;
   width?: number | string;
   height?: number | string;
@@ -14,7 +15,15 @@ const LazySvg: React.FC<{
     } | null,
     svg?: SVGElement
   ) => void;
-}> = ({ src, width, height, className, svgClassName, onReady }) => {
+}> = ({
+  src,
+  width,
+  height,
+  className,
+  svgClassName,
+  onReady,
+  showLoading = true,
+}) => {
   const beforeInjection = useMemo(() => {
     return (svg) => {
       if (height) {
@@ -32,7 +41,7 @@ const LazySvg: React.FC<{
   return (
     <ReactSVG
       src={src}
-      loading={() => <Spinner />}
+      loading={() => (showLoading ? <Spinner /> : null)}
       beforeInjection={beforeInjection}
       className={className}
       afterInjection={onReady}
