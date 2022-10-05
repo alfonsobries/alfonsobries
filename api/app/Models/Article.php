@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\ExpiresFrontend;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,7 @@ class Article extends Model implements HasMedia
     use HasSlug;
     use InteractsWithMedia;
     use SoftDeletes;
+    use ExpiresFrontend;
 
     protected $casts = [
         'published_at'      => 'datetime',
