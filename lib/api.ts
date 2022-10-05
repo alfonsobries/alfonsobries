@@ -10,9 +10,7 @@ export async function getPostBySlug(slug: string, fields: string[] = []) {
   const filteredPost = {};
 
   fields.forEach(async (field) => {
-    if (field === "excerpt") {
-      filteredPost[field] = post.meta_description;
-    } else if (typeof post[field] !== "undefined") {
+    if (typeof post[field] !== "undefined") {
       filteredPost[field] = post[field];
     } else {
       filteredPost[field] = null;
@@ -31,9 +29,7 @@ export async function getAllPosts(fields: string[] = []) {
     const filteredPost = {};
 
     fields.forEach(async (field) => {
-      if (field === "excerpt") {
-        filteredPost[field] = post.meta_description;
-      } else if (typeof post[field] !== "undefined") {
+      if (typeof post[field] !== "undefined") {
         filteredPost[field] = post[field];
       } else {
         filteredPost[field] = null;

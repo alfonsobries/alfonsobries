@@ -36,6 +36,10 @@ class Article extends Model implements HasMedia
         'published_at',
     ];
 
+    protected $appends = [
+        'excerpt',
+    ];
+
     /**
      * Get the options for generating the slug.
      */
@@ -53,7 +57,8 @@ class Article extends Model implements HasMedia
 
     public function getExcerptAttribute(): string
     {
-        return Str::words($this->body, 10);
+        // @TODO: allow me to define a custom excerpt
+        return $this->meta_description;
     }
 
     public function registerMediaCollections(): void
