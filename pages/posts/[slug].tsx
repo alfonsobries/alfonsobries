@@ -27,7 +27,7 @@ export default function Post({ post, content, morePosts, preview }: Props) {
     <Layout
       meta={{
         title: post.title,
-        description: post.meta_description,
+        description: post.meta_description || post.excerpt,
         ogType: "article",
       }}
     >
@@ -63,6 +63,7 @@ export async function getStaticProps({ params }: Params) {
   const post = await getPostBySlug(params.slug, [
     "title",
     "meta_description",
+    "excerpt",
     "body",
     "published_at",
     "slug",

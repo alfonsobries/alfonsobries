@@ -7,7 +7,7 @@ const ArticleListItem: React.FC<{
   return (
     <article>
       <h2>
-        <Link href={`/articles/${post.slug}`}>
+        <Link href={`/posts/${post.slug}`}>
           <a className="no-underline hover:underline">{post.title}</a>
         </Link>
       </h2>
@@ -15,7 +15,7 @@ const ArticleListItem: React.FC<{
       <p>{post.excerpt}</p>
 
       <p>
-        <Link href={`/articles/${post.slug}`}>
+        <Link href={`/posts/${post.slug}`}>
           <a className="text-blue-700 hover:text-blue-600 hover:underline dark:text-blue-500 dark:hover:text-blue-600">
             Read more →
           </a>
