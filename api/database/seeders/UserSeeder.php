@@ -19,12 +19,11 @@ class UserSeeder extends Seeder
         $email = env('INITIAL_USER_EMAIL');
         $password = env('INITIAL_USER_PASSWORD');
 
-
         if ($name && $email && $password) {
             User::factory()->create([
                 'name' => $name,
                 'email' => $email,
-                'password' => $password,
+                'password' => bcrypt($password),
             ]);
         }
     }
