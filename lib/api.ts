@@ -9,9 +9,11 @@ const getPostWithOnlyProperties = (
   properties: PostProperties = []
 ): FilteredPost => {
   const newPost: FilteredPost = {};
+
   properties.forEach((property) => {
     newPost[property] = post[property];
   });
+
   return newPost;
 };
 

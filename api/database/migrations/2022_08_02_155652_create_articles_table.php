@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug');
             $table->text('body');
+            $table->string('excerpt');
             $table->string('meta_description')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->softDeletes();

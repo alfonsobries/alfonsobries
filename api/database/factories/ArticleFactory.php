@@ -23,7 +23,7 @@ class ArticleFactory extends Factory
         return [
             'title' => $this->faker->sentence(),
             'body' => $this->faker->markdown(),
-            'meta_description' => $this->faker->sentence(),
+            'excerpt' => $this->faker->sentence(),
             'published_at' => Carbon::now(),
         ];
     }

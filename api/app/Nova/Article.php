@@ -12,7 +12,8 @@ use Ardenthq\EnhancedTextarea\EnhancedTextarea;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
-// use Laravel\Nova\Fields\Image;
+use Laravel\Nova\Fields\Image;
+use Illuminate\Http\Request;
 
 final class Article extends Resource
 {
@@ -46,15 +47,17 @@ final class Article extends Resource
      */
     public function fields(NovaRequest $request)
     {
-        // /** @var Model */
-        // $resource = $this->resource;
-
         return [
             ID::make()->sortable(),
 
             Text::make('Title', 'title')
                 ->sortable()
                 ->rules('required', 'string', 'max:120'),
+
+            EnhancedTextarea::make('Excerpt', 'excerpt')
+                ->rules('nullable', 'string', 'max:155')
+                ->hideFromIndex()
+                ->maxLength(155),
 
             EnhancedTextarea::make('Meta description', 'meta_description')
                 ->rules('nullable', 'string', 'max:155')
@@ -66,26 +69,20 @@ final class Article extends Resource
                 ->rules('required', 'string')
                 ->hideFromIndex(),
 
-            // Image::make('Banner', 'banner')
-            //     ->rules('image', 'max:2048')
-            //     ->store(function ($request, $model) {
-            //         $model
-            //             ->addMedia($request->file('banner'))
-            //             ->toMediaCollection('banner');
+            Image::make('Banner', 'banner')
+                ->rules('image')
+                ->store(function ($request, $model) {
+                    $model
+                        ->addMedia($request->file('banner'))
+                        ->toMediaCollection('banner');
 
-            //         return [];
-            //     })
-            //     ->deletable(false)
-            //     ->thumbnail(function () use ($resource) {
-            //         /** @var Article $resource */
-            //         return $resource->getFirstMediaUrl('banner');
-            //     })
-            //     ->preview(function () use ($resource) {
-            //         info($resource->getFirstMediaUrl('banner'));
-            //         /** @var Article $resource */
-            //         return $resource->getFirstMediaUrl('banner');
-            //     })
-            //     ->disableDownload(),
+                    return [];
+                })
+                ->delete(fn (Request $request, Model|null $model) => $model->getFirstMedia('banner')->delete())
+                ->thumbnail(fn (mixed $value, string $disk, Model|null $model) => $model?->getFirstMediaUrl('banner', 'og'))
+                ->preview(fn (mixed $value, string $disk, Model|null $model) => $model?->getFirstMediaUrl('banner', 'og'))
+                ->hideFromIndex()
+                ->disableDownload(),
 
             DateTime::make('Published at')
                 ->sortable()
@@ -93,24 +90,4 @@ final class Article extends Resource
                 ->help('Set a published date to publish the article'),
         ];
     }
-
-    // protected static function afterValidation(NovaRequest $request, $validator) : void
-    // {
-    //     /** @var Model|null $model */
-    //     $model = $request->findModel();
-
-    //     if ($model?->getFirstMedia('banner') !== null) {
-    //         return;
-    //     }
-
-    //     if ($request->input('published_at') === null) {
-    //         return;
-    //     }
-
-    //     if ($request->has('banner')) {
-    //         return;
-    //     }
-
-    //     $validator->errors()->add('banner', 'The banner is required when the article is set to be published');
-    // }
 }

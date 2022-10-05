@@ -11,7 +11,10 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Spatie\MediaLibrary\MediaCollections\File;
 use Illuminate\Support\Str;
+use Spatie\Image\Manipulations;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Article extends Model implements HasMedia
 {
@@ -31,13 +34,10 @@ class Article extends Model implements HasMedia
      */
     protected $fillable = [
         'title',
+        'excerpt',
         'meta_description',
         'body',
         'published_at',
-    ];
-
-    protected $appends = [
-        'excerpt',
     ];
 
     /**
@@ -55,14 +55,20 @@ class Article extends Model implements HasMedia
         return $query->where('published_at', '<=', Carbon::now());
     }
 
-    public function getExcerptAttribute(): string
-    {
-        // @TODO: allow me to define a custom excerpt
-        return $this->meta_description;
-    }
-
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('banner')->singleFile();
+        $this
+            ->addMediaCollection('banner')
+            ->singleFile()
+            ->useFallbackUrl(
+                sprintf('https://og.alfonsobries.com/%s.png', $this->title)
+            )
+            ->acceptsFile(fn (File $file) => Str::startsWith($file->mimeType, 'image/'))
+            ->registerMediaConversions(function (Media $media) {
+                $this
+                    ->addMediaConversion('og')
+                    ->fit(Manipulations::FIT_CROP, 1200, 630);
+            });
+
     }
 }
