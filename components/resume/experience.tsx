@@ -12,7 +12,7 @@ const ResumeExperience = ({
       <div className="relative flex items-center space-x-2 text-sm text-gray-400 before:absolute before:inset-0 before:-ml-8 before:block before:content-['●']">
         <span>{period}</span>
 
-        <Separator />
+        <Separator className="h-4" />
 
         <span>{place}</span>
       </div>

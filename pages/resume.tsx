@@ -1,5 +1,6 @@
 import Container from "../components/container";
 import Briefcase from "../components/icons/briefcase";
+import Code from "../components/icons/code";
 import Layout from "../components/layout";
 import ResumeExperience from "../components/resume/experience";
 import ResumeSection from "../components/resume/section";
@@ -29,6 +30,16 @@ export default function Index({ experience }: Props) {
         <div className="relative z-0 mx-auto max-w-4xl px-4">
           <div className="md:w-3/5">
             <ResumeSection title="Experience" icon={<Briefcase />}>
+              <div className="space-y-4">
+                {experience.map((item) => (
+                  <ResumeExperience {...item} key={item.id} />
+                ))}
+              </div>
+            </ResumeSection>
+            <ResumeSection
+              title="Open Source & Personal Projects"
+              icon={<Code />}
+            >
               <div className="space-y-4">
                 {experience.map((item) => (
                   <ResumeExperience {...item} key={item.id} />
