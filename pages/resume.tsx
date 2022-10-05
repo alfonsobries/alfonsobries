@@ -3,15 +3,18 @@ import Briefcase from "../components/icons/briefcase";
 import Code from "../components/icons/code";
 import Layout from "../components/layout";
 import ResumeExperience from "../components/resume/experience";
+import ResumeProject from "../components/resume/project";
 import ResumeSection from "../components/resume/section";
 import { Experience } from "../interfaces/experience";
-import { getExperience } from "../lib/api";
+import { ResumeProject as ResumeProjectType } from "../interfaces/resume_project";
+import { getExperience, getResumeProjects } from "../lib/api";
 
 type Props = {
   experience: Experience[];
+  projects: ResumeProjectType[];
 };
 
-export default function Index({ experience }: Props) {
+export default function Index({ experience, projects }: Props) {
   return (
     <>
       <Layout
@@ -41,8 +44,8 @@ export default function Index({ experience }: Props) {
               icon={<Code />}
             >
               <div className="space-y-4">
-                {experience.map((item) => (
-                  <ResumeExperience {...item} key={item.id} />
+                {projects.map((item) => (
+                  <ResumeProject {...item} key={item.id} />
                 ))}
               </div>
             </ResumeSection>
@@ -54,9 +57,12 @@ export default function Index({ experience }: Props) {
 }
 
 export const getStaticProps = async () => {
-  const experience = await getExperience();
+  const [experience, projects] = await Promise.all([
+    getExperience(),
+    getResumeProjects(),
+  ]);
 
   return {
-    props: { experience },
+    props: { experience, projects },
   };
 };
