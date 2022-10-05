@@ -34,8 +34,10 @@ export async function getAllPosts(properties: PostProperties = []) {
   });
 }
 
-// export async function getExperience(fields: string[] = []) {
-//   const { data: posts } = await Api.get("/articles");
+export async function getExperience() {
+  const { data: experience } = await Api.get("/experience");
 
-//   return posts;
-// }
+  console.log(experience);
+
+  return experience;
+}

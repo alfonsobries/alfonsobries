@@ -1,15 +1,13 @@
 import Container from "../components/container";
 import Layout from "../components/layout";
-// import { getAllPosts } from "../lib/api";
-import { Post } from "../interfaces/post";
+import { Experience } from "../interfaces/experience";
+import { getExperience } from "../lib/api";
 
 type Props = {
-  allPosts: Post[];
+  experience: Experience[];
 };
 
-export default function Index({ allPosts }: Props) {
-  const posts = allPosts.slice(0, 3);
-
+export default function Index({ experience }: Props) {
   return (
     <>
       <Layout
@@ -25,12 +23,11 @@ export default function Index({ allPosts }: Props) {
         }}
       >
         <Container>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis
-            maiores suscipit atque quam rem accusamus culpa soluta perspiciatis
-            vero ad, rerum corporis eum fugiat obcaecati nesciunt quaerat,
-            adipisci, ducimus dolor?
-          </p>
+          {experience.map((item) => (
+            <div key={item.id}>
+              <h2>{item.title}</h2>
+            </div>
+          ))}
         </Container>
       </Layout>
     </>
@@ -38,16 +35,9 @@ export default function Index({ allPosts }: Props) {
 }
 
 export const getStaticProps = async () => {
-  // const allPosts = await getAllPosts([
-  //   "title",
-  //   "date",
-  //   "slug",
-  //   "author",
-  //   "coverImage",
-  //   "excerpt",
-  // ]);
+  const experience = await getExperience();
 
   return {
-    props: { allPosts: [] },
+    props: { experience },
   };
 };
