@@ -17,6 +17,7 @@
         "laravel/nova": "~4.0",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
+        "outl1ne/nova-sortable": "^3.2",
         "spatie/laravel-medialibrary": "^10.0.0",
         "spatie/laravel-sluggable": "^3.4"
     },

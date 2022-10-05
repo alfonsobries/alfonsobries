@@ -9,6 +9,6 @@ class ExperienceController extends Controller
 {
     public function __invoke(): Collection
     {
-        return Experience::latest()->get();
+        return Experience::ordered()->get();
     }
 }
