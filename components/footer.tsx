@@ -6,7 +6,7 @@ import Github from "./icons/github";
 
 const Footer = () => {
   return (
-    <footer className="text-xs text-gray-400 dark:text-gray-500 ">
+    <footer className="text-sm text-gray-400 dark:text-gray-500 ">
       <Container>
         <div
           className={classNames(
@@ -14,37 +14,40 @@ const Footer = () => {
             "mt-8 flex flex-col space-y-4 border-t pt-8"
           )}
         >
-          <div className="mb-2 flex justify-center space-x-4">
-            <a
-              href="https://github.com/alfonsobries"
-              target="_blank"
-              className="text-blue-700 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-600"
-              rel="noreferrer"
-            >
-              <Github />
-            </a>
+          {/* <div className="mb-2 flex justify-center space-x-4">
+            <span>Made with love by Alfonso</span>
+            <span className={classNames(BORDER_COLOR, "border-l")}></span>
+            <div className="flex space-x-4">
+              <a
+                href="https://github.com/alfonsobries"
+                target="_blank"
+                className="text-blue-700 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-600"
+                rel="noreferrer"
+              >
+                <Github />
+              </a>
 
-            <a
-              href="https://twitter.com/alfonsobries"
-              target="_blank"
-              className="text-blue-700 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-600"
-              rel="noreferrer"
-            >
-              <Twitter />
-            </a>
-          </div>
+              <a
+                href="https://twitter.com/alfonsobries"
+                target="_blank"
+                className="text-blue-700 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-600"
+                rel="noreferrer"
+              >
+                <Twitter />
+              </a>
+            </div>
+          </div> */}
 
           <div className="flex flex-col items-center space-y-2 pb-8 text-center">
-            <span>Idea, illustrations, design and development by</span>
             <span className="flex space-x-3">
               <img
-                src="/images/this-guy.svg"
+                src="/images/is-this-a.svg"
                 alt="Alfonso Bribiesca"
-                width={35}
+                width={80}
               />
 
-              <span className="mt-2 font-cursive text-2xl text-gray-900 dark:text-gray-200">
-                this guy
+              <span className="mt-4 font-cursive text-2xl text-gray-900 dark:text-gray-200">
+                is this engagement?
               </span>
             </span>
           </div>
