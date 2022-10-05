@@ -7,7 +7,12 @@ import Link from "next/link";
 
 const PageHeader: React.FC<{
   small?: boolean;
-}> = ({ small = false }) => {
+  pinned?: boolean;
+}> = ({ small = false, pinned = false }) => {
+  if (pinned) {
+    return <></>;
+  }
+
   return (
     <div
       className={classNames(BORDER_COLOR, {

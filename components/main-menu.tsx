@@ -44,13 +44,22 @@ const links = [
   },
 ];
 
-const MainMenu = () => {
+type Props = {
+  pinned?: boolean;
+  navigationTitle?: string;
+};
+
+const MainMenu = ({ pinned = false, navigationTitle }: Props) => {
   const router = useRouter();
-  const [isSticky, setIsSticky] = useState(false);
+  const [isSticky, setIsSticky] = useState(pinned);
   const [menuOpened, setMenuOpened] = useState(false);
   const navRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    if (pinned) {
+      return;
+    }
+
     const nav = navRef.current;
 
     const observer = new IntersectionObserver(
@@ -68,7 +77,7 @@ const MainMenu = () => {
     return () => {
       observer.unobserve(nav);
     };
-  }, [setIsSticky]);
+  }, [setIsSticky, pinned]);
 
   const toggleMenu = useCallback(() => {
     setMenuOpened(!menuOpened);
@@ -117,7 +126,7 @@ const MainMenu = () => {
           </Link>
 
           <span className="font-cursive text-2xl font-bold text-gray-900 dark:text-gray-300 ">
-            Alfonso&#x27;s Website
+            {navigationTitle || "Alfonso's Website"}
           </span>
         </div>
 

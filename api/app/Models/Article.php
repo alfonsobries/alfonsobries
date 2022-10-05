@@ -11,6 +11,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class Article extends Model implements HasMedia
 {
@@ -48,6 +49,11 @@ class Article extends Model implements HasMedia
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('published_at', '<=', Carbon::now());
+    }
+
+    public function getExcerptAttribute(): string
+    {
+        return Str::words($this->body, 10);
     }
 
     public function registerMediaCollections(): void

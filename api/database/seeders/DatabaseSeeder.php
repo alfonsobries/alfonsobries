@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Article;
+use App\Models\Experience;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,6 +16,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        Article::factory(10)->create();
+        $this->call([
+            ArticleSeeder::class,
+            ExperienceSeeder::class,
+        ]);
     }
 }

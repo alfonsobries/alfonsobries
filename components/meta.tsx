@@ -9,6 +9,7 @@ type Props = {
     description: string;
     image?: string;
     ogType?: string;
+    hidePageName?: boolean;
   };
 };
 
@@ -18,15 +19,20 @@ const Meta = ({ meta, children }: Props) => {
   if (meta.description.length > 155) {
     throw new Error("Meta Description is too long");
   }
+
   const image =
     meta.image ||
     `https://og.alfonsobries.com/${encodeURIComponent(meta.title)}.png`;
 
   return (
     <Head>
-      <title>
-        {meta.title} | {CMS_NAME}
-      </title>
+      {meta.hidePageName ? (
+        <title>{meta.title}</title>
+      ) : (
+        <title>
+          {meta.title} | {CMS_NAME}
+        </title>
+      )}
       <meta name="description" content={meta.description} />
       <link
         rel="apple-touch-icon"

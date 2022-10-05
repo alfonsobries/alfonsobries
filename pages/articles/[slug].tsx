@@ -62,6 +62,7 @@ export async function getStaticProps({ params }: Params) {
   const post = await getPostBySlug(params.slug, [
     "title",
     "meta_description",
+    "body",
     "date",
     "slug",
     "author",
@@ -83,7 +84,7 @@ export async function getStaticProps({ params }: Params) {
 }
 
 export async function getStaticPaths() {
-  const posts = await getAllPosts();
+  const posts = await getAllPosts(["slug"]);
 
   return {
     paths: posts.map((post) => {
