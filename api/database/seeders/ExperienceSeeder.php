@@ -9,7 +9,7 @@ class ExperienceSeeder extends Seeder
 {
     protected $initialData = [
         [
-            'period' => 'Oct 2021 - Present day (~2 year)',
+            'period' => 'Oct 2021 - Present day (~2 years)',
             'place' => 'Remote',
             'title' => 'Ark Ecosystem - Fullstack Developer',
             'description' => 'I work remotely as a Full Stack Software Developer for [Ark](https://ark.io/) a blockchain solutions company working on his different open source and proprietary software products with technologies like React, Laravel and Alpine.js.',
