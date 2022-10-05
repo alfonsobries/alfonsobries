@@ -1,5 +1,7 @@
 import axios from "axios";
+import { Experience } from "../interfaces/experience";
 import { FilteredPost, Post, PostProperties } from "../interfaces/post";
+import markdownToHtml from "./markdownToHtml";
 export const Api = axios.create({
   baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
 });
@@ -34,10 +36,25 @@ export async function getAllPosts(properties: PostProperties = []) {
   });
 }
 
+const parseExperience = async (experience: Experience) => {
+  const formattedDescription = await markdownToHtml(experience.description);
+
+  return {
+    ...experience,
+    description: formattedDescription,
+  };
+};
+
 export async function getExperience() {
-  const { data: experience } = await Api.get("/experience");
+  const { data: experience }: { data: Experience[] } = await Api.get(
+    "/experience"
+  );
 
-  console.log(experience);
+  const result = await Promise.all(
+    experience.map(async (exp) => {
+      return parseExperience(exp);
+    })
+  );
 
-  return experience;
+  return result;
 }

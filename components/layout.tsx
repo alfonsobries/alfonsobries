@@ -10,6 +10,7 @@ type Props = {
   hideFooter?: boolean;
   useLightLogo?: boolean;
   navigationTitle?: string;
+  maxWidthClass?: string;
   meta: {
     title: string;
     description: string;
@@ -27,12 +28,14 @@ const Layout = ({
   navigationTitle,
   hideFooter = false,
   useLightLogo,
+  maxWidthClass,
 }: Props) => {
   const isHome = useIsHome();
 
   return (
     <>
       <Meta meta={meta} />
+
       <main>
         <PageHeader small={!isHome} pinned={pinned} />
 
@@ -40,10 +43,12 @@ const Layout = ({
           pinned={pinned}
           navigationTitle={navigationTitle}
           useLightLogo={useLightLogo}
+          maxWidthClass={maxWidthClass}
         />
 
         <div>{children}</div>
       </main>
+
       {hideFooter || <Footer />}
     </>
   );
