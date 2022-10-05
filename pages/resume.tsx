@@ -1,7 +1,7 @@
 import Container from "../components/container";
 import Layout from "../components/layout";
-import { getAllPosts } from "../lib/api";
-import Post from "../interfaces/post";
+// import { getAllPosts } from "../lib/api";
+import { Post } from "../interfaces/post";
 
 type Props = {
   allPosts: Post[];
@@ -36,16 +36,16 @@ export default function Index({ allPosts }: Props) {
 }
 
 export const getStaticProps = async () => {
-  const allPosts = await getAllPosts([
-    "title",
-    "date",
-    "slug",
-    "author",
-    "coverImage",
-    "excerpt",
-  ]);
+  // const allPosts = await getAllPosts([
+  //   "title",
+  //   "date",
+  //   "slug",
+  //   "author",
+  //   "coverImage",
+  //   "excerpt",
+  // ]);
 
   return {
-    props: { allPosts },
+    props: { allPosts: [] },
   };
 };

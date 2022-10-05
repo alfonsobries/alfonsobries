@@ -7,15 +7,16 @@ import Layout from "../../components/layout";
 import { getPostBySlug, getAllPosts } from "../../lib/api";
 import PostTitle from "../../components/post-title";
 import markdownToHtml from "../../lib/markdownToHtml";
-import type PostType from "../../interfaces/post";
+import { Post as PostType } from "../../interfaces/post";
 
 type Props = {
   post: PostType;
+  content: string;
   morePosts: PostType[];
   preview?: boolean;
 };
 
-export default function Post({ post, morePosts, preview }: Props) {
+export default function Post({ post, content, morePosts, preview }: Props) {
   const router = useRouter();
 
   if (!router.isFallback && !post?.slug) {
@@ -38,12 +39,12 @@ export default function Post({ post, morePosts, preview }: Props) {
             <article className="prose dark:prose-invert">
               <PostHeader
                 title={post.title}
-                coverImage={post.coverImage}
-                date={post.date}
-                author={post.author}
+                // coverImage={post.coverImage}
+                date={post.published_at}
+                // author={post.author}
               />
 
-              <PostBody content={post.content} />
+              <PostBody content={content} />
             </article>
           </>
         )}
@@ -63,22 +64,20 @@ export async function getStaticProps({ params }: Params) {
     "title",
     "meta_description",
     "body",
-    "date",
+    "published_at",
     "slug",
-    "author",
-    "content",
-    "ogImage",
-    "coverImage",
+    // "author",
+    // "content",
+    // "ogImage",
+    // "coverImage",
   ]);
 
   const content = await markdownToHtml(post.body || "");
 
   return {
     props: {
-      post: {
-        ...post,
-        content,
-      },
+      content,
+      post,
     },
   };
 }

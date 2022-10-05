@@ -1,49 +1,39 @@
 import axios from "axios";
-import markdownToHtml from "./markdownToHtml";
+import { FilteredPost, Post, PostProperties } from "../interfaces/post";
 export const Api = axios.create({
   baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
 });
 
-export async function getPostBySlug(slug: string, fields: string[] = []) {
+const getPostWithOnlyProperties = (
+  post: Post,
+  properties: PostProperties = []
+): FilteredPost => {
+  const newPost: FilteredPost = {};
+  properties.forEach((property) => {
+    newPost[property] = post[property];
+  });
+  return newPost;
+};
+
+export async function getPostBySlug(
+  slug: string,
+  properties: PostProperties = []
+): Promise<FilteredPost> {
   const { data: post } = await Api.get(`/articles/${slug}`);
 
-  const filteredPost = {};
-
-  fields.forEach(async (field) => {
-    if (typeof post[field] !== "undefined") {
-      filteredPost[field] = post[field];
-    } else {
-      filteredPost[field] = null;
-    }
-  });
-
-  return filteredPost;
+  return getPostWithOnlyProperties(post, properties);
 }
 
-export async function getAllPosts(fields: string[] = []) {
+export async function getAllPosts(properties: PostProperties = []) {
   const { data: posts } = await Api.get("/articles");
 
-  const filteredPosts = [];
-
-  posts.forEach((post) => {
-    const filteredPost = {};
-
-    fields.forEach(async (field) => {
-      if (typeof post[field] !== "undefined") {
-        filteredPost[field] = post[field];
-      } else {
-        filteredPost[field] = null;
-      }
-    });
-
-    filteredPosts.push(filteredPost);
+  return posts.map((post) => {
+    return getPostWithOnlyProperties(post, properties);
   });
-
-  return filteredPosts;
 }
 
-export async function getExperience(fields: string[] = []) {
-  const { data: posts } = await Api.get("/articles");
+// export async function getExperience(fields: string[] = []) {
+//   const { data: posts } = await Api.get("/articles");
 
-  return posts;
-}
+//   return posts;
+// }

@@ -1,17 +1,17 @@
-import type Author from "./author";
-
-type PostType = {
-  slug: string;
+export type Post = {
+  id: string;
   title: string;
+  slug: string;
+  body: string;
   meta_description: string;
-  date: string;
-  coverImage: string;
-  author: Author;
   excerpt: string;
-  ogImage: {
-    url: string;
-  };
-  content: string;
+  // Make it date maybe?
+  published_at: string;
+  // coverImage?: string;
 };
 
-export default PostType;
+export type PostProperties = (keyof Post)[];
+
+export type FilteredPost = {
+  [key in keyof Post]?: Post[key];
+};

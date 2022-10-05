@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Post from "../interfaces/post";
+import { Post } from "../interfaces/post";
 
 const ArticleListItem: React.FC<{
   post: Post;

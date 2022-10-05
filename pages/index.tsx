@@ -6,7 +6,7 @@ import Layout from "../components/layout";
 import { getAllPosts } from "../lib/api";
 import Head from "next/head";
 import { CMS_NAME } from "../lib/constants";
-import Post from "../interfaces/post";
+import { Post } from "../interfaces/post";
 import ArticleListItem from "../components/article-list-item";
 import { useEffect } from "react";
 
