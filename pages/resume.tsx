@@ -31,7 +31,7 @@ export default function Index({ experience, projects }: Props) {
         }}
       >
         <div className="relative z-0 mx-auto max-w-4xl px-4">
-          <div className="md:w-3/5">
+          <div className="space-y-8 md:w-3/5">
             <ResumeSection title="Experience" icon={<Briefcase />}>
               <div className="space-y-4">
                 {experience.map((item) => (
@@ -39,8 +39,9 @@ export default function Index({ experience, projects }: Props) {
                 ))}
               </div>
             </ResumeSection>
+
             <ResumeSection
-              title="Open Source & Personal Projects"
+              title="Open Source &amp; Personal Projects"
               icon={<Code />}
             >
               <div className="space-y-4">
