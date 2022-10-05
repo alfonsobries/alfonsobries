@@ -3,6 +3,7 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\ExperienceController;
+use App\Http\Controllers\ResumeProjectController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/articles/{article:slug}', [ArticleController::class, 'show']);
 
-Route::get('/experience', ExperienceController::class);
+Route::get('/resume/experience', ExperienceController::class);
+Route::get('/resume/projects', ResumeProjectController::class);
 
 Route::post('/contact', ContactFormController::class);

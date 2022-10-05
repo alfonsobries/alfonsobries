@@ -70,7 +70,7 @@ export async function getExperience() {
 
 export async function getResumeProjects() {
   const { data: experience }: { data: ResumeProject[] } = await Api.get(
-    "/resume/experience"
+    "/resume/projects"
   );
 
   const result = await Promise.all(

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->text('description');
             $table->enum('type', ['work', 'education'])->default('work');
             $table->integer('sort_order');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
