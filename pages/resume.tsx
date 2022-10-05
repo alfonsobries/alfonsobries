@@ -15,6 +15,8 @@ export default function Index({ allPosts }: Props) {
       <Layout
         pinned={true}
         navigationTitle="My Personal Resume"
+        useLightLogo
+        hideFooter
         meta={{
           title: "Alfonso Bribiesca - Personal Resume",
           hidePageName: true,

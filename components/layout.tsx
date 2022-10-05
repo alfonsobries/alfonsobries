@@ -7,6 +7,8 @@ import PageHeader from "./page-header";
 type Props = {
   children: React.ReactNode;
   pinned?: boolean;
+  hideFooter?: boolean;
+  useLightLogo?: boolean;
   navigationTitle?: string;
   meta: {
     title: string;
@@ -18,7 +20,14 @@ type Props = {
   };
 };
 
-const Layout = ({ children, meta, pinned = false, navigationTitle }: Props) => {
+const Layout = ({
+  children,
+  meta,
+  pinned = false,
+  navigationTitle,
+  hideFooter = false,
+  useLightLogo,
+}: Props) => {
   const isHome = useIsHome();
 
   return (
@@ -27,11 +36,15 @@ const Layout = ({ children, meta, pinned = false, navigationTitle }: Props) => {
       <main>
         <PageHeader small={!isHome} pinned={pinned} />
 
-        <MainMenu pinned={pinned} navigationTitle={navigationTitle} />
+        <MainMenu
+          pinned={pinned}
+          navigationTitle={navigationTitle}
+          useLightLogo={useLightLogo}
+        />
 
         <div>{children}</div>
       </main>
-      <Footer />
+      {hideFooter || <Footer />}
     </>
   );
 };

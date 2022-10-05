@@ -47,9 +47,10 @@ const links = [
 type Props = {
   pinned?: boolean;
   navigationTitle?: string;
+  useLightLogo?: boolean;
 };
 
-const MainMenu = ({ pinned = false, navigationTitle }: Props) => {
+const MainMenu = ({ pinned = false, navigationTitle, useLightLogo }: Props) => {
   const router = useRouter();
   const [isSticky, setIsSticky] = useState(pinned);
   const [menuOpened, setMenuOpened] = useState(false);
@@ -118,10 +119,17 @@ const MainMenu = ({ pinned = false, navigationTitle }: Props) => {
         <div className="relative flex items-center space-x-3">
           <Link href="/">
             <a className="flex h-8 w-8 origin-bottom items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200">
-              <ReactSVG
-                src="/images/face-icon.svg"
-                loading={() => <Spinner />}
-              />
+              {useLightLogo ? (
+                <ReactSVG
+                  src="/images/face-icon-light.svg"
+                  loading={() => <Spinner />}
+                />
+              ) : (
+                <ReactSVG
+                  src="/images/face-icon.svg"
+                  loading={() => <Spinner />}
+                />
+              )}
             </a>
           </Link>
 
