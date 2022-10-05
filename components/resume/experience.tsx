@@ -9,10 +9,10 @@ const ResumeExperience = ({
 }: Experience) => {
   return (
     <div className="space-y-4">
-      <div className="relative flex items-center space-x-2 text-sm text-gray-400 before:absolute before:inset-0 before:-ml-8 before:block before:content-['●']">
+      <div className="relative space-x-4 text-sm text-gray-400 before:absolute before:inset-0 before:-ml-8 before:block before:content-['●']">
         <span>{period}</span>
 
-        <Separator className="h-4" />
+        <span className="text-xs text-gray-200 dark:text-gray-700">●</span>
 
         <span>{place}</span>
       </div>

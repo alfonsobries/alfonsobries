@@ -1,6 +1,6 @@
-import Container from "../components/container";
 import Briefcase from "../components/icons/briefcase";
 import Code from "../components/icons/code";
+import GraduationHat from "../components/icons/graduation-hat";
 import Layout from "../components/layout";
 import ResumeExperience from "../components/resume/experience";
 import ResumeProject from "../components/resume/project";
@@ -10,11 +10,12 @@ import { ResumeProject as ResumeProjectType } from "../interfaces/resume_project
 import { getExperience, getResumeProjects } from "../lib/api";
 
 type Props = {
-  experience: Experience[];
+  work: Experience[];
+  education: Experience[];
   projects: ResumeProjectType[];
 };
 
-export default function Index({ experience, projects }: Props) {
+export default function Index({ work, education, projects }: Props) {
   return (
     <>
       <Layout
@@ -34,7 +35,7 @@ export default function Index({ experience, projects }: Props) {
           <div className="space-y-8 md:w-3/5">
             <ResumeSection title="Experience" icon={<Briefcase />}>
               <div className="space-y-4">
-                {experience.map((item) => (
+                {work.map((item) => (
                   <ResumeExperience {...item} key={item.id} />
                 ))}
               </div>
@@ -47,6 +48,14 @@ export default function Index({ experience, projects }: Props) {
               <div className="space-y-4">
                 {projects.map((item) => (
                   <ResumeProject {...item} key={item.id} />
+                ))}
+              </div>
+            </ResumeSection>
+
+            <ResumeSection title="Education" icon={<GraduationHat />}>
+              <div className="space-y-4">
+                {education.map((item) => (
+                  <ResumeExperience {...item} key={item.id} />
                 ))}
               </div>
             </ResumeSection>
@@ -63,7 +72,10 @@ export const getStaticProps = async () => {
     getResumeProjects(),
   ]);
 
+  const work = experience.filter((item) => item.type === "work");
+  const education = experience.filter((item) => item.type === "education");
+
   return {
-    props: { experience, projects },
+    props: { projects, work, education },
   };
 };

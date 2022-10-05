@@ -14,7 +14,7 @@ const ResumeSection = ({ icon, title, children }: Props) => {
       <div className="relative flex min-h-[2.5rem]">
         <div className="absolute inset-0 -ml-9 flex h-full items-center">
           {cloneElement(icon, {
-            className: "w-5 h-5 text-gray-400 dark:text-gray-500 ",
+            className: "w-6 h-6 text-gray-400 dark:text-gray-500",
           })}
         </div>
 
