@@ -9,14 +9,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
 
-class Experience extends Model implements Sortable
+class ResumeExperience extends Model implements Sortable
 {
     use HasFactory;
     use SortableTrait;
     use SoftDeletes;
     use ExpiresFrontend;
 
-    protected $table = 'experience';
+    protected $table = 'resume_experience';
 
     public $sortable = [
         'order_column_name' => 'sort_order',

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('experience', function (Blueprint $table) {
+        Schema::create('resume_experience', function (Blueprint $table) {
             $table->id();
             $table->string('period');
             $table->string('place');
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('experience');
+        Schema::dropIfExists('resume_experience');
     }
 };

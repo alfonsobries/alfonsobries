@@ -54,30 +54,23 @@ const parseResumeProject = async (project: ResumeProject) => {
   };
 };
 
-export async function getExperience() {
-  const { data: experience }: { data: Experience[] } = await Api.get(
-    "/resume/experience"
-  );
+export async function getResumeData() {
+  const {
+    data,
+  }: { data: { experience: Experience[]; projects: ResumeProject[] } } =
+    await Api.get("/resume");
 
-  const result = await Promise.all(
-    experience.map(async (exp) => {
-      return parseExperience(exp);
+  const experience = await Promise.all(
+    data.experience.map(async (item) => {
+      return parseExperience(item);
     })
   );
 
-  return result;
-}
-
-export async function getResumeProjects() {
-  const { data: experience }: { data: ResumeProject[] } = await Api.get(
-    "/resume/projects"
-  );
-
-  const result = await Promise.all(
-    experience.map(async (exp) => {
-      return parseResumeProject(exp);
+  const projects = await Promise.all(
+    data.projects.map(async (item) => {
+      return parseResumeProject(item);
     })
   );
 
-  return result;
+  return { experience, projects };
 }

@@ -7,7 +7,7 @@ import ResumeProject from "../components/resume/project";
 import ResumeSection from "../components/resume/section";
 import { Experience } from "../interfaces/experience";
 import { ResumeProject as ResumeProjectType } from "../interfaces/resume_project";
-import { getExperience, getResumeProjects } from "../lib/api";
+import { getResumeData } from "../lib/api";
 
 type Props = {
   work: Experience[];
@@ -67,10 +67,7 @@ export default function Index({ work, education, projects }: Props) {
 }
 
 export const getStaticProps = async () => {
-  const [experience, projects] = await Promise.all([
-    getExperience(),
-    getResumeProjects(),
-  ]);
+  const { experience, projects } = await getResumeData();
 
   const work = experience.filter((item) => item.type === "work");
   const education = experience.filter((item) => item.type === "education");

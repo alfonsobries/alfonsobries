@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Experience;
+use App\Models\ResumeExperience;
 use Illuminate\Database\Seeder;
 
-class ExperienceSeeder extends Seeder
+class ResumeExperienceSeeder extends Seeder
 {
     protected $initialData = [
         [
@@ -75,7 +75,7 @@ HTML,
     public function run()
     {
         foreach ($this->initialData as $data) {
-            Experience::create($data);
+            ResumeExperience::create($data);
         }
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Nova;
 
-use App\Models\Experience as Model;
+use App\Models\ResumeExperience as Model;
 use Laravel\Nova\Fields\ID;
 use Ardenthq\EnhancedMarkdown\EnhancedMarkdown;
 use Laravel\Nova\Fields\Text;
@@ -13,7 +13,7 @@ use Laravel\Nova\Resource;
 use Laravel\Nova\Fields\Select;
 use Outl1ne\NovaSortable\Traits\HasSortableRows;
 
-final class Experience extends Resource
+final class ResumeExperience extends Resource
 {
     use HasSortableRows;
 
