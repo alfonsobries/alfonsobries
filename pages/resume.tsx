@@ -1,6 +1,7 @@
 import Briefcase from "../components/icons/briefcase";
 import Code from "../components/icons/code";
 import GraduationHat from "../components/icons/graduation-hat";
+import Knife from "../components/icons/knife";
 import Layout from "../components/layout";
 import ResumeExperience from "../components/resume/experience";
 import ResumeProject from "../components/resume/project";
@@ -12,14 +13,27 @@ import {
 } from "../interfaces/resume";
 import { getResumeData } from "../lib/api";
 
+type SkillGroup = {
+  framework: ResumeSkillType[];
+  language: ResumeSkillType[];
+  other: ResumeSkillType[];
+};
+
 type Props = {
   work: ResumeExperienceType[];
   education: ResumeExperienceType[];
   projects: ResumeProjectType[];
-  skills: ResumeSkillType[];
+  skillsExpert: SkillGroup;
+  skillsAdvanced: SkillGroup;
 };
 
-export default function Index({ work, education, projects, skills }: Props) {
+export default function Index({
+  work,
+  education,
+  projects,
+  skillsExpert,
+  skillsAdvanced,
+}: Props) {
   return (
     <>
       <Layout
@@ -65,10 +79,20 @@ export default function Index({ work, education, projects, skills }: Props) {
             </ResumeSection>
           </div>
           <div className="flex-1 space-y-8">
-            <ResumeSection title="Skills & Knowledge" icon={<Briefcase />}>
+            <ResumeSection title="Skills & Knowledge" icon={<Knife />}>
               <div className="space-y-4">
                 <ul>
-                  {skills.map((skill) => (
+                  {skillsExpert.framework.map((skill) => (
+                    <li key={skill.id}>{skill.name}</li>
+                  ))}
+                </ul>
+                <ul>
+                  {skillsExpert.language.map((skill) => (
+                    <li key={skill.id}>{skill.name}</li>
+                  ))}
+                </ul>
+                <ul>
+                  {skillsExpert.other.map((skill) => (
                     <li key={skill.id}>{skill.name}</li>
                   ))}
                 </ul>
@@ -85,9 +109,38 @@ export const getStaticProps = async () => {
   const { experience, projects, skills } = await getResumeData();
 
   const work = experience.filter((item) => item.type === "work");
+
   const education = experience.filter((item) => item.type === "education");
 
+  const skillsExpert: SkillGroup = skills
+    .filter((item) => item.level === "expert")
+    .reduce(
+      (acc, item) => {
+        acc[item.category].push(item);
+        return acc;
+      },
+      {
+        framework: [],
+        language: [],
+        other: [],
+      }
+    );
+
+  const skillsAdvanced: SkillGroup = skills
+    .filter((item) => item.level === "advanced")
+    .reduce(
+      (acc, item) => {
+        acc[item.category].push(item);
+        return acc;
+      },
+      {
+        framework: [],
+        language: [],
+        other: [],
+      }
+    );
+
   return {
-    props: { projects, work, education, skills },
+    props: { projects, work, education, skillsExpert, skillsAdvanced },
   };
 };
