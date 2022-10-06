@@ -52,8 +52,8 @@ export default function Index({
           image: `https://og.alfonsobries.com/@TODO.png`,
         }}
       >
-        <div className="relative z-0 mx-auto flex max-w-4xl space-x-8 px-4">
-          <div className="space-y-8 md:w-3/5">
+        <div className="relative z-0 mx-auto flex max-w-4xl flex-col space-y-8 px-4 sm:flex-row sm:space-x-8 sm:space-y-0">
+          <div className="space-y-8 sm:max-w-sm md:max-w-md lg:max-w-lg">
             <ResumeSection title="Experience" icon={<Briefcase />}>
               <div className="space-y-4">
                 {work.map((item) => (
@@ -82,7 +82,11 @@ export default function Index({
             </ResumeSection>
           </div>
           <div className="flex-1 space-y-8">
-            <ResumeSection title="Skills &amp; Knowledge" icon={<Knife />}>
+            <ResumeSection
+              title="Skills &amp; Knowledge"
+              icon={<Knife />}
+              noMargin
+            >
               <div className="space-y-4">
                 <h3 className="text-md font-semibold uppercase ">
                   I am an expert in:

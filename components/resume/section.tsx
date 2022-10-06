@@ -6,13 +6,23 @@ type Props = {
   icon: React.ReactElement;
   title: string;
   children: React.ReactNode;
+  noMargin?: boolean;
 };
 
-const ResumeSection = ({ icon, title, children }: Props) => {
+const ResumeSection = ({ icon, title, children, noMargin = false }: Props) => {
   return (
-    <div className="ml-10 flex flex-col space-y-4">
+    <div
+      className={classNames(" flex flex-col space-y-4", {
+        "ml-10": !noMargin,
+      })}
+    >
       <div className="relative flex min-h-[2.5rem]">
-        <div className="absolute inset-0 -ml-9 flex h-full items-center">
+        <div
+          className={classNames("  flex  items-center", {
+            "absolute inset-0 -ml-9 h-full": !noMargin,
+            "mr-3": noMargin,
+          })}
+        >
           {cloneElement(icon, {
             className: "w-6 h-6 text-gray-400 dark:text-gray-500",
           })}
@@ -20,7 +30,7 @@ const ResumeSection = ({ icon, title, children }: Props) => {
 
         <h3
           className={classNames(
-            "mb-0 flex  flex-1 items-center border-b text-xl uppercase  text-gray-800 dark:text-gray-200",
+            "mb-0 flex flex-1 items-center border-b text-xl uppercase text-gray-800 dark:text-gray-200",
             BORDER_COLOR
           )}
         >
