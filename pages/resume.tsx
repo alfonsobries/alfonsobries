@@ -3,9 +3,12 @@ import Code from "../components/icons/code";
 import GraduationHat from "../components/icons/graduation-hat";
 import Knife from "../components/icons/knife";
 import Layout from "../components/layout";
+import LineClamp from "../components/line-clamp";
 import ResumeExperience from "../components/resume/experience";
 import ResumeProject from "../components/resume/project";
 import ResumeSection from "../components/resume/section";
+import ResumeSkill from "../components/resume/skill";
+import ResumeSkillList from "../components/resume/skill-list";
 import {
   ResumeExperience as ResumeExperienceType,
   ResumeProject as ResumeProjectType,
@@ -79,23 +82,39 @@ export default function Index({
             </ResumeSection>
           </div>
           <div className="flex-1 space-y-8">
-            <ResumeSection title="Skills & Knowledge" icon={<Knife />}>
+            <ResumeSection title="Skills &amp; Knowledge" icon={<Knife />}>
               <div className="space-y-4">
-                <ul>
+                <h3 className="text-md font-semibold uppercase ">
+                  I am an expert in:
+                </h3>
+
+                <LineClamp>
+                  <p className="text-sm text-gray-400 line-clamp-3">
+                    The following is a list of the different technologies where
+                    I have a deep understanding of their inner workings, have
+                    used them to solve real-world problems, and feel confident
+                    in my ability to use them in a professional setting, either
+                    leading a team or as an individual.
+                  </p>
+                </LineClamp>
+
+                <ResumeSkillList title="Frameworks &amp; Tools">
                   {skillsExpert.framework.map((skill) => (
-                    <li key={skill.id}>{skill.name}</li>
+                    <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
                   ))}
-                </ul>
-                <ul>
+                </ResumeSkillList>
+
+                <ResumeSkillList title="Programic Languages">
                   {skillsExpert.language.map((skill) => (
-                    <li key={skill.id}>{skill.name}</li>
+                    <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
                   ))}
-                </ul>
-                <ul>
+                </ResumeSkillList>
+
+                <ResumeSkillList title="Other Technologies &amp; Methodologies">
                   {skillsExpert.other.map((skill) => (
-                    <li key={skill.id}>{skill.name}</li>
+                    <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
                   ))}
-                </ul>
+                </ResumeSkillList>
               </div>
             </ResumeSection>
           </div>
