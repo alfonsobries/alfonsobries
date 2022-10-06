@@ -1,12 +1,11 @@
-import { Experience } from "../../interfaces/experience";
-import Separator from "../separator";
+import { ResumeExperience as ResumeExperienceType } from "../../interfaces/resume";
 
 const ResumeExperience = ({
   title,
   period,
   place,
   description,
-}: Experience) => {
+}: ResumeExperienceType) => {
   return (
     <div className="space-y-4">
       <div className="relative space-x-4 text-sm text-gray-400 before:absolute before:inset-0 before:-ml-8 before:block before:content-['●']">

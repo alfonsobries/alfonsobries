@@ -5,17 +5,21 @@ import Layout from "../components/layout";
 import ResumeExperience from "../components/resume/experience";
 import ResumeProject from "../components/resume/project";
 import ResumeSection from "../components/resume/section";
-import { Experience } from "../interfaces/experience";
-import { ResumeProject as ResumeProjectType } from "../interfaces/resume_project";
+import {
+  ResumeExperience as ResumeExperienceType,
+  ResumeProject as ResumeProjectType,
+  ResumeSkill as ResumeSkillType,
+} from "../interfaces/resume";
 import { getResumeData } from "../lib/api";
 
 type Props = {
-  work: Experience[];
-  education: Experience[];
+  work: ResumeExperienceType[];
+  education: ResumeExperienceType[];
   projects: ResumeProjectType[];
+  skills: ResumeSkillType[];
 };
 
-export default function Index({ work, education, projects }: Props) {
+export default function Index({ work, education, projects, skills }: Props) {
   return (
     <>
       <Layout
@@ -31,7 +35,7 @@ export default function Index({ work, education, projects }: Props) {
           image: `https://og.alfonsobries.com/@TODO.png`,
         }}
       >
-        <div className="relative z-0 mx-auto max-w-4xl px-4">
+        <div className="relative z-0 mx-auto flex max-w-4xl space-x-8 px-4">
           <div className="space-y-8 md:w-3/5">
             <ResumeSection title="Experience" icon={<Briefcase />}>
               <div className="space-y-4">
@@ -60,6 +64,17 @@ export default function Index({ work, education, projects }: Props) {
               </div>
             </ResumeSection>
           </div>
+          <div className="flex-1 space-y-8">
+            <ResumeSection title="Skills & Knowledge" icon={<Briefcase />}>
+              <div className="space-y-4">
+                <ul>
+                  {skills.map((skill) => (
+                    <li key={skill.id}>{skill.name}</li>
+                  ))}
+                </ul>
+              </div>
+            </ResumeSection>
+          </div>
         </div>
       </Layout>
     </>
@@ -67,12 +82,12 @@ export default function Index({ work, education, projects }: Props) {
 }
 
 export const getStaticProps = async () => {
-  const { experience, projects } = await getResumeData();
+  const { experience, projects, skills } = await getResumeData();
 
   const work = experience.filter((item) => item.type === "work");
   const education = experience.filter((item) => item.type === "education");
 
   return {
-    props: { projects, work, education },
+    props: { projects, work, education, skills },
   };
 };

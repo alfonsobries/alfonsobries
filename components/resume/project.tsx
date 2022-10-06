@@ -1,4 +1,4 @@
-import { ResumeProject } from "../../interfaces/resume_project";
+import { ResumeProject } from "../../interfaces/resume";
 import LinkIcon from "../icons/link";
 
 const ResumeProject = ({ title, description, url }: ResumeProject) => {

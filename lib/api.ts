@@ -1,6 +1,9 @@
 import axios from "axios";
-import { Experience } from "../interfaces/experience";
-import { ResumeProject } from "../interfaces/resume_project";
+import {
+  ResumeProject,
+  ResumeExperience,
+  ResumeSkill,
+} from "../interfaces/resume";
 import { FilteredPost, Post, PostProperties } from "../interfaces/post";
 import markdownToHtml from "./markdownToHtml";
 export const Api = axios.create({
@@ -37,7 +40,7 @@ export async function getAllPosts(properties: PostProperties = []) {
   });
 }
 
-const parseExperience = async (experience: Experience) => {
+const parseExperience = async (experience: ResumeExperience) => {
   const formattedDescription = await markdownToHtml(experience.description);
 
   return {
@@ -57,8 +60,13 @@ const parseResumeProject = async (project: ResumeProject) => {
 export async function getResumeData() {
   const {
     data,
-  }: { data: { experience: Experience[]; projects: ResumeProject[] } } =
-    await Api.get("/resume");
+  }: {
+    data: {
+      experience: ResumeExperience[];
+      projects: ResumeProject[];
+      skills: ResumeSkill[];
+    };
+  } = await Api.get("/resume");
 
   const experience = await Promise.all(
     data.experience.map(async (item) => {
@@ -72,5 +80,7 @@ export async function getResumeData() {
     })
   );
 
-  return { experience, projects };
+  const skills = data.skills;
+
+  return { experience, projects, skills };
 }

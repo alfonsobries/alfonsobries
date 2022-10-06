@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             ArticleSeeder::class,
             ResumeExperienceSeeder::class,
             ResumeProjectSeeder::class,
+            ResumeSkillSeeder::class,
         ]);
     }
 }

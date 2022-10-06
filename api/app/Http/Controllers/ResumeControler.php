@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ResumeExperience;
 use App\Models\ResumeProject;
+use App\Models\ResumeSkill;
 
 class ResumeControler extends Controller
 {
@@ -11,7 +12,8 @@ class ResumeControler extends Controller
     {
         return [
             'experience' => ResumeExperience::ordered()->get(),
-            'projects' => ResumeProject::ordered()->get()
+            'projects' => ResumeProject::ordered()->get(),
+            'skills' => ResumeSkill::ordered()->get(),
         ];
     }
 }
