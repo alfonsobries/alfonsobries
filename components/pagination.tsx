@@ -46,7 +46,7 @@ const Pagination = ({
       aria-label="Pagination"
     >
       <div className="hidden sm:block">
-        <p className="text-sm text-gray-500">
+        <p className="text-gray-500">
           Showing <span className="font-semibold">{from}</span> to{" "}
           <span className="font-semibold">{to}</span> of{" "}
           <span className="font-semibold">{total}</span> results
@@ -58,7 +58,7 @@ const Pagination = ({
             <a
               className={classNames(
                 LINK_COLOR_TEXT,
-                "relative inline-flex items-center text-sm hover:underline"
+                "relative inline-flex items-center hover:underline"
               )}
             >
               ← Previous
@@ -80,7 +80,7 @@ const Pagination = ({
             <a
               className={classNames(
                 LINK_COLOR_TEXT,
-                "relative inline-flex items-center text-sm hover:underline"
+                "relative inline-flex items-center hover:underline"
               )}
             >
               Next →
