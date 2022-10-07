@@ -30,6 +30,10 @@ const Pagination = ({
       return null;
     }
 
+    if (current_page === 2) {
+      return path;
+    }
+
     return `${path}/page/${current_page - 1}`;
   }, [prev_page_url, path, current_page]);
 

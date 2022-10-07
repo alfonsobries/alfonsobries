@@ -50,6 +50,10 @@ export async function getAllPosts(
 
   const { data: posts } = await Api.get(`/articles${queryString}`);
 
+  if (params.all) {
+    return posts;
+  }
+
   return {
     ...posts,
     data: posts.data.map((post) => getPostWithOnlyProperties(post, properties)),

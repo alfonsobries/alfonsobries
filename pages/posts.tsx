@@ -5,24 +5,43 @@ import Pagination from "../components/pagination";
 import { Post } from "../interfaces/post";
 import { Pagination as PaginationType } from "../interfaces/pagination";
 import { getAllPosts } from "../lib/api";
+import { useMemo } from "react";
+
+export const POST_PER_PAGE = 5;
 
 type Props = {
   pagination: PaginationType<Post>;
 };
 
 export default function Posts({ pagination }: Props) {
+  const subtitle = useMemo(() => {
+    return `${
+      pagination.current_page > 1 ? `Page ${pagination.current_page}` : ""
+    }`;
+  }, [pagination.current_page]);
+
   return (
     <>
       <Layout
         meta={{
-          title: "Posts",
+          title: `Posts - ${subtitle}`,
           description: "@TODO: TBD",
           image: `https://og.alfonsobries.com/@TODO.png`,
         }}
       >
         <Container>
           <div className="prose prose-h2:text-lg dark:prose-invert">
-            <h1>Posts</h1>
+            <h1>
+              Posts
+              {subtitle && (
+                <>
+                  <span className="text-base font-normal text-gray-500">
+                    {" "}
+                    / {subtitle}
+                  </span>
+                </>
+              )}
+            </h1>
 
             {pagination.data.map((post) => (
               <ArticleListItem key={post.slug} post={post} />
@@ -36,10 +55,20 @@ export default function Posts({ pagination }: Props) {
   );
 }
 
-export const getStaticProps = async () => {
-  const pagination = await getAllPosts(["title", "slug", "excerpt"], {
-    limit: 3,
-  });
+type Params = {
+  params?: {
+    page?: number;
+  };
+};
+
+export const getStaticProps = async ({ params }: Params) => {
+  const pagination: PaginationType<Post> = await getAllPosts(
+    ["title", "slug", "excerpt"],
+    {
+      limit: POST_PER_PAGE,
+      ...params,
+    }
+  );
 
   return {
     props: {

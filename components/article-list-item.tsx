@@ -20,7 +20,7 @@ const ArticleListItem: React.FC<{
 
       <p>
         <Link href={`/posts/${post.slug}`}>
-          <a className={classNames(LINK_COLOR_TEXT, "hover:underline")}>
+          <a className={classNames(LINK_COLOR_TEXT, "text-sm hover:underline")}>
             Read More →
           </a>
         </Link>

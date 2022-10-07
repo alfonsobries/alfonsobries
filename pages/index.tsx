@@ -18,7 +18,8 @@ export default function Index({ posts, hasMorePosts }: Props) {
       <Layout
         meta={{
           title: "Tech, Development, and more",
-          description: "@TODO: TBD",
+          description:
+            "Hello, it’s me! Alfonso Bribiesca on this website. You can find here all about my work and my interests, and it is a great place to connect. Welcome!",
           image: `https://og.alfonsobries.com/@TODO.png`,
         }}
       >
@@ -37,7 +38,7 @@ export default function Index({ posts, hasMorePosts }: Props) {
                 className={classNames(
                   LINK_COLOR_BORDER,
                   LINK_COLOR_TEXT,
-                  "mt-8 block rounded border p-2 text-center text-white"
+                  "mt-8 block rounded border p-2 text-center"
                 )}
               >
                 More Posts →
