@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\ResumeControler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,5 +24,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/articles', [ArticleController::class, 'index']);
 Route::get('/articles/{article:slug}', [ArticleController::class, 'show']);
+Route::get('/projects', ProjectController::class);
 Route::get('/resume', ResumeControler::class);
 Route::post('/contact', ContactFormController::class);

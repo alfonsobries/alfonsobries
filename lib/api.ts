@@ -6,6 +6,7 @@ import {
 } from "../interfaces/resume";
 import { FilteredPost, Post, PostProperties } from "../interfaces/post";
 import markdownToHtml from "./markdownToHtml";
+import { Project } from "../interfaces/project";
 export const Api = axios.create({
   baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
 });
@@ -103,4 +104,29 @@ export async function getResumeData() {
   const skills = data.skills;
 
   return { experience, projects, skills };
+}
+
+const parseProject = async (project: Project) => {
+  const formattedDescription = await markdownToHtml(project.description);
+
+  return {
+    ...project,
+    description: formattedDescription,
+  };
+};
+
+export async function getProjects() {
+  const {
+    data,
+  }: {
+    data: Project[];
+  } = await Api.get("/projects");
+
+  const projects = await Promise.all(
+    data.map(async (item) => {
+      return parseProject(item);
+    })
+  );
+
+  return projects;
 }

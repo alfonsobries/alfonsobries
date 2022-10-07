@@ -1,33 +1,12 @@
 import classNames from "classnames";
 import Container from "../components/container";
-import Laravel from "../components/icons/brands/laravel";
-import React from "../components/icons/brands/react";
-import Tailwindcss from "../components/icons/brands/tailwindcss";
 import Sphere from "../components/icons/sphere";
 import Layout from "../components/layout";
+import ProjectTechnology from "../components/projects/technology";
+import { getProjects } from "../lib/api";
 import { BORDER_COLOR } from "../lib/cssClasses";
 
-export default function Labs() {
-  const projects = [
-    {
-      id: 1,
-      title: "Project 1",
-      description: "This is a project",
-      link: "https://google.com",
-    },
-    {
-      id: 2,
-      title: "Project 2",
-      description: "This is a project",
-      link: "https://google.com",
-    },
-    {
-      id: 3,
-      title: "Project 3",
-      description: "This is a project",
-      link: "https://google.com",
-    },
-  ];
+export default function Labs({ projects }) {
   return (
     <>
       <Layout
@@ -50,31 +29,25 @@ export default function Labs() {
                 <div className="overflow-hidden rounded shadow">
                   <img src="https://picsum.photos/600/300" alt="" />
                 </div>
-                <p className="mt-2 text-gray-600 dark:text-gray-400">
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Distinctio rem sit aut ut obcaecati totam quibusdam aliquam,
-                  amet pariatur, fugiat quisquam voluptate. Facere nihil
-                  possimus quam illo maxime veniam voluptas!
-                </p>
-                <div className="flex justify-between">
+                <div
+                  className="prose dark:prose-invert"
+                  dangerouslySetInnerHTML={{ __html: project.description }}
+                />
+                <div className="flex items-center justify-between space-x-4">
                   <a
-                    href={project.link}
-                    className="mt-2 inline-flex items-center space-x-2 text-sm text-blue-500 dark:text-blue-400"
+                    href={project.url}
+                    className="inline-flex items-center space-x-2 overflow-auto text-sm text-blue-500 dark:text-blue-400"
                   >
-                    <Sphere className="h-4 w-4" />
-                    <span>{project.link}</span>
+                    <Sphere className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{project.url}</span>
                   </a>
 
-                  <ul className="flex space-x-4">
-                    <li>
-                      <Tailwindcss className="h-5 w-5 text-gray-400 hover:text-[#38b2ac]" />
-                    </li>
-                    <li>
-                      <Laravel className="h-5 w-5 text-gray-400 hover:text-[#ff2d20]" />
-                    </li>
-                    <li>
-                      <React className="h-5 w-5 text-gray-400 hover:text-[#61dafb]" />
-                    </li>
+                  <ul className="flex items-center space-x-4">
+                    {project.technologies.map((technology) => (
+                      <li key={technology.id}>
+                        <ProjectTechnology technology={technology} />
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -101,3 +74,13 @@ export default function Labs() {
     </>
   );
 }
+
+export const getStaticProps = async () => {
+  const projects = await getProjects();
+
+  return {
+    props: {
+      projects,
+    },
+  };
+};
