@@ -21,6 +21,7 @@ import {
 } from "../interfaces/resume";
 import { getResumeData } from "../lib/api";
 import Envelop from "../components/icons/envelop";
+import Dna from "../components/icons/dna";
 
 type SkillGroup = {
   framework: ResumeSkillType[];
@@ -179,6 +180,18 @@ export default function Index({
                     </ResumeSkillList>
                   </ResumeSkillGroup>
                 </div>
+              </ResumeSection>
+
+              <ResumeSection title="About Me" icon={<Dna />} noMargin>
+                <p>
+                  Hello, I’m Alfonso. For the past 12 years, I have been
+                  building and designing software for a wide variety of
+                  businesses, either working in my company In Mexico or, in
+                  recent years, working as a member of different companies
+                  worldwide. My specialty is full-stack architecture and
+                  development, and I am proficient in several technologies, as
+                  you can see on my resume.
+                </p>
               </ResumeSection>
             </div>
           </div>
