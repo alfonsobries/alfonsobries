@@ -118,13 +118,6 @@ export default function Contact() {
                   >
                     {form.busy ? <Spinner size="sm" /> : <>Send</>}
                   </button>
-
-                  {/* <div className="mt-4 -ml-12 flex items-center justify-center">
-                <LazySvg src="/images/is-this-a.svg" width={128} height={141} />
-                <span className="-mt-10 font-cursive text-4xl text-gray-900 dark:text-gray-200">
-                  is this engagement?
-                </span>
-              </div> */}
                 </div>
               </form>
             </>

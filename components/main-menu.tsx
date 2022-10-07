@@ -227,6 +227,8 @@ const MainMenu = ({
             className=" rounded-full bg-blue-700 p-4 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600"
           >
             <Twitter className="h-5 w-5" />
+
+            <span className="sr-only"> Twitter Profile</span>
           </a>
 
           <a
@@ -234,6 +236,7 @@ const MainMenu = ({
             className=" rounded-full bg-blue-700 p-4 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600"
           >
             <Github className="h-5 w-5" />
+            <span className="sr-only"> Github Profile</span>
           </a>
         </div>
       </nav>
