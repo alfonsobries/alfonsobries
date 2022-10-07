@@ -9,7 +9,7 @@ type Props = {
   pinned?: boolean;
   hideFooter?: boolean;
   useLightLogo?: boolean;
-  navigationTitle?: string;
+  navigationTitle?: string | React.ReactNode;
   maxWidthClass?: string;
   meta: {
     title: string;

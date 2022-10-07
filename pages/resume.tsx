@@ -22,6 +22,7 @@ import {
 import { getResumeData } from "../lib/api";
 import Envelop from "../components/icons/envelop";
 import Dna from "../components/icons/dna";
+import LineClamp from "../components/line-clamp";
 
 type SkillGroup = {
   framework: ResumeSkillType[];
@@ -48,7 +49,14 @@ export default function Index({
     <>
       <Layout
         pinned={true}
-        navigationTitle="My Personal Resume"
+        navigationTitle={
+          <span className="prose font-sans font-normal dark:prose-invert ">
+            <strong>
+              Alfonso <span className="hidden sm:inline">Bribiesca</span>
+            </strong>{" "}
+            Personal Resume
+          </span>
+        }
         useLightLogo
         hideFooter
         maxWidthClass="max-w-4xl"
@@ -183,15 +191,33 @@ export default function Index({
               </ResumeSection>
 
               <ResumeSection title="About Me" icon={<Dna />} noMargin>
-                <p>
-                  Hello, I’m Alfonso. For the past 12 years, I have been
-                  building and designing software for a wide variety of
-                  businesses, either working in my company In Mexico or, in
-                  recent years, working as a member of different companies
-                  worldwide. My specialty is full-stack architecture and
-                  development, and I am proficient in several technologies, as
-                  you can see on my resume.
-                </p>
+                <LineClamp>
+                  <div className="prose text-sm line-clamp-6 dark:prose-invert">
+                    <p>
+                      Hello, I’m Alfonso. For the past 12 years, I have been
+                      building and designing software for a wide variety of
+                      businesses, either working in my company In Mexico or, in
+                      recent years, working as a member of different companies
+                      worldwide. My specialty is full-stack architecture and
+                      development, and, as you can see in my resume, I am
+                      proficient in several technologies.
+                    </p>
+
+                    <p>
+                      In addition to software development I like good design and
+                      illustration. I particullary enjoy memes and silly comic
+                      strips as well. Other topics that interest me are
+                      philosophy, psychology, and everything about the human
+                      mind.
+                    </p>
+
+                    <p>
+                      In my spare time, I enjoy traveling, reading a good book,
+                      watching a good TV series, playing with my kids, and I
+                      recently started training for triathlons.
+                    </p>
+                  </div>
+                </LineClamp>
               </ResumeSection>
             </div>
           </div>

@@ -46,7 +46,7 @@ const links = [
 
 type Props = {
   pinned?: boolean;
-  navigationTitle?: string;
+  navigationTitle?: string | React.ReactNode;
   useLightLogo?: boolean;
   maxWidthClass?: string;
 };
@@ -124,9 +124,9 @@ const MainMenu = ({
           }
         )}
       >
-        <div className="relative flex items-center space-x-3">
+        <div className="relative flex items-center space-x-3 overflow-auto">
           <Link href="/">
-            <a className="flex h-8 w-8 origin-bottom items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200">
+            <a className="flex h-8 w-8 shrink-0 origin-bottom items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200">
               {useLightLogo ? (
                 <ReactSVG
                   src="/images/face-icon-light.svg"
@@ -141,7 +141,7 @@ const MainMenu = ({
             </a>
           </Link>
 
-          <span className="font-cursive text-2xl font-bold text-gray-900 dark:text-gray-300 ">
+          <span className="truncate font-cursive text-2xl font-bold text-gray-900 dark:text-gray-300">
             {navigationTitle || "Alfonso's Website"}
           </span>
         </div>
