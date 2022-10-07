@@ -9,6 +9,6 @@ class ProjectController extends Controller
 {
     public function __invoke(): Collection
     {
-        return Project::ordered()->get();
+        return Project::ordered()->published()->get();
     }
 }

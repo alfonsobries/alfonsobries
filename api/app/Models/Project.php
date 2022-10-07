@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\ExpiresFrontend;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -50,6 +51,7 @@ class Project extends Model implements HasMedia, Sortable
 
     protected $casts = [
         'technologies' => 'json',
+        'is_published' => 'boolean',
     ];
 
      /**
@@ -62,6 +64,7 @@ class Project extends Model implements HasMedia, Sortable
         'description',
         'url',
         'technologies',
+        'is_published',
     ];
 
     protected $appends = [
@@ -93,6 +96,10 @@ class Project extends Model implements HasMedia, Sortable
                     ->addMediaConversion('2x')
                     ->fit(Manipulations::FIT_CROP, self::BANNER_WIDTH * 2, self::BANNER_HEIGHT * 2);
             });
+    }
 
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('is_published', true);
     }
 }

@@ -12,6 +12,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
 use Laravel\Nova\Fields\Image;
 use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\MultiSelect;
 use Outl1ne\NovaSortable\Traits\HasSortableRows;
 
@@ -81,6 +82,7 @@ final class Project extends Resource
                 ->options(collect(Model::TECHNOLOGIES)->map(fn ($value) => ['value' => $value, 'label' => $value]))
                 ->sortable(),
 
+            Boolean::make('Published', 'is_published'),
         ];
     }
 }
