@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ContactFormEmail;
+use App\Models\ContactFormMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -15,6 +16,8 @@ class ContactFormController extends Controller
             'email' => 'required|email|max:254',
             'message' => 'required|max:1000',
         ]);
+
+        ContactFormMessage::create($values);
 
         Mail::to('alfonso@vexilo.com')
             ->send(new ContactFormEmail(name: $values['name'], email: $values['email'], message: $values['message']));
