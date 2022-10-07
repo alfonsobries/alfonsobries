@@ -11,10 +11,6 @@ const SwitchButton: React.FC<{
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    console.log({ resolvedTheme });
-  }, [resolvedTheme]);
-
-  useEffect(() => {
     setIsMounted(true);
   }, []);
 
