@@ -22,6 +22,9 @@ const SwitchButton: React.FC<{
     return (
       <button type="button" onClick={toggleTheme} className={className}>
         <LazySvg src="/images/switch.svg" />
+        <span className="sr-only">
+          {resolvedTheme === "dark" ? "Use Light Mode" : "Use Dark Mode"}
+        </span>
       </button>
     );
   }
