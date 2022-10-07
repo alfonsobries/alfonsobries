@@ -8,7 +8,7 @@ const ArticleListItem: React.FC<{
     <article>
       <h2 className="not-prose">
         <Link href={`/posts/${post.slug}`}>
-          <a className="font-semibold text-gray-800 no-underline hover:underline">
+          <a className="font-semibold text-gray-800 no-underline hover:underline dark:text-gray-200">
             {post.title}
           </a>
         </Link>
@@ -19,7 +19,7 @@ const ArticleListItem: React.FC<{
       <p>
         <Link href={`/posts/${post.slug}`}>
           <a className="text-blue-700 hover:text-blue-600 hover:underline dark:text-blue-500 dark:hover:text-blue-600">
-            Read more →
+            Read More →
           </a>
         </Link>
       </p>

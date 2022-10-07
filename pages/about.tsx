@@ -21,13 +21,14 @@ export default function About() {
 
             <p>
               I created this site to share a little about the topics that
-              interest me, the things I learn, and my thoughts on them. Also, to
-              share some of the projects and experiments I am working on.
+              interest me, the things I learn, and my thoughts on them. It is
+              also a place where I can share some of the projects and
+              experiments I am working on.
             </p>
 
             <p>
               I intend to let people know more about who I am and what I do and
-              hopefully teach and learn something along the way.
+              hopefully teaching and learning along the way.
             </p>
 
             <h2>About Me</h2>
@@ -65,8 +66,9 @@ export default function About() {
             <p>
               Other topics that interest me are philosophy, psychology, and
               everything about the human mind. Recently I have become very
-              interested in health issues.
+              interested in personal health issues.
             </p>
+
             <p>
               Do you like the site? Let me know! I Would love to hear{" "}
               <Link href={`/contact`}>
