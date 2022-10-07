@@ -3,28 +3,35 @@ import { cloneElement } from "react";
 import { BORDER_COLOR } from "../../lib/cssClasses";
 
 type Props = {
+  className?: string;
   icon: React.ReactElement;
   title: string;
   children: React.ReactNode;
   noMargin?: boolean;
 };
 
-const ResumeSection = ({ icon, title, children, noMargin = false }: Props) => {
+const ResumeSection = ({
+  icon,
+  title,
+  children,
+  noMargin = false,
+  className,
+}: Props) => {
   return (
     <div
-      className={classNames(" flex flex-col space-y-4", {
+      className={classNames(className, "flex flex-col space-y-4", {
         "ml-10": !noMargin,
       })}
     >
       <div className="relative flex min-h-[2.5rem]">
         <div
-          className={classNames("  flex  items-center", {
+          className={classNames("flex", {
             "absolute inset-0 -ml-9 h-full": !noMargin,
             "mr-3": noMargin,
           })}
         >
           {cloneElement(icon, {
-            className: "w-6 h-6 text-gray-400 dark:text-gray-500",
+            className: "w-6 h-6 text-gray-400 dark:text-gray-500 mt-2",
           })}
         </div>
 

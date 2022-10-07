@@ -5,8 +5,8 @@ type Props = {
   children: React.ReactElement;
 };
 
-const MORE_LABEL = "[...]";
-const LESS_LABEL = "[...]";
+const MORE_LABEL = "[More...]";
+const LESS_LABEL = "[...Less]";
 let lineClampClasses: string[] = [];
 
 const readMoreHandler = (event) => {

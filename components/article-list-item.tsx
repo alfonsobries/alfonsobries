@@ -6,9 +6,11 @@ const ArticleListItem: React.FC<{
 }> = ({ post }) => {
   return (
     <article>
-      <h2>
+      <h2 className="not-prose">
         <Link href={`/posts/${post.slug}`}>
-          <a className="no-underline hover:underline">{post.title}</a>
+          <a className="font-semibold text-gray-800 no-underline hover:underline">
+            {post.title}
+          </a>
         </Link>
       </h2>
 

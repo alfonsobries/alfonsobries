@@ -2,12 +2,17 @@ import Briefcase from "../components/icons/briefcase";
 import Code from "../components/icons/code";
 import GraduationHat from "../components/icons/graduation-hat";
 import Knife from "../components/icons/knife";
+import Contact from "../components/icons/contact";
+import Twitter from "../components/icons/twitter";
+import Github from "../components/icons/github";
+import Linkedin from "../components/icons/linkedin";
 import Layout from "../components/layout";
-import LineClamp from "../components/line-clamp";
+import ResumeContactItem from "../components/resume/contact-item";
 import ResumeExperience from "../components/resume/experience";
 import ResumeProject from "../components/resume/project";
 import ResumeSection from "../components/resume/section";
 import ResumeSkill from "../components/resume/skill";
+import ResumeSkillGroup from "../components/resume/skill-group";
 import ResumeSkillList from "../components/resume/skill-list";
 import {
   ResumeExperience as ResumeExperienceType,
@@ -15,6 +20,7 @@ import {
   ResumeSkill as ResumeSkillType,
 } from "../interfaces/resume";
 import { getResumeData } from "../lib/api";
+import Envelop from "../components/icons/envelop";
 
 type SkillGroup = {
   framework: ResumeSkillType[];
@@ -52,7 +58,7 @@ export default function Index({
           image: `https://og.alfonsobries.com/@TODO.png`,
         }}
       >
-        <div className="relative z-0 mx-auto flex max-w-4xl flex-col space-y-8 px-4 sm:flex-row sm:space-x-8 sm:space-y-0">
+        <div className="relative z-0 mx-auto flex max-w-4xl flex-col space-y-8 px-4 pb-8 sm:flex-row sm:space-x-8 sm:space-y-0">
           <div className="space-y-8 sm:max-w-sm md:max-w-md lg:max-w-lg">
             <ResumeSection title="Experience" icon={<Briefcase />}>
               <div className="space-y-4">
@@ -81,46 +87,100 @@ export default function Index({
               </div>
             </ResumeSection>
           </div>
-          <div className="flex-1 space-y-8">
+          <div className="flex flex-1 flex-col-reverse sm:flex-col ">
             <ResumeSection
-              title="Skills &amp; Knowledge"
-              icon={<Knife />}
+              className="mt-8 sm:mt-0 sm:mb-8"
+              title="Contact Information"
+              icon={<Contact />}
               noMargin
             >
-              <div className="space-y-4">
-                <h3 className="text-md font-semibold uppercase ">
-                  I am an expert in:
-                </h3>
-
-                <LineClamp>
-                  <p className="text-sm text-gray-400 line-clamp-3">
-                    The following is a list of the different technologies where
+              <ul className="space-y-2">
+                <ResumeContactItem
+                  icon={<Envelop />}
+                  link="mailto:alfonso@vexilo.com"
+                  external={false}
+                >
+                  alfonso@vexilo.com
+                </ResumeContactItem>
+                <ResumeContactItem
+                  icon={<Twitter />}
+                  link="https://twitter.com/alfonsobries"
+                >
+                  @alfonsobries
+                </ResumeContactItem>
+                <ResumeContactItem
+                  icon={<Github />}
+                  link="https://github.com/alfonsobries"
+                >
+                  @alfonsobries
+                </ResumeContactItem>
+                <ResumeContactItem
+                  icon={<Linkedin />}
+                  link="https://www.linkedin.com/in/alfonsobribiesca"
+                >
+                  /alfonsobribiesca
+                </ResumeContactItem>
+              </ul>
+            </ResumeSection>
+            <div className="space-y-8">
+              <ResumeSection
+                title="Skills &amp; Knowledge"
+                icon={<Knife />}
+                noMargin
+              >
+                <div className="space-y-8">
+                  <ResumeSkillGroup
+                    title="I am an expert in:"
+                    intro="The following is a list of the different technologies where
                     I have a deep understanding of their inner workings, have
                     used them to solve real-world problems, and feel confident
                     in my ability to use them in a professional setting, either
-                    leading a team or as an individual.
-                  </p>
-                </LineClamp>
+                    leading a team or as an individual."
+                  >
+                    <ResumeSkillList title="Frameworks &amp; Tools">
+                      {skillsExpert.framework.map((skill) => (
+                        <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
+                      ))}
+                    </ResumeSkillList>
 
-                <ResumeSkillList title="Frameworks &amp; Tools">
-                  {skillsExpert.framework.map((skill) => (
-                    <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
-                  ))}
-                </ResumeSkillList>
+                    <ResumeSkillList title="Programic Languages">
+                      {skillsExpert.language.map((skill) => (
+                        <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
+                      ))}
+                    </ResumeSkillList>
 
-                <ResumeSkillList title="Programic Languages">
-                  {skillsExpert.language.map((skill) => (
-                    <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
-                  ))}
-                </ResumeSkillList>
+                    <ResumeSkillList title="Other Techs &amp; Methodologies">
+                      {skillsExpert.other.map((skill) => (
+                        <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
+                      ))}
+                    </ResumeSkillList>
+                  </ResumeSkillGroup>
 
-                <ResumeSkillList title="Other Technologies &amp; Methodologies">
-                  {skillsExpert.other.map((skill) => (
-                    <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
-                  ))}
-                </ResumeSkillList>
-              </div>
-            </ResumeSection>
+                  <ResumeSkillGroup
+                    title="I have strong knowledge"
+                    intro="I have worked with the following technologies over the last several years. However, I have only had a few opportunities to use them to their full potential. Still, I have a solid and extensive knowledge of them, and I am ready to use them on any production project that comes on my way."
+                  >
+                    <ResumeSkillList title="Frameworks &amp; Tools">
+                      {skillsAdvanced.framework.map((skill) => (
+                        <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
+                      ))}
+                    </ResumeSkillList>
+
+                    {/* <ResumeSkillList title="Programic Languages">
+                    {skillsAdvanced.language.map((skill) => (
+                      <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
+                    ))}
+                  </ResumeSkillList> */}
+
+                    <ResumeSkillList title="Techs &amp; Methodologies">
+                      {skillsAdvanced.other.map((skill) => (
+                        <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
+                      ))}
+                    </ResumeSkillList>
+                  </ResumeSkillGroup>
+                </div>
+              </ResumeSection>
+            </div>
           </div>
         </div>
       </Layout>

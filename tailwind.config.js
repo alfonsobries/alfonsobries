@@ -26,6 +26,28 @@ module.exports = {
         sans: ["Open Sans", "sans-serif"],
         cursive: ["Square Peg", "cursive"],
       },
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            a: {
+              color: theme("colors.blue.700"),
+              "&:hover": {
+                color: theme("colors.blue.600"),
+              },
+            },
+          },
+        },
+        invert: {
+          css: {
+            a: {
+              color: theme("colors.blue.500"),
+              "&:hover": {
+                color: theme("colors.blue.600"),
+              },
+            },
+          },
+        },
+      }),
     },
   },
   plugins: [
