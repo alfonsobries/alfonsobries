@@ -11,6 +11,10 @@ const SwitchButton: React.FC<{
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    console.log({ resolvedTheme });
+  }, [resolvedTheme]);
+
+  useEffect(() => {
     setIsMounted(true);
   }, []);
 
@@ -22,9 +26,7 @@ const SwitchButton: React.FC<{
     return (
       <button type="button" onClick={toggleTheme} className={className}>
         <LazySvg src="/images/switch.svg" />
-        <span className="sr-only">
-          {resolvedTheme === "dark" ? "Use Light Mode" : "Use Dark Mode"}
-        </span>
+        <span className="sr-only">Switch Dark Mode</span>
       </button>
     );
   }
@@ -68,9 +70,7 @@ const SwitchButton: React.FC<{
         />
       </svg>
 
-      <span className="sr-only">
-        {resolvedTheme === "dark" ? "Use Light Mode" : "Use Dark Mode"}
-      </span>
+      <span className="sr-only">Switch Dark Mode</span>
     </button>
   );
 };
