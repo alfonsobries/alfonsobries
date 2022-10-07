@@ -1,9 +1,11 @@
+import classNames from "classnames";
 import Container from "../components/container";
 import Laravel from "../components/icons/brands/laravel";
 import React from "../components/icons/brands/react";
 import Tailwindcss from "../components/icons/brands/tailwindcss";
 import Sphere from "../components/icons/sphere";
 import Layout from "../components/layout";
+import { BORDER_COLOR } from "../lib/cssClasses";
 
 export default function Labs() {
   const projects = [
@@ -45,7 +47,9 @@ export default function Labs() {
                 <h2 className="text-2xl font-bold dark:text-gray-200">
                   {project.title}
                 </h2>
-                <img src="https://picsum.photos/600/300" alt="" />
+                <div className="overflow-hidden rounded shadow">
+                  <img src="https://picsum.photos/600/300" alt="" />
+                </div>
                 <p className="mt-2 text-gray-600 dark:text-gray-400">
                   Lorem ipsum dolor sit amet, consectetur adipisicing elit.
                   Distinctio rem sit aut ut obcaecati totam quibusdam aliquam,
@@ -77,13 +81,18 @@ export default function Labs() {
             ))}
           </div>
 
-          <div className="mt-8 flex flex-col items-center space-y-2 text-center">
+          <div
+            className={classNames(
+              BORDER_COLOR,
+              "mt-8 flex flex-col items-center space-y-2 border-t pt-8"
+            )}
+          >
             <span className="flex space-x-3">
               <img
                 src="/images/tired.svg"
                 alt="Alfonso Bribiesca"
-                width={300}
-                height={300}
+                width={150}
+                height={150}
               />
             </span>
           </div>
