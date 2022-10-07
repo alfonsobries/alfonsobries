@@ -34,16 +34,21 @@ export async function getPostBySlug(
 
 export async function getAllPosts(
   properties: PostProperties = [],
-  params: {
+  params?: {
+    all?: boolean;
     limit?: number;
     page?: number;
   }
 ) {
-  const queryString = Object.keys(params)
-    .map((key) => `${key}=${params[key]}`)
-    .join("&");
+  const queryString =
+    params === undefined
+      ? ""
+      : "?" +
+        Object.keys(params)
+          .map((key) => `${key}=${params[key]}`)
+          .join("&");
 
-  const { data: posts } = await Api.get(`/articles?${queryString}`);
+  const { data: posts } = await Api.get(`/articles${queryString}`);
 
   return {
     ...posts,
