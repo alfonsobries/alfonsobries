@@ -206,9 +206,9 @@ export default function Index({
               </ResumeSection>
 
               <ResumeSection title="About Me" icon={<Dna />} noMargin>
-                <LineClamp>
-                  <div className="prose text-sm line-clamp-6 dark:prose-invert">
-                    <p>
+                <div className="text-smdark:prose-invert prose text-sm">
+                  <LineClamp>
+                    <p className="line-clamp-6">
                       Hello, I’m Alfonso. For the past {yearsOfExperience}{" "}
                       years, I have been building and designing software for a
                       wide variety of businesses, either working in my company
@@ -216,23 +216,21 @@ export default function Index({
                       different companies worldwide. My specialty is full-stack
                       architecture and development, and, as you can see in my
                       resume, I am proficient in several technologies.
-                    </p>
-
-                    <p>
+                      <br />
+                      <br />
                       In addition to software development I like good design and
                       illustration. I particullary enjoy memes and silly comic
                       strips as well. Other topics that interest me are
                       philosophy, psychology, and everything about the human
                       mind.
-                    </p>
-
-                    <p>
+                      <br />
+                      <br />
                       In my spare time, I enjoy traveling, reading a good book,
                       watching a good TV series, playing with my kids, and I
                       recently started training for triathlons.
                     </p>
-                  </div>
-                </LineClamp>
+                  </LineClamp>
+                </div>
               </ResumeSection>
             </div>
           </div>
