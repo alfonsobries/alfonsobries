@@ -31,7 +31,7 @@ class ProjectFactory extends Factory
     public function withBanner()
     {
         return $this->afterCreating(function (Project $project) {
-            $url = sprintf('https://picsum.photos/seed/%s/%s/%s', $project->id, 544 * 2, 306 * 2);
+            $url = sprintf('https://picsum.photos/seed/%s/%s/%s', $project->id, Project::BANNER_WIDTH * 2, Project::BANNER_HEIGHT * 2);
             $response = Http::get($url);
             $project->addMediaFromString($response->__toString())->toMediaCollection('banner');
         });

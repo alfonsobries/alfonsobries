@@ -23,6 +23,9 @@ class Project extends Model implements HasMedia, Sortable
     use SoftDeletes;
     use ExpiresFrontend;
 
+    const BANNER_WIDTH = 544;
+    const BANNER_HEIGHT = 306;
+
     const TECHNOLOGIES = [
         'laravel',
         'vue',
@@ -85,10 +88,10 @@ class Project extends Model implements HasMedia, Sortable
             ->registerMediaConversions(function (Media $media) {
                 $this
                     ->addMediaConversion('1x')
-                    ->fit(Manipulations::FIT_CROP, 544, 306);
+                    ->fit(Manipulations::FIT_CROP, self::BANNER_WIDTH, self::BANNER_HEIGHT);
                 $this
                     ->addMediaConversion('2x')
-                    ->fit(Manipulations::FIT_CROP, 544 * 2, 306 * 2);
+                    ->fit(Manipulations::FIT_CROP, self::BANNER_WIDTH * 2, self::BANNER_HEIGHT * 2);
             });
 
     }

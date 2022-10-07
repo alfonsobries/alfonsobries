@@ -75,7 +75,7 @@ final class Project extends Resource
                 ->delete(fn (Request $request, Model|null $model) => $model->getFirstMedia('banner')->delete())
                 ->thumbnail(fn (mixed $value, string $disk, Model|null $model) => $model?->getFirstMediaUrl('banner', '1x'))
                 ->preview(fn (mixed $value, string $disk, Model|null $model) => $model?->getFirstMediaUrl('banner', '1x'))
-                ->disableDownload(),
+                ->help(sprintf('Try to use a banner that is at least %spx wide and %spx tall.', Model::BANNER_WIDTH * 2, Model::BANNER_HEIGHT * 2)),
 
             MultiSelect::make('Technologies', 'technologies')
                 ->options(collect(Model::TECHNOLOGIES)->map(fn ($value) => ['value' => $value, 'label' => $value]))
