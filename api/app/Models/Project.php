@@ -29,9 +29,15 @@ class Project extends Model implements HasMedia, Sortable
         'react',
         'tailwind',
         'bootstrap',
-        // 'bulma',
-        // 'inertia',
-        // 'livewire',
+        'jest',
+        'redis',
+        'js',
+        'pgsql',
+        'mysql',
+        'php',
+        'next',
+        'ts',
+        'html',
     ];
 
     public $sortable = [

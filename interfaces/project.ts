@@ -3,7 +3,16 @@ export type ProjectType =
   | "vue"
   | "react"
   | "tailwind"
-  | "bootstrap";
+  | "jest"
+  | "redis"
+  | "js"
+  | "pgsql"
+  | "bootstrap"
+  | "mysql"
+  | "php"
+  | "next"
+  | "ts"
+  | "html";
 
 export type Project = {
   id: string;
