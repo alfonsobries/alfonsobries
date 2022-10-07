@@ -32,12 +32,16 @@ export async function getPostBySlug(
   return getPostWithOnlyProperties(post, properties);
 }
 
-export async function getAllPosts(properties: PostProperties = []) {
-  const { data: posts } = await Api.get("/articles");
+export async function getAllPosts(
+  properties: PostProperties = [],
+  limit: number = 10
+) {
+  const { data: posts } = await Api.get(`/articles?limit=${limit}`);
 
-  return posts.map((post) => {
-    return getPostWithOnlyProperties(post, properties);
-  });
+  return {
+    ...posts,
+    data: posts.data.map((post) => getPostWithOnlyProperties(post, properties)),
+  };
 }
 
 const parseExperience = async (experience: ResumeExperience) => {

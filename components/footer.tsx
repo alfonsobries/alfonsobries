@@ -21,7 +21,7 @@ const Footer = () => {
               <a
                 href="https://github.com/alfonsobries"
                 target="_blank"
-                className="text-blue-700 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-600"
+                className={classNames(LINK_COLOR_TEXT)}
                 rel="noreferrer"
               >
                 <Github />
@@ -30,7 +30,7 @@ const Footer = () => {
               <a
                 href="https://twitter.com/alfonsobries"
                 target="_blank"
-                className="text-blue-700 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-600"
+                className={classNames(LINK_COLOR_TEXT)}
                 rel="noreferrer"
               >
                 <Twitter />

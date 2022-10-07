@@ -1,6 +1,8 @@
 /* eslint-disable react/jsx-no-target-blank */
+import classNames from "classnames";
 import React from "react";
 import { cloneElement } from "react";
+import { LINK_COLOR_TEXT } from "../../lib/cssClasses";
 
 type Props = {
   children: React.ReactNode;
@@ -18,7 +20,10 @@ const ResumeContactItem = ({
   return (
     <li>
       <a
-        className="inline-flex items-center space-x-2 text-blue-700 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-600"
+        className={classNames(
+          LINK_COLOR_TEXT,
+          "inline-flex items-center space-x-2"
+        )}
         href={link}
         target={external ? "_blank" : undefined}
         rel={external ? "noreferrer" : undefined}

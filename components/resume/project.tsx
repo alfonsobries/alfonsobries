@@ -1,4 +1,6 @@
+import classNames from "classnames";
 import { ResumeProject } from "../../interfaces/resume";
+import { LINK_COLOR_TEXT } from "../../lib/cssClasses";
 import LinkIcon from "../icons/link";
 
 const ResumeProject = ({ title, description, url }: ResumeProject) => {
@@ -22,7 +24,7 @@ const ResumeProject = ({ title, description, url }: ResumeProject) => {
             href={url}
             target="_blank"
             rel="noreferrer"
-            className="text-blue-700 hover:text-blue-600 hover:underline dark:text-blue-500 dark:hover:text-blue-600"
+            className={classNames(LINK_COLOR_TEXT, "hover:underline")}
           >
             {url}
           </a>

@@ -1,20 +1,21 @@
 import Container from "../components/container";
-import MoreStories from "../components/more-stories";
-import HeroPost from "../components/hero-post";
-import Intro from "../components/intro";
 import Layout from "../components/layout";
 import { getAllPosts } from "../lib/api";
-import Head from "next/head";
-import { CMS_NAME } from "../lib/constants";
 import { Post } from "../interfaces/post";
 import ArticleListItem from "../components/article-list-item";
-import { useEffect } from "react";
+import classNames from "classnames";
+import {
+  BORDER_COLOR,
+  LINK_COLOR_BORDER,
+  LINK_COLOR_TEXT,
+} from "../lib/cssClasses";
 
 type Props = {
   allPosts: Post[];
+  hasMorePosts: boolean;
 };
 
-export default function Index({ allPosts }: Props) {
+export default function Index({ allPosts, hasMorePosts }: Props) {
   const posts = allPosts.slice(0, 3);
 
   return (
@@ -30,25 +31,23 @@ export default function Index({ allPosts }: Props) {
           <div className="prose prose-h2:text-lg dark:prose-invert">
             <h1>Latest Posts</h1>
 
-            <div>
-              {posts.map((post) => (
-                <ArticleListItem key={post.slug} post={post} />
-              ))}
-            </div>
+            {posts.map((post) => (
+              <ArticleListItem key={post.slug} post={post} />
+            ))}
           </div>
 
-          {/* <Intro /> */}
-          {/* {heroPost && (
-            <HeroPost
-              title={heroPost.title}
-              coverImage={heroPost.coverImage}
-              date={heroPost.date}
-              author={heroPost.author}
-              slug={heroPost.slug}
-              excerpt={heroPost.excerpt}
-            />
+          {hasMorePosts && (
+            <a
+              className={classNames(
+                LINK_COLOR_BORDER,
+                LINK_COLOR_TEXT,
+                "mt-8 block rounded border p-2 text-center text-white"
+              )}
+              href=""
+            >
+              More Posts...
+            </a>
           )}
-          {morePosts.length > 0 && <MoreStories posts={morePosts} />} */}
         </Container>
       </Layout>
     </>
@@ -56,9 +55,12 @@ export default function Index({ allPosts }: Props) {
 }
 
 export const getStaticProps = async () => {
-  const allPosts = await getAllPosts(["title", "slug", "excerpt"]);
+  const posts = await getAllPosts(["title", "slug", "excerpt"], 3);
 
   return {
-    props: { allPosts },
+    props: {
+      allPosts: posts.data,
+      hasMorePosts: posts.next_page_url !== null,
+    },
   };
 };

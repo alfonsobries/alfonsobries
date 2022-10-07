@@ -1,7 +1,12 @@
 import Link from "next/link";
 import cn from "classnames";
 import { useRouter } from "next/router";
-import { BORDER_COLOR } from "../lib/cssClasses";
+import {
+  BORDER_COLOR,
+  LINK_COLOR_BG,
+  LINK_COLOR_BORDER,
+  LINK_COLOR_TEXT,
+} from "../lib/cssClasses";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SwitchButton from "./switch-button";
 import Spinner from "./spinner";
@@ -9,6 +14,7 @@ import { ReactSVG } from "react-svg";
 import Twitter from "./icons/twitter";
 import Github from "./icons/github";
 import Home from "./icons/home";
+import classNames from "classnames";
 const links = [
   {
     href: "/",
@@ -141,7 +147,7 @@ const MainMenu = ({
 
         <div className="flex items-center">
           <SwitchButton
-            className="flex h-8 items-center px-2 text-blue-700 hover:text-blue-600 dark:text-blue-200 dark:hover:text-blue-200"
+            className="flex h-8 items-center px-2 text-blue-700 hover:text-blue-600 dark:text-blue-200 dark:hover:text-blue-300"
             icon
           />
 
@@ -155,7 +161,7 @@ const MainMenu = ({
           >
             <span
               className={cn(
-                "top-0 block w-6 rounded-full border border-blue-700 transition-transform duration-100 ease-in-out group-hover:border-blue-600 dark:border-blue-200 dark:group-hover:border-blue-100",
+                "top-0 block w-6 rounded-full border border-blue-700 transition-transform duration-100 ease-in-out group-hover:border-blue-600 dark:border-blue-200 dark:group-hover:border-blue-300",
                 {
                   "-translate-y-1": !menuOpened,
                   "translate-y-[2px] rotate-45": menuOpened,
@@ -164,7 +170,7 @@ const MainMenu = ({
             ></span>
             <span
               className={cn(
-                "block w-6 rounded-full border border-blue-700 transition-transform duration-100 ease-in-out group-hover:border-blue-600 dark:border-blue-200 dark:group-hover:border-blue-100",
+                "block w-6 rounded-full border border-blue-700 transition-transform duration-100 ease-in-out group-hover:border-blue-600 dark:border-blue-200 dark:group-hover:border-blue-300",
                 {
                   "translate-y-1": !menuOpened,
                   "-rotate-45": menuOpened,
@@ -224,7 +230,7 @@ const MainMenu = ({
         >
           <a
             href="https://twitter.com/alfonsobries"
-            className=" rounded-full bg-blue-700 p-4 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600"
+            className={classNames(LINK_COLOR_BG, "rounded-full p-4 text-white")}
           >
             <Twitter className="h-5 w-5" />
 
@@ -233,7 +239,7 @@ const MainMenu = ({
 
           <a
             href="https://github.com/alfonsobries"
-            className=" rounded-full bg-blue-700 p-4 text-white hover:bg-blue-600 dark:bg-blue-500 dark:hover:bg-blue-600"
+            className={classNames(LINK_COLOR_BG, "rounded-full p-4 text-white")}
           >
             <Github className="h-5 w-5" />
             <span className="sr-only"> Github Profile</span>
