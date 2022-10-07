@@ -55,6 +55,21 @@ class Project extends Model implements HasMedia, Sortable
         'technologies',
     ];
 
+    protected $appends = [
+        'banner_url',
+        'banner_url_2x',
+    ];
+
+    public function getBannerUrlAttribute(): string
+    {
+        return $this->getFirstMediaUrl('banner', '1x');
+    }
+
+    public function getBannerUrl2xAttribute(): string
+    {
+        return $this->getFirstMediaUrl('banner', '2x');
+    }
+
     public function registerMediaCollections(): void
     {
         $this

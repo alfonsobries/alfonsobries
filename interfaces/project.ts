@@ -11,4 +11,6 @@ export type Project = {
   title: string;
   url: string;
   technologies: ProjectType[];
+  banner_url: string;
+  banner_url_2x: string;
 };

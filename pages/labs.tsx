@@ -27,7 +27,11 @@ export default function Labs({ projects }) {
                   {project.title}
                 </h2>
                 <div className="overflow-hidden rounded shadow">
-                  <img src="https://picsum.photos/600/300" alt="" />
+                  <img
+                    src={project.banner_url}
+                    srcSet={project.banner_url_2x + " 2x"}
+                    alt={project.title + " banner"}
+                  />
                 </div>
                 <div
                   className="prose dark:prose-invert"
