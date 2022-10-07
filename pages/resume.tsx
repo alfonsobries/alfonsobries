@@ -50,11 +50,12 @@ export default function Index({
       <Layout
         pinned={true}
         navigationTitle={
-          <span className="prose font-sans font-normal dark:prose-invert ">
+          <span className="prose inline-flex items-center space-x-2 font-sans font-normal dark:prose-invert">
             <strong>
               Alfonso <span className="hidden sm:inline">Bribiesca</span>
             </strong>{" "}
-            Personal Resume
+            <span className="text-sm text-gray-200 dark:text-gray-700">●</span>
+            <span className="text-gray-500">Personal Resume</span>
           </span>
         }
         useLightLogo
