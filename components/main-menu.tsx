@@ -1,12 +1,7 @@
 import Link from "next/link";
 import cn from "classnames";
 import { useRouter } from "next/router";
-import {
-  BORDER_COLOR,
-  LINK_COLOR_BG,
-  LINK_COLOR_BORDER,
-  LINK_COLOR_TEXT,
-} from "../lib/cssClasses";
+import { BORDER_COLOR, LINK_COLOR_BG } from "../lib/cssClasses";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SwitchButton from "./switch-button";
 import Spinner from "./spinner";

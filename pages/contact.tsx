@@ -120,6 +120,23 @@ export default function Contact() {
                   </button>
                 </div>
               </form>
+
+              {form.successful !== true && (
+                <div className="mt-8 flex flex-col items-center space-y-2 text-center">
+                  <span className="flex space-x-3">
+                    <img
+                      src="/images/is-this-a.svg"
+                      alt="Alfonso Bribiesca"
+                      width={120}
+                      height={120}
+                    />
+
+                    <span className="mt-4 font-cursive text-4xl text-gray-900 dark:text-gray-200">
+                      is this engagement?
+                    </span>
+                  </span>
+                </div>
+              )}
             </>
           )}
         </Container>
