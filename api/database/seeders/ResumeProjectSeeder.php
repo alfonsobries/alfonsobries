@@ -20,7 +20,7 @@ class ResumeProjectSeeder extends Seeder
         ],
         [
             'title' => 'Dona.me',
-            'description' => 'Dona.me is a tool that allows nonprofit organizations to create a website to share their work, receive monthly financial contributions, and keep in touch with people who support them',
+            'description' => 'Dona.me is a tool that allows nonprofit organizations to create a website to share their work, receive monthly financial contributions, and be in touch with people who support them.',
             'url' => 'https://www.dona.me',
         ],
         [

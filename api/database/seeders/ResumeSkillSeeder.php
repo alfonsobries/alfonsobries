@@ -107,7 +107,17 @@ class ResumeSkillSeeder extends Seeder
         ],
         [
             'level' => ResumeSkill::LEVEL_EXPERT,
-            'name' => 'Mocha & Test',
+            'name' => 'Jest',
+            'category' => ResumeSkill::CATEGORY_OTHER,
+        ],
+        [
+            'level' => ResumeSkill::LEVEL_EXPERT,
+            'name' => 'Mocha',
+            'category' => ResumeSkill::CATEGORY_OTHER,
+        ],
+        [
+            'level' => ResumeSkill::LEVEL_EXPERT,
+            'name' => 'Vitest',
             'category' => ResumeSkill::CATEGORY_OTHER,
         ],
         [
@@ -118,6 +128,11 @@ class ResumeSkillSeeder extends Seeder
         [
             'level' => ResumeSkill::LEVEL_EXPERT,
             'name' => 'CI',
+            'category' => ResumeSkill::CATEGORY_OTHER,
+        ],
+        [
+            'level' => ResumeSkill::LEVEL_EXPERT,
+            'name' => 'Github Actions',
             'category' => ResumeSkill::CATEGORY_OTHER,
         ],
         [
@@ -148,12 +163,6 @@ class ResumeSkillSeeder extends Seeder
         ],
         [
             'level' => ResumeSkill::LEVEL_ADVANCED,
-            'name' => 'Gridsome',
-            'category' => ResumeSkill::CATEGORY_FRAMEWORK,
-        ],
-
-        [
-            'level' => ResumeSkill::LEVEL_ADVANCED,
             'name' => 'Blockchain',
             'category' => ResumeSkill::CATEGORY_OTHER,
         ],
@@ -179,7 +188,7 @@ class ResumeSkillSeeder extends Seeder
         ],
         [
             'level' => ResumeSkill::LEVEL_ADVANCED,
-            'name' => 'Apache Cordova',
+            'name' => 'Electron',
             'category' => ResumeSkill::CATEGORY_OTHER,
         ],
     ];
