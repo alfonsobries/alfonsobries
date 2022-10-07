@@ -3,12 +3,9 @@ import classNames from "classnames";
 import { BORDER_COLOR, LINK_COLOR_TEXT } from "../lib/cssClasses";
 import Twitter from "./icons/twitter";
 import Github from "./icons/github";
-import { ReactSVG } from "react-svg";
-import Spinner from "./spinner";
 import LazySvg from "./lazy-svg";
 import Heart from "./icons/heart";
 import { useMemo } from "react";
-import Separator from "./separator";
 
 const Footer = () => {
   const year = useMemo(() => new Date().getFullYear(), []);

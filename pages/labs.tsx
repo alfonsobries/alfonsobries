@@ -1,7 +1,5 @@
 import Container from "../components/container";
 import Layout from "../components/layout";
-import Head from "next/head";
-import { CMS_NAME } from "../lib/constants";
 
 export default function Labs() {
   return (
@@ -9,8 +7,9 @@ export default function Labs() {
       <Layout
         meta={{
           title: "Labs",
-          description: "@TODO: TBD",
-          image: `https://og.alfonsobries.com/@TODO.png`,
+          description:
+            "In this section, I want to share some of my personal projects and experiments that I made in addition to my daily job.",
+          image: `https://og.alfonsobries.com/Personal%20Projects%20and%20Experiments`,
         }}
       >
         <Container>

@@ -33,8 +33,9 @@ export default function Contact() {
       <Layout
         meta={{
           title: "Contact me",
-          description: "@TODO: TBD",
-          image: `https://og.alfonsobries.com/@TODO.png`,
+          description:
+            "If you have any questions or comments or would like to make a proposal, feel free to use the contact form on this page.",
+          image: `https://og.alfonsobries.com/Contact%20Me`,
         }}
       >
         <Container>

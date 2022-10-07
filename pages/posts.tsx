@@ -25,7 +25,8 @@ export default function Posts({ pagination }: Props) {
       <Layout
         meta={{
           title: `Posts - ${subtitle}`,
-          description: "@TODO: TBD",
+          description:
+            "Posts related to frontend and backend development, design, technology, and maybe other subjects that I may find interesting.",
           image: `https://og.alfonsobries.com/@TODO.png`,
         }}
       >

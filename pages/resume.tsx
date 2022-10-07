@@ -38,6 +38,20 @@ type Props = {
   skillsAdvanced: SkillGroup;
 };
 
+const yearsOfExperience = (() => {
+  const firstJobDate = new Date(2007, 7, 1);
+  const today = new Date();
+  const years = today.getFullYear() - firstJobDate.getFullYear();
+  const months = today.getMonth() - firstJobDate.getMonth();
+  if (
+    months < 0 ||
+    (months === 0 && today.getDate() < firstJobDate.getDate())
+  ) {
+    return years - 1;
+  }
+  return years;
+})();
+
 export default function Index({
   work,
   education,
@@ -64,7 +78,7 @@ export default function Index({
         meta={{
           title: "Alfonso Bribiesca - Personal Resume",
           hidePageName: true,
-          description: "@TODO: TBD",
+          description: `Alfonso Bribiesca is a full-stack developer with more than ${yearsOfExperience} years of experience building software for a wide variety of businesses around the world.`,
           image: `https://og.alfonsobries.com/@TODO.png`,
         }}
       >
@@ -195,13 +209,13 @@ export default function Index({
                 <LineClamp>
                   <div className="prose text-sm line-clamp-6 dark:prose-invert">
                     <p>
-                      Hello, I’m Alfonso. For the past 12 years, I have been
-                      building and designing software for a wide variety of
-                      businesses, either working in my company In Mexico or, in
-                      recent years, working as a member of different companies
-                      worldwide. My specialty is full-stack architecture and
-                      development, and, as you can see in my resume, I am
-                      proficient in several technologies.
+                      Hello, I’m Alfonso. For the past {yearsOfExperience}{" "}
+                      years, I have been building and designing software for a
+                      wide variety of businesses, either working in my company
+                      In Mexico or, in recent years, working as a member of
+                      different companies worldwide. My specialty is full-stack
+                      architecture and development, and, as you can see in my
+                      resume, I am proficient in several technologies.
                     </p>
 
                     <p>
