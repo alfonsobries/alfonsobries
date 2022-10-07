@@ -44,6 +44,7 @@ const Footer = () => {
                 src="/images/is-this-a.svg"
                 alt="Alfonso Bribiesca"
                 width={80}
+                height={80}
               />
 
               <span className="mt-4 font-cursive text-2xl text-gray-900 dark:text-gray-200">
