@@ -4,7 +4,7 @@ type Props = {
   className?: string;
 };
 
-const Github = ({ className }: Props) => {
+const Linkedin = ({ className }: Props) => {
   return (
     <svg
       version="1.1"
@@ -20,4 +20,4 @@ const Github = ({ className }: Props) => {
   );
 };
 
-export default Github;
+export default Linkedin;
