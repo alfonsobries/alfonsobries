@@ -34,7 +34,7 @@ export default function Labs({ projects }) {
                   />
                 </div>
                 <div
-                  className="prose dark:prose-invert"
+                  className="prose text-sm dark:prose-invert"
                   dangerouslySetInnerHTML={{ __html: project.description }}
                 />
                 <div className="flex items-center justify-between space-x-4">
