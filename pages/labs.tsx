@@ -26,7 +26,8 @@ export default function Labs({ projects }) {
                 <h2 className="text-2xl font-bold dark:text-gray-200">
                   {project.title}
                 </h2>
-                <div className="overflow-hidden rounded shadow">
+                <div className="aspect-w-16 aspect-h-9 relative overflow-hidden rounded bg-gray-200">
+                  <span className="absolute h-full w-full animate-pulse bg-gray-200 dark:bg-gray-900"></span>
                   <img
                     src={project.banner_url}
                     srcSet={project.banner_url_2x + " 2x"}
