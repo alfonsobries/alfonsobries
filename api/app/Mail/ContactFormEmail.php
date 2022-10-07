@@ -29,7 +29,7 @@ class ContactFormEmail extends Mailable
     {
         return $this
             ->subject(config('app.name') . ' Contact Form')
-            ->from($this->email, $this->name)
+            ->from('alfonso@vexilo.com', 'Contact Form')
             ->markdown('mail.contact-form-email');
     }
 }
