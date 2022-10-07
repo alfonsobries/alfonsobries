@@ -4,20 +4,15 @@ import { getAllPosts } from "../lib/api";
 import { Post } from "../interfaces/post";
 import ArticleListItem from "../components/article-list-item";
 import classNames from "classnames";
-import {
-  BORDER_COLOR,
-  LINK_COLOR_BORDER,
-  LINK_COLOR_TEXT,
-} from "../lib/cssClasses";
+import { LINK_COLOR_BORDER, LINK_COLOR_TEXT } from "../lib/cssClasses";
+import Link from "next/link";
 
 type Props = {
-  allPosts: Post[];
+  posts: Post[];
   hasMorePosts: boolean;
 };
 
-export default function Index({ allPosts, hasMorePosts }: Props) {
-  const posts = allPosts.slice(0, 3);
-
+export default function Index({ posts, hasMorePosts }: Props) {
   return (
     <>
       <Layout
@@ -37,16 +32,17 @@ export default function Index({ allPosts, hasMorePosts }: Props) {
           </div>
 
           {hasMorePosts && (
-            <a
-              className={classNames(
-                LINK_COLOR_BORDER,
-                LINK_COLOR_TEXT,
-                "mt-8 block rounded border p-2 text-center text-white"
-              )}
-              href=""
-            >
-              More Posts...
-            </a>
+            <Link href={`/posts`}>
+              <a
+                className={classNames(
+                  LINK_COLOR_BORDER,
+                  LINK_COLOR_TEXT,
+                  "mt-8 block rounded border p-2 text-center text-white"
+                )}
+              >
+                More Posts →
+              </a>
+            </Link>
           )}
         </Container>
       </Layout>
@@ -55,11 +51,13 @@ export default function Index({ allPosts, hasMorePosts }: Props) {
 }
 
 export const getStaticProps = async () => {
-  const posts = await getAllPosts(["title", "slug", "excerpt"], 3);
+  const posts = await getAllPosts(["title", "slug", "excerpt"], {
+    limit: 3,
+  });
 
   return {
     props: {
-      allPosts: posts.data,
+      posts: posts.data,
       hasMorePosts: posts.next_page_url !== null,
     },
   };

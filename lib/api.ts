@@ -34,9 +34,16 @@ export async function getPostBySlug(
 
 export async function getAllPosts(
   properties: PostProperties = [],
-  limit: number = 10
+  params: {
+    limit?: number;
+    page?: number;
+  }
 ) {
-  const { data: posts } = await Api.get(`/articles?limit=${limit}`);
+  const queryString = Object.keys(params)
+    .map((key) => `${key}=${params[key]}`)
+    .join("&");
+
+  const { data: posts } = await Api.get(`/articles?${queryString}`);
 
   return {
     ...posts,
