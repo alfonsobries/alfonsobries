@@ -206,7 +206,7 @@ export default function Index({
               </ResumeSection>
 
               <ResumeSection title="About Me" icon={<Dna />} noMargin>
-                <div className="text-smdark:prose-invert prose text-sm">
+                <div className="prose text-sm dark:prose-invert">
                   <LineClamp>
                     <p className="line-clamp-6">
                       Hello, I’m Alfonso. For the past {yearsOfExperience}{" "}

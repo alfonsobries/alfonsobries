@@ -18,7 +18,13 @@ export default function Labs({ projects }) {
         }}
       >
         <Container>
-          <h1 className="text-4xl font-bold dark:text-gray-200">Labs</h1>
+          <div className="prose dark:prose-invert">
+            <h1 className="text-4xl font-bold dark:text-gray-200">Labs</h1>
+            <p>
+              In this section you can explopre some of my personal side-projects
+              and experiments that I made in addition to my daily job duties .
+            </p>
+          </div>
 
           <div className="space-y-8">
             {projects.map((project) => (
