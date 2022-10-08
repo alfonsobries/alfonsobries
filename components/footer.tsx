@@ -10,7 +10,7 @@ import { useMemo } from "react";
 const Footer = () => {
   const year = useMemo(() => new Date().getFullYear(), []);
   return (
-    <footer className="text-sm text-gray-400 dark:text-gray-500">
+    <footer className="text-sm text-gray-500">
       <Container>
         <div
           className={classNames(
@@ -49,6 +49,7 @@ const Footer = () => {
                 rel="noreferrer"
               >
                 <Github className="h-4 w-4" />
+                <span className="sr-only">Github: /alfonsobries</span>
               </a>
 
               <a
@@ -58,6 +59,7 @@ const Footer = () => {
                 rel="noreferrer"
               >
                 <Twitter className="h-4 w-4" />
+                <span className="sr-only">Twitter: @alfonsobries</span>
               </a>
             </div>
           </div>
