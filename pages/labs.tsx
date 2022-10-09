@@ -13,7 +13,7 @@ export default function Labs({ projects }) {
         meta={{
           title: "Labs",
           description:
-            "In this section, I want to share some of my personal projects and experiments that I made in addition to my daily job.",
+            "In this section, I want to share some of the personal projects and experiments that I am doing in addition to my daily job",
           image: `https://og.alfonsobries.com/Personal%20Projects%20and%20Experiments`,
         }}
       >
@@ -21,8 +21,8 @@ export default function Labs({ projects }) {
           <div className="prose dark:prose-invert">
             <h1 className="text-4xl font-bold dark:text-gray-200">Labs</h1>
             <p>
-              In this section you can explopre some of my personal side-projects
-              and experiments that I made in addition to my daily job duties .
+              In this section you can find some personal side-projects and
+              experiments that I am doing during my spare time.
             </p>
           </div>
 

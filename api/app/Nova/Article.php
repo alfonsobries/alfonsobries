@@ -55,12 +55,12 @@ final class Article extends Resource
                 ->rules('required', 'string', 'max:120'),
 
             EnhancedTextarea::make('Excerpt', 'excerpt')
-                ->rules('nullable', 'string', 'max:155')
+                ->rules('nullable', 'string', 'required')
                 ->hideFromIndex()
                 ->maxLength(155),
 
             EnhancedTextarea::make('Meta description', 'meta_description')
-                ->rules('nullable', 'string', 'max:155')
+                ->rules('nullable', 'string', 'max:155', 'required')
                 ->hideFromIndex()
                 ->maxLength(155),
 
