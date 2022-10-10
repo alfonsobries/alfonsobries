@@ -20,7 +20,7 @@ export default function Index({ posts, hasMorePosts }: Props) {
           title: "Tech, Development, and more",
           description:
             "Hello, it’s me! Alfonso Bribiesca on this website. You can find here all about my work and my interests, and it is a great place to connect. Welcome!",
-          image: `https://og.alfonsobries.com/@TODO.png`,
+          image: "https://www.alfonsobries.com/images/og/main.png",
         }}
       >
         <Container>
