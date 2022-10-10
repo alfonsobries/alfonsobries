@@ -64,7 +64,7 @@ type Params = {
 
 export const getStaticProps = async ({ params }: Params) => {
   const pagination: PaginationType<Post> = await getAllPosts(
-    ["title", "slug", "excerpt"],
+    ["title", "slug", "excerpt", "published_at", "body"],
     {
       limit: POST_PER_PAGE,
       ...params,

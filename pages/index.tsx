@@ -52,9 +52,12 @@ export default function Index({ posts, hasMorePosts }: Props) {
 }
 
 export const getStaticProps = async () => {
-  const posts = await getAllPosts(["title", "slug", "excerpt"], {
-    limit: 3,
-  });
+  const posts = await getAllPosts(
+    ["title", "slug", "excerpt", "published_at", "body"],
+    {
+      limit: 3,
+    }
+  );
 
   return {
     props: {

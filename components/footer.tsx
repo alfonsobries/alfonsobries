@@ -30,7 +30,9 @@ const Footer = () => {
                 />
               </span>
 
-              <span>●</span>
+              <span className="text-xs text-gray-300 dark:text-gray-700">
+                ●
+              </span>
 
               <span className="inline-flex items-center space-x-2">
                 <span>Made with</span>

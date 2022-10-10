@@ -35,12 +35,14 @@ export default function Post({ post, content, morePosts, preview }: Props) {
           <h1>Loading…</h1>
         ) : (
           <>
+            <div className="mb-2 flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
+              <DateFormatter dateString={post.published_at} />
+              <span className="text-xs text-gray-300 dark:text-gray-700">
+                ●
+              </span>
+              <ReadTime content={post.body} />
+            </div>
             <article className="prose dark:prose-invert">
-              <div className="mb-2 flex justify-between text-sm text-gray-600 dark:text-gray-300">
-                <DateFormatter dateString={post.published_at} />
-
-                <ReadTime content={content} />
-              </div>
               <h1>{post.title}</h1>
 
               <div className="mx-auto">
