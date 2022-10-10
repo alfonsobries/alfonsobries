@@ -27,7 +27,7 @@ export default function Posts({ pagination }: Props) {
           title: `Posts - ${subtitle}`,
           description:
             "Posts related to frontend and backend development, design, technology, and maybe other subjects that I may find interesting.",
-          image: `https://og.alfonsobries.com/@TODO.png`,
+          image: `https://og.alfonsobries.com/Latest%20Blog%Posts.png`,
         }}
       >
         <Container>

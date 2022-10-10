@@ -79,7 +79,7 @@ export default function Index({
           title: "Alfonso Bribiesca - Personal Resume",
           hidePageName: true,
           description: `Alfonso Bribiesca is a full-stack developer with more than ${yearsOfExperience} years of experience building software for a wide variety of businesses around the world.`,
-          image: `https://og.alfonsobries.com/@TODO.png`,
+          image: `https://og.alfonsobries.com/Alfonso%20Bribiesca%20-%20Personal%20Resume.png`,
         }}
       >
         <div className="relative z-0 mx-auto flex max-w-4xl flex-col space-y-8 px-4 pb-8 sm:flex-row sm:space-x-8 sm:space-y-0">
