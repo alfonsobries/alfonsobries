@@ -17,7 +17,8 @@ export default function Index({ posts, hasMorePosts }: Props) {
     <>
       <Layout
         meta={{
-          title: "Tech, Development, and more",
+          title:
+            "Tech, Software Development, Memes, a little big about me, and more",
           description:
             "Hello, it’s me! Alfonso Bribiesca on this website. You can find here all about my work and my interests, and it is a great place to connect. Welcome!",
           image: "https://www.alfonsobries.com/images/og/main.png",
