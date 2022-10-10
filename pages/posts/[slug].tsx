@@ -1,13 +1,12 @@
 import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import Container from "../../components/container";
-import PostBody from "../../components/post-body";
-import PostHeader from "../../components/post-header";
 import Layout from "../../components/layout";
 import { getPostBySlug, getAllPosts } from "../../lib/api";
-import PostTitle from "../../components/post-title";
 import markdownToHtml from "../../lib/markdownToHtml";
 import { Post as PostType } from "../../interfaces/post";
+import DateFormatter from "../../components/date-formatter";
+import ReadTime from "../../components/read-time";
 
 type Props = {
   post: PostType;
@@ -33,18 +32,20 @@ export default function Post({ post, content, morePosts, preview }: Props) {
     >
       <Container>
         {router.isFallback ? (
-          <PostTitle>Loading…</PostTitle>
+          <h1>Loading…</h1>
         ) : (
           <>
             <article className="prose dark:prose-invert">
-              <PostHeader
-                title={post.title}
-                // coverImage={post.coverImage}
-                date={post.published_at}
-                // author={post.author}
-              />
+              <div className="mb-2 flex justify-between text-sm text-gray-600 dark:text-gray-300">
+                <DateFormatter dateString={post.published_at} />
 
-              <PostBody content={content} />
+                <ReadTime content={content} />
+              </div>
+              <h1>{post.title}</h1>
+
+              <div className="mx-auto">
+                <div dangerouslySetInnerHTML={{ __html: content }} />
+              </div>
             </article>
           </>
         )}
