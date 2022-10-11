@@ -73,21 +73,6 @@ const Meta = ({ meta, children }: Props) => {
       <meta property="og:url" content={`${SITE_URL}${asPath}`} />
       <meta property="og:type" content={meta.ogType || "website"} />
       <meta name="twitter:site" content="@alfonsobries" />
-
-      <script
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}`}
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS}');
-          `,
-        }}
-      />
       {children}
     </Head>
   );
