@@ -19,7 +19,7 @@ export default function Index({ posts, hasMorePosts }: Props) {
         meta={{
           title: "An average human being",
           description:
-            "Hello, it’s me, Alfonso, on this website. Here you can find a little bit about my work and my interests, it is also a good place to connect. Please come in",
+            "Hello, it’s me, Alfonso. On this website you can find a little bit about my work and my interests, it is also a good place to connect. Please come in",
           image: "https://www.alfonsobries.com/images/og/main.png",
         }}
       >
