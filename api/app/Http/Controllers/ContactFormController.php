@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Mail\ContactFormEmail;
 use App\Models\ContactFormMessage;
+use App\Models\User;
+use App\Notifications\ContactFormNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -17,9 +19,10 @@ class ContactFormController extends Controller
             'message' => 'required|max:1000',
         ]);
 
-        ContactFormMessage::create($values);
-
-        Mail::to('alfonso@vexilo.com')
-            ->send(new ContactFormEmail(name: $values['name'], email: $values['email'], message: $values['message']));
+        User::whereEmail('alfonso@vexilo.com')->first()->notify(new ContactFormNotification(
+            name: $values['name'],
+            email: $values['email'],
+            message: $values['message'],
+        ));
     }
 }
