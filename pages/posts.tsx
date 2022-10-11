@@ -20,11 +20,19 @@ export default function Posts({ pagination }: Props) {
     }`;
   }, [pagination.current_page]);
 
+  const metaTitle = useMemo(() => {
+    return `${
+      pagination.current_page > 1
+        ? `Posts - Page ${pagination.current_page}`
+        : "Posts"
+    }`;
+  }, [pagination.current_page]);
+
   return (
     <>
       <Layout
         meta={{
-          title: `Posts - ${subtitle}`,
+          title: metaTitle,
           description:
             "Posts related to frontend and backend development, design, technology, and maybe other subjects that I may find interesting.",
           image: `https://og.alfonsobries.com/Latest%20Blog%Posts.png`,
