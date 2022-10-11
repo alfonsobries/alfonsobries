@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ContactFormEmail;
-use App\Models\ContactFormMessage;
 use App\Models\User;
 use App\Notifications\ContactFormNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class ContactFormController extends Controller
 {
