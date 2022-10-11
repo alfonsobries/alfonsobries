@@ -10,16 +10,16 @@ class ContactFormController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $values = $this->validate($request, [
+        $this->validate($request, [
             'name' => 'required|max:255',
             'email' => 'required|email|max:254',
             'message' => 'required|max:1000',
         ]);
 
         User::whereEmail('alfonso@vexilo.com')->first()->notify(new ContactFormNotification(
-            name: $values['name'],
-            email: $values['email'],
-            message: $values['message'],
+            name: $request->get('name'),
+            email: $request->get('email'),
+            message: $request->get('message'),
         ));
     }
 }
