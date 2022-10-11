@@ -1,5 +1,7 @@
 import LazySvg from "../components/lazy-svg";
 import React, { useEffect } from "react";
+import Home from "./icons/home";
+import Link from "next/link";
 
 let resetTimeout: NodeJS.Timeout | null = null;
 let messageIndex = 0;
@@ -86,7 +88,7 @@ export default function Error404() {
       >
         <div
           id="globe"
-          className="flex-0 absolute inset-0 z-50 mt-[-40px] ml-[40%] flex aspect-video max-h-[34vh] w-[220px] max-w-[60vw] flex-col items-center justify-center bg-[url('/images/globe.svg')] bg-contain bg-center bg-no-repeat text-center text-black opacity-0 transition-opacity duration-200 ease-in-out sm:w-[300px]"
+          className="flex-0 aspect-video absolute inset-0 z-50 mt-[-40px] ml-[40%] flex max-h-[34vh] w-[220px] max-w-[60vw] flex-col items-center justify-center bg-[url('/images/globe.svg')] bg-contain bg-center bg-no-repeat text-center text-black opacity-0 transition-opacity duration-200 ease-in-out sm:w-[300px]"
         >
           <span id="message" className="font-cursive text-4xl sm:text-5xl">
             Error 404
@@ -115,6 +117,20 @@ export default function Error404() {
         src="/images/flame-bottom-left.svg"
         showLoading={false}
       />
+
+      <div className="absolute bottom-0 z-50 mb-4 flex sm:space-x-4">
+        <Link href="/">
+          <a className="rounded-xl bg-black/50 px-4 py-2 text-base text-white hover:bg-black">
+            ← Go to Home Page
+          </a>
+        </Link>
+
+        <Link href="/contact">
+          <a className="hidden rounded-xl bg-black/50 px-4 py-2 text-base text-white hover:bg-black sm:inline">
+            Contact Me
+          </a>
+        </Link>
+      </div>
     </div>
   );
 }
