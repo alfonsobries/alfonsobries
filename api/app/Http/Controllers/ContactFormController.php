@@ -16,7 +16,6 @@ class ContactFormController extends Controller
             'message' => 'required|max:1000',
         ]);
 
-
         User::whereEmail('alfonso@vexilo.com')->first()->notify(new ContactFormNotification(
             name: $request->get('name'),
             email: $request->get('email'),
