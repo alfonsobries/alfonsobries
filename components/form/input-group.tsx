@@ -2,7 +2,7 @@ import { Form } from "@alfonsobries/react-use-form";
 
 const InputGrup: React.FC<
   {
-    label: string;
+    label?: string;
     inputName: string;
     form: Form;
     children: React.ReactNode;
@@ -10,12 +10,14 @@ const InputGrup: React.FC<
 > = ({ inputName, children, form, label, ...attributes }) => {
   return (
     <div {...attributes}>
-      <label
-        htmlFor={inputName}
-        className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-      >
-        {label}
-      </label>
+      {label && (
+        <label
+          htmlFor={inputName}
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
+          {label}
+        </label>
+      )}
 
       <div className="relative mt-1 shadow-sm">{children}</div>
 

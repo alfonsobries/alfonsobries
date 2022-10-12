@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, useCallback } from "react";
+import React, { useCallback } from "react";
 import { Form } from "@alfonsobries/react-use-form";
 import classNames from "classnames";
 

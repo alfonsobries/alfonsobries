@@ -4,24 +4,31 @@ import useClickOutside from "../hooks/useClickOutside";
 import MousePointer from "./icons/mouse-pointer";
 import LazySvg from "./lazy-svg";
 import windowHasVerticalScroll from "../helpers/windowHasVerticalScroll";
+import TypoFormForm from "./typo-form-form";
+import { Post } from "../interfaces/post";
 
 const TIME_UNTIL_BUTTON_APPEARS_AFTER_SCROLLING = 1500;
 const TIME_UNTIL_HIDE = 500;
 
-const TypoForm = () => {
+type Props = {
+  post: Post;
+};
+
+const TypoForm = ({ post }: Props) => {
   const [init, setInit] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [active, setActive] = useState(false);
+  const [success, setSuccess] = useState(false);
   const [hoveredTimeout, setHoveredTimeout] = useState(null);
 
   const elRef = useRef(null);
 
-  const clickOutsideHandler = useCallback(() => {
-    setActive(false);
-    setHovered(false);
-  }, []);
+  // const clickOutsideHandler = useCallback(() => {
+  //   setActive(false);
+  //   setHovered(false);
+  // }, []);
 
-  useClickOutside({ ref: elRef, handler: clickOutsideHandler });
+  // useClickOutside({ ref: elRef, handler: clickOutsideHandler });
 
   const mouseEnterHandler = useCallback(() => {
     clearTimeout(hoveredTimeout);
@@ -65,48 +72,80 @@ const TypoForm = () => {
     };
   }, []);
 
-  const shouldShow = useMemo(() => {
-    return hovered || active;
-  }, [hovered, active]);
+  const formSubmittedHandler = useCallback(() => {
+    setSuccess(true);
+  }, []);
+
+  const formErrorHandler = useCallback(() => {
+    alert(
+      "Something went wrong. Please try again later. (A meme is going to replace this alert soon)"
+    );
+  }, []);
+
+  const formCancelHandler = useCallback(() => {
+    setActive(false);
+    setHovered(false);
+  }, []);
+
+  const buttonIsHidden = useMemo(() => {
+    return !init || active;
+  }, [active, init]);
+
+  const buttonIsBarelyHidden = useMemo(() => {
+    return !hovered && !buttonIsHidden;
+  }, [hovered, buttonIsHidden]);
+
+  const buttonIsVisible = useMemo(() => {
+    return !buttonIsHidden && !buttonIsBarelyHidden;
+  }, [buttonIsHidden, buttonIsBarelyHidden]);
 
   return (
-    <button
-      ref={elRef}
-      type="button"
-      onClick={clickHandler}
-      onMouseEnter={mouseEnterHandler}
-      onMouseLeave={mouseLeaveHandler}
-      className={classNames(
-        "transform-opacity relative left-0 bottom-0 mt-8 flex cursor-pointer items-center space-x-2 transition-transform duration-300 ease-in-out md:fixed md:space-x-4 ",
-        {
-          "md:translate-y-12": init && !shouldShow,
-          "md:translate-y-40": !init,
-          "md:opacity-80": !shouldShow,
-          "md:translate-y-2 md:opacity-100": init && shouldShow,
-        }
+    <div ref={elRef}>
+      {active && (
+        <TypoFormForm
+          post={post}
+          onSubmitted={formSubmittedHandler}
+          onCancel={formCancelHandler}
+          onError={formErrorHandler}
+        />
       )}
-    >
-      <LazySvg src="/images/typo.svg" svgClassName="h-24 md:h-32" />
 
-      <div
+      <button
+        type="button"
+        onClick={clickHandler}
+        onMouseEnter={mouseEnterHandler}
+        onMouseLeave={mouseLeaveHandler}
         className={classNames(
-          "aspect-video -mt-14 bg-[url('/images/globe.svg')] bg-contain bg-center bg-no-repeat p-6 text-center text-black opacity-100 transition-opacity duration-200 ease-in-out md:-mt-20 md:p-8",
+          "transform-opacity relative left-0 bottom-0 z-10 mt-8 flex cursor-pointer items-center space-x-2 transition-transform duration-300 ease-in-out md:fixed md:space-x-4",
           {
-            "md:opacity-0": !shouldShow,
-            "md:opacity-100": shouldShow,
+            "md:translate-y-40": buttonIsHidden,
+            "md:translate-y-12 md:opacity-80": buttonIsBarelyHidden,
+            "md:translate-y-2 md:opacity-100": buttonIsVisible,
           }
         )}
       >
-        <span id="message" className="font-cursive text-2xl leading-none">
-          Something not
-          <br />
-          Clear?{" "}
-          <span>
-            <MousePointer className="-mt-1 ml-1 inline h-5 w-5" />
+        <LazySvg src="/images/typo.svg" svgClassName="h-24 md:h-32" />
+
+        <div
+          className={classNames(
+            "aspect-video -mt-14 bg-[url('/images/globe.svg')] bg-contain bg-center bg-no-repeat p-6 text-center text-black opacity-100 transition-opacity duration-200 ease-in-out md:-mt-20 md:p-8",
+            {
+              "md:opacity-0": !buttonIsVisible,
+              "md:opacity-100": buttonIsVisible,
+            }
+          )}
+        >
+          <span id="message" className="font-cursive text-2xl leading-none">
+            Something not
+            <br />
+            Clear?{" "}
+            <span>
+              <MousePointer className="-mt-1 ml-1 inline h-5 w-5" />
+            </span>
           </span>
-        </span>
-      </div>
-    </button>
+        </div>
+      </button>
+    </div>
   );
 };
 
