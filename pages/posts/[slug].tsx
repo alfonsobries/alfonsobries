@@ -51,9 +51,7 @@ export default function Post({ post, content, morePosts, preview }: Props) {
               </div>
             </article>
 
-            <div className="flex justify-center md:block">
-              <TypoForm post={post} />
-            </div>
+            <TypoForm post={post} />
           </>
         )}
       </Container>

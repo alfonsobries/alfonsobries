@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import useClickOutside from "../hooks/useClickOutside";
 import MousePointer from "./icons/mouse-pointer";
 import LazySvg from "./lazy-svg";
 import windowHasVerticalScroll from "../helpers/windowHasVerticalScroll";
@@ -18,7 +17,6 @@ const TypoForm = ({ post }: Props) => {
   const [init, setInit] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [active, setActive] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [hoveredTimeout, setHoveredTimeout] = useState(null);
 
   const elRef = useRef(null);
@@ -72,10 +70,6 @@ const TypoForm = ({ post }: Props) => {
     };
   }, []);
 
-  const formSubmittedHandler = useCallback(() => {
-    setSuccess(true);
-  }, []);
-
   const formErrorHandler = useCallback(() => {
     alert(
       "Something went wrong. Please try again later. (A meme is going to replace this alert soon)"
@@ -100,11 +94,10 @@ const TypoForm = ({ post }: Props) => {
   }, [buttonIsHidden, buttonIsBarelyHidden]);
 
   return (
-    <div ref={elRef}>
+    <div ref={elRef} className="flex w-full justify-center md:block">
       {active && (
         <TypoFormForm
           post={post}
-          onSubmitted={formSubmittedHandler}
           onCancel={formCancelHandler}
           onError={formErrorHandler}
         />
@@ -124,7 +117,7 @@ const TypoForm = ({ post }: Props) => {
           }
         )}
       >
-        <LazySvg src="/images/typo.svg" svgClassName="h-24 md:h-32" />
+        <LazySvg src="/images/typo.svg" svgClassName="h-24 md:h-32 w-auto" />
 
         <div
           className={classNames(

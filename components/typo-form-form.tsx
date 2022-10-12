@@ -10,7 +10,7 @@ import LazySvg from "./lazy-svg";
 
 type Props = {
   post: Post;
-  onSubmitted: () => void;
+  onSubmitted?: () => void;
   onCancel: () => void;
   onError: (response: any) => void;
 };
@@ -52,7 +52,7 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
       form
         .post("contact")
         .then(() => {
-          onSubmitted();
+          onSubmitted && onSubmitted();
         })
         .catch((response) => onError(response));
     },
@@ -61,8 +61,6 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
 
   useEffect(() => {
     setMounted(true);
-
-    formRef.current.querySelector("textarea").focus();
   }, []);
 
   const clickPopupHandler = useCallback(() => {
