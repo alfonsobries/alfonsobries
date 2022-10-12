@@ -35,7 +35,7 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
       setTimeout(() => {
         resolve(1);
         // Time should match the animation duration
-      }, 500);
+      }, 300);
     });
   }, []);
 
@@ -79,7 +79,7 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
     <>
       <div
         className={classNames(
-          "fixed inset-0 z-[51] h-screen w-screen bg-black/30 backdrop-blur-lg transition-opacity duration-500 ",
+          "fixed inset-0 z-[51] h-screen w-screen bg-black/30 backdrop-blur-lg transition-opacity duration-300 ",
           {
             "pointer-events-none opacity-0": !mounted || closing,
             "opacity-100": mounted,
@@ -91,15 +91,14 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
 
       <div
         className={classNames(
-          "md:rounded-l-0 fixed bottom-0 left-0 right-0 z-[52] mx-auto rounded-t-xl bg-white p-4 shadow-xl transition-transform duration-500 dark:bg-black md:bottom-auto md:top-[50%] md:right-auto md:max-w-sm md:-translate-y-[50%] md:rounded-r-xl",
+          "md:rounded-l-0 fixed bottom-0 left-0 right-0 z-[52] mx-auto rounded-t-xl bg-white p-4 shadow-xl transition-transform duration-300 dark:bg-black md:bottom-auto md:top-[50%] md:right-auto md:max-w-sm md:-translate-y-[50%] md:rounded-r-xl",
+          showText ? `${BORDER_COLOR} border` : null,
           {
             "pointer-events-none translate-y-full opacity-0 md:-translate-x-full":
               !mounted || closing,
             "opacity-100 md:translate-x-0": mounted,
             "translate-y-0": mounted && !showText,
-            "translate-y-[50%] md:translate-x-[-75%]": mounted && showText,
-            BORDER_COLOR: showText,
-            border: showText,
+            "translate-y-[75%] md:translate-x-[-75%]": mounted && showText,
           }
         )}
         onClick={clickPopupHandler}
