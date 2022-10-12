@@ -19,8 +19,10 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
   const [closing, setClosing] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showText, setShowText] = useState(false);
+  const [mouseOutWhileShowingText, setMouseOutWhileShowingText] =
+    useState(false);
 
-  const formRef = useRef(null);
+  const wrapperRef = useRef(null);
 
   const form: Form = useForm({
     post_slug: post.slug,
@@ -61,7 +63,21 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+
+    const keydownListener = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        cancel();
+      }
+    };
+
+    wrapperRef.current.focus();
+
+    window.addEventListener("keydown", keydownListener);
+
+    return () => {
+      window.removeEventListener("keydown", keydownListener);
+    };
+  }, [wrapperRef, cancel]);
 
   const clickPopupHandler = useCallback(() => {
     if (form.successful) {
@@ -72,6 +88,24 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
       setShowText(false);
     }
   }, [form, cancel, showText]);
+
+  const popupMouseEnterHandler = useCallback(() => {
+    if (showText && mouseOutWhileShowingText) {
+      setShowText(false);
+    }
+  }, [showText, mouseOutWhileShowingText]);
+
+  useEffect(() => {
+    if (!showText) {
+      setMouseOutWhileShowingText(false);
+    }
+  }, [showText]);
+
+  const popupMouseLeaveHandler = useCallback(() => {
+    if (showText) {
+      setMouseOutWhileShowingText(true);
+    }
+  }, [showText]);
 
   return (
     <>
@@ -88,18 +122,21 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
       ></div>
 
       <div
+        ref={wrapperRef}
+        tabIndex={0}
         className={classNames(
-          "md:rounded-l-0 fixed bottom-0 left-0 right-0 z-[52] mx-auto rounded-t-xl bg-white p-4 shadow-xl transition-transform duration-300 dark:bg-black md:bottom-auto md:top-[50%] md:right-auto md:max-w-sm md:-translate-y-[50%] md:rounded-r-xl",
-          showText ? `${BORDER_COLOR} border` : null,
+          "md:rounded-l-0 fixed bottom-0 left-0 right-0 z-[52] mx-auto rounded-t-xl bg-white p-4 shadow-xl-bottom outline-none transition-all duration-300 dark:bg-black md:bottom-auto md:top-[50%] md:right-auto md:max-w-sm md:-translate-y-[50%] md:rounded-r-xl md:shadow-xl",
           {
             "pointer-events-none translate-y-full opacity-0 md:-translate-x-full":
               !mounted || closing,
-            "opacity-100 md:translate-x-0": mounted,
+            "opacity-100 md:translate-x-0": mounted && !closing,
             "translate-y-0": mounted && !showText,
             "translate-y-[75%] md:translate-x-[-75%]": mounted && showText,
           }
         )}
         onClick={clickPopupHandler}
+        onMouseEnter={popupMouseEnterHandler}
+        onMouseLeave={popupMouseLeaveHandler}
       >
         {form.successful ? (
           <div
@@ -119,7 +156,7 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
           </div>
         ) : (
           <>
-            <form ref={formRef} onSubmit={formHandler}>
+            <form onSubmit={formHandler}>
               <div className="prose mb-6 text-sm dark:prose-invert ">
                 <p>
                   <button

@@ -11,6 +11,12 @@ module.exports = {
   ],
   theme: {
     extend: {
+      boxShadow: {
+        "lg-bottom":
+          "0 -10px 15px -3px rgb(0 0 0 / 0.1), 0 -4px 6px -4px rgb(0 0 0 / 0.1)",
+        "xl-bottom":
+          "0 -20px 25px -5px rgb(0 0 0 / 0.1), 0 -8px 10px -6px rgb(0 0 0 / 0.1)",
+      },
       animation: {
         "spin-cloud": "spin-inverse 140s linear infinite",
         "spin-cloud-2": "spin-inverse 150s linear infinite",
