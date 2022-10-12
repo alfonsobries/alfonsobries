@@ -7,6 +7,8 @@ import markdownToHtml from "../../lib/markdownToHtml";
 import { Post as PostType } from "../../interfaces/post";
 import DateFormatter from "../../components/date-formatter";
 import ReadTime from "../../components/read-time";
+import LazySvg from "../../components/lazy-svg";
+import TypoForm from "../../components/typo-form";
 
 type Props = {
   post: PostType;
@@ -49,6 +51,10 @@ export default function Post({ post, content, morePosts, preview }: Props) {
                 <div dangerouslySetInnerHTML={{ __html: content }} />
               </div>
             </article>
+
+            <div className="flex justify-center md:block">
+              <TypoForm />
+            </div>
           </>
         )}
       </Container>
