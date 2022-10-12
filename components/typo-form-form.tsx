@@ -111,10 +111,11 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
     <>
       <div
         className={classNames(
-          "fixed inset-0 z-[51] h-screen w-screen bg-black/30 backdrop-blur-lg transition-opacity duration-300 ",
+          "fixed inset-0 z-[51] h-screen w-screen bg-black/30 transition-all duration-300",
           {
-            "pointer-events-none opacity-0": !mounted || closing,
-            "opacity-100": mounted,
+            "pointer-events-none opacity-0 backdrop-blur-0":
+              !mounted || closing,
+            "opacity-100 backdrop-blur-md": mounted,
             "pointer-events-none hidden": showText,
           }
         )}
