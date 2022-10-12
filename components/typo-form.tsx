@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useClickOutside from "../hooks/useClickOutside";
 import MousePointer from "./icons/mouse-pointer";
 import LazySvg from "./lazy-svg";
+import windowHasVerticalScroll from "../helpers/windowHasVerticalScroll";
 
 const TIME_UNTIL_BUTTON_APPEARS_AFTER_SCROLLING = 1500;
 const TIME_UNTIL_HIDE = 500;
@@ -42,6 +43,13 @@ const TypoForm = () => {
   useEffect(() => {
     let timeout: NodeJS.Timeout;
 
+    const hasScroll = windowHasVerticalScroll();
+
+    if (!hasScroll) {
+      setInit(true);
+      return;
+    }
+
     const scrollListener = () => {
       timeout = setTimeout(() => {
         setInit(true);
@@ -69,7 +77,7 @@ const TypoForm = () => {
       onMouseEnter={mouseEnterHandler}
       onMouseLeave={mouseLeaveHandler}
       className={classNames(
-        "transform-opacity relative left-0 bottom-0 mt-8 flex cursor-pointer items-center space-x-2 transition-transform duration-200 ease-in-out md:fixed md:space-x-4 ",
+        "transform-opacity relative left-0 bottom-0 mt-8 flex cursor-pointer items-center space-x-2 transition-transform duration-300 ease-in-out md:fixed md:space-x-4 ",
         {
           "md:translate-y-12": init && !shouldShow,
           "md:translate-y-40": !init,
