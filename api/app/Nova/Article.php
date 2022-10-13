@@ -79,7 +79,7 @@ final class Article extends Resource
                     return [];
                 })
                 ->delete(fn (Request $request, Model|null $model) => $model->getFirstMedia('banner')->delete())
-                ->thumbnail(fn (mixed $value, string $disk, Model|null $model) => $model?->getFirstMediaUrl('banner', 'og'))
+                ->thumbnail(fn (mixed $value, string $disk, Model|null $model) => $model?->getFirstMediaUrl('banner', 'thumbnail'))
                 ->preview(fn (mixed $value, string $disk, Model|null $model) => $model?->getFirstMediaUrl('banner', 'og'))
                 ->disableDownload(),
 

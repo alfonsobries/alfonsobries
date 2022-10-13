@@ -77,6 +77,10 @@ class Article extends Model implements HasMedia
                 $this
                     ->addMediaConversion('og')
                     ->fit(Manipulations::FIT_CROP, 1200, 630);
+
+                $this
+                    ->addMediaConversion('thumbnail')
+                    ->fit(Manipulations::FIT_CROP, 30, 30);
             });
 
     }
