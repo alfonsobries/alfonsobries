@@ -2,6 +2,7 @@ import LazySvg from "../components/lazy-svg";
 import React, { useEffect } from "react";
 import Home from "./icons/home";
 import Link from "next/link";
+import ArrowLeft from "./icons/arrow-left";
 
 let resetTimeout: NodeJS.Timeout | null = null;
 let messageIndex = 0;
@@ -118,16 +119,18 @@ export default function Error404() {
         showLoading={false}
       />
 
-      <div className="absolute bottom-0 z-50 mb-4 flex sm:space-x-4">
-        <Link href="/">
-          <a className="rounded-xl bg-black/50 px-4 py-2 text-base text-white hover:bg-black">
-            ← Go to Home Page
-          </a>
-        </Link>
+      <div className="absolute bottom-0 z-50 mb-4 flex space-x-4">
+        <button
+          onClick={() => window.history.back()}
+          type="button"
+          className="flex items-center space-x-2 rounded-xl bg-black/50 px-4 py-2 text-base text-white hover:bg-black"
+        >
+          <ArrowLeft className="h-4 w-4 text-white/50" /> <span>Back</span>
+        </button>
 
-        <Link href="/contact">
-          <a className="hidden rounded-xl bg-black/50 px-4 py-2 text-base text-white hover:bg-black sm:inline">
-            Contact Me
+        <Link href="/">
+          <a className="flex items-center space-x-2 rounded-xl bg-black/50 px-4 py-2 text-base text-white hover:bg-black">
+            <Home className="h-4 w-4 text-white/50" /> <span>Go Home</span>
           </a>
         </Link>
       </div>
