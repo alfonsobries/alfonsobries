@@ -6,6 +6,7 @@ use App\Http\Controllers\ResumeControler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SlugHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +28,4 @@ Route::get('/articles/{article:slug}', [ArticleController::class, 'show']);
 Route::get('/projects', ProjectController::class);
 Route::get('/resume', ResumeControler::class);
 Route::post('/contact', ContactFormController::class);
+Route::get('/slug-history', SlugHistoryController::class)->name('slug-history.index');
