@@ -59,7 +59,7 @@ export default function Labs({ projects }) {
 
                   <ul className="flex items-center space-x-4">
                     {project.technologies.map((technology) => (
-                      <li key={technology.id}>
+                      <li key={technology}>
                         <ProjectTechnology technology={technology} />
                       </li>
                     ))}
