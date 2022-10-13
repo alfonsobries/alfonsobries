@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\ExpiresFrontend;
+use App\Models\Traits\HasSlugHistory;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,7 @@ class Article extends Model implements HasMedia
     use InteractsWithMedia;
     use SoftDeletes;
     use ExpiresFrontend;
+    use HasSlugHistory;
 
     protected $casts = [
         'published_at'      => 'datetime',
@@ -55,6 +57,11 @@ class Article extends Model implements HasMedia
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('published_at', '<=', Carbon::now());
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->published_at !== null && $this->published_at->isPast();
     }
 
     public function registerMediaCollections(): void
