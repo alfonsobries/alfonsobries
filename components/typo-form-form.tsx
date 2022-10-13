@@ -1,11 +1,11 @@
 import FormTextarea from "./form/form-textarea";
 import InputGrup from "./form/input-group";
 import useForm, { Form } from "@alfonsobries/react-use-form";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import FormButton from "./form/form-button";
 import classNames from "classnames";
 import { Post } from "../interfaces/post";
-import { BORDER_COLOR, LINK_COLOR_TEXT } from "../lib/cssClasses";
+import { LINK_COLOR_TEXT } from "../lib/cssClasses";
 import LazySvg from "./lazy-svg";
 
 type Props = {
