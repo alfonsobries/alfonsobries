@@ -81,7 +81,6 @@ final class Article extends Resource
                 ->delete(fn (Request $request, Model|null $model) => $model->getFirstMedia('banner')->delete())
                 ->thumbnail(fn (mixed $value, string $disk, Model|null $model) => $model?->getFirstMediaUrl('banner', 'og'))
                 ->preview(fn (mixed $value, string $disk, Model|null $model) => $model?->getFirstMediaUrl('banner', 'og'))
-                ->hideFromIndex()
                 ->disableDownload(),
 
             DateTime::make('Published at')
