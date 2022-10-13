@@ -65,7 +65,7 @@ final class Article extends Resource
                 ->maxLength(155),
 
             EnhancedMarkdown::make('Body')
-                ->withFiles('public')
+                ->withFiles('public_s3', "/blog")
                 ->rules('required', 'string')
                 ->hideFromIndex(),
 
