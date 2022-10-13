@@ -111,11 +111,11 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
     <>
       <div
         className={classNames(
-          "fixed inset-0 z-[51] h-screen w-screen bg-black/30 transition-all duration-300",
+          "fixed inset-0 z-[51] h-screen w-screen transition-all duration-300",
           {
             "pointer-events-none opacity-0 backdrop-blur-0":
               !mounted || closing,
-            "opacity-100 backdrop-blur-md": mounted,
+            "opacity-100 backdrop-blur-md": !(!mounted || closing),
             "pointer-events-none hidden": showText,
           }
         )}
@@ -126,7 +126,7 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
         ref={wrapperRef}
         tabIndex={0}
         className={classNames(
-          "md:rounded-l-0 fixed bottom-0 left-0 right-0 z-[52] mx-auto rounded-t-xl bg-white p-4 shadow-xl-bottom outline-none transition-all duration-300 dark:bg-black md:bottom-auto md:top-[50%] md:right-auto md:max-w-sm md:-translate-y-[50%] md:rounded-r-xl md:shadow-xl",
+          "fixed bottom-0 left-0 right-0 z-[52] mx-auto rounded-t-xl bg-white p-4 shadow-xl-bottom outline-none transition-all duration-300 dark:bg-black md:bottom-auto md:top-[50%] md:right-auto md:max-w-sm md:-translate-y-[50%] md:rounded-r-xl md:rounded-tl-none md:shadow-xl",
           {
             "pointer-events-none translate-y-full opacity-0 md:-translate-x-full":
               !mounted || closing,
