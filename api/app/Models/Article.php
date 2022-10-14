@@ -100,6 +100,6 @@ class Article extends Model implements HasMedia
             return null;
         }
 
-        return sprintf('%s/%s/posts/%s', config('site.site_url'), config('site.secret_prefix'), $this->slug);
+        return sprintf('%s/secret/%s/posts/%s', config('site.site_url'), config('site.secret_prefix'), $this->slug);
     }
 }
