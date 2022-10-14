@@ -23,25 +23,10 @@ class ArticleController extends Controller
 
     public function show(Article $article)
     {
+        if (! $article->isPublished()) {
+            abort(404);
+        }
+
         return $article;
     }
-
-    // public static function handleMissing(Request $request): RedirectResponse
-    // {
-    //     /** @var Route $route */
-    //     $route = $request->route();
-    //     $slug  = $route->parameter('article');
-
-    //     /** @var ?Article $article */
-    //     $article = SlugHistory::where('slug', $slug)
-    //         ->where('sluggable_type', (new Article())->getMorphClass())
-    //         ->firstOrFail()
-    //         ->sluggable;
-
-    //     if ($article === null) {
-    //         abort(404);
-    //     }
-
-    //     return Redirect::to($article->url(), 301);
-    // }
 }

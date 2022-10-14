@@ -33,6 +33,16 @@ export async function getPostBySlug(
   return getPostWithOnlyProperties(post, properties);
 }
 
+export async function getDraftPostBySlug(
+  slug: string,
+  secretPath: string,
+  properties: PostProperties = []
+): Promise<FilteredPost> {
+  const { data: post } = await Api.get(`/${secretPath}/articles/${slug}`);
+
+  return getPostWithOnlyProperties(post, properties);
+}
+
 export async function getAllPosts(
   properties: PostProperties = [],
   params?: {
@@ -52,13 +62,22 @@ export async function getAllPosts(
   const { data: posts } = await Api.get(`/articles${queryString}`);
 
   if (params.all) {
-    return posts;
+    return posts.map((post) => getPostWithOnlyProperties(post, properties));
   }
 
   return {
     ...posts,
     data: posts.data.map((post) => getPostWithOnlyProperties(post, properties)),
   };
+}
+
+export async function getAllDraftPosts(
+  properties: PostProperties = [],
+  secretPath: string
+) {
+  const { data: posts } = await Api.get(`/${secretPath}/articles`);
+
+  return posts.map((post) => getPostWithOnlyProperties(post, properties));
 }
 
 const parseExperience = async (experience: ResumeExperience) => {

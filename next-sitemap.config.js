@@ -13,6 +13,10 @@ module.exports = {
   transform: async (config, path) => {
     const overrides = {};
 
+    if (path.startsWith("/secret")) {
+      return false;
+    }
+
     if (path === "/") {
       overrides.priority = 1;
       overrides.changefreq = "weekly";

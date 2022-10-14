@@ -59,6 +59,11 @@ class Article extends Model implements HasMedia
         return $query->where('published_at', '<=', Carbon::now());
     }
 
+    public function scopeNotPublished(Builder $query): Builder
+    {
+        return $query->whereNull('published_at');
+    }
+
     public function isPublished(): bool
     {
         return $this->published_at !== null && $this->published_at->isPast();
