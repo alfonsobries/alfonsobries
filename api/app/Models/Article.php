@@ -87,6 +87,19 @@ class Article extends Model implements HasMedia
                     ->addMediaConversion('thumbnail')
                     ->fit(Manipulations::FIT_CROP, 30, 30);
             });
+    }
 
+    public function url(): string
+    {
+        return sprintf('%s/posts/%s', config('site.site_url'), $this->slug);
+    }
+
+    public function previewUrl(): ?string
+    {
+        if (config('site.secret_prefix') === false) {
+            return null;
+        }
+
+        return sprintf('%s/%s/posts/%s', config('site.site_url'), config('site.secret_prefix'), $this->slug);
     }
 }

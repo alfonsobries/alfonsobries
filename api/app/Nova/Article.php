@@ -50,6 +50,16 @@ final class Article extends Resource
         return [
             ID::make()->sortable(),
 
+            Text::make('URL', function ($model) {
+                if ($model->isPublished()) {
+                    $url = $model->url();
+                } else {
+                    $url = $model->previewUrl();
+                }
+
+                return sprintf('<a class="link-default" target="_blank" href="%s">Preview</a>', $url);
+            })->asHtml(),
+
             Text::make('Title', 'title')
                 ->sortable()
                 ->rules('required', 'string', 'max:120'),
