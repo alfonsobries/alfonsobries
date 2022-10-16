@@ -57,7 +57,6 @@ it('lists all the latest published articles without pagination if all param is p
 it('returns a published article', function () {
     $article = Article::factory()->published()->create();
 
-
     $response = $this->getJson(route('articles.show', $article));
 
     $response->assertSuccessful();

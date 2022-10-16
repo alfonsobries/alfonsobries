@@ -39,4 +39,13 @@ class UserFactory extends Factory
             ];
         });
     }
+
+    public function me()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'email' => 'alfonso@vexilo.com',
+            ];
+        });
+    }
 }

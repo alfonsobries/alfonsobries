@@ -18,7 +18,7 @@ class ContactFormNotification extends Notification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(private string $name, private string $email, private string $message)
+    public function __construct(public string $name, public string $email, public string $message)
     {
         //
     }
