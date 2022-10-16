@@ -28,9 +28,9 @@ Route::name('articles.')
     });
 
 if (config('site.secret_prefix')) {
-    Route::prefix(config('site.secret_prefix'))->group(function () {
-        Route::get('/articles', [DraftArticleController::class, 'index']);
-        Route::get('/articles/{article:slug}', [DraftArticleController::class, 'show']);
+    Route::name('draft_articles.')->prefix(config('site.secret_prefix'))->group(function () {
+        Route::get('/articles/slugs', [DraftArticleController::class, 'slugs'])->name('slugs');
+        Route::get('/articles/{article:slug}', [DraftArticleController::class, 'show'])->name('show');
     });
 }
 

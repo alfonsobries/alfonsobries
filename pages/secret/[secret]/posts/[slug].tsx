@@ -7,7 +7,7 @@ import { Post as PostType } from "../../../../interfaces/post";
 import DateFormatter from "../../../../components/date-formatter";
 import ReadTime from "../../../../components/read-time";
 import TypoForm from "../../../../components/typo-form";
-import { getAllDraftPosts, getDraftPostBySlug } from "../../../../lib/api";
+import { getAllDraftPostsSlugs, getDraftPostBySlug } from "../../../../lib/api";
 
 type Props = {
   post: PostType;
@@ -95,14 +95,14 @@ export async function getStaticPaths() {
     };
   }
 
-  const posts = await getAllDraftPosts(["slug"], secretPath);
+  const slugs = await getAllDraftPostsSlugs(secretPath);
 
   return {
-    paths: posts.map((post) => {
+    paths: slugs.map((slug) => {
       return {
         params: {
           secret: secretPath,
-          slug: post.slug,
+          slug,
         },
       };
     }),

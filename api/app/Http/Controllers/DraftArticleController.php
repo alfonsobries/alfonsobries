@@ -3,17 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-use Illuminate\Http\Request;
 
 class DraftArticleController extends Controller
 {
-    public function index(Request $request)
+    public function slugs()
     {
-        return Article::notPublished()->get();
+        return Article::select('slug')->latest('created_at')->notPublished()->pluck('slug');
     }
 
     public function show(Article $article)
     {
+        if ($article->isPublished()) {
+            abort(404);
+        }
+
         return $article;
     }
 }

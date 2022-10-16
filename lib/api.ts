@@ -71,13 +71,10 @@ export async function getAllPosts(
   };
 }
 
-export async function getAllDraftPosts(
-  properties: PostProperties = [],
-  secretPath: string
-) {
-  const { data: posts } = await Api.get(`/${secretPath}/articles`);
+export async function getAllDraftPostsSlugs(secretPath: string) {
+  const { data: slugs } = await Api.get(`/${secretPath}/articles/slugs`);
 
-  return posts.map((post) => getPostWithOnlyProperties(post, properties));
+  return slugs;
 }
 
 const parseExperience = async (experience: ResumeExperience) => {
