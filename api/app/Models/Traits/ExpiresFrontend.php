@@ -23,7 +23,7 @@ trait ExpiresFrontend
 
     private static function markFrontendAsExpired()
     {
-        Cache::set('fronted-expired', true);
+        Cache::set(config('site.expireCacheKey'), true);
     }
 
     public static function shouldExpireFrontend($model): bool

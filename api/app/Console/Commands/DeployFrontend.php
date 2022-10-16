@@ -29,12 +29,12 @@ class DeployFrontend extends Command
      */
     public function handle()
     {
-        if (Cache::has('fronted-expired') || $this->option('force')) {
+        if (Cache::has(config('site.expireCacheKey')) || $this->option('force')) {
             $this->info('Deploying frontend...');
 
             Http::post(config('services.vercel.deployment_url'));
 
-            Cache::forget('fronted-expired');
+            Cache::forget(config('site.expireCacheKey'));
 
             return 0;
         }
