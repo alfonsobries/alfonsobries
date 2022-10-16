@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6ee7a42954d67096ceae471592221a72",
+    "content-hash": "8a6840088d82513e0e255415abac3c90",
     "packages": [
         {
             "name": "ardenthq/nova-enhanced-markdown",
