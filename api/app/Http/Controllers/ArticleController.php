@@ -3,11 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-// use App\Models\SlugHistory;
-// use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-
-// use Illuminate\Support\Facades\Redirect;
 
 class ArticleController extends Controller
 {

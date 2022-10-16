@@ -1,10 +1,10 @@
 <?php
 
 use Carbon\Carbon;
-use Laravel\Nova\Trix\PendingAttachment;
+use Illuminate\Console\Scheduling\CallbackEvent;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Console\Scheduling\CallbackEvent;
+use Laravel\Nova\Trix\PendingAttachment;
 
 it('schedules the command for deploy the site every minute', function () {
     $schedule = resolve(Schedule::class);

@@ -13,8 +13,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/articles', [ArticleController::class, 'index']);
-Route::get('/articles/{article:slug}', [ArticleController::class, 'show']);
+Route::controller(ArticleController::class)->group(function () {
+    Route::get('/orders/{id}', 'show');
+    Route::post('/orders', 'store');
+});
+
+Route::name('articles.')
+    ->prefix('/articles')
+    ->controller(ArticleController::class)
+    ->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{article:slug}', 'show')->name('show');
+    });
 
 if (config('site.secret_prefix')) {
     Route::prefix(config('site.secret_prefix'))->group(function () {

@@ -3,10 +3,10 @@
 use App\Models\Article;
 
 it('returns all the elements in the slug history with his equivalente element', function () {
-    $article = Article::factory()->create([
+    $article = Article::factory()->published()->create([
         'title' => 'Title 1',
     ]);
-    $article2 = Article::factory()->create([
+    $article2 = Article::factory()->published()->create([
         'title' => 'Article 2 Title 1',
     ]);
 
