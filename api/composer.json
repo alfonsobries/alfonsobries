@@ -9,7 +9,6 @@
     "license": "MIT",
     "require": {
         "ardenthq/nova-enhanced-markdown": "^1.0",
-        "ardenthq/nova-enhanced-textarea": "^1.0",
         "davidbadura/faker-markdown-generator": "^1.1",
         "guzzlehttp/guzzle": "^7.5",
         "laravel-notification-channels/telegram": "^2.1",
