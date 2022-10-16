@@ -53,3 +53,23 @@ it('lists all the latest published articles without pagination if all param is p
     expect($response->json('1.id'))->toBe($second->id);
     expect($response->json('2.id'))->toBe($third->id);
 });
+
+it('returns a published article', function () {
+    $article = Article::factory()->published()->create();
+
+
+    $response = $this->getJson(route('articles.show', $article));
+
+    $response->assertSuccessful();
+
+    expect($response->json('id'))->toBe($article->id);
+    expect($response->json('title'))->toBe($article->title);
+});
+
+it('returns 400 for an unpublished article', function () {
+    $article = Article::factory()->unpublished()->create();
+
+    $response = $this->getJson(route('articles.show', $article));
+
+    $response->assertNotFound();
+});
