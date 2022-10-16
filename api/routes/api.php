@@ -6,6 +6,7 @@ use App\Http\Controllers\DraftArticleController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResumeControler;
 use App\Http\Controllers\SlugHistoryController;
+use App\Http\Controllers\TypoFormController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,4 +37,5 @@ if (config('site.secret_prefix')) {
 Route::get('/projects', ProjectController::class);
 Route::get('/resume', ResumeControler::class);
 Route::post('/contact', ContactFormController::class)->name('contact');
+Route::post('/typo', TypoFormController::class)->name('typo');
 Route::get('/slug-history', SlugHistoryController::class)->name('slug-history.index');

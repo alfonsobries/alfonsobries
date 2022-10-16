@@ -18,7 +18,7 @@ it('sends a contact form notification with the parameters', function () {
     $response->assertOk();
 
     Notification::assertSentTo(
-        User::whereEmail($me->email)->first(),
+        $me,
         ContactFormNotification::class,
         function ($notification, $channels) {
             return $notification->name === 'Alfonso'

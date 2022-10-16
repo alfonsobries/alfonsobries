@@ -26,7 +26,6 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
 
   const form: Form = useForm({
     post_slug: post.slug,
-    typo: true,
     message: "",
   });
 
@@ -52,7 +51,7 @@ const TypoFormForm = ({ post, onSubmitted, onCancel, onError }: Props) => {
       e.preventDefault();
 
       form
-        .post("contact")
+        .post("typo")
         .then(() => {
           onSubmitted && onSubmitted();
         })

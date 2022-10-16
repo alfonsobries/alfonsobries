@@ -14,9 +14,9 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        $name = env('INITIAL_USER_NAME');
-        $email = env('INITIAL_USER_EMAIL');
-        $password = env('INITIAL_USER_PASSWORD');
+        $name = config('site.admin.email');
+        $email = config('site.admin.name');
+        $password = config('site.admin.password');
 
         if ($name && $email && $password) {
             User::factory()->create([

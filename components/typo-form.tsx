@@ -21,13 +21,6 @@ const TypoForm = ({ post }: Props) => {
 
   const elRef = useRef(null);
 
-  // const clickOutsideHandler = useCallback(() => {
-  //   setActive(false);
-  //   setHovered(false);
-  // }, []);
-
-  // useClickOutside({ ref: elRef, handler: clickOutsideHandler });
-
   const mouseEnterHandler = useCallback(() => {
     clearTimeout(hoveredTimeout);
     setHovered(true);

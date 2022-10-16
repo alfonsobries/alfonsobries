@@ -19,7 +19,7 @@ class TypoNotification extends Notification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(private Article $article, private string $message, private ?string $excerpt = null)
+    public function __construct(public Article $article, public string $message, public ?string $excerpt = null)
     {
         //
     }
