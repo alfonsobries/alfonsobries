@@ -25,6 +25,7 @@ class Project extends Model implements HasMedia, Sortable
     use ExpiresFrontend;
 
     const BANNER_WIDTH = 544;
+
     const BANNER_HEIGHT = 306;
 
     const TECHNOLOGIES = [
@@ -54,7 +55,7 @@ class Project extends Model implements HasMedia, Sortable
         'is_published' => 'boolean',
     ];
 
-     /**
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<string>

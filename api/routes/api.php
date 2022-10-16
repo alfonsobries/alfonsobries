@@ -3,11 +3,11 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\DraftArticleController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResumeControler;
+use App\Http\Controllers\SlugHistoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\SlugHistoryController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

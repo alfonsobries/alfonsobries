@@ -6,10 +6,10 @@ namespace App\Nova;
 
 use App\Models\ResumeSkill as Model;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
-use Laravel\Nova\Fields\Select;
 use Outl1ne\NovaSortable\Traits\HasSortableRows;
 
 final class ResumeSkill extends Resource

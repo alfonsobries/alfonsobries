@@ -4,10 +4,10 @@ namespace App\Notifications;
 
 use App\Models\Article;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramMessage;
 
 class TypoNotification extends Notification implements ShouldQueue
@@ -46,8 +46,8 @@ class TypoNotification extends Notification implements ShouldQueue
         $message = (new MailMessage)
                     ->subject($this->subject())
                     ->greeting($this->subject())
-                    ->line($this->getHtmlableLine('<strong>Article Title:</strong> ' . $this->article->title))
-                    ->line($this->getHtmlableLine('<strong>Article Slug:</strong> ' . $this->article->slug))
+                    ->line($this->getHtmlableLine('<strong>Article Title:</strong> '.$this->article->title))
+                    ->line($this->getHtmlableLine('<strong>Article Slug:</strong> '.$this->article->slug))
                     ->line($this->getHtmlableLine('<strong>Message:</strong>'))
                     ->line($this->getHtmlableLine(nl2br($this->message)));
 
@@ -69,6 +69,7 @@ class TypoNotification extends Notification implements ShouldQueue
     {
         return url(sprintf('nova/resources/articles/%s/edit', $this->article->id));
     }
+
     public function viewUrl(): string
     {
         return sprintf('%s/posts/%s', config('site.site_url'), $this->article->slug);
@@ -76,7 +77,8 @@ class TypoNotification extends Notification implements ShouldQueue
 
     public function getHtmlableLine($html): Htmlable
     {
-        return new class($html) implements Htmlable {
+        return new class($html) implements Htmlable
+        {
             public function __construct(private string $html)
             {
                 //
@@ -107,10 +109,9 @@ class TypoNotification extends Notification implements ShouldQueue
         ];
     }
 
-
     public function toTelegram($notifiable)
     {
-        $markdown = <<<MARKDOWN
+        $markdown = <<<'MARKDOWN'
 *%s*
 
 *Message:*
@@ -122,7 +123,7 @@ MARKDOWN;
 
         return TelegramMessage::create()
             ->to(config('services.telegram-bot-api.chat_id'))
-            ->content(sprintf($markdown, $this->subject(),  $this->message, $this->excerpt ?? '**No excerpt provided**'))
+            ->content(sprintf($markdown, $this->subject(), $this->message, $this->excerpt ?? '**No excerpt provided**'))
             ->button('View Article', $this->viewUrl())
             ->button('Edit Article', $this->editUrl());
     }

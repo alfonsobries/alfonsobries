@@ -8,13 +8,13 @@ trait ExpiresFrontend
 {
     public static function bootExpiresFrontend()
     {
-        static::saved(function($model) {
+        static::saved(function ($model) {
             if (self::shouldExpireFrontend($model)) {
                 self::markFrontendAsExpired();
             }
         });
 
-        static::deleted(function($model) {
+        static::deleted(function ($model) {
             if (self::shouldExpireFrontend($model)) {
                 self::markFrontendAsExpired();
             }

@@ -3,10 +3,10 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramMessage;
 
 class ContactFormNotification extends Notification implements ShouldQueue
@@ -45,8 +45,8 @@ class ContactFormNotification extends Notification implements ShouldQueue
         return (new MailMessage)
                     ->subject($this->subject())
                     ->greeting($this->subject())
-                    ->line($this->getHtmlableLine('<strong>Name:</strong> ' . $this->name))
-                    ->line($this->getHtmlableLine('<strong>Email:</strong> ' . $this->email))
+                    ->line($this->getHtmlableLine('<strong>Name:</strong> '.$this->name))
+                    ->line($this->getHtmlableLine('<strong>Email:</strong> '.$this->email))
                     ->line($this->getHtmlableLine('<strong>Message:</strong>'))
                     ->line($this->getHtmlableLine(nl2br($this->message)));
     }
@@ -58,7 +58,8 @@ class ContactFormNotification extends Notification implements ShouldQueue
 
     public function getHtmlableLine($html): Htmlable
     {
-        return new class($html) implements Htmlable {
+        return new class($html) implements Htmlable
+        {
             public function __construct(private string $html)
             {
                 //
@@ -89,7 +90,6 @@ class ContactFormNotification extends Notification implements ShouldQueue
         ];
     }
 
-
     public function toTelegram($notifiable)
     {
         // // Response is an array of updates.
@@ -113,11 +113,11 @@ class ContactFormNotification extends Notification implements ShouldQueue
         // info($updates);
         //
 
-return TelegramMessage::create()
-            // Optional recipient user id.
-            ->to(config('services.telegram-bot-api.chat_id'))
-            // Markdown supported.
-            ->content(sprintf(<<<MARKDOWN
+        return TelegramMessage::create()
+                    // Optional recipient user id.
+                    ->to(config('services.telegram-bot-api.chat_id'))
+                    // Markdown supported.
+                    ->content(sprintf(<<<'MARKDOWN'
 *%s*
 
 *Name:* %s

@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace App\Nova;
 
 use App\Models\Project as Model;
-use Laravel\Nova\Fields\ID;
 use Ardenthq\EnhancedMarkdown\EnhancedMarkdown;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Image;
+use Laravel\Nova\Fields\MultiSelect;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
-use Laravel\Nova\Fields\Image;
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Fields\MultiSelect;
 use Outl1ne\NovaSortable\Traits\HasSortableRows;
 
 final class Project extends Resource

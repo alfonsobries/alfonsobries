@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use DavidBadura\FakerMarkdownGenerator\FakerProvider;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Article>

@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace App\Nova;
 
 use App\Models\Article as Model;
-use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\ID;
 use Ardenthq\EnhancedMarkdown\EnhancedMarkdown;
 use Ardenthq\EnhancedTextarea\EnhancedTextarea;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
-use Laravel\Nova\Fields\Image;
-use Illuminate\Http\Request;
 
 final class Article extends Resource
 {
@@ -73,7 +73,7 @@ final class Article extends Resource
                 ->maxLength(155),
 
             EnhancedMarkdown::make('Body')
-                ->withFiles('public_s3', "/blog")
+                ->withFiles('public_s3', '/blog')
                 ->rules('required', 'string')
                 ->hideFromIndex(),
 

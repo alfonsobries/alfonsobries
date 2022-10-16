@@ -5,18 +5,18 @@ namespace App\Models;
 use App\Models\Traits\ExpiresFrontend;
 use App\Models\Traits\HasSlugHistory;
 use Carbon\Carbon;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\Sluggable\HasSlug;
-use Spatie\Sluggable\SlugOptions;
-use Illuminate\Contracts\Database\Eloquent\Builder;
-use Spatie\MediaLibrary\MediaCollections\File;
 use Illuminate\Support\Str;
 use Spatie\Image\Manipulations;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\File;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 class Article extends Model implements HasMedia
 {
@@ -28,7 +28,7 @@ class Article extends Model implements HasMedia
     use HasSlugHistory;
 
     protected $casts = [
-        'published_at'      => 'datetime',
+        'published_at' => 'datetime',
     ];
 
     /**
@@ -47,7 +47,7 @@ class Article extends Model implements HasMedia
     /**
      * Get the options for generating the slug.
      */
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('title')

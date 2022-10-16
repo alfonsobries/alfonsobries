@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Nova;
 
 use App\Models\ResumeExperience as Model;
-use Laravel\Nova\Fields\ID;
 use Ardenthq\EnhancedMarkdown\EnhancedMarkdown;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
-use Laravel\Nova\Fields\Select;
 use Outl1ne\NovaSortable\Traits\HasSortableRows;
 
 final class ResumeExperience extends Resource

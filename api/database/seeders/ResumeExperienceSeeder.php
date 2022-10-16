@@ -49,7 +49,7 @@ class ResumeExperienceSeeder extends Seeder
             'period' => 'Continual',
             'place' => 'Online',
             'title' => 'Online Courses & Self Learning',
-            'description' => <<<HTML
+            'description' => <<<'HTML'
 I'm used to learning through online courses as an important source of new knowledge. Some of the recent or favorite ones are:
 
 * PHP, Vue, Laravel, & TDD Courses at [Laracasts](https://laracasts.com/)
@@ -68,7 +68,6 @@ I'm used to learning through online courses as an important source of new knowle
 HTML,
             'type' => 'education',
         ],
-
 
     ];
 

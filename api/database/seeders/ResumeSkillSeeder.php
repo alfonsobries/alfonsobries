@@ -11,12 +11,12 @@ class ResumeSkillSeeder extends Seeder
         [
             'level' => ResumeSkill::LEVEL_EXPERT,
             'name' => 'Laravel',
-            'category' => ResumeSkill::CATEGORY_FRAMEWORK
+            'category' => ResumeSkill::CATEGORY_FRAMEWORK,
         ],
         [
             'level' => ResumeSkill::LEVEL_EXPERT,
             'name' => 'VueJs',
-            'category' => ResumeSkill::CATEGORY_FRAMEWORK
+            'category' => ResumeSkill::CATEGORY_FRAMEWORK,
         ],
         [
             'level' => ResumeSkill::LEVEL_EXPERT,

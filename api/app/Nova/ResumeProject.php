@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Nova;
 
 use App\Models\ResumeProject as Model;
-use Laravel\Nova\Fields\ID;
 use Ardenthq\EnhancedMarkdown\EnhancedMarkdown;
+use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
-use Laravel\Nova\Fields\Select;
 use Outl1ne\NovaSortable\Traits\HasSortableRows;
 
 final class ResumeProject extends Resource
