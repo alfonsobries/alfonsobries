@@ -25,7 +25,26 @@ class ProjectFactory extends Factory
             'description' => $this->faker->sentence(20),
             'url' => $this->faker->url(),
             'technologies' => $this->faker->randomElements($techs, $this->faker->numberBetween(1, count($techs))),
+            'is_published' => $this->faker->boolean(),
         ];
+    }
+
+    public function published()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'is_published' => true,
+            ];
+        });
+    }
+
+    public function unpublished()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'is_published' => false,
+            ];
+        });
     }
 
     public function withBanner()
