@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'site_url' => env('FRONT_URL', 'http://localhost:3000'),
+    'site_url' => env('FRONT_URL', 'https://www.alfonsobries.com'),
     'secret_prefix' => env('SECRET_PREFIX', false),
     'expireCacheKey' => 'frontend-expired',
     'expireResumeKey' => 'resume-expired',
