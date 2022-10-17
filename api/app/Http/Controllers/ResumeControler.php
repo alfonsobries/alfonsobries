@@ -34,6 +34,7 @@ class ResumeControler extends Controller
 
     private function shouldGeneratePdf()
     {
+        return true;
         return ! file_exists(storage_path('alfonso.bribiesca-resume.pdf')) || Cache::has(config('site.expireResumeKey'));
     }
 }
