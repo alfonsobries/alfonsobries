@@ -3,9 +3,16 @@ import { ResumeProject } from "../../interfaces/resume";
 import { LINK_COLOR_TEXT } from "../../lib/cssClasses";
 import LinkIcon from "../icons/link";
 
-const ResumeProject = ({ title, description, url }: ResumeProject) => {
+const ResumeProject = ({
+  title,
+  description,
+  url,
+  className,
+}: ResumeProject & {
+  className?: string;
+}) => {
   return (
-    <div className="space-y-4">
+    <div className={classNames("space-y-4", className)}>
       <div className="prose relative flex flex-col before:absolute before:inset-0 before:-ml-8 before:block before:h-full before:w-1 before:border-r before:border-gray-100 before:content-[''] dark:prose-invert dark:before:border-gray-800">
         <h4 className="mb-0 justify-start uppercase text-black dark:text-gray-200">
           {title}

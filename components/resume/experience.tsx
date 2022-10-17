@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { ResumeExperience as ResumeExperienceType } from "../../interfaces/resume";
 
 const ResumeExperience = ({
@@ -5,15 +6,22 @@ const ResumeExperience = ({
   period,
   place,
   description,
-}: ResumeExperienceType) => {
+  className,
+}: ResumeExperienceType & {
+  className?: string;
+}) => {
   return (
-    <div className="space-y-4">
+    <div className={classNames(className, "space-y-4")}>
       <div className="relative space-x-4 text-sm text-gray-400 before:absolute before:inset-0 before:-ml-8 before:block before:content-['●']">
         <span>{period}</span>
 
-        <span className="text-xs text-gray-200 dark:text-gray-700">●</span>
+        {place && (
+          <>
+            <span className="text-xs text-gray-200 dark:text-gray-700">●</span>
 
-        <span>{place}</span>
+            <span>{place}</span>
+          </>
+        )}
       </div>
 
       <div className="prose relative flex flex-col before:absolute before:inset-0 before:-ml-8 before:block before:h-full before:w-1 before:border-r before:border-gray-100 before:content-[''] dark:prose-invert dark:before:border-gray-800">

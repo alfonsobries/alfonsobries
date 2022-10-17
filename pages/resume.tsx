@@ -23,6 +23,7 @@ import { getResumeData } from "../lib/api";
 import Envelop from "../components/icons/envelop";
 import Dna from "../components/icons/dna";
 import LineClamp from "../components/line-clamp";
+import PageBreak from "../components/PageBreak";
 
 type SkillGroup = {
   framework: ResumeSkillType[];
@@ -66,7 +67,8 @@ export default function Index({
         navigationTitle={
           <span className="prose inline-flex items-center space-x-2 font-sans font-normal dark:prose-invert">
             <strong>
-              Alfonso <span className="hidden sm:inline">Bribiesca</span>
+              Alfonso{" "}
+              <span className="hidden print:inline sm:inline">Bribiesca</span>
             </strong>{" "}
             <span className="text-sm text-gray-200 dark:text-gray-700">●</span>
             <span className="text-gray-500">Personal Resume</span>
@@ -82,8 +84,8 @@ export default function Index({
           image: `https://og.alfonsobries.com/Alfonso%20Bribiesca%20-%20Personal%20Resume.png`,
         }}
       >
-        <div className="relative z-0 mx-auto flex max-w-4xl flex-col space-y-8 px-4 pb-8 sm:flex-row sm:space-x-8 sm:space-y-0">
-          <div className="space-y-8 sm:max-w-sm md:max-w-md lg:max-w-lg">
+        <div className="relative z-0 mx-auto flex max-w-4xl flex-col space-y-8 px-4 pb-8 print:flex-row print:space-x-8 print:space-y-0 print:pt-0 sm:flex-row sm:space-x-8 sm:space-y-0">
+          <div className="space-y-8 print:max-w-md print:space-y-4 sm:max-w-sm md:max-w-md lg:max-w-lg">
             <ResumeSection title="Experience" icon={<Briefcase />}>
               <div className="space-y-4">
                 {work.map((item) => (
@@ -92,28 +94,57 @@ export default function Index({
               </div>
             </ResumeSection>
 
+            <PageBreak />
+
             <ResumeSection
               title="Open Source &amp; Personal Projects"
               icon={<Code />}
             >
               <div className="space-y-4">
-                {projects.map((item) => (
-                  <ResumeProject {...item} key={item.id} />
-                ))}
+                <>
+                  {projects.map((item) => (
+                    <ResumeProject
+                      className="print:hidden"
+                      {...item}
+                      key={item.id}
+                    />
+                  ))}
+
+                  <ResumeProject
+                    id="other"
+                    title="Visit my website"
+                    url="https://www.alfonsobries.com/"
+                    description='<p>Visit the <a href="https://www.alfonsobries.com" target="_blank" rel="nofollow">Labs</a> section on my personal website, the <a href="https://www.alfonsobries.com/resume" target="_blank" rel="nofollow">online version</a> of this resume or explore my <a href="https://github.com/alfonsobries" target="_blank" rel="nofollow">Github profile</a> to check some of my open-source tools, side-projects, and experiments.</p>'
+                  />
+                </>
               </div>
             </ResumeSection>
 
             <ResumeSection title="Education" icon={<GraduationHat />}>
               <div className="space-y-4">
-                {education.map((item) => (
-                  <ResumeExperience {...item} key={item.id} />
+                {education.map((item, index) => (
+                  <ResumeExperience
+                    {...item}
+                    key={item.id}
+                    className={index > 0 && "print:hidden"}
+                  />
                 ))}
+
+                <ResumeExperience
+                  id="test"
+                  className="hidden print:block"
+                  title="Online Courses & Self Learning"
+                  period="Continual"
+                  place="Online"
+                  type="education"
+                  description='<p>During the last years, I have been taking online courses and reading books to keep my skills up to date. I have also been working on personal projects to learn new technologies and improve my skills. Visit the <a href="https://www.alfonsobries.com/resume" target="_blank" rel="nofollow">online version</a> of this resume for details.</p>'
+                />
               </div>
             </ResumeSection>
           </div>
-          <div className="flex flex-1 flex-col-reverse sm:flex-col ">
+          <div className="flex flex-1 flex-col-reverse print:flex-col sm:flex-col">
             <ResumeSection
-              className="mt-8 sm:mt-0 sm:mb-8"
+              className="mt-8 print:mt-0 print:mb-8 sm:mt-0 sm:mb-8"
               title="Contact Information"
               icon={<Contact />}
               noMargin
@@ -146,14 +177,15 @@ export default function Index({
                 </ResumeContactItem>
               </ul>
             </ResumeSection>
-            <div className="space-y-8">
+            <div className="space-y-8 print:space-y-4">
               <ResumeSection
                 title="Skills &amp; Knowledge"
                 icon={<Knife />}
                 noMargin
               >
-                <div className="space-y-8">
+                <div className="space-y-8 print:space-y-4">
                   <ResumeSkillGroup
+                    className="break-after-all"
                     title="I am an expert in:"
                     intro="The following is a list of the different technologies where
                     I have a deep understanding of their inner workings, have
@@ -179,6 +211,8 @@ export default function Index({
                       ))}
                     </ResumeSkillList>
                   </ResumeSkillGroup>
+
+                  <PageBreak />
 
                   <ResumeSkillGroup
                     title="I have strong knowledge"
@@ -206,9 +240,9 @@ export default function Index({
               </ResumeSection>
 
               <ResumeSection title="About Me" icon={<Dna />} noMargin>
-                <div className="prose text-sm dark:prose-invert">
+                <div className="prose text-sm dark:prose-invert  ">
                   <LineClamp>
-                    <p className="line-clamp-6">
+                    <p className="line-clamp-6 print:line-clamp-none">
                       Hello, I’m Alfonso. For the past {yearsOfExperience}{" "}
                       years, I have been building and designing software for a
                       wide variety of businesses, either working in my company
@@ -216,13 +250,6 @@ export default function Index({
                       different companies worldwide. My specialty is full-stack
                       architecture and development, and, as you can see in my
                       resume, I am proficient in several technologies.
-                      <br />
-                      <br />
-                      In addition to software development I like good design and
-                      illustration. I particullary enjoy memes and silly comic
-                      strips as well. Other topics that interest me are
-                      philosophy, psychology, and everything about the human
-                      mind.
                       <br />
                       <br />
                       In my spare time, I enjoy traveling, reading a good book,
