@@ -24,6 +24,8 @@ class ResumeControler extends Controller
         if ($this->shouldGeneratePdf()) {
             Browsershot::url(config('site.site_url').'/resume')
                 ->format('Letter')
+                ->waitUntilNetworkIdle()
+                ->ignoreHttpsErrors()
                 ->save(storage_path('alfonso.bribiesca-resume.pdf'));
 
             Cache::forget(config('site.expireResumeKey'));
@@ -34,7 +36,6 @@ class ResumeControler extends Controller
 
     private function shouldGeneratePdf()
     {
-        return true;
         return ! file_exists(storage_path('alfonso.bribiesca-resume.pdf')) || Cache::has(config('site.expireResumeKey'));
     }
 }
