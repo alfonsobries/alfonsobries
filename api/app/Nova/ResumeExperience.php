@@ -52,8 +52,8 @@ final class ResumeExperience extends Resource
 
             Select::make('Type', 'type')
                 ->options([
-                    'work' => 'Work',
-                    'education' => 'Education',
+                    Model::TYPE_WORK => 'Work',
+                    Model::TYPE_EDUCATION => 'Education',
                 ])
                 ->displayUsingLabels()
                 ->rules('required'),

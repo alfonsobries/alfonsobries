@@ -16,6 +16,10 @@ class ResumeExperience extends Model implements Sortable
     use SoftDeletes;
     use ExpiresFrontend;
 
+    const TYPE_WORK = 'work';
+
+    const TYPE_EDUCATION = 'education';
+
     protected $table = 'resume_experience';
 
     public $sortable = [

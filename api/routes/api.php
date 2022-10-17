@@ -35,7 +35,7 @@ if (config('site.secret_prefix')) {
 }
 
 Route::get('/projects', ProjectController::class)->name('projects.index');
-Route::get('/resume', ResumeControler::class);
+Route::get('/resume', ResumeControler::class)->name('resume');
 Route::post('/contact', ContactFormController::class)->name('contact');
 Route::post('/typo', TypoFormController::class)->name('typo');
 Route::get('/slug-history', SlugHistoryController::class)->name('slug-history.index');

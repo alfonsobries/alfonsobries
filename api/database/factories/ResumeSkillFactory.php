@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\ResumeSkill;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +18,9 @@ class ResumeSkillFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'level' => $this->faker->randomElement([ResumeSkill::LEVEL_EXPERT, ResumeSkill::LEVEL_ADVANCED]),
+            'name' => $this->faker->word(),
+            'category' => $this->faker->randomElement([ResumeSkill::CATEGORY_FRAMEWORK, ResumeSkill::CATEGORY_LANGUAGE, ResumeSkill::CATEGORY_OTHER]),
         ];
     }
 }
