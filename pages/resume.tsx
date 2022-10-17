@@ -111,6 +111,7 @@ export default function Index({
                   ))}
 
                   <ResumeProject
+                    className="hidden print:block"
                     id="other"
                     title="Visit my website"
                     url="https://www.alfonsobries.com/"
