@@ -84,7 +84,7 @@ export default function Index({
           </span>
         </div>
 
-        <Link href="/">
+        <Link href="/resume">
           <a>
             <Sphere className="h-5 w-5 text-blue-700" />
           </a>
