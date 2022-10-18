@@ -25,7 +25,7 @@ class ResumeControler extends Controller
             Browsershot::url(config('site.site_url').'/resume/print')
                 ->format('Letter')
                 ->scale(0.9)
-                ->margins(10, 5, 10, 5)
+                ->margins(7, 5, 7, 5)
                 ->waitUntilNetworkIdle()
                 ->timeout(180)
                 ->ignoreHttpsErrors()
