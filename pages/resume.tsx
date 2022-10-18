@@ -77,13 +77,15 @@ export default function Index({
               <span className="hidden print:inline sm:inline">Personal</span>{" "}
               Resume
             </span>
-            <div className="flex">
+            <div className="flex items-center">
               <span
                 className={`sm:border-l ${BORDER_COLOR}  ml-2 block h-5 sm:mr-4 sm:ml-2`}
               ></span>
               <a
                 href="https://api.alfonsobries.com/api/resume/pdf"
+                target="_blank"
                 className="text-blue-700 hover:text-blue-600 dark:text-blue-200 dark:hover:text-blue-300"
+                rel="noreferrer"
               >
                 <FileDownload className="h-4 w-4" />
               </a>
