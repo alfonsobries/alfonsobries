@@ -66,7 +66,10 @@ export default function Index({
 }: Props) {
   return (
     <>
-      <div className="mx-auto mb-4 flex max-w-4xl items-center px-4 pb-4">
+      <div
+        id="header"
+        className="mx-auto mb-4 flex max-w-4xl items-center px-4 pb-4"
+      >
         <div className="flex flex-1 items-center space-x-2">
           <Link href="/">
             <a className="flex h-8 w-8 shrink-0 origin-bottom items-center justify-center rounded-full bg-blue-700 p-1">
