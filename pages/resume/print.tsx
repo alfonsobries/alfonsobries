@@ -112,6 +112,13 @@ export default function Index({
           >
             <ul className="space-y-2">
               <ResumeContactItem
+                icon={<Sphere />}
+                link="https://www.alfonsobries.com/"
+                external={false}
+              >
+                alfonsobries.com
+              </ResumeContactItem>
+              <ResumeContactItem
                 icon={<Envelop />}
                 link="mailto:alfonso@vexilo.com"
                 external={false}
