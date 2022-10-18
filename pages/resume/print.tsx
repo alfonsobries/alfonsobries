@@ -77,7 +77,7 @@ export default function Index({
             </a>
           </Link>
 
-          <span className="prose flex items-center space-x-2 font-sans font-normal uppercase">
+          <span className="prose flex items-center space-x-2 font-sans text-xl font-normal uppercase">
             <strong>Alfonso Bribiesca</strong>{" "}
             <span className="text-sm text-gray-200">●</span>
             <span className="uppercase text-gray-500">Personal Resume</span>
