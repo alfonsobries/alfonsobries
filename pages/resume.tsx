@@ -178,6 +178,7 @@ export default function Index({
                 </ResumeContactItem>
               </ul>
             </ResumeSection>
+
             <div className="space-y-8 print:space-y-4">
               <ResumeSection
                 title="Skills &amp; Knowledge"
@@ -240,8 +241,10 @@ export default function Index({
                 </div>
               </ResumeSection>
 
+              <PageBreak />
+
               <ResumeSection title="About Me" icon={<Dna />} noMargin>
-                <div className="prose text-sm dark:prose-invert  ">
+                <div className="prose text-sm dark:prose-invert ">
                   <LineClamp>
                     <p className="line-clamp-6 print:line-clamp-none">
                       Hello, I’m Alfonso. For the past {yearsOfExperience}{" "}
