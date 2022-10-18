@@ -13,7 +13,7 @@ module.exports = {
   transform: async (config, path) => {
     const overrides = {};
 
-    if (path.startsWith("/secret")) {
+    if (path.startsWith("/secret") || path.includes("print")) {
       return false;
     }
 

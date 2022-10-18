@@ -21,25 +21,24 @@ class ResumeControler extends Controller
 
     public function pdf()
     {
-        // if ($this->shouldGeneratePdf()) {
-            $pdf = Browsershot::url(config('site.site_url').'/resume')
+        if ($this->shouldGeneratePdf()) {
+            Browsershot::url(config('site.site_url').'/resume')
                 ->format('Letter')
                 ->waitUntilNetworkIdle()
                 ->ignoreHttpsErrors()
-                ->pdf();
+                ->timeout(10000)
+                ->save(storage_path('alfonso.bribiesca-resume.pdf'));
 
-            // Cache::forget(config('site.expireResumeKey'));
-        // }
+            Cache::forget(config('site.expireResumeKey'));
+        }
 
-        return response($pdf, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="resume.pdf"',
-        ]);
-        // return response()->download(storage_path('alfonso.bribiesca-resume.pdf'));
+        Cache::set(config('site.expireResumeKey'), true);
+
+        return response()->download(storage_path('alfonso.bribiesca-resume.pdf'));
     }
 
-    // private function shouldGeneratePdf()
-    // {
-    //     return ! file_exists(storage_path('alfonso.bribiesca-resume.pdf')) || Cache::has(config('site.expireResumeKey'));
-    // }
+    private function shouldGeneratePdf()
+    {
+        return ! file_exists(storage_path('alfonso.bribiesca-resume.pdf')) || Cache::has(config('site.expireResumeKey'));
+    }
 }

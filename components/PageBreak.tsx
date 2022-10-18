@@ -1,7 +1,6 @@
 const PageBreak = () => {
   return (
-    <span
-      className="hidden print:block print:h-4"
+    <div
       style={{
         pageBreakAfter: "always",
       }}
