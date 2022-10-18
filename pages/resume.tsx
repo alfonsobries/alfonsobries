@@ -23,7 +23,7 @@ import { getResumeData } from "../lib/api";
 import Envelop from "../components/icons/envelop";
 import Dna from "../components/icons/dna";
 import LineClamp from "../components/line-clamp";
-import PageBreak from "../components/PageBreak";
+import PageBreak from "../components/page-break";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import FileDownload from "../components/icons/file-download";
 

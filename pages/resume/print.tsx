@@ -21,7 +21,7 @@ import {
 import { getResumeData } from "../../lib/api";
 import Envelop from "../../components/icons/envelop";
 import Dna from "../../components/icons/dna";
-import PageBreak from "../../components/PageBreak";
+import PageBreak from "../../components/page-break";
 import Link from "next/link";
 import Sphere from "../../components/icons/sphere";
 
