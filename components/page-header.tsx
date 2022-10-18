@@ -47,9 +47,9 @@ const PageHeader: React.FC<{
               <>
                 <LazySvg
                   src="/images/me.svg"
-                  width={130}
-                  height={180}
-                  className="flex h-[180px] w-[130px] flex-shrink-0 items-center justify-center"
+                  width={110}
+                  height={150}
+                  className="flex h-[150px] w-[130px] flex-shrink-0 items-center justify-center"
                 />
 
                 <div className="mt-4 w-full overflow-hidden sm:ml-4 sm:mt-0 sm:w-auto sm:flex-grow sm:space-y-4">
