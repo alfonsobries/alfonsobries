@@ -26,14 +26,14 @@ class ResumeControler extends Controller
                 ->format('Letter')
                 ->scale(0.9)
                 ->margins(5, 5, 5, 5)
+                ->waitUntilNetworkIdle()
+                ->timeout(180)
                 ->ignoreHttpsErrors()
                 ->waitForFunction("document.getElementById('header') !== null")
                 ->save(storage_path('alfonso.bribiesca-resume.pdf'));
 
             Cache::forget(config('site.expireResumeKey'));
         }
-
-        Cache::set(config('site.expireResumeKey'), true);
 
         return response()->download(storage_path('alfonso.bribiesca-resume.pdf'));
     }
