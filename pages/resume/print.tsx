@@ -6,7 +6,6 @@ import Contact from "../../components/icons/contact";
 import Twitter from "../../components/icons/twitter";
 import Github from "../../components/icons/github";
 import Linkedin from "../../components/icons/linkedin";
-import Layout from "../../components/layout";
 import ResumeContactItem from "../../components/resume/contact-item";
 import ResumeExperience from "../../components/resume/experience";
 import ResumeProject from "../../components/resume/project";
@@ -22,12 +21,9 @@ import {
 import { getResumeData } from "../../lib/api";
 import Envelop from "../../components/icons/envelop";
 import Dna from "../../components/icons/dna";
-import LineClamp from "../../components/line-clamp";
 import PageBreak from "../../components/PageBreak";
 import Link from "next/link";
 import Sphere from "../../components/icons/sphere";
-import classNames from "classnames";
-import { BORDER_COLOR } from "../../lib/cssClasses";
 
 type SkillGroup = {
   framework: ResumeSkillType[];
