@@ -62,22 +62,6 @@ export default function Index({
   skillsExpert,
   skillsAdvanced,
 }: Props) {
-  const downloadResume = () => {
-    fetch("https://api.alfonsobries.com/api/resume/pdf")
-      .then((resp) => resp.blob())
-      .then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.style.display = "none";
-        a.href = url;
-        // the filename you want
-        a.download = "alfonso-bribiesca-resume.pdf";
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        a.remove();
-      });
-  };
   return (
     <>
       <Layout
@@ -97,13 +81,12 @@ export default function Index({
               <span
                 className={`sm:border-l ${BORDER_COLOR}  ml-2 block h-5 sm:mr-4 sm:ml-2`}
               ></span>
-              <button
-                type="button"
-                onClick={downloadResume}
+              <a
+                href="https://api.alfonsobries.com/api/resume/pdf"
                 className="text-blue-700 hover:text-blue-600 dark:text-blue-200 dark:hover:text-blue-300"
               >
                 <FileDownload className="h-4 w-4" />
-              </button>
+              </a>
             </div>
           </span>
         }
