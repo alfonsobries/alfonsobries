@@ -73,9 +73,9 @@ final class Article extends Resource
                 ->maxLength(155),
 
             EnhancedMarkdown::make('Body')
-                ->withFiles('public_s3', '/blog')
-                ->rules('required', 'string')
-                ->hideFromIndex(),
+                ->disk('public_s3')
+                ->path('/blog')
+                ->rules('required', 'string'),
 
             Image::make('Banner', 'banner')
                 ->rules('image')

@@ -4,24 +4,24 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "061e007b1c6bfe4d47120994a68f88d7",
+    "content-hash": "ace0670f9e4f8dea2b34255f3fad14ec",
     "packages": [
         {
             "name": "ardenthq/nova-enhanced-markdown",
-            "version": "1.0.3",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ArdentHQ/nova-enhanced-markdown.git",
-                "reference": "d4dd8025b8b39a1ad91c30b573b14c70f9d360e5"
+                "reference": "c059c445d12a9d7cc3098904e0fd4ab868c717b7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ArdentHQ/nova-enhanced-markdown/zipball/d4dd8025b8b39a1ad91c30b573b14c70f9d360e5",
-                "reference": "d4dd8025b8b39a1ad91c30b573b14c70f9d360e5",
+                "url": "https://api.github.com/repos/ArdentHQ/nova-enhanced-markdown/zipball/c059c445d12a9d7cc3098904e0fd4ab868c717b7",
+                "reference": "c059c445d12a9d7cc3098904e0fd4ab868c717b7",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "^9.34",
+                "laravel/framework": "^9.0",
                 "laravel/nova": "^4.0",
                 "php": "^8.0",
                 "spatie/image": "^2.2",
@@ -60,9 +60,9 @@
             "description": "Custom Markdown Field for Nova with image upload support",
             "support": {
                 "issues": "https://github.com/ArdentHQ/nova-enhanced-markdown/issues",
-                "source": "https://github.com/ArdentHQ/nova-enhanced-markdown/tree/1.0.3"
+                "source": "https://github.com/ArdentHQ/nova-enhanced-markdown/tree/2.0.0"
             },
-            "time": "2022-10-12T11:49:14+00:00"
+            "time": "2022-10-21T08:53:04+00:00"
         },
         {
             "name": "aws/aws-crt-php",

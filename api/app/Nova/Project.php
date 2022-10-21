@@ -58,6 +58,8 @@ final class Project extends Resource
                 ->rules('required', 'string', 'max:120'),
 
             EnhancedMarkdown::make('Description', 'description')
+                ->disk('public_s3')
+                ->path('/project')
                 ->rules('nullable', 'string'),
 
             Text::make('Url', 'url')
