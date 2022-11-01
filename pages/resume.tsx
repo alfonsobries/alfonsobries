@@ -19,13 +19,15 @@ import {
   ResumeProject as ResumeProjectType,
   ResumeSkill as ResumeSkillType,
 } from "../interfaces/resume";
-import { getResumeData } from "../lib/api";
+import { getGithubContributions, getResumeData } from "../lib/api";
 import Envelop from "../components/icons/envelop";
 import Dna from "../components/icons/dna";
 import LineClamp from "../components/line-clamp";
 import PageBreak from "../components/page-break";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import FileDownload from "../components/icons/file-download";
+import GithubHeatmap from "../components/github-heatmap";
+import Keyboard from "../components/icons/keyboard";
 
 type SkillGroup = {
   framework: ResumeSkillType[];
@@ -39,6 +41,9 @@ type Props = {
   projects: ResumeProjectType[];
   skillsExpert: SkillGroup;
   skillsAdvanced: SkillGroup;
+  githubContributions: {
+    [key: number]: any[];
+  };
 };
 
 const yearsOfExperience = (() => {
@@ -61,6 +66,7 @@ export default function Index({
   projects,
   skillsExpert,
   skillsAdvanced,
+  githubContributions,
 }: Props) {
   return (
     <>
@@ -232,8 +238,6 @@ export default function Index({
                     </ResumeSkillList>
                   </ResumeSkillGroup>
 
-                  <PageBreak />
-
                   <ResumeSkillGroup
                     title="I have strong knowledge"
                     intro="I have worked with the following technologies over the last several years. However, I have only had a few opportunities to use them to their full potential. Still, I have a solid and extensive knowledge of them, and I am ready to use them on any production project that comes on my way."
@@ -259,8 +263,13 @@ export default function Index({
                 </div>
               </ResumeSection>
 
-              <PageBreak />
-
+              <ResumeSection
+                title="Latest Github Activity"
+                icon={<Keyboard />}
+                noMargin
+              >
+                <GithubHeatmap githubContributions={githubContributions} />
+              </ResumeSection>
               <ResumeSection title="About Me" icon={<Dna />} noMargin>
                 <div className="prose text-sm dark:prose-invert ">
                   <LineClamp>
@@ -290,7 +299,8 @@ export default function Index({
 }
 
 export const getStaticProps = async () => {
-  const { experience, projects, skills } = await getResumeData();
+  const [{ experience, projects, skills }, githubContributions] =
+    await Promise.all([getResumeData(), getGithubContributions()]);
 
   const work = experience.filter((item) => item.type === "work");
 
@@ -325,6 +335,13 @@ export const getStaticProps = async () => {
     );
 
   return {
-    props: { projects, work, education, skillsExpert, skillsAdvanced },
+    props: {
+      projects,
+      work,
+      education,
+      skillsExpert,
+      skillsAdvanced,
+      githubContributions,
+    },
   };
 };

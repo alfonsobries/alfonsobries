@@ -10,6 +10,7 @@ import { Project } from "../interfaces/project";
 export const Api = axios.create({
   baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
 });
+const USERNAME = "alfonsobries";
 
 const getPostWithOnlyProperties = (
   post: Post,
@@ -145,4 +146,113 @@ export async function getProjects() {
   );
 
   return projects;
+}
+
+enum ContributionLevel {
+  FIRST_QUARTILE = "FIRST_QUARTILE",
+  FOURTH_QUARTILE = "FOURTH_QUARTILE",
+  NONE = "NONE",
+  SECOND_QUARTILE = "SECOND_QUARTILE",
+  THIRD_QUARTILE = "THIRD_QUARTILE",
+}
+
+type ContributionDay = {
+  color: string;
+  contributionLevel: ContributionLevel;
+  contributionCount: number;
+  date: string;
+  weekday: number;
+};
+
+type ContributionWeeks = {
+  contributionDays: ContributionDay[];
+  firstDay: string;
+}[];
+
+const parseGithubContributions = (weeks: ContributionWeeks) => {
+  const months = weeks.reduce(
+    (acc, week) => {
+      const firstDay = new Date(week.firstDay);
+
+      const month = new Date(
+        firstDay.getFullYear(),
+        firstDay.getMonth(),
+        1
+      ).getTime();
+
+      const groupedByDayOfWeek = week.contributionDays.reduce(
+        (acc, day) => {
+          acc[day.weekday] = day;
+          return acc;
+        },
+        {} as {
+          [key: number]: ContributionDay;
+        }
+      );
+
+      if (!acc[month]) {
+        acc[month] = [];
+      }
+
+      acc[month].push(groupedByDayOfWeek);
+
+      return acc;
+    },
+    {} as {
+      [key: number]: any[];
+    }
+  );
+
+  // Sorts by key date
+  return Object.keys(months)
+    .sort((a, b) => Number(a) - Number(b))
+    .reduce(
+      (acc, key) => {
+        acc[Number(key)] = months[Number(key)];
+
+        return acc;
+      },
+      {} as {
+        [key: number]: any[];
+      }
+    );
+};
+
+export async function getGithubContributions() {
+  const headers = {
+    Authorization: `bearer ${process.env.GITHUB_API_KEY}`,
+  };
+  const body = {
+    query: `query {
+          user(login: "${USERNAME}") {
+            contributionsCollection {
+              contributionCalendar {
+                totalContributions
+                weeks {
+                  contributionDays {
+                    color
+                    contributionLevel,
+                    contributionCount
+                    date
+                    weekday
+                  }
+                  firstDay
+                }
+              }
+            }
+          }
+        }`,
+  };
+
+  const response = await fetch("https://api.github.com/graphql", {
+    method: "POST",
+    body: JSON.stringify(body),
+    headers: headers,
+  });
+
+  const { data } = await response.json();
+
+  return parseGithubContributions(
+    data.user.contributionsCollection.contributionCalendar.weeks
+  );
 }
