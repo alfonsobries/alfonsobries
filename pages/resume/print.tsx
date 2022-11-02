@@ -18,12 +18,14 @@ import {
   ResumeProject as ResumeProjectType,
   ResumeSkill as ResumeSkillType,
 } from "../../interfaces/resume";
-import { getResumeData } from "../../lib/api";
+import { getGithubContributions, getResumeData } from "../../lib/api";
 import Envelop from "../../components/icons/envelop";
 import Dna from "../../components/icons/dna";
 import PageBreak from "../../components/page-break";
 import Link from "next/link";
 import Sphere from "../../components/icons/sphere";
+import Keyboard from "../../components/icons/keyboard";
+import GithubHeatmap from "../../components/github-heatmap";
 
 type SkillGroup = {
   framework: ResumeSkillType[];
@@ -37,6 +39,9 @@ type Props = {
   projects: ResumeProjectType[];
   skillsExpert: SkillGroup;
   skillsAdvanced: SkillGroup;
+  githubContributions: {
+    [key: number]: any[];
+  };
 };
 
 const yearsOfExperience = (() => {
@@ -59,6 +64,7 @@ export default function Index({
   projects,
   skillsExpert,
   skillsAdvanced,
+  githubContributions,
 }: Props) {
   return (
     <>
@@ -251,6 +257,14 @@ export default function Index({
               </ResumeSkillGroup>
             </ResumeSection>
 
+            <ResumeSection
+              title="Latest Github Activity"
+              icon={<Keyboard />}
+              noMargin
+            >
+              <GithubHeatmap githubContributions={githubContributions} />
+            </ResumeSection>
+
             <ResumeSection title="About Me" icon={<Dna />} noMargin>
               <div className="prose text-sm">
                 <p>
@@ -277,7 +291,8 @@ export default function Index({
 }
 
 export const getStaticProps = async () => {
-  const { experience, projects, skills } = await getResumeData();
+  const [{ experience, projects, skills }, githubContributions] =
+    await Promise.all([getResumeData(), getGithubContributions()]);
 
   const work = experience.filter((item) => item.type === "work");
 
@@ -312,6 +327,13 @@ export const getStaticProps = async () => {
     );
 
   return {
-    props: { projects, work, education, skillsExpert, skillsAdvanced },
+    props: {
+      projects,
+      work,
+      education,
+      skillsExpert,
+      skillsAdvanced,
+      githubContributions,
+    },
   };
 };
