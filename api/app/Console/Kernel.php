@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('alfonsobries:deploy')->everyMinute();
 
-        $schedule->command('alfonsobries:deploy --force')->daily();
+        $schedule->command('alfonsobries:deploy --force')->dailyAt('00:00')->sundays();
     }
 
     /**
