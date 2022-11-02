@@ -68,22 +68,22 @@ export default function GithubHeatmap({
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
                                   ContributionLevel.NONE,
-                                "bg-blue-300 dark:bg-blue-700":
+                                "bg-blue-300 dark:bg-blue-900":
                                   githubContributions[Number(month)][
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
                                   ContributionLevel.FIRST_QUARTILE,
-                                "bg-blue-500 dark:bg-blue-500":
+                                "bg-blue-500 dark:bg-blue-700":
                                   githubContributions[Number(month)][
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
                                   ContributionLevel.SECOND_QUARTILE,
-                                "bg-blue-700 dark:bg-blue-300":
+                                "bg-blue-700 dark:bg-blue-500":
                                   githubContributions[Number(month)][
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
                                   ContributionLevel.THIRD_QUARTILE,
-                                "bg-blue-900  dark:bg-blue-100":
+                                "bg-blue-900  dark:bg-blue-300":
                                   githubContributions[Number(month)][
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
