@@ -57,3 +57,8 @@
 .twitter-wrapper > div > iframe {
   margin: -1px;
 }
+
+[class*="bg-"] {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}

@@ -33,8 +33,11 @@ export default function GithubHeatmap({
 
   return (
     <div className="flex w-full overflow-hidden">
-      {months.map((month) => {
+      {months.map((month, index) => {
         return (
+          // className={classNames("flex flex-col", {
+          //   "print:hidden": index <= 1,
+          // })}
           <div
             key={month}
             className="flex flex-col"
@@ -47,7 +50,7 @@ export default function GithubHeatmap({
             <span className="px-2 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 ">
               {formatMonth(month)}
             </span>
-            <div className="flex ">
+            <div className="flex">
               {Object.keys(githubContributions[Number(month)]).map((week) => {
                 return (
                   <div
@@ -63,27 +66,27 @@ export default function GithubHeatmap({
                             className={classNames(
                               "h-0 w-full overflow-hidden pt-[100%]",
                               {
-                                "bg-blue-50 dark:bg-black":
+                                "bg-blue-50 dark:bg-gray-800":
                                   githubContributions[Number(month)][
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
                                   ContributionLevel.NONE,
-                                "bg-blue-300 dark:bg-blue-900":
+                                "bg-blue-300 dark:bg-gray-700":
                                   githubContributions[Number(month)][
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
                                   ContributionLevel.FIRST_QUARTILE,
-                                "bg-blue-500 dark:bg-blue-700":
+                                "bg-blue-500 dark:bg-gray-500":
                                   githubContributions[Number(month)][
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
                                   ContributionLevel.SECOND_QUARTILE,
-                                "bg-blue-700 dark:bg-blue-500":
+                                "bg-blue-700 dark:bg-gray-300":
                                   githubContributions[Number(month)][
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
                                   ContributionLevel.THIRD_QUARTILE,
-                                "bg-blue-900  dark:bg-blue-300":
+                                "bg-blue-900  dark:bg-gray-100":
                                   githubContributions[Number(month)][
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
