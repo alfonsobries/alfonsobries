@@ -26,25 +26,17 @@ export default function GithubHeatmap({
     (month, index) => index > 7
   );
 
-  const totalWeeks = months.reduce(
-    (acc, month) => acc + githubContributions[month].length,
-    0
-  );
-
   return (
     <div className="flex w-full overflow-hidden">
       {months.map((month, index) => {
         return (
-          // className={classNames("flex flex-col", {
-          //   "print:hidden": index <= 1,
-          // })}
           <div
             key={month}
-            className="flex flex-col"
+            className={classNames("flex flex-col", {
+              "print:hidden": index <= 0,
+            })}
             style={{
-              width: `${
-                (githubContributions[month].length / totalWeeks) * 100
-              }%`,
+              flex: githubContributions[month].length,
             }}
           >
             <span className="px-2 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 ">
