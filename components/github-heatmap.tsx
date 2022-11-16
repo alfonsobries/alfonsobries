@@ -23,7 +23,7 @@ export default function GithubHeatmap({
   };
 }) {
   const months = Object.keys(githubContributions).filter(
-    (month, index) => index > 7
+    (month, index) => index > 7 && githubContributions[month].length > 2
   );
 
   return (
@@ -32,14 +32,14 @@ export default function GithubHeatmap({
         return (
           <div
             key={month}
-            className={classNames("flex flex-col", {
+            className={classNames("flex flex-col overflow-auto", {
               "print:hidden": index <= 0,
             })}
             style={{
               flex: githubContributions[month].length,
             }}
           >
-            <span className="px-2 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 ">
+            <span className="truncate px-2 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 ">
               {formatMonth(month)}
             </span>
             <div className="flex">
