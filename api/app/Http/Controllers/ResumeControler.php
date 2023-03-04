@@ -30,16 +30,16 @@ class ResumeControler extends Controller
                 ->timeout(180)
                 ->ignoreHttpsErrors()
                 ->waitForFunction("document.getElementById('header') !== null")
-                ->save(storage_path('alfonso.bribiesca-resume.pdf'));
+                ->save(storage_path('alfonso.bribiesca.resume.pdf'));
 
             Cache::forget(config('site.expireResumeKey'));
         }
 
-        return response()->download(storage_path('alfonso.bribiesca-resume.pdf'));
+        return response()->download(storage_path('alfonso.bribiesca.resume.pdf'));
     }
 
     private function shouldGeneratePdf()
     {
-        return ! file_exists(storage_path('alfonso.bribiesca-resume.pdf')) || Cache::has(config('site.expireResumeKey'));
+        return ! file_exists(storage_path('alfonso.bribiesca.resume.pdf')) || Cache::has(config('site.expireResumeKey'));
     }
 }
