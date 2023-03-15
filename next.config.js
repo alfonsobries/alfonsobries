@@ -1,4 +1,5 @@
 const axios = require("axios");
+const { i18n } = require("./next-i18next.config");
 
 const Api = axios.create({
   baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
@@ -19,10 +20,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   experimental: { images: { allowFutureImage: true } },
-  i18n: {
-    locales: ["en", "es"],
-    defaultLocale: "en",
-  },
+  i18n,
 };
 
 module.exports = nextConfig;
