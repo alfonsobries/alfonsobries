@@ -1,12 +1,30 @@
 import React from "react";
 
-import Document, { Html, Head, Main, NextScript } from "next/document";
+import Document, {
+  Html,
+  Head,
+  Main,
+  NextScript,
+  DocumentContext,
+} from "next/document";
 import Script from "next/script";
 
 class MyDocument extends Document {
+  static async getInitialProps(ctx: DocumentContext) {
+    const initialProps = await Document.getInitialProps(ctx);
+
+    const { locale } = ctx;
+
+    return {
+      ...initialProps,
+      locale,
+    };
+  }
   render() {
+    const { locale } = this.props;
+
     return (
-      <Html lang="en">
+      <Html lang={locale}>
         <Head>
           <link
             href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Square+Peg&display=swap"
