@@ -15,17 +15,19 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\File;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\HasTranslatableSlug;
 use Spatie\Sluggable\SlugOptions;
+use Spatie\Translatable\HasTranslations;
 
 class Article extends Model implements HasMedia
 {
     use HasFactory;
-    use HasSlug;
+    use HasTranslatableSlug;
     use InteractsWithMedia;
     use SoftDeletes;
     use ExpiresFrontend;
     use HasSlugHistory;
+    use HasTranslations;
 
     protected $casts = [
         'published_at' => 'datetime',
@@ -42,6 +44,14 @@ class Article extends Model implements HasMedia
         'meta_description',
         'body',
         'published_at',
+    ];
+
+    public $translatable = [
+        'title',
+        'slug',
+        'body',
+        'excerpt',
+        'meta_description',
     ];
 
     /**

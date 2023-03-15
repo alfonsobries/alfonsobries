@@ -1,7 +1,7 @@
 const axios = require("axios");
 
 const Api = axios.create({
-  baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
+  baseURL: process.env.API_URL || "https://api.alfonsobries.test/api",
 });
 
 /** @type {import('next-sitemap').IConfig} */

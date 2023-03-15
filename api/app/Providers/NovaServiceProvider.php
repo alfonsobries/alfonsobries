@@ -2,8 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Gate;
 use Laravel\Nova\Nova;
+use Illuminate\Support\Facades\Gate;
+use Spatie\NovaTranslatable\Translatable;
 use Laravel\Nova\NovaApplicationServiceProvider;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
@@ -76,6 +77,6 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     public function register()
     {
-        //
+        Translatable::defaultLocales(['en', 'es']);
     }
 }

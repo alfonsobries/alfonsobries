@@ -8,7 +8,7 @@ import { FilteredPost, Post, PostProperties } from "../interfaces/post";
 import markdownToHtml from "./markdownToHtml";
 import { Project } from "../interfaces/project";
 export const Api = axios.create({
-  baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
+  baseURL: process.env.API_URL || "https://api.alfonsobries.test/api",
 });
 const USERNAME = "alfonsobries";
 

@@ -2,7 +2,7 @@ const axios = require("axios");
 const { i18n } = require("./next-i18next.config");
 
 const Api = axios.create({
-  baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
+  baseURL: process.env.API_URL || "https://api.alfonsobries.test/api",
 });
 
 /** @type {import('next').NextConfig} */

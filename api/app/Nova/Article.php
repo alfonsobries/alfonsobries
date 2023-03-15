@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\Nova;
 
-use App\Models\Article as Model;
-use Ardenthq\EnhancedMarkdown\EnhancedMarkdown;
-use Illuminate\Http\Request;
-use Laravel\Nova\Fields\DateTime;
-use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\Image;
-use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Textarea;
-use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
+use Laravel\Nova\Fields\ID;
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Image;
+use App\Models\Article as Model;
+use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\Textarea;
+use Spatie\NovaTranslatable\Translatable;
+use Laravel\Nova\Http\Requests\NovaRequest;
+use Ardenthq\EnhancedMarkdown\EnhancedMarkdown;
 
 final class Article extends Resource
 {
@@ -58,24 +59,27 @@ final class Article extends Resource
                 }
             })->asHtml(),
 
-            Text::make('Title', 'title')
-                ->sortable()
-                ->rules('required', 'string', 'max:120'),
+            Translatable::make([
+                Text::make('Title', 'title')
+                    ->sortable()
+                    ->rules('required', 'string', 'max:120'),
 
-            Textarea::make('Excerpt', 'excerpt')
-                ->rules('nullable', 'string', 'required')
-                ->hideFromIndex()
-                ->maxLength(155),
+                Textarea::make('Excerpt', 'excerpt')
+                    ->rules('nullable', 'string', 'required')
+                    ->hideFromIndex()
+                    ->maxLength(155),
 
-            Textarea::make('Meta description', 'meta_description')
-                ->rules('nullable', 'string', 'max:155', 'required')
-                ->hideFromIndex()
-                ->maxLength(155),
+                Textarea::make('Meta description', 'meta_description')
+                    ->rules('nullable', 'string', 'max:155', 'required')
+                    ->hideFromIndex()
+                    ->maxLength(155),
 
-            EnhancedMarkdown::make('Body')
-                ->disk('public_s3')
-                ->path('/blog')
-                ->rules('required', 'string'),
+                EnhancedMarkdown::make('Body')
+                    ->disk('public_s3')
+                    ->path('/blog')
+                    ->rules('required', 'string'),
+            ]),
+
 
             Image::make('Banner', 'banner')
                 ->rules('image')
