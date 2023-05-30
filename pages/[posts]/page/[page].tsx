@@ -1,4 +1,4 @@
-import Posts, { POST_PER_PAGE, getStaticProps } from "../../[posts]";
+import Posts, { POST_PER_PAGE, getStaticProps } from "../../posts";
 import { Post } from "../../../interfaces/post";
 import { Pagination as PaginationType } from "../../../interfaces/pagination";
 import { getAllPosts } from "../../../lib/api";

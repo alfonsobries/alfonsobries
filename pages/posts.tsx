@@ -77,20 +77,6 @@ type Params = {
   locale: LocaleCode;
 };
 
-export async function getStaticPaths({ locales }) {
-  return {
-    paths: locales.flatMap((locale) => {
-      return {
-        params: {
-          posts: locale === "es" ? "publicaciones" : "posts",
-        },
-        locale,
-      };
-    }),
-    fallback: false,
-  };
-}
-
 export const getStaticProps = async ({ params, locale }: Params) => {
   const pagination: PaginationType<Post> = await getAllPosts(
     ["title", "slug", "excerpt", "published_at", "body"],
