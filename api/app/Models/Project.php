@@ -15,6 +15,7 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\File;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Translatable\HasTranslations;
 
 class Project extends Model implements HasMedia, Sortable
 {
@@ -23,6 +24,12 @@ class Project extends Model implements HasMedia, Sortable
     use SortableTrait;
     use SoftDeletes;
     use ExpiresFrontend;
+    use HasTranslations;
+
+    public $translatable = [
+        'description',
+        'title',
+    ];
 
     const BANNER_WIDTH = 544;
 

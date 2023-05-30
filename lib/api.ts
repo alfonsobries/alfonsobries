@@ -158,11 +158,15 @@ export async function getResumeData() {
 }
 
 const parseProject = async (project: Project) => {
-  const formattedDescription = await markdownToHtml(project.description);
+  const formattedDescriptionEn = await markdownToHtml(project.description.en);
+  const formattedDescriptionEs = await markdownToHtml(project.description.es);
 
   return {
     ...project,
-    description: formattedDescription,
+    description: {
+      es: formattedDescriptionEs,
+      en: formattedDescriptionEn,
+    },
   };
 };
 

@@ -41,7 +41,7 @@ export default function Labs({ projects }) {
               <div key={project.id} className="mt-8 space-y-4 ">
                 <h2 className="text-2xl font-bold dark:text-gray-200">
                   <a className="hover:underline" href={project.url}>
-                    {project.title}
+                    {project.title[locale]}
                   </a>
                 </h2>
                 <div className="aspect-w-16 aspect-h-9 relative overflow-hidden rounded bg-gray-200">
@@ -50,13 +50,15 @@ export default function Labs({ projects }) {
                     <img
                       src={project.banner_url}
                       srcSet={project.banner_url_2x + " 2x"}
-                      alt={project.title + " banner"}
+                      alt={project.title[locale] + " banner"}
                     />
                   </a>
                 </div>
                 <div
                   className="prose text-sm dark:prose-invert"
-                  dangerouslySetInnerHTML={{ __html: project.description }}
+                  dangerouslySetInnerHTML={{
+                    __html: project.description[locale],
+                  }}
                 />
                 <div className="flex items-center justify-between space-x-4">
                   <a

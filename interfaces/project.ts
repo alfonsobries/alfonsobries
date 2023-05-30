@@ -16,8 +16,14 @@ export type ProjectType =
 
 export type Project = {
   id: string;
-  description: string;
-  title: string;
+  description: {
+    en: string;
+    es: string;
+  };
+  title: {
+    en: string;
+    es: string;
+  };
   url: string;
   technologies: ProjectType[];
   banner_url: string;

@@ -15,6 +15,7 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
 use Outl1ne\NovaSortable\Traits\HasSortableRows;
+use Spatie\NovaTranslatable\Translatable;
 
 final class Project extends Resource
 {
@@ -53,14 +54,16 @@ final class Project extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('Title', 'title')
-                ->sortable()
-                ->rules('required', 'string', 'max:120'),
+            Translatable::make([
+                Text::make('Title', 'title')
+                    ->sortable()
+                    ->rules('required', 'string', 'max:120'),
 
-            EnhancedMarkdown::make('Description', 'description')
-                ->disk('public_s3')
-                ->path('/project')
-                ->rules('nullable', 'string'),
+                EnhancedMarkdown::make('Description', 'description')
+                    ->disk('public_s3')
+                    ->path('/project')
+                    ->rules('nullable', 'string'),
+            ]),
 
             Text::make('Url', 'url')
                 ->rules('required', 'url')
