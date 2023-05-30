@@ -24,8 +24,10 @@ const getPostWithOnlyProperties = (
   };
 
   properties.forEach((property) => {
+    console.log({ property });
     if (
       typeof post[property] === "object" &&
+      post[property] !== null &&
       post[property][locale] !== undefined
     ) {
       newPost[property] = post[property][locale];
@@ -57,7 +59,11 @@ export async function getDraftPostBySlug(
   properties: PostProperties = [],
   locale: LocaleCode
 ): Promise<FilteredPost> {
-  const { data: post } = await Api.get(`/${secretPath}/articles/${slug}`);
+  const { data: post } = await Api.get(`/${secretPath}/articles/${slug}`, {
+    headers: {
+      "Accept-Language": locale,
+    },
+  });
 
   return getPostWithOnlyProperties(post, properties, locale);
 }

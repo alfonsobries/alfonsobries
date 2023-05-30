@@ -9,15 +9,15 @@ import ReadTime from "../../../../components/read-time";
 import TypoForm from "../../../../components/typo-form";
 import { getAllDraftPostsSlugs, getDraftPostBySlug } from "../../../../lib/api";
 import { LocaleCode } from "../../../../interfaces/localization";
+import urls from "../../../../helpers/urls";
 
 type Props = {
   post: PostType;
   content: string;
-  morePosts: PostType[];
-  preview?: boolean;
+  secret: string;
 };
 
-export default function Post({ post, content, morePosts, preview }: Props) {
+export default function Post({ post, content, secret }: Props) {
   const router = useRouter();
 
   if (!router.isFallback && !post?.slug) {
@@ -31,6 +31,11 @@ export default function Post({ post, content, morePosts, preview }: Props) {
         description: post.meta_description || post.excerpt,
         ogType: "article",
       }}
+      hreflangUrl={urls.draftPost({
+        post,
+        secret,
+        locale: router.locale === "en" ? "es" : "en",
+      })}
     >
       <Container>
         {router.isFallback ? (
@@ -81,11 +86,12 @@ export async function getStaticProps({ params, locale }: Params) {
     props: {
       content,
       post,
+      secret: params.secret,
     },
   };
 }
 
-export async function getStaticPaths() {
+export async function getStaticPaths({ locales }) {
   const secretPath = process.env.SECRET_PREFIX;
 
   if (secretPath === undefined) {
@@ -98,13 +104,16 @@ export async function getStaticPaths() {
   const slugs = await getAllDraftPostsSlugs(secretPath);
 
   return {
-    paths: slugs.map((slug) => {
-      return {
-        params: {
-          secret: secretPath,
-          slug,
-        },
-      };
+    paths: slugs.flatMap((slugsLangs) => {
+      return locales.flatMap((locale) => {
+        return {
+          params: {
+            secret: secretPath,
+            slug: slugsLangs[locale],
+          },
+          locale,
+        };
+      });
     }),
     fallback: false,
   };

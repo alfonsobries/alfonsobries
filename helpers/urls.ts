@@ -38,12 +38,34 @@ const urls = {
 
     return `/${locale}/contacto`;
   },
+  resume: ({ locale }: { locale: LocaleCode }) => {
+    if (locale === "en") {
+      return "/resume";
+    }
+
+    return `/${locale}/curriculum`;
+  },
   post: ({ post, locale }: { post: Post; locale: LocaleCode }) => {
     if (locale === "es") {
       return `/${locale}/publicaciones/${post.slugs.es}`;
     }
 
     return `/posts/${post.slugs.en}`;
+  },
+  draftPost: ({
+    post,
+    locale,
+    secret,
+  }: {
+    post: Post;
+    locale: LocaleCode;
+    secret: string;
+  }) => {
+    if (locale === "es") {
+      return `/${locale}/secret/${secret}/posts/${post.slugs.es}`;
+    }
+
+    return `/secret/${secret}/posts/${post.slugs.en}`;
   },
 };
 

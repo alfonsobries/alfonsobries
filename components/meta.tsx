@@ -11,7 +11,7 @@ type Props = {
     ogType?: string;
     hidePageName?: boolean;
   };
-  hreflangUrl: string;
+  hreflangUrl?: string;
 };
 
 const Meta = ({ meta, children, hreflangUrl }: Props) => {
@@ -76,11 +76,14 @@ const Meta = ({ meta, children, hreflangUrl }: Props) => {
       <meta property="og:url" content={`${SITE_URL}${asPath}`} />
       <meta property="og:type" content={meta.ogType || "website"} />
       <meta name="twitter:site" content="@alfonsobries" />
-      <link
-        rel="alternate"
-        hrefLang={locale === "es" ? "en" : "es"}
-        href={hreflangUrl}
-      />
+      {hreflangUrl && (
+        <link
+          rel="alternate"
+          hrefLang={locale === "es" ? "en" : "es"}
+          href={hreflangUrl}
+        />
+      )}
+
       {children}
     </Head>
   );

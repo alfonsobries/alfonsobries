@@ -8,7 +8,7 @@ class DraftArticleController extends Controller
 {
     public function slugs()
     {
-        return Article::select('slug')->latest('created_at')->notPublished()->pluck('slug');
+        return Article::select('slug')->latest('created_at')->notPublished()->get()->map(fn ($article) => $article->getTranslations('slug'));
     }
 
     public function show(Article $article)

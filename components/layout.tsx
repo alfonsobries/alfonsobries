@@ -11,7 +11,7 @@ type Props = {
   useLightLogo?: boolean;
   navigationTitle?: string | React.ReactNode;
   maxWidthClass?: string;
-  hreflangUrl: string;
+  hreflangUrl?: string;
   meta: {
     title: string;
     description: string;

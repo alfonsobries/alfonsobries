@@ -28,6 +28,8 @@ import { BORDER_COLOR } from "../lib/cssClasses";
 import FileDownload from "../components/icons/file-download";
 import GithubHeatmap from "../components/github-heatmap";
 import Keyboard from "../components/icons/keyboard";
+import urls from "../helpers/urls";
+import { useRouter } from "next/router";
 
 type SkillGroup = {
   framework: ResumeSkillType[];
@@ -60,7 +62,7 @@ const yearsOfExperience = (() => {
   return years;
 })();
 
-export default function Index({
+export default function Resume({
   work,
   education,
   projects,
@@ -68,6 +70,8 @@ export default function Index({
   skillsAdvanced,
   githubContributions,
 }: Props) {
+  const { locale } = useRouter();
+
   return (
     <>
       <Layout
@@ -107,6 +111,9 @@ export default function Index({
           description: `Alfonso Bribiesca is a full-stack developer with more than ${yearsOfExperience} years of experience building software for a wide variety of businesses around the world.`,
           image: `https://og.alfonsobries.com/Alfonso%20Bribiesca%20-%20Personal%20Resume.png`,
         }}
+        hreflangUrl={urls.resume({
+          locale: locale === "en" ? "es" : "en",
+        })}
       >
         <div className="relative z-0 mx-auto flex max-w-4xl flex-col space-y-8 px-4 pb-8 print:flex-row print:space-x-8 print:space-y-0 print:pt-0 sm:flex-row sm:space-x-8 sm:space-y-0">
           <div className="space-y-8 print:max-w-md print:space-y-4 sm:max-w-sm md:max-w-md lg:max-w-lg">
