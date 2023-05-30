@@ -12,7 +12,6 @@ import Home from "./icons/home";
 import classNames from "classnames";
 import { LocaleCode } from "../interfaces/localization";
 import urls from "../helpers/urls";
-import { ro } from "date-fns/locale";
 
 type MenuLink = {
   selected: (router: NextRouter) => boolean;

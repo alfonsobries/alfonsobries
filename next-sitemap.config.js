@@ -1,5 +1,9 @@
 const axios = require("axios");
 
+const frontBaseUrl = `${
+  process.env.SITE_URL || "https://www.alfonsobries.com"
+}`;
+
 const Api = axios.create({
   baseURL: process.env.API_URL || "https://api.alfonsobries.test/api",
 });
@@ -46,7 +50,7 @@ module.exports = {
       overrides.changefreq = "weekly";
       overrides.alternateRefs = [
         {
-          href: `${process.env.SITE_URL || "https://www.alfonsobries.com"}/es`,
+          href: `${frontBaseUrl}/es`,
           hreflang: "es",
           hrefIsAbsolute: true,
         },
@@ -54,9 +58,7 @@ module.exports = {
     } else if (alternates[path] !== undefined) {
       overrides.alternateRefs = [
         {
-          href: `${process.env.SITE_URL || "https://www.alfonsobries.com"}/es${
-            alternates[path]
-          }`,
+          href: `${frontBaseUrl}/es${alternates[path]}`,
           hreflang: "es",
           hrefIsAbsolute: true,
         },
@@ -68,9 +70,7 @@ module.exports = {
       if (path === "/posts") {
         overrides.alternateRefs = [
           {
-            href: `${
-              process.env.SITE_URL || "https://www.alfonsobries.com"
-            }/es/publicaciones`,
+            href: `${frontBaseUrl}/es/publicaciones`,
             hreflang: "es",
             hrefIsAbsolute: true,
           },
@@ -80,9 +80,7 @@ module.exports = {
 
         overrides.alternateRefs = [
           {
-            href: `${
-              process.env.SITE_URL || "https://www.alfonsobries.com"
-            }/es/publicaciones/page/${page}`,
+            href: `${frontBaseUrl}/es/publicaciones/page/${page}`,
             hreflang: "es",
             hrefIsAbsolute: true,
           },
@@ -115,9 +113,7 @@ module.exports = {
 
       overrides.alternateRefs = [
         {
-          href: `${
-            process.env.SITE_URL || "https://www.alfonsobries.com"
-          }/es/publicaciones/${data.slug.es}`,
+          href: `${frontBaseUrl}/es/publicaciones/${data.slug.es}`,
           hreflang: "es",
           hrefIsAbsolute: true,
         },
