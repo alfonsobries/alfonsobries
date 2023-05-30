@@ -21,6 +21,7 @@ const Meta = ({ meta, children, hreflangUrl }: Props) => {
     throw new Error("Meta Description is too long");
   }
 
+  // In case this change adjust sitemap generation
   const image =
     meta.image ||
     `https://og.alfonsobries.com/${encodeURIComponent(meta.title)}.png`;

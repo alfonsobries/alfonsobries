@@ -6,7 +6,6 @@ const Api = axios.create({
 
 const alternates = {
   "/contact": "/contacto",
-  "/posts": "/publicaciones",
   "/about": "/sobre-mi",
   "/labs": "/labs",
 };
@@ -14,6 +13,7 @@ const alternates = {
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
   siteUrl: process.env.SITE_URL || "https://www.alfonsobries.com",
+  generateIndexSitemap: false,
   generateRobotsTxt: true,
   robotsTxtOptions: {
     policies: [
@@ -29,6 +29,7 @@ module.exports = {
   priority: 0.7,
   exclude: [
     "/resume",
+    "/publicaciones",
     "/curriculum",
     "/secret/*",
     "/es",
@@ -63,6 +64,30 @@ module.exports = {
     } else if (path === "/posts" || path.startsWith("/posts/page")) {
       overrides.changefreq = "weekly";
       overrides.priority = 0.9;
+
+      if (path === "/posts") {
+        overrides.alternateRefs = [
+          {
+            href: `${
+              process.env.SITE_URL || "https://www.alfonsobries.com"
+            }/es/publicaciones`,
+            hreflang: "es",
+            hrefIsAbsolute: true,
+          },
+        ];
+      } else {
+        const page = path.split("/posts/page/")[1];
+
+        overrides.alternateRefs = [
+          {
+            href: `${
+              process.env.SITE_URL || "https://www.alfonsobries.com"
+            }/es/publicaciones/page/${page}`,
+            hreflang: "es",
+            hrefIsAbsolute: true,
+          },
+        ];
+      }
     } else if (path.startsWith("/posts/")) {
       const slug = path.split("/posts/")[1];
 
@@ -70,6 +95,23 @@ module.exports = {
 
       overrides.priority = 0.8;
       overrides.lastmod = new Date(Date.parse(data.updated_at)).toISOString();
+
+      overrides.images = [
+        {
+          loc: {
+            href: `https://og.alfonsobries.com/${encodeURIComponent(
+              data.title.en
+            )}.png`,
+          },
+        },
+      ];
+
+      overrides.news = {
+        title: data.title.en,
+        publicationName: "Alfonso's Blog",
+        publicationLanguage: "en",
+        date: overrides.lastmod,
+      };
 
       overrides.alternateRefs = [
         {

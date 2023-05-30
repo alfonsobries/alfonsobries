@@ -89,7 +89,7 @@ export async function getStaticProps({ params, locale }: Params) {
   };
 }
 
-export async function getStaticPaths({ locales, ...rest }) {
+export async function getStaticPaths({ locales }) {
   const slugs = await getSlugs();
 
   return {

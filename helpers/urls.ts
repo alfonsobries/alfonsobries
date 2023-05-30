@@ -10,12 +10,12 @@ const urls = {
 
     return `/${locale}`;
   },
-  posts: ({ locale }: { locale: LocaleCode }) => {
+  posts: ({ locale, page = 1 }: { locale: LocaleCode; page?: number }) => {
     if (locale === "en") {
-      return "/posts";
+      return `/posts${page > 1 ? `/page/${page}` : ""}`;
     }
 
-    return `/${locale}/publicaciones`;
+    return `/${locale}/publicaciones${page > 1 ? `/page/${page}` : ""}`;
   },
   labs: ({ locale }: { locale: LocaleCode }) => {
     if (locale === "en") {

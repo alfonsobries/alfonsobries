@@ -42,6 +42,7 @@ export default function Posts({ pagination, locale }: Props) {
         }}
         hreflangUrl={urls.posts({
           locale: locale === "en" ? "es" : "en",
+          page: pagination.current_page,
         })}
       >
         <Container>
@@ -63,7 +64,7 @@ export default function Posts({ pagination, locale }: Props) {
             ))}
           </div>
 
-          <Pagination pagination={pagination} path="/posts" />
+          <Pagination pagination={pagination} path={urls.posts({ locale })} />
         </Container>
       </Layout>
     </>

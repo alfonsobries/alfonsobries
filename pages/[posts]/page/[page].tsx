@@ -7,7 +7,7 @@ export default Posts;
 
 export { getStaticProps };
 
-export async function getStaticPaths() {
+export async function getStaticPaths({ locales }) {
   const pagination: PaginationType<Post> = await getAllPosts(
     [],
     {
@@ -24,12 +24,16 @@ export async function getStaticPaths() {
   pages.shift();
 
   return {
-    paths: pages.map((page) => {
-      return {
-        params: {
-          page: page.toString(),
-        },
-      };
+    paths: pages.flatMap((page) => {
+      return locales.flatMap((locale) => {
+        return {
+          params: {
+            posts: locale === "en" ? "posts" : "publicaciones",
+            page: page.toString(),
+          },
+          locale,
+        };
+      });
     }),
     fallback: false,
   };
