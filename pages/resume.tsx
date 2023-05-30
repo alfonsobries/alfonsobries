@@ -88,8 +88,16 @@ export default function Resume({
             </strong>{" "}
             <span className="text-sm text-gray-200 dark:text-gray-700">●</span>
             <span className="text-gray-500">
-              <span className="hidden print:inline sm:inline">Personal</span>{" "}
-              Resume
+              {locale === "en" ? (
+                <>
+                  <span className="hidden print:inline sm:inline">
+                    Personal
+                  </span>{" "}
+                  Resume
+                </>
+              ) : (
+                <>Curriculum</>
+              )}
             </span>
             <div className="flex items-center">
               <span
@@ -110,10 +118,14 @@ export default function Resume({
         hideFooter
         maxWidthClass="max-w-4xl"
         meta={{
-          title: "Alfonso Bribiesca - Personal Resume",
+          title: t("common:resume.meta_title"),
           hidePageName: true,
-          description: `Alfonso Bribiesca is a full-stack developer with more than ${yearsOfExperience} years of experience building software for a wide variety of businesses around the world.`,
-          image: `https://og.alfonsobries.com/Alfonso%20Bribiesca%20-%20Personal%20Resume.png`,
+          description: t("common:resume.meta_description", {
+            yearsOfExperience,
+          }),
+          image: `https://og.alfonsobries.com/${encodeURIComponent(
+            t("common:resume.meta_title")
+          )}.png`,
         }}
         hreflangUrl={urls.resume({
           locale: locale === "en" ? "es" : "en",
@@ -122,7 +134,10 @@ export default function Resume({
       >
         <div className="relative z-0 mx-auto flex max-w-4xl flex-col space-y-8 px-4 pb-8 print:flex-row print:space-x-8 print:space-y-0 print:pt-0 sm:flex-row sm:space-x-8 sm:space-y-0">
           <div className="space-y-8 print:max-w-md print:space-y-4 sm:max-w-sm md:max-w-md lg:max-w-lg">
-            <ResumeSection title="Experience" icon={<Briefcase />}>
+            <ResumeSection
+              title={t("common:resume.experience")}
+              icon={<Briefcase />}
+            >
               <div className="space-y-4">
                 {work.map((item) => (
                   <ResumeExperience {...item} key={item.id} />
@@ -133,7 +148,7 @@ export default function Resume({
             <PageBreak />
 
             <ResumeSection
-              title="Open Source &amp; Personal Projects"
+              title={t("common:resume.open_source")}
               icon={<Code />}
             >
               <div className="space-y-4">
@@ -157,7 +172,10 @@ export default function Resume({
               </div>
             </ResumeSection>
 
-            <ResumeSection title="Education" icon={<GraduationHat />}>
+            <ResumeSection
+              title={t("common:resume.education")}
+              icon={<GraduationHat />}
+            >
               <div className="space-y-4">
                 {education.map((item, index) => (
                   <ResumeExperience
@@ -170,7 +188,7 @@ export default function Resume({
                 <ResumeExperience
                   id="test"
                   className="hidden print:block"
-                  title="Online Courses & Self Learning"
+                  title={t("common.resume.online_courses")}
                   period="Continual"
                   place="Online"
                   type="education"
@@ -182,7 +200,7 @@ export default function Resume({
           <div className="flex flex-1 flex-col-reverse print:flex-col sm:flex-col">
             <ResumeSection
               className="mt-8 print:mt-0 print:mb-8 sm:mt-0 sm:mb-8"
-              title="Contact Information"
+              title={t("common:resume.contact_information")}
               icon={<Contact />}
               noMargin
             >
@@ -217,33 +235,31 @@ export default function Resume({
 
             <div className="space-y-8 print:space-y-4">
               <ResumeSection
-                title="Skills &amp; Knowledge"
+                title={t("common:resume.skills")}
                 icon={<Knife />}
                 noMargin
               >
                 <div className="space-y-8 print:space-y-4">
                   <ResumeSkillGroup
                     className="break-after-all"
-                    title="I am an expert in:"
-                    intro="The following is a list of the different technologies where
-                    I have a deep understanding of their inner workings, have
-                    used them to solve real-world problems, and feel confident
-                    in my ability to use them in a professional setting, either
-                    leading a team or as an individual."
+                    title={t("common:resume.im_an_expert")}
+                    intro={t("common:resume.im_an_expert_intro")}
                   >
-                    <ResumeSkillList title="Frameworks &amp; Tools">
+                    <ResumeSkillList title={t("common:resume.frameworks")}>
                       {skillsExpert.framework.map((skill) => (
                         <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
                       ))}
                     </ResumeSkillList>
 
-                    <ResumeSkillList title="Programic Languages">
+                    <ResumeSkillList
+                      title={t("common:resume.programming_language")}
+                    >
                       {skillsExpert.language.map((skill) => (
                         <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
                       ))}
                     </ResumeSkillList>
 
-                    <ResumeSkillList title="Other Techs &amp; Methodologies">
+                    <ResumeSkillList title={t("common:resume.other_techs")}>
                       {skillsExpert.other.map((skill) => (
                         <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
                       ))}
@@ -251,22 +267,22 @@ export default function Resume({
                   </ResumeSkillGroup>
 
                   <ResumeSkillGroup
-                    title="I have strong knowledge"
-                    intro="I have worked with the following technologies over the last several years. However, I have only had a few opportunities to use them to their full potential. Still, I have a solid and extensive knowledge of them, and I am ready to use them on any production project that comes on my way."
+                    title={t("common:resume.strong_knowledge")}
+                    intro={t("common:resume.strong_knowledge_intro")}
                   >
-                    <ResumeSkillList title="Frameworks &amp; Tools">
+                    <ResumeSkillList title={t("common:resume.frameworks")}>
                       {skillsAdvanced.framework.map((skill) => (
                         <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
                       ))}
                     </ResumeSkillList>
 
-                    {/* <ResumeSkillList title="Programic Languages">
+                    {/* <ResumeSkillList title={t("common:resume.programming_language")}>
                     {skillsAdvanced.language.map((skill) => (
                       <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
                     ))}
                   </ResumeSkillList> */}
 
-                    <ResumeSkillList title="Techs &amp; Methodologies">
+                    <ResumeSkillList title={t("common:resume.other_techs")}>
                       {skillsAdvanced.other.map((skill) => (
                         <ResumeSkill key={skill.id}>{skill.name}</ResumeSkill>
                       ))}
@@ -276,28 +292,55 @@ export default function Resume({
               </ResumeSection>
 
               <ResumeSection
-                title="Latest Github Activity"
+                title={t("common:resume.latest_github")}
                 icon={<Keyboard />}
                 noMargin
               >
                 <GithubHeatmap githubContributions={githubContributions} />
               </ResumeSection>
-              <ResumeSection title="About Me" icon={<Dna />} noMargin>
+              <ResumeSection
+                title={t("common:resume.about_me")}
+                icon={<Dna />}
+                noMargin
+              >
                 <div className="prose text-sm dark:prose-invert ">
                   <LineClamp>
                     <p className="line-clamp-6 print:line-clamp-none">
-                      Hello, I’m Alfonso. For the past {yearsOfExperience}{" "}
-                      years, I have been building and designing software for a
-                      wide variety of businesses, either working in my company
-                      In Mexico or, in recent years, working as a member of
-                      different companies worldwide. My specialty is full-stack
-                      architecture and development, and, as you can see in my
-                      resume, I am proficient in several technologies.
-                      <br />
-                      <br />
-                      In my spare time, I enjoy traveling, reading a good book,
-                      watching a good TV series, playing with my kids, and I
-                      recently started training for triathlons.
+                      {locale === "en" ? (
+                        <>
+                          Hello, I’m Alfonso. For the past {yearsOfExperience}{" "}
+                          years, I have been building and designing software for
+                          a wide variety of businesses, either working in my
+                          company In Mexico or, in recent years, working as a
+                          member of different companies worldwide. My specialty
+                          is full-stack architecture and development, and, as
+                          you can see in my resume, I am proficient in several
+                          technologies.
+                          <br />
+                          <br />
+                          In my spare time, I enjoy traveling, reading a good
+                          book, watching a good TV series, playing with my kids,
+                          and I recently started training for triathlons.
+                        </>
+                      ) : (
+                        <>
+                          Hola, soy Alfonso. Durante los últimos{" "}
+                          {yearsOfExperience} años, he estado construyendo y
+                          diseñando software para una amplia variedad de
+                          negocios, ya sea trabajando en mi empresa en México o,
+                          en los últimos años, trabajando como miembro de
+                          diferentes empresas en todo el mundo. Mi especialidad
+                          es la arquitectura y desarrollo full-stack, y, como
+                          puedes ver en mi currículum, tengo habilidades en
+                          varias tecnologías.
+                          <br />
+                          <br />
+                          En mi tiempo libre, disfruto viajar, leer un buen
+                          libro, ver una buena serie de televisión, jugar con
+                          mis hijos y recientemente comencé a entrenar para
+                          triatlones.
+                        </>
+                      )}
                     </p>
                   </LineClamp>
                 </div>

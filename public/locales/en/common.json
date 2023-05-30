@@ -44,5 +44,24 @@
       "your_message": "Your Message",
       "what_can_i_do": "What can I do for you?"
     }
+  },
+  "resume": {
+    "meta_title": "Alfonso Bribiesca - Personal Resume",
+    "meta_description": "Alfonso Bribiesca is a full-stack developer with more than {{yearsOfExperience}} years of experience building software for a wide variety of businesses around the world.",
+    "experience": "Experience",
+    "open_source": "Open Source & Personal Projects",
+    "education": "Education",
+    "contact_information": "Contact Information",
+    "skills": "Skills & Knowledge",
+    "latest_github": "Latest Github Activity",
+    "about_me": "About Me",
+    "frameworks": "Frameworks & Tools",
+    "programming_language": "Programming languages",
+    "other_techs": "Other Techs & Methodologies",
+    "im_an_expert": "I am an expert in:",
+    "im_an_expert_intro": "The following is a list of the different technologies where I have a deep understanding of their inner workings, have used them to solve real-world problems, and feel confident in my ability to use them in a professional setting, either leading a team or as an individual.",
+    "strong_knowledge": "I have strong knowledge:",
+    "strong_knowledge_intro": "I have worked with the following technologies over the last several years. However, I have only had a few opportunities to use them to their full potential. Still, I have a solid and extensive knowledge of them, and I am ready to use them on any production project that comes on my way.",
+    "online_courses": "Online Courses & Self Learning"
   }
 }

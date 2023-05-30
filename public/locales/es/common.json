@@ -44,5 +44,24 @@
       "your_message": "Tu Mensaje",
       "what_can_i_do": "¿Qué puedo hacer por ti?"
     }
+  },
+  "resume": {
+    "meta_title": "Alfonso Bribiesca - Currículum",
+    "meta_description": "Alfonso Bribiesca es un desarrollador con más de {{yearsOfExperience}} años de experiencia construyendo software para una amplia variedad de empresas alrededor del mundo.",
+    "experience": "Experiencia",
+    "open_source": "Open Source & Proyectos Personales",
+    "education": "Educación",
+    "contact_information": "Información de Contacto",
+    "skills": "Conocimiento",
+    "latest_github": "Actividad de Github",
+    "about_me": "Sobre mi",
+    "frameworks": "Frameworks y Herramientas",
+    "programming_language": "Lenguajes de programación",
+    "other_techs": "Otras Tecnologías y Metodologías",
+    "im_an_expert": "Soy un experto en:",
+    "im_an_expert_intro": "La siguiente es una lista de las diferentes tecnologías con las que tengo un fuerte conocimiento y experiencia, las he utilizado para resolver problemas del mundo real y me siento seguro de mi capacidad para utilizarlas en un entorno profesional, ya sea liderando un equipo o como individuo.",
+    "strong_knowledge": "Tengo un amplio conocimiento:",
+    "strong_knowledge_intro": "He trabajado con las siguientes tecnologías en los últimos años. Sin embargo, solo he tenido algunas oportunidades de utilizarlas al máximo. Aun así, tengo un conocimiento sólido y extenso de ellas, y estoy listo para utilizarlas en cualquier proyecto que se presente.",
+    "online_courses": "Cursos en línea y auto didacta"
   }
 }
