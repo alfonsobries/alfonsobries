@@ -8,6 +8,7 @@
   "made_with": "Made with",
   "latest_posts": "Latest Posts",
   "read_time": "{{minutes}} min read time",
+  "something_went_wrong": "Something went wrong. Please try again.",
   "home": {
     "meta_title": "",
     "meta_description": "Hello, it’s me, Alfonso. On this website you can find a little bit about my work and my interests, it is also a good place to connect. Please come in"
@@ -24,5 +25,13 @@
     "description": "In this section you can find some personal side-projects and experiments that I am doing during my spare time.",
     "meta_title": "Labs",
     "meta_description": "In this section, I want to share some of the personal projects and experiments that I am doing in addition to my daily job"
+  },
+  "contact": {
+    "title": "Contact Me",
+    "intro": "Comments, inquiries, suggestions, or want to say hi? I’d love to hear! Fill this form out and hit send.",
+    "meta_title": "Contact Me",
+    "meta_description": "If you have any questions or comments or would like to make a proposal, feel free to use the contact form on this page.",
+    "success_title": "Thanks for reaching me!",
+    "success_message": "Your message was successfully sent. If you are not a spam bot, or you are a very good spam bot, you should receive a response from me within a few hours."
   }
 }

@@ -8,6 +8,7 @@
   "made_with": "Hecho con",
   "latest_posts": "Últimas publicaciones",
   "read_time": "{{minutes}} min de lectura",
+  "something_went_wrong": "Algo salió mal. Por favor intenta de nuevo.",
   "home": {
     "meta_title": "",
     "meta_description": "Hola!, soy Alfonso.  En este sitio web puedes encontrar un poco sobre mi trabajo y mis intereses, también es un buen lugar para conectarse."
@@ -24,5 +25,13 @@
     "description": "En esta sección puedes encontrar algunos proyectos personales y experimentos que hecho durante mi tiempo libre.",
     "meta_title": "Labs",
     "meta_description": "En esta sección, quiero compartir algunos de los proyectos personales y experimentos que realizo además de mi trabajo diario."
+  },
+  "contact": {
+    "title": "Contáctame",
+    "intro": "¿Comentarios, consultas, sugerencias o simplemente saludar? ¡Me gustaría leerte! Usa el formulario de contacto.",
+    "meta_title": "Contáctame",
+    "meta_description": "Si tienes alguna pregunta o comentario, o si deseas hacer una propuesta, no dudes en utilizar el formulario de contacto en esta página",
+    "success_title": "¡Gracias por contactarme!",
+    "success_message": "Tu mensaje se ha enviado correctamente. Si no eres un bot de spam, o eres un muy buen bot de spam, deberías recibir una respuesta de mi parte en unas pocas horas."
   }
 }

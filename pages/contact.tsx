@@ -37,9 +37,8 @@ export default function Contact() {
     <>
       <Layout
         meta={{
-          title: "Contact me",
-          description:
-            "If you have any questions or comments or would like to make a proposal, feel free to use the contact form on this page.",
+          title: t("common:contact.meta_title"),
+          description: t("common:contact.meta_description"),
           image: `https://og.alfonsobries.com/Contact%20Me`,
         }}
         hreflangUrl={urls.contact({
@@ -48,33 +47,26 @@ export default function Contact() {
         t={t}
       >
         <Container>
-          <Alert show={errored}>Something went wrong. Please try again.</Alert>
+          <Alert show={errored}>{t("common:something_went_wrong")}</Alert>
 
           <div className="prose dark:prose-invert">
             {form.successful ? (
               <div className="mx-auto flex max-w-md flex-col items-center justify-center space-y-6 text-center">
                 <span className="font-cursive text-5xl text-gray-900 dark:text-gray-200">
-                  Thanks for reaching me!
+                  <div>{t("common:contact.success_title")}</div>
                 </span>
 
                 <LazySvg src="/images/crying.svg" width={200} height={200} />
 
-                <p>
-                  Your message was successfully sent. If you are not a spam bot,
-                  or you are a very good spam bot, you should receive a response
-                  from me within a few hours.
-                </p>
+                <p>{t("common:contact.success_message")}</p>
               </div>
             ) : (
               <>
                 <h1 className="mb-3 text-4xl font-bold dark:text-gray-200">
-                  Contact Me
+                  {t("common:contact.title")}
                 </h1>
 
-                <p>
-                  Comments, inquiries, suggestions, or want to say hi? I’d love
-                  to hear! Fill this form out and hit send.
-                </p>
+                <p>{t("common:contact.intro")}</p>
 
                 <form onSubmit={formHandler} className="mt-4 space-y-6">
                   <div className="flex flex-col space-y-6 sm:flex-row sm:space-x-6 sm:space-y-0">
