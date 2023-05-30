@@ -27,6 +27,10 @@
     "meta_title": "Labs",
     "meta_description": "In this section, I want to share some of the personal projects and experiments that I am doing in addition to my daily job"
   },
+  "about": {
+    "meta_title": "About me and this site",
+    "meta_description": "Created this site to discuss the topics that interest me, share some of the projects I am working and to hopefully teach and learn something along the way."
+  },
   "contact": {
     "title": "Contact Me",
     "intro": "Comments, inquiries, suggestions, or want to say hi? I’d love to hear! Fill this form out and hit send.",
