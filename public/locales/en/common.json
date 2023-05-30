@@ -9,6 +9,7 @@
   "latest_posts": "Latest Posts",
   "read_time": "{{minutes}} min read time",
   "something_went_wrong": "Something went wrong. Please try again.",
+  "send": "Send",
   "home": {
     "meta_title": "",
     "meta_description": "Hello, it’s me, Alfonso. On this website you can find a little bit about my work and my interests, it is also a good place to connect. Please come in"
@@ -32,6 +33,12 @@
     "meta_title": "Contact Me",
     "meta_description": "If you have any questions or comments or would like to make a proposal, feel free to use the contact form on this page.",
     "success_title": "Thanks for reaching me!",
-    "success_message": "Your message was successfully sent. If you are not a spam bot, or you are a very good spam bot, you should receive a response from me within a few hours."
+    "success_message": "Your message was successfully sent. If you are not a spam bot, or you are a very good spam bot, you should receive a response from me within a few hours.",
+    "form": {
+      "your_name": "Your Name",
+      "your_email": "Your Email",
+      "your_message": "Your Message",
+      "what_can_i_do": "What can I do for you?"
+    }
   }
 }

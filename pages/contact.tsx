@@ -74,7 +74,7 @@ export default function Contact() {
                       className="flex-1"
                       form={form}
                       inputName="name"
-                      label="Your Name"
+                      label={t("common:contact.form.your_name")}
                     >
                       <FormInput
                         name="name"
@@ -88,7 +88,7 @@ export default function Contact() {
                       className="flex-1"
                       form={form}
                       inputName="email"
-                      label="Your Email"
+                      label={t("common:contact.form.your_email")}
                     >
                       <FormInput
                         type="email"
@@ -104,12 +104,12 @@ export default function Contact() {
                     className="flex-1"
                     form={form}
                     inputName="message"
-                    label="Your Message"
+                    label={t("common:contact.form.your_message")}
                   >
                     <FormTextarea
                       name="message"
                       form={form}
-                      placeholder="What can I do for you? "
+                      placeholder={t("common:contact.form.what_can_i_do")}
                       rows={4}
                       required
                     />
@@ -127,7 +127,11 @@ export default function Contact() {
                       )}
                       disabled={form.busy}
                     >
-                      {form.busy ? <Spinner size="sm" /> : <>Send</>}
+                      {form.busy ? (
+                        <Spinner size="sm" />
+                      ) : (
+                        <>{t("common:send")}</>
+                      )}
                     </button>
                   </div>
                 </form>

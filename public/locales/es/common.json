@@ -9,6 +9,7 @@
   "latest_posts": "Últimas publicaciones",
   "read_time": "{{minutes}} min de lectura",
   "something_went_wrong": "Algo salió mal. Por favor intenta de nuevo.",
+  "send": "Enviar",
   "home": {
     "meta_title": "",
     "meta_description": "Hola!, soy Alfonso.  En este sitio web puedes encontrar un poco sobre mi trabajo y mis intereses, también es un buen lugar para conectarse."
@@ -32,6 +33,12 @@
     "meta_title": "Contáctame",
     "meta_description": "Si tienes alguna pregunta o comentario, o si deseas hacer una propuesta, no dudes en utilizar el formulario de contacto en esta página",
     "success_title": "¡Gracias por contactarme!",
-    "success_message": "Tu mensaje se ha enviado correctamente. Si no eres un bot de spam, o eres un muy buen bot de spam, deberías recibir una respuesta de mi parte en unas pocas horas."
+    "success_message": "Tu mensaje se ha enviado correctamente. Si no eres un bot de spam, o eres un muy buen bot de spam, deberías recibir una respuesta de mi parte en unas pocas horas.",
+    "form": {
+      "your_name": "Tu Nombre",
+      "your_email": "Tu Correo Electrónico",
+      "your_message": "Tu Mensaje",
+      "what_can_i_do": "¿Qué puedo hacer por ti?"
+    }
   }
 }
