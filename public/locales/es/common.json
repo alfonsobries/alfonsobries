@@ -11,5 +11,18 @@
   "home": {
     "meta_title": "",
     "meta_description": "Hola!, soy Alfonso.  En este sitio web puedes encontrar un poco sobre mi trabajo y mis intereses, también es un buen lugar para conectarse."
+  },
+  "posts": {
+    "title": "Publicaciones",
+    "subtitle_page": "Página {{page}}",
+    "meta_title": "Publicaciones",
+    "meta_title_page": "Publicaciones - Página {{page}}",
+    "meta_description": "Publicaciones relacionadas con el desarrollo frontend y backend, diseño, tecnología y otros temas que pueda encontrar interesantes"
+  },
+  "labs": {
+    "title": "Labs",
+    "description": "En esta sección puedes encontrar algunos proyectos personales y experimentos que hecho durante mi tiempo libre.",
+    "meta_title": "Labs",
+    "meta_description": "En esta sección, quiero compartir algunos de los proyectos personales y experimentos que realizo además de mi trabajo diario."
   }
 }

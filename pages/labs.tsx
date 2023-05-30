@@ -7,7 +7,7 @@ import { getProjects } from "../lib/api";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import urls from "../helpers/urls";
 import { useRouter } from "next/router";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function Labs({ projects }) {
@@ -19,9 +19,8 @@ export default function Labs({ projects }) {
     <>
       <Layout
         meta={{
-          title: "Labs",
-          description:
-            "In this section, I want to share some of the personal projects and experiments that I am doing in addition to my daily job",
+          title: t("common:labs.meta_title"),
+          description: t("common:labs.meta_description"),
           image: `https://og.alfonsobries.com/Personal%20Projects%20and%20Experiments`,
         }}
         hreflangUrl={urls.labs({
@@ -31,11 +30,10 @@ export default function Labs({ projects }) {
       >
         <Container>
           <div className="prose dark:prose-invert">
-            <h1 className="text-4xl font-bold dark:text-gray-200">Labs</h1>
-            <p>
-              In this section you can find some personal side-projects and
-              experiments that I am doing during my spare time.
-            </p>
+            <h1 className="text-4xl font-bold dark:text-gray-200">
+              {t("common:labs.title")}
+            </h1>
+            <p>{t("common:labs.description")}</p>
           </div>
 
           <div className="space-y-8">

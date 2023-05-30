@@ -8,7 +8,7 @@ import { getAllPosts } from "../lib/api";
 import { useMemo } from "react";
 import { LocaleCode } from "../interfaces/localization";
 import urls from "../helpers/urls";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export const POST_PER_PAGE = 5;
@@ -22,26 +22,28 @@ export default function Posts({ pagination, locale }: Props) {
   const { t } = useTranslation();
 
   const subtitle = useMemo(() => {
-    return `${
-      pagination.current_page > 1 ? `Page ${pagination.current_page}` : ""
-    }`;
-  }, [pagination.current_page]);
+    if (pagination.current_page > 1) {
+      return t("common:posts.subtitle_page", { page: pagination.current_page });
+    }
+    return "";
+  }, [pagination.current_page, t]);
 
   const metaTitle = useMemo(() => {
-    return `${
-      pagination.current_page > 1
-        ? `Posts - Page ${pagination.current_page}`
-        : "Posts"
-    }`;
-  }, [pagination.current_page]);
+    if (pagination.current_page > 1) {
+      return t("common:posts.meta_title_page", {
+        page: pagination.current_page,
+      });
+    }
+
+    return t("common:posts.meta_title");
+  }, [pagination.current_page, t]);
 
   return (
     <>
       <Layout
         meta={{
           title: metaTitle,
-          description:
-            "Posts related to frontend and backend development, design, technology, and maybe other subjects that I may find interesting.",
+          description: t("common:posts.meta_description"),
           image: `https://og.alfonsobries.com/Latest%20Blog%Posts.png`,
         }}
         hreflangUrl={urls.posts({
@@ -53,7 +55,8 @@ export default function Posts({ pagination, locale }: Props) {
         <Container>
           <div className="prose prose-h2:text-lg dark:prose-invert">
             <h1>
-              Posts
+              {t("common:posts.title")}
+
               {subtitle && (
                 <>
                   <span className="text-base font-normal text-gray-500">
@@ -74,7 +77,11 @@ export default function Posts({ pagination, locale }: Props) {
             ))}
           </div>
 
-          <Pagination pagination={pagination} path={urls.posts({ locale })} />
+          <Pagination
+            t={t}
+            pagination={pagination}
+            path={urls.posts({ locale })}
+          />
         </Container>
       </Layout>
     </>

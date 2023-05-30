@@ -1,8 +1,11 @@
 import React from "react";
 import Error404 from "../components/error-404";
 import Meta from "../components/meta";
+import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function Error404Page() {
+  const { t } = useTranslation();
   return (
     <>
       <Meta
@@ -11,6 +14,7 @@ export default function Error404Page() {
           description: "The page you're looking for doesn't exist ¯\\_(ツ)_/¯",
           image: "https://www.alfonsobries.com/images/og/this-is-fine.png",
         }}
+        t={t}
       >
         <style>
           {`
@@ -29,3 +33,11 @@ export default function Error404Page() {
     </>
   );
 }
+
+export const getStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale)),
+    },
+  };
+};

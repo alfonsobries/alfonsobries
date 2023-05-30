@@ -7,8 +7,10 @@ import {
   LINK_COLOR_TEXT,
   LINK_COLOR_TEXT_DISABLED,
 } from "../lib/cssClasses";
+import { TFunction } from "next-i18next";
 
 type Props = {
+  t: TFunction;
   pagination: Pagination;
   path: string;
 };
@@ -16,6 +18,7 @@ type Props = {
 const Pagination = ({
   pagination: { next_page_url, current_page, prev_page_url, total, from, to },
   path,
+  t,
 }: Props) => {
   const nextPageUrl = useMemo(() => {
     if (next_page_url === null) {
@@ -43,13 +46,15 @@ const Pagination = ({
         BORDER_COLOR,
         "mt-8 flex items-center justify-between border-t pt-8"
       )}
-      aria-label="Pagination"
+      aria-label={t("pagination:pagination")}
     >
       <div className="hidden sm:block">
         <p className="text-gray-500">
-          Showing <span className="font-semibold">{from}</span> to{" "}
-          <span className="font-semibold">{to}</span> of{" "}
-          <span className="font-semibold">{total}</span> results
+          {t("pagination:showing")}{" "}
+          <span className="font-semibold">{from}</span> {t("pagination:to")}{" "}
+          <span className="font-semibold">{to}</span> {t("pagination:of")}{" "}
+          <span className="font-semibold">{total}</span>{" "}
+          {t("pagination:results")}{" "}
         </p>
       </div>
       <div className="flex flex-1 justify-between space-x-4 sm:justify-end">
@@ -61,7 +66,7 @@ const Pagination = ({
                 "relative inline-flex items-center hover:underline"
               )}
             >
-              ← Previous
+              ← {t("pagination:previous")}
             </a>
           </Link>
         ) : (
@@ -71,7 +76,7 @@ const Pagination = ({
               "relative inline-flex items-center text-sm"
             )}
           >
-            ← Previous
+            ← {t("pagination:previous")}
           </span>
         )}
 
@@ -83,7 +88,7 @@ const Pagination = ({
                 "relative inline-flex items-center hover:underline"
               )}
             >
-              Next →
+              {t("pagination:next")} →
             </a>
           </Link>
         ) : (
@@ -93,7 +98,7 @@ const Pagination = ({
               "relative inline-flex items-center text-sm"
             )}
           >
-            Next →
+            {t("pagination:next")} →
           </span>
         )}
       </div>

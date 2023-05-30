@@ -16,7 +16,7 @@ type Props = {
   hasMorePosts: boolean;
 };
 
-export default function Index({ posts, hasMorePosts, ...rest }: Props) {
+export default function Index({ posts, hasMorePosts }: Props) {
   const { locale } = useRouter();
 
   const { t } = useTranslation();

@@ -11,7 +11,7 @@ import FormTextarea from "../components/form/form-textarea";
 import Alert from "../components/alert";
 import urls from "../helpers/urls";
 import { useRouter } from "next/router";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function Contact() {
@@ -168,7 +168,7 @@ export default function Contact() {
 export const getStaticProps = async ({ locale }) => {
   return {
     props: {
-      ...(await serverSideTranslations(locale)),
+      ...(await serverSideTranslations(locale, ["common", "menu"])),
     },
   };
 };

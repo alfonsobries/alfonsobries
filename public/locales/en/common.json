@@ -11,5 +11,18 @@
   "home": {
     "meta_title": "",
     "meta_description": "Hello, it’s me, Alfonso. On this website you can find a little bit about my work and my interests, it is also a good place to connect. Please come in"
+  },
+  "posts": {
+    "title": "Posts",
+    "subtitle_page": "Page {{page}}",
+    "meta_title": "Posts",
+    "meta_title_page": "Posts - Page {{page}}",
+    "meta_description": "Posts related to frontend and backend development, design, technology, and maybe other subjects that I may find interesting."
+  },
+  "labs": {
+    "title": "Labs",
+    "description": "In this section you can find some personal side-projects and experiments that I am doing during my spare time.",
+    "meta_title": "Labs",
+    "meta_description": "In this section, I want to share some of the personal projects and experiments that I am doing in addition to my daily job"
   }
 }

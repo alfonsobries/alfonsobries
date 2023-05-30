@@ -3,7 +3,7 @@ import Container from "../components/container";
 import Layout from "../components/layout";
 import urls from "../helpers/urls";
 import { useRouter } from "next/router";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function About() {

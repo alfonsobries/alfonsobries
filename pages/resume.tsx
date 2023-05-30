@@ -30,7 +30,7 @@ import GithubHeatmap from "../components/github-heatmap";
 import Keyboard from "../components/icons/keyboard";
 import urls from "../helpers/urls";
 import { useRouter } from "next/router";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 type SkillGroup = {

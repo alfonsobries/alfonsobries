@@ -10,7 +10,7 @@ import TypoForm from "../../../../components/typo-form";
 import { getAllDraftPostsSlugs, getDraftPostBySlug } from "../../../../lib/api";
 import { LocaleCode } from "../../../../interfaces/localization";
 import urls from "../../../../helpers/urls";
-import { useTranslation } from "react-i18next";
+import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 type Props = {
@@ -52,7 +52,7 @@ export default function Post({ post, content, secret }: Props) {
               <span className="text-xs text-gray-300 dark:text-gray-700">
                 ●
               </span>
-              <ReadTime content={post.body} />
+              <ReadTime content={post.body} t={t} />
             </div>
             <article className="prose dark:prose-invert">
               <h1>{post.title}</h1>
