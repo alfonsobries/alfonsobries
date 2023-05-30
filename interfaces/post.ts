@@ -1,3 +1,5 @@
+import { LocaleCode } from "./localization";
+
 export type Post = {
   id: string;
   title: string;
@@ -8,9 +10,10 @@ export type Post = {
   // Make it date maybe?
   published_at: string;
   // coverImage?: string;
+  slugs: Record<LocaleCode, string>;
 };
 
-export type PostProperties = (keyof Post)[];
+export type PostProperties = Array<keyof Omit<Post, "slugs">>;
 
 export type FilteredPost = {
   [key in keyof Post]?: Post[key];

@@ -9,6 +9,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import urls from "../helpers/urls";
+import { LocaleCode } from "../interfaces/localization";
 type Props = {
   posts: Post[];
   hasMorePosts: boolean;
@@ -28,23 +30,20 @@ export default function Index({ posts, hasMorePosts }: Props) {
             "Hello, it’s me, Alfonso. On this website you can find a little bit about my work and my interests, it is also a good place to connect. Please come in",
           image: "https://www.alfonsobries.com/images/og/main.png",
         }}
+        hreflangUrl={urls.home({
+          locale: locale === "en" ? "es" : "en",
+        })}
       >
         <Container>
           <div className="prose prose-h2:text-lg dark:prose-invert">
             <h1>Latest Posts</h1>
 
-            <p>{t("description")}</p>
-
-            <Link
-              href="/"
-              locale={locale === "es" ? "en" : "es"}
-              className="bg-red-100 p-3"
-            >
-              <a>To /{locale === "es" ? "en" : "es"}/another</a>
-            </Link>
-
             {posts.map((post) => (
-              <ArticleListItem key={post.slug} post={post} />
+              <ArticleListItem
+                key={post.slug}
+                post={post}
+                locale={locale as LocaleCode}
+              />
             ))}
           </div>
 
@@ -72,10 +71,9 @@ export const getStaticProps = async ({ locale }) => {
     ["title", "slug", "excerpt", "published_at", "body"],
     {
       limit: 3,
-    }
+    },
+    locale
   );
-
-  console.log("LOCALE", locale);
 
   return {
     props: {

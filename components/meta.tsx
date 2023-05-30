@@ -11,10 +11,11 @@ type Props = {
     ogType?: string;
     hidePageName?: boolean;
   };
+  hreflangUrl: string;
 };
 
-const Meta = ({ meta, children }: Props) => {
-  const { asPath } = useRouter();
+const Meta = ({ meta, children, hreflangUrl }: Props) => {
+  const { asPath, locale } = useRouter();
 
   if (meta.description.length > 155) {
     throw new Error("Meta Description is too long");
@@ -30,7 +31,9 @@ const Meta = ({ meta, children }: Props) => {
         <title>{meta.title}</title>
       ) : (
         <title>
-          {meta.title} | {CMS_NAME}
+          <>
+            {meta.title} | {CMS_NAME}
+          </>
         </title>
       )}
       <meta name="description" content={meta.description} />
@@ -73,6 +76,11 @@ const Meta = ({ meta, children }: Props) => {
       <meta property="og:url" content={`${SITE_URL}${asPath}`} />
       <meta property="og:type" content={meta.ogType || "website"} />
       <meta name="twitter:site" content="@alfonsobries" />
+      <link
+        rel="alternate"
+        hrefLang={locale === "es" ? "en" : "es"}
+        href={hreflangUrl}
+      />
       {children}
     </Head>
   );

@@ -1,8 +1,12 @@
 import Link from "next/link";
 import Container from "../components/container";
 import Layout from "../components/layout";
+import urls from "../helpers/urls";
+import { useRouter } from "next/router";
 
 export default function About() {
+  const { locale } = useRouter();
+
   return (
     <>
       <Layout
@@ -12,6 +16,9 @@ export default function About() {
             "Created this site to discuss the topics that interest me, share some of the projects I am working and to hopefully teach and learn something along the way.",
           ogType: "profile",
         }}
+        hreflangUrl={urls.about({
+          locale: locale === "en" ? "es" : "en",
+        })}
       >
         <Container>
           <div className="prose dark:prose-invert">

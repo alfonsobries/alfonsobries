@@ -1,6 +1,6 @@
 import Link from "next/link";
 import cn from "classnames";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import { BORDER_COLOR, LINK_COLOR_BG } from "../lib/cssClasses";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SwitchButton from "./switch-button";
@@ -10,9 +10,29 @@ import Twitter from "./icons/twitter";
 import Github from "./icons/github";
 import Home from "./icons/home";
 import classNames from "classnames";
-const links = [
+import { LocaleCode } from "../interfaces/localization";
+import urls from "../helpers/urls";
+import { ro } from "date-fns/locale";
+
+type MenuLink = {
+  selected: (router: NextRouter) => boolean;
+  href: ({
+    locale,
+    router,
+  }: {
+    locale: LocaleCode;
+    router: NextRouter;
+  }) => string;
+  label:
+    | string
+    | React.ReactNode
+    | (({ locale }: { locale: LocaleCode }) => React.ReactNode);
+};
+
+const links: MenuLink[] = [
   {
-    href: "/",
+    selected: (router) => router.asPath === "/",
+    href: ({ locale }) => urls.home({ locale }),
     label: (
       <>
         <Home className="h-5 w-5" />
@@ -21,19 +41,26 @@ const links = [
     ),
   },
   {
-    href: "/posts",
+    selected: (router) => {
+      return router.pathname.startsWith("/[posts]");
+    },
+    href: ({ locale }) => urls.posts({ locale }),
     label: "Posts",
   },
   {
-    href: "/labs",
+    selected: (router) => false,
+    // @TODO
+    href: ({ locale }) => urls.labs({ locale }),
     label: "Labs",
   },
   {
-    href: "/about",
+    selected: (router) => false,
+    href: ({ locale }) => urls.about({ locale }),
     label: "About",
   },
   {
-    href: "/contact",
+    selected: (router) => false,
+    href: ({ locale }) => urls.contact({ locale }),
     label: "Contact",
   },
 ];
@@ -43,12 +70,14 @@ type Props = {
   navigationTitle?: string | React.ReactNode;
   useLightLogo?: boolean;
   maxWidthClass?: string;
+  hreflangUrl: string;
 };
 
 const MainMenu = ({
   pinned = false,
   navigationTitle,
   useLightLogo,
+  hreflangUrl,
   maxWidthClass = "max-w-xl",
 }: Props) => {
   const router = useRouter();
@@ -90,6 +119,50 @@ const MainMenu = ({
     () => useDropdownMenu && menuOpened,
     [menuOpened, useDropdownMenu]
   );
+
+  const renderMenuLink = ({
+    link,
+    index,
+    router,
+  }: {
+    link: MenuLink;
+    index: number;
+    router: NextRouter;
+  }): React.ReactNode => {
+    const locale = router.locale as LocaleCode;
+
+    const href = link.href({ locale, router });
+
+    const selected = link.selected(router);
+
+    return (
+      <Link href={href}>
+        <a
+          className={cn(
+            "flex h-full items-center whitespace-nowrap text-blue-700 dark:text-blue-200",
+            {
+              "border-b-2 border-blue-600 dark:border-blue-500":
+                selected &&
+                typeof link.label !== "function" &&
+                !useDropdownMenu,
+              "hover:text-blue-600 hover:underline":
+                !selected && !useDropdownMenu,
+              "px-2": !useDropdownMenu,
+              [`${BORDER_COLOR} border-t py-3`]: useDropdownMenu,
+              "font-semibold":
+                useDropdownMenu && typeof link.label !== "function" && selected,
+            }
+          )}
+        >
+          {typeof link.label === "function"
+            ? link.label({ locale })
+            : index === 0 && menuOpened
+            ? "Home"
+            : link.label}
+        </a>
+      </Link>
+    );
+  };
 
   return (
     <div
@@ -191,29 +264,38 @@ const MainMenu = ({
             "flex-col": useDropdownMenu,
           })}
         >
-          {links.map(({ href, label }, index) => (
-            <li key={href}>
-              <Link href={href}>
+          {links.map((link, index) => (
+            <li key={index}>
+              {renderMenuLink({
+                link,
+                index,
+                router,
+              })}
+            </li>
+          ))}
+
+          {hreflangUrl && (
+            <li>
+              <Link
+                href={hreflangUrl}
+                locale={router.locale === "en" ? "es" : "en"}
+              >
                 <a
+                  lang={router.locale}
+                  hrefLang={router.locale === "en" ? "es" : "en"}
                   className={cn(
                     "flex h-full items-center whitespace-nowrap text-blue-700 dark:text-blue-200",
                     {
-                      "border-b-2 border-blue-600 dark:border-blue-500":
-                        router.pathname === href && !useDropdownMenu,
-                      "hover:text-blue-600 hover:underline":
-                        router.pathname !== href && !useDropdownMenu,
                       "px-2": !useDropdownMenu,
                       [`${BORDER_COLOR} border-t py-3`]: useDropdownMenu,
-                      "font-semibold":
-                        useDropdownMenu && router.pathname === href,
                     }
                   )}
                 >
-                  {index === 0 && menuOpened ? "Home" : label}
+                  {router.locale === "en" ? "ES" : "EN"}
                 </a>
               </Link>
             </li>
-          ))}
+          )}
         </ul>
 
         <div

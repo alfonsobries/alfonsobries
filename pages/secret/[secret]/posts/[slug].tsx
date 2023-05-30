@@ -8,6 +8,7 @@ import DateFormatter from "../../../../components/date-formatter";
 import ReadTime from "../../../../components/read-time";
 import TypoForm from "../../../../components/typo-form";
 import { getAllDraftPostsSlugs, getDraftPostBySlug } from "../../../../lib/api";
+import { LocaleCode } from "../../../../interfaces/localization";
 
 type Props = {
   post: PostType;
@@ -63,17 +64,16 @@ type Params = {
     slug: string;
     secret: string;
   };
+  locale: LocaleCode;
 };
 
-export async function getStaticProps({ params }: Params) {
-  const post = await getDraftPostBySlug(params.slug, params.secret, [
-    "title",
-    "meta_description",
-    "excerpt",
-    "body",
-    "published_at",
-    "slug",
-  ]);
+export async function getStaticProps({ params, locale }: Params) {
+  const post = await getDraftPostBySlug(
+    params.slug,
+    params.secret,
+    ["title", "meta_description", "excerpt", "body", "published_at", "slug"],
+    locale
+  );
 
   const content = await markdownToHtml(post.body || "");
 

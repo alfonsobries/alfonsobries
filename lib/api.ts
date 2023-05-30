@@ -7,19 +7,31 @@ import {
 import { FilteredPost, Post, PostProperties } from "../interfaces/post";
 import markdownToHtml from "./markdownToHtml";
 import { Project } from "../interfaces/project";
+import { LocaleCode } from "../interfaces/localization";
 export const Api = axios.create({
   baseURL: process.env.API_URL || "https://api.alfonsobries.test/api",
 });
+
 const USERNAME = "alfonsobries";
 
 const getPostWithOnlyProperties = (
   post: Post,
-  properties: PostProperties = []
+  properties: PostProperties = [],
+  locale: LocaleCode
 ): FilteredPost => {
-  const newPost: FilteredPost = {};
+  const newPost: FilteredPost = {
+    slugs: post.slug as unknown as Record<LocaleCode, string>,
+  };
 
   properties.forEach((property) => {
-    newPost[property] = post[property];
+    if (
+      typeof post[property] === "object" &&
+      post[property][locale] !== undefined
+    ) {
+      newPost[property] = post[property][locale];
+    } else {
+      newPost[property] = post[property];
+    }
   });
 
   return newPost;
@@ -27,30 +39,37 @@ const getPostWithOnlyProperties = (
 
 export async function getPostBySlug(
   slug: string,
-  properties: PostProperties = []
+  properties: PostProperties = [],
+  locale: LocaleCode
 ): Promise<FilteredPost> {
-  const { data: post } = await Api.get(`/articles/${slug}`);
+  const { data: post } = await Api.get(`/articles/${slug}`, {
+    headers: {
+      "Accept-Language": locale,
+    },
+  });
 
-  return getPostWithOnlyProperties(post, properties);
+  return getPostWithOnlyProperties(post, properties, locale);
 }
 
 export async function getDraftPostBySlug(
   slug: string,
   secretPath: string,
-  properties: PostProperties = []
+  properties: PostProperties = [],
+  locale: LocaleCode
 ): Promise<FilteredPost> {
   const { data: post } = await Api.get(`/${secretPath}/articles/${slug}`);
 
-  return getPostWithOnlyProperties(post, properties);
+  return getPostWithOnlyProperties(post, properties, locale);
 }
 
 export async function getAllPosts(
   properties: PostProperties = [],
-  params?: {
+  params: {
     all?: boolean;
     limit?: number;
     page?: number;
-  }
+  },
+  locale: LocaleCode
 ) {
   const queryString =
     params === undefined
@@ -63,13 +82,23 @@ export async function getAllPosts(
   const { data: posts } = await Api.get(`/articles${queryString}`);
 
   if (params.all) {
-    return posts.map((post) => getPostWithOnlyProperties(post, properties));
+    return posts.map((post) =>
+      getPostWithOnlyProperties(post, properties, locale)
+    );
   }
 
   return {
     ...posts,
-    data: posts.data.map((post) => getPostWithOnlyProperties(post, properties)),
+    data: posts.data.map((post) => {
+      return getPostWithOnlyProperties(post, properties, locale);
+    }),
   };
+}
+
+export async function getSlugs() {
+  const { data: posts } = await Api.get(`/articles?all=true`);
+
+  return posts.map((post) => post.slug);
 }
 
 export async function getAllDraftPostsSlugs(secretPath: string) {

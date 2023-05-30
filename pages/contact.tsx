@@ -9,6 +9,8 @@ import InputGrup from "../components/form/input-group";
 import FormInput from "../components/form/form-input";
 import FormTextarea from "../components/form/form-textarea";
 import Alert from "../components/alert";
+import urls from "../helpers/urls";
+import { useRouter } from "next/router";
 
 export default function Contact() {
   const [errored, setErrored] = useState(false);
@@ -25,6 +27,7 @@ export default function Contact() {
 
     form.post("contact").catch(() => setErrored(true));
   };
+  const { locale } = useRouter();
 
   return (
     <>
@@ -35,6 +38,9 @@ export default function Contact() {
             "If you have any questions or comments or would like to make a proposal, feel free to use the contact form on this page.",
           image: `https://og.alfonsobries.com/Contact%20Me`,
         }}
+        hreflangUrl={urls.contact({
+          locale: locale === "en" ? "es" : "en",
+        })}
       >
         <Container>
           <Alert show={errored}>Something went wrong. Please try again.</Alert>

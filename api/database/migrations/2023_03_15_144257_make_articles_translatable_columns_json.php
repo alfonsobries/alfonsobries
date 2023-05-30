@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    protected $slugColumns = [
+    protected $translatableColumns = [
         'title',
         'slug',
         'body',
@@ -24,14 +24,14 @@ return new class extends Migration
     {
         // 1. Make it text so we can store the whole text
         Schema::table('articles', function (Blueprint $table) {
-            collect($this->slugColumns)->each(function ($columnName) use ($table) {
+            collect($this->translatableColumns)->each(function ($columnName) use ($table) {
                 $table->text($columnName)->change();
             });
         });
 
         // 2. Convert the columns to JSON
         Article::withTrashed()->update(
-            collect($this->slugColumns)
+            collect($this->translatableColumns)
                 ->mapWithKeys(function ($columnName) {
                     return [$columnName => DB::raw(sprintf("JSON_OBJECT('en', %s, 'es', %s)", $columnName, $columnName))];
                 })
@@ -40,7 +40,7 @@ return new class extends Migration
 
         // 3. Make it JSON
         Schema::table('articles', function (Blueprint $table) {
-            collect($this->slugColumns)->each(function ($columnName) use ($table) {
+            collect($this->translatableColumns)->each(function ($columnName) use ($table) {
                 $table->json($columnName)->change();
             });
         });
@@ -55,14 +55,14 @@ return new class extends Migration
     {
         // 1. Make it text so we can store the whole text
         Schema::table('articles', function (Blueprint $table) {
-            collect($this->slugColumns)->each(function ($columnName) use ($table) {
+            collect($this->translatableColumns)->each(function ($columnName) use ($table) {
                 $table->text($columnName)->change();
             });
         });
 
         // 2. Store the English version in the column
         Article::withTrashed()->update(
-            collect($this->slugColumns)
+            collect($this->translatableColumns)
                 ->mapWithKeys(function ($columnName) {
                     return [$columnName => DB::raw(sprintf("JSON_UNQUOTE(JSON_EXTRACT(%s, '$.en'))", $columnName))];
                 })

@@ -10,7 +10,6 @@ const nextConfig = {
   async redirects() {
     const { data } = await Api.get(`/slug-history`);
 
-    // Current hardcoded for articles, make it dynamic if needed
     return data.map(({ slug, new_slug }) => ({
       source: `/posts/${slug}`,
       destination: `/posts/${new_slug}`,

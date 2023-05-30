@@ -4,14 +4,22 @@ import { Post } from "../interfaces/post";
 import { LINK_COLOR_TEXT } from "../lib/cssClasses";
 import DateFormatter from "./date-formatter";
 import ReadTime from "./read-time";
+import urls from "../helpers/urls";
+import { LocaleCode } from "../interfaces/localization";
 
 const ArticleListItem: React.FC<{
   post: Post;
-}> = ({ post }) => {
+  locale: LocaleCode;
+}> = ({ post, locale }) => {
+  const postUrl = urls.post({
+    post,
+    locale,
+  });
+
   return (
     <article>
       <h2 className="not-prose">
-        <Link href={`/posts/${post.slug}`}>
+        <Link href={postUrl}>
           <a className="font-semibold text-gray-800 no-underline hover:underline dark:text-gray-200">
             {post.title}
           </a>
@@ -29,7 +37,7 @@ const ArticleListItem: React.FC<{
           <ReadTime content={post.body} className="hidden sm:inline" />
         </span>
 
-        <Link href={`/posts/${post.slug}`}>
+        <Link href={postUrl}>
           <a className={classNames(LINK_COLOR_TEXT, "text-sm hover:underline")}>
             Read More →
           </a>

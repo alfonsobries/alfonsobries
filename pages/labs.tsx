@@ -5,8 +5,12 @@ import Layout from "../components/layout";
 import ProjectTechnology from "../components/projects/technology";
 import { getProjects } from "../lib/api";
 import { BORDER_COLOR } from "../lib/cssClasses";
+import urls from "../helpers/urls";
+import { useRouter } from "next/router";
 
 export default function Labs({ projects }) {
+  const { locale } = useRouter();
+
   return (
     <>
       <Layout
@@ -16,6 +20,9 @@ export default function Labs({ projects }) {
             "In this section, I want to share some of the personal projects and experiments that I am doing in addition to my daily job",
           image: `https://og.alfonsobries.com/Personal%20Projects%20and%20Experiments`,
         }}
+        hreflangUrl={urls.labs({
+          locale: locale === "en" ? "es" : "en",
+        })}
       >
         <Container>
           <div className="prose dark:prose-invert">

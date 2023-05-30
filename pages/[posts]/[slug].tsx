@@ -2,12 +2,14 @@ import { useRouter } from "next/router";
 import ErrorPage from "next/error";
 import Container from "../../components/container";
 import Layout from "../../components/layout";
-import { getPostBySlug, getAllPosts } from "../../lib/api";
+import { getPostBySlug, getAllPosts, getSlugs } from "../../lib/api";
 import markdownToHtml from "../../lib/markdownToHtml";
 import { Post as PostType } from "../../interfaces/post";
 import DateFormatter from "../../components/date-formatter";
 import ReadTime from "../../components/read-time";
 import TypoForm from "../../components/typo-form";
+import { LocaleCode } from "../../interfaces/localization";
+import urls from "../../helpers/urls";
 
 type Props = {
   post: PostType;
@@ -30,6 +32,10 @@ export default function Post({ post, content, morePosts, preview }: Props) {
         description: post.meta_description || post.excerpt,
         ogType: "article",
       }}
+      hreflangUrl={urls.post({
+        post,
+        locale: router.locale === "en" ? "es" : "en",
+      })}
     >
       <Container>
         {router.isFallback ? (
@@ -63,17 +69,15 @@ type Params = {
   params: {
     slug: string;
   };
+  locale: LocaleCode;
 };
 
-export async function getStaticProps({ params }: Params) {
-  const post = await getPostBySlug(params.slug, [
-    "title",
-    "meta_description",
-    "excerpt",
-    "body",
-    "published_at",
-    "slug",
-  ]);
+export async function getStaticProps({ params, locale }: Params) {
+  const post = await getPostBySlug(
+    params.slug,
+    ["title", "meta_description", "excerpt", "body", "published_at", "slug"],
+    locale
+  );
 
   const content = await markdownToHtml(post.body || "");
 
@@ -85,18 +89,20 @@ export async function getStaticProps({ params }: Params) {
   };
 }
 
-export async function getStaticPaths() {
-  const posts = await getAllPosts(["slug"], {
-    all: true,
-  });
+export async function getStaticPaths({ locales, ...rest }) {
+  const slugs = await getSlugs();
 
   return {
-    paths: posts.map((post) => {
-      return {
-        params: {
-          slug: post.slug,
-        },
-      };
+    paths: slugs.flatMap((slugsLangs) => {
+      return locales.flatMap((locale) => {
+        return {
+          params: {
+            posts: locale === "es" ? "publicaciones" : "posts",
+            slug: slugsLangs[locale],
+          },
+          locale,
+        };
+      });
     }),
     fallback: false,
   };

@@ -8,9 +8,13 @@ export default Posts;
 export { getStaticProps };
 
 export async function getStaticPaths() {
-  const pagination: PaginationType<Post> = await getAllPosts([], {
-    limit: 1,
-  });
+  const pagination: PaginationType<Post> = await getAllPosts(
+    [],
+    {
+      limit: 1,
+    },
+    "en"
+  );
 
   const totalPages = Math.ceil(pagination.total / POST_PER_PAGE);
 

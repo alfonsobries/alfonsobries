@@ -11,6 +11,7 @@ type Props = {
   useLightLogo?: boolean;
   navigationTitle?: string | React.ReactNode;
   maxWidthClass?: string;
+  hreflangUrl: string;
   meta: {
     title: string;
     description: string;
@@ -29,12 +30,13 @@ const Layout = ({
   hideFooter = false,
   useLightLogo,
   maxWidthClass,
+  hreflangUrl,
 }: Props) => {
   const isHome = useIsHome();
 
   return (
     <>
-      <Meta meta={meta} />
+      <Meta meta={meta} hreflangUrl={hreflangUrl} />
 
       <main>
         <PageHeader small={!isHome} pinned={pinned} />
@@ -44,6 +46,7 @@ const Layout = ({
           navigationTitle={navigationTitle}
           useLightLogo={useLightLogo}
           maxWidthClass={maxWidthClass}
+          hreflangUrl={hreflangUrl}
         />
 
         <div>{children}</div>
