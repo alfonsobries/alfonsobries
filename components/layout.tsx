@@ -15,7 +15,7 @@ type Props = {
   hreflangUrl?: string;
   t: TFunction;
   meta: {
-    title: string;
+    title?: string;
     description: string;
     image?: string;
     path?: string;
@@ -39,7 +39,7 @@ const Layout = ({
 
   return (
     <>
-      <Meta meta={meta} hreflangUrl={hreflangUrl} />
+      <Meta meta={meta} hreflangUrl={hreflangUrl} t={t} />
 
       <main>
         <PageHeader small={!isHome} pinned={pinned} t={t} />
@@ -56,7 +56,7 @@ const Layout = ({
         <div>{children}</div>
       </main>
 
-      {hideFooter || <Footer />}
+      {hideFooter || <Footer t={t} />}
     </>
   );
 };

@@ -1,20 +1,22 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { CMS_NAME, SITE_URL } from "../lib/constants";
+import { TFunction } from "next-i18next";
 
 type Props = {
   children?: React.ReactNode;
   meta: {
-    title: string;
+    title?: string;
     description: string;
     image?: string;
     ogType?: string;
     hidePageName?: boolean;
   };
   hreflangUrl?: string;
+  t: TFunction;
 };
 
-const Meta = ({ meta, children, hreflangUrl }: Props) => {
+const Meta = ({ meta, children, hreflangUrl, t }: Props) => {
   const { asPath, locale } = useRouter();
 
   if (meta.description.length > 155) {
@@ -33,7 +35,9 @@ const Meta = ({ meta, children, hreflangUrl }: Props) => {
       ) : (
         <title>
           <>
-            {meta.title} | {CMS_NAME}
+            {meta.title
+              ? `${meta.title} • ${t("common:site_title")}`
+              : t("common:site_title")}
           </>
         </title>
       )}

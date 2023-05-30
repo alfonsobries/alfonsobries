@@ -25,9 +25,8 @@ export default function Index({ posts, hasMorePosts, ...rest }: Props) {
     <>
       <Layout
         meta={{
-          title: "An average human being",
-          description:
-            "Hello, it’s me, Alfonso. On this website you can find a little bit about my work and my interests, it is also a good place to connect. Please come in",
+          title: t("common:home.meta_title"),
+          description: t("common:home.meta_description"),
           image: "https://www.alfonsobries.com/images/og/main.png",
         }}
         hreflangUrl={urls.home({
@@ -37,13 +36,14 @@ export default function Index({ posts, hasMorePosts, ...rest }: Props) {
       >
         <Container>
           <div className="prose prose-h2:text-lg dark:prose-invert">
-            <h1>Latest Posts</h1>
+            <h1>{t("common:latest_posts")}</h1>
 
             {posts.map((post) => (
               <ArticleListItem
                 key={post.slug}
                 post={post}
                 locale={locale as LocaleCode}
+                t={t}
               />
             ))}
           </div>
@@ -57,7 +57,7 @@ export default function Index({ posts, hasMorePosts, ...rest }: Props) {
                   "mt-8 block rounded border p-2 text-center"
                 )}
               >
-                More Posts →
+                {t("common:more_posts")} →
               </a>
             </Link>
           )}

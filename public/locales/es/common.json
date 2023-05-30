@@ -2,5 +2,14 @@
   "site_title": "Sitio Web de Alfonso",
   "hello_im": "Hola, soy",
   "twitter_profile": "Perfil de Twitter",
-  "github_profile": "Perfil de Github"
+  "github_profile": "Perfil de Github",
+  "read_more": "Leer más",
+  "more_posts": "Más publicaciones",
+  "made_with": "Hecho con",
+  "latest_posts": "Últimas publicaciones",
+  "read_time": "{{minutes}} min de lectura",
+  "home": {
+    "meta_title": "",
+    "meta_description": "Hola!, soy Alfonso.  En este sitio web puedes encontrar un poco sobre mi trabajo y mis intereses, también es un buen lugar para conectarse."
+  }
 }

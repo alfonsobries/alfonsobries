@@ -19,6 +19,8 @@ type Props = {
 };
 
 export default function Posts({ pagination, locale }: Props) {
+  const { t } = useTranslation();
+
   const subtitle = useMemo(() => {
     return `${
       pagination.current_page > 1 ? `Page ${pagination.current_page}` : ""
@@ -32,8 +34,6 @@ export default function Posts({ pagination, locale }: Props) {
         : "Posts"
     }`;
   }, [pagination.current_page]);
-
-  const { t } = useTranslation();
 
   return (
     <>
@@ -65,7 +65,12 @@ export default function Posts({ pagination, locale }: Props) {
             </h1>
 
             {pagination.data.map((post) => (
-              <ArticleListItem key={post.slug} post={post} locale={locale} />
+              <ArticleListItem
+                t={t}
+                key={post.slug}
+                post={post}
+                locale={locale}
+              />
             ))}
           </div>
 

@@ -2,5 +2,14 @@
   "site_title": "Alfonso's Website",
   "hello_im": "Hello, I’m",
   "twitter_profile": "Twitter Profile",
-  "github_profile": "Github Profile"
+  "github_profile": "Github Profile",
+  "read_more": "Read More",
+  "more_posts": "More Posts",
+  "made_with": "Made with",
+  "latest_posts": "Latest Posts",
+  "read_time": "{{minutes}} min read time",
+  "home": {
+    "meta_title": "",
+    "meta_description": "Hello, it’s me, Alfonso. On this website you can find a little bit about my work and my interests, it is also a good place to connect. Please come in"
+  }
 }

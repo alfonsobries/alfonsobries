@@ -10,8 +10,9 @@ import urls from "../helpers/urls";
 import { useRouter } from "next/router";
 import { LocaleCode } from "../interfaces/localization";
 import Link from "next/link";
+import { TFunction } from "next-i18next";
 
-const Footer = () => {
+const Footer = ({ t }: { t: TFunction }) => {
   const year = useMemo(() => new Date().getFullYear(), []);
   const { locale } = useRouter();
   return (
@@ -40,7 +41,7 @@ const Footer = () => {
               </span>
 
               <span className="inline-flex items-center space-x-2">
-                <span>Made with</span>
+                <span>{t("common:made_with")}</span>
                 <span>
                   <Heart className="h-4 w-4 text-gray-800 dark:text-gray-200" />
                   <span className="sr-only">Love</span>
@@ -58,7 +59,7 @@ const Footer = () => {
                   }
                   rel="noreferrer"
                 >
-                  About Me
+                  {t("menu:about")}
                 </a>
               </Link>
             </span>

@@ -40,7 +40,7 @@ const PageHeader: React.FC<{
                     className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200"
                   />
 
-                  <span className="font-cursive text-4xl font-bold text-gray-900 dark:text-gray-300 ">
+                  <span className="font-cursive text-4xl font-bold text-gray-900 dark:text-gray-300">
                     {t("common:site_title")}
                   </span>
                 </a>

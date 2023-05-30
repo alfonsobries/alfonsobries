@@ -6,11 +6,13 @@ import DateFormatter from "./date-formatter";
 import ReadTime from "./read-time";
 import urls from "../helpers/urls";
 import { LocaleCode } from "../interfaces/localization";
+import { TFunction } from "next-i18next";
 
 const ArticleListItem: React.FC<{
   post: Post;
   locale: LocaleCode;
-}> = ({ post, locale }) => {
+  t: TFunction;
+}> = ({ post, locale, t }) => {
   const postUrl = urls.post({
     post,
     locale,
@@ -34,12 +36,12 @@ const ArticleListItem: React.FC<{
           <span className="hidden text-xs text-gray-300 dark:text-gray-700 sm:inline">
             ●
           </span>
-          <ReadTime content={post.body} className="hidden sm:inline" />
+          <ReadTime t={t} content={post.body} className="hidden sm:inline" />
         </span>
 
         <Link href={postUrl}>
           <a className={classNames(LINK_COLOR_TEXT, "text-sm hover:underline")}>
-            Read More →
+            {t("common:read_more")} →
           </a>
         </Link>
       </p>
