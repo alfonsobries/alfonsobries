@@ -216,6 +216,29 @@ const MainMenu = ({
         </div>
 
         <div className="flex items-center print:hidden">
+          <Link
+            href={hreflangUrl}
+            locale={router.locale === "en" ? "es" : "en"}
+          >
+            <a
+              lang={router.locale}
+              hrefLang={router.locale === "en" ? "es" : "en"}
+              className={cn(
+                "flex h-full items-center space-x-1 whitespace-nowrap px-2 text-blue-700 dark:text-blue-200",
+                {
+                  "px-2": !useDropdownMenu,
+                  [`${BORDER_COLOR} border-t py-3`]: useDropdownMenu,
+                }
+              )}
+            >
+              <span className="text-sm">
+                {router.locale === "en" ? "ES" : "EN"}
+              </span>
+            </a>
+          </Link>
+
+          <span className={`border-l ${BORDER_COLOR} mx-2 h-5`}></span>
+
           <SwitchButton
             className="flex h-8 items-center px-2 text-blue-700 hover:text-blue-600 dark:text-blue-200 dark:hover:text-blue-300"
             icon
