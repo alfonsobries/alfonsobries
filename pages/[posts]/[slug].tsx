@@ -63,7 +63,7 @@ export default function Post({ post, content }: Props) {
               </div>
             </article>
 
-            <TypoForm post={post} />
+            {router.locale !== "es" && <TypoForm post={post} />}
           </>
         )}
       </Container>
