@@ -4,11 +4,13 @@ import { BORDER_COLOR } from "../lib/cssClasses";
 import SwitchButton from "./switch-button";
 import LazySvg from "./lazy-svg";
 import Link from "next/link";
+import { TFunction } from "next-i18next";
 
 const PageHeader: React.FC<{
   small?: boolean;
   pinned?: boolean;
-}> = ({ small = false, pinned = false }) => {
+  t: TFunction;
+}> = ({ small = false, pinned = false, t }) => {
   if (pinned) {
     return <></>;
   }
@@ -39,7 +41,7 @@ const PageHeader: React.FC<{
                   />
 
                   <span className="font-cursive text-4xl font-bold text-gray-900 dark:text-gray-300 ">
-                    Alfonso&#x27;s Website
+                    {t("common:site_title")}
                   </span>
                 </a>
               </Link>
@@ -52,9 +54,9 @@ const PageHeader: React.FC<{
                   className="flex h-[150px] w-[130px] flex-shrink-0 items-center justify-center"
                 />
 
-                <div className="mt-4 w-full overflow-hidden sm:ml-4 sm:mt-0 sm:w-auto sm:flex-grow sm:space-y-4">
-                  <p className="overflow-hidden whitespace-nowrap text-center font-cursive text-6xl font-bold text-gray-900 dark:text-gray-300 sm:text-left">
-                    Hello, I’m{" "}
+                <div className="mt-4 w-full sm:ml-4 sm:mt-0 sm:w-auto sm:flex-grow sm:space-y-4">
+                  <p className="whitespace-nowrap text-center font-cursive text-6xl font-bold text-gray-900 dark:text-gray-300 sm:text-left">
+                    {t("common:hello_im")}{" "}
                     <span className="relative after:absolute after:left-0 after:-mt-[15px] after:-ml-[5%] after:block after:h-3 after:w-[110%] after:bg-[#fbd68b] after:opacity-50 after:content-['']">
                       Alfonso
                     </span>

@@ -1,3 +1,4 @@
+import { TFunction } from "next-i18next";
 import useIsHome from "../hooks/useIsHome";
 import Footer from "./footer";
 import MainMenu from "./main-menu";
@@ -12,6 +13,7 @@ type Props = {
   navigationTitle?: string | React.ReactNode;
   maxWidthClass?: string;
   hreflangUrl?: string;
+  t: TFunction;
   meta: {
     title: string;
     description: string;
@@ -31,6 +33,7 @@ const Layout = ({
   useLightLogo,
   maxWidthClass,
   hreflangUrl,
+  t,
 }: Props) => {
   const isHome = useIsHome();
 
@@ -39,7 +42,7 @@ const Layout = ({
       <Meta meta={meta} hreflangUrl={hreflangUrl} />
 
       <main>
-        <PageHeader small={!isHome} pinned={pinned} />
+        <PageHeader small={!isHome} pinned={pinned} t={t} />
 
         <MainMenu
           pinned={pinned}
@@ -47,6 +50,7 @@ const Layout = ({
           useLightLogo={useLightLogo}
           maxWidthClass={maxWidthClass}
           hreflangUrl={hreflangUrl}
+          t={t}
         />
 
         <div>{children}</div>

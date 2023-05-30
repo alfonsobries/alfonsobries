@@ -1,3 +1,6 @@
 {
-  "description": "Un ejemplo simple"
+  "site_title": "Sitio de Alfonso",
+  "hello_im": "Hola, soy",
+  "twitter_profile": "Perfil de Twitter",
+  "github_profile": "Perfil de Github"
 }

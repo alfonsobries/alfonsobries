@@ -16,10 +16,10 @@ type Props = {
   hasMorePosts: boolean;
 };
 
-export default function Index({ posts, hasMorePosts }: Props) {
+export default function Index({ posts, hasMorePosts, ...rest }: Props) {
   const { locale } = useRouter();
 
-  const { t } = useTranslation();
+  const { t } = useTranslation("common");
 
   return (
     <>
@@ -33,6 +33,7 @@ export default function Index({ posts, hasMorePosts }: Props) {
         hreflangUrl={urls.home({
           locale: locale === "en" ? "es" : "en",
         })}
+        t={t}
       >
         <Container>
           <div className="prose prose-h2:text-lg dark:prose-invert">
@@ -79,7 +80,7 @@ export const getStaticProps = async ({ locale }) => {
     props: {
       posts: posts.data,
       hasMorePosts: posts.next_page_url !== null,
-      ...(await serverSideTranslations(locale, ["common"])),
+      ...(await serverSideTranslations(locale, ["menu", "common"])),
     },
   };
 };

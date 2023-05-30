@@ -12,6 +12,7 @@ import Home from "./icons/home";
 import classNames from "classnames";
 import { LocaleCode } from "../interfaces/localization";
 import urls from "../helpers/urls";
+import { TFunction } from "next-i18next";
 
 type MenuLink = {
   selected: (router: NextRouter) => boolean;
@@ -25,7 +26,13 @@ type MenuLink = {
   label:
     | string
     | React.ReactNode
-    | (({ locale }: { locale: LocaleCode }) => React.ReactNode);
+    | (({
+        locale,
+        t,
+      }: {
+        locale: LocaleCode;
+        t: TFunction;
+      }) => React.ReactNode);
   mobileOnly?: boolean;
 };
 
@@ -33,35 +40,57 @@ const links: MenuLink[] = [
   {
     selected: (router) => router.asPath === "/",
     href: ({ locale }) => urls.home({ locale }),
-    label: (
-      <>
-        <Home className="h-5 w-5" />
-        <span className="sr-only"> Home</span>
-      </>
-    ),
+    label: ({ t }) => {
+      return (
+        <>
+          <Home className="h-5 w-5" />
+          <span className="sr-only">
+            {t("home", {
+              ns: "menu",
+            })}
+          </span>
+        </>
+      );
+    },
   },
   {
     selected: (router) => {
       return router.pathname.startsWith("/[posts]");
     },
     href: ({ locale }) => urls.posts({ locale }),
-    label: "Posts",
+    label: ({ t }) => {
+      return t("posts", {
+        ns: "menu",
+      });
+    },
   },
   {
     selected: (router) => false,
     href: ({ locale }) => urls.labs({ locale }),
-    label: "Labs",
+    label: ({ t }) => {
+      return t("labs", {
+        ns: "menu",
+      });
+    },
   },
   {
     selected: (router) => router.pathname.startsWith("/[about]"),
     href: ({ locale }) => urls.about({ locale }),
-    label: "About",
+    label: ({ t }) => {
+      return t("about", {
+        ns: "menu",
+      });
+    },
     mobileOnly: true,
   },
   {
     selected: (router) => false,
     href: ({ locale }) => urls.contact({ locale }),
-    label: "Contact",
+    label: ({ t }) => {
+      return t("contact", {
+        ns: "menu",
+      });
+    },
   },
 ];
 
@@ -71,6 +100,7 @@ type Props = {
   useLightLogo?: boolean;
   maxWidthClass?: string;
   hreflangUrl: string;
+  t: TFunction;
 };
 
 const MainMenu = ({
@@ -79,6 +109,7 @@ const MainMenu = ({
   useLightLogo,
   hreflangUrl,
   maxWidthClass = "max-w-xl",
+  t,
 }: Props) => {
   const router = useRouter();
   const [isSticky, setIsSticky] = useState(pinned);
@@ -155,7 +186,7 @@ const MainMenu = ({
           )}
         >
           {typeof link.label === "function"
-            ? link.label({ locale })
+            ? link.label({ locale, t })
             : index === 0 && menuOpened
             ? "Home"
             : link.label}
@@ -357,7 +388,12 @@ const MainMenu = ({
           >
             <Twitter className="h-5 w-5" />
 
-            <span className="sr-only"> Twitter Profile</span>
+            <span className="sr-only">
+              {" "}
+              {t("twitter_profile", {
+                ns: "common",
+              })}
+            </span>
           </a>
 
           <a
@@ -365,7 +401,12 @@ const MainMenu = ({
             className={classNames(LINK_COLOR_BG, "rounded-full p-4 text-white")}
           >
             <Github className="h-5 w-5" />
-            <span className="sr-only"> Github Profile</span>
+            <span className="sr-only">
+              {" "}
+              {t("github_profile", {
+                ns: "common",
+              })}
+            </span>
           </a>
         </div>
       </nav>
