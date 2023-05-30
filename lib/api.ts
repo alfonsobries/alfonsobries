@@ -24,7 +24,6 @@ const getPostWithOnlyProperties = (
   };
 
   properties.forEach((property) => {
-    console.log({ property });
     if (
       typeof post[property] === "object" &&
       post[property] !== null &&
