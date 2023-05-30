@@ -8,6 +8,8 @@ import { getAllPosts } from "../lib/api";
 import { useMemo } from "react";
 import { LocaleCode } from "../interfaces/localization";
 import urls from "../helpers/urls";
+import { useTranslation } from "react-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export const POST_PER_PAGE = 5;
 
@@ -31,6 +33,8 @@ export default function Posts({ pagination, locale }: Props) {
     }`;
   }, [pagination.current_page]);
 
+  const { t } = useTranslation();
+
   return (
     <>
       <Layout
@@ -44,6 +48,7 @@ export default function Posts({ pagination, locale }: Props) {
           locale: locale === "en" ? "es" : "en",
           page: pagination.current_page,
         })}
+        t={t}
       >
         <Container>
           <div className="prose prose-h2:text-lg dark:prose-invert">
@@ -92,6 +97,7 @@ export const getStaticProps = async ({ params, locale }: Params) => {
     props: {
       locale,
       pagination,
+      ...(await serverSideTranslations(locale)),
     },
   };
 };

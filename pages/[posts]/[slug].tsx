@@ -10,16 +10,18 @@ import ReadTime from "../../components/read-time";
 import TypoForm from "../../components/typo-form";
 import { LocaleCode } from "../../interfaces/localization";
 import urls from "../../helpers/urls";
+import { useTranslation } from "react-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 type Props = {
   post: PostType;
   content: string;
-  morePosts: PostType[];
-  preview?: boolean;
 };
 
-export default function Post({ post, content, morePosts, preview }: Props) {
+export default function Post({ post, content }: Props) {
   const router = useRouter();
+
+  const { t } = useTranslation();
 
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />;
@@ -36,6 +38,7 @@ export default function Post({ post, content, morePosts, preview }: Props) {
         post,
         locale: router.locale === "en" ? "es" : "en",
       })}
+      t={t}
     >
       <Container>
         {router.isFallback ? (
@@ -85,6 +88,7 @@ export async function getStaticProps({ params, locale }: Params) {
     props: {
       content,
       post,
+      ...(await serverSideTranslations(locale)),
     },
   };
 }

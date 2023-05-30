@@ -30,6 +30,8 @@ import GithubHeatmap from "../components/github-heatmap";
 import Keyboard from "../components/icons/keyboard";
 import urls from "../helpers/urls";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 type SkillGroup = {
   framework: ResumeSkillType[];
@@ -71,6 +73,8 @@ export default function Resume({
   githubContributions,
 }: Props) {
   const { locale } = useRouter();
+
+  const { t } = useTranslation();
 
   return (
     <>
@@ -114,6 +118,7 @@ export default function Resume({
         hreflangUrl={urls.resume({
           locale: locale === "en" ? "es" : "en",
         })}
+        t={t}
       >
         <div className="relative z-0 mx-auto flex max-w-4xl flex-col space-y-8 px-4 pb-8 print:flex-row print:space-x-8 print:space-y-0 print:pt-0 sm:flex-row sm:space-x-8 sm:space-y-0">
           <div className="space-y-8 print:max-w-md print:space-y-4 sm:max-w-sm md:max-w-md lg:max-w-lg">
@@ -305,7 +310,7 @@ export default function Resume({
   );
 }
 
-export const getStaticProps = async () => {
+export const getStaticProps = async ({ locale }) => {
   const [{ experience, projects, skills }, githubContributions] =
     await Promise.all([getResumeData(), getGithubContributions()]);
 
@@ -349,6 +354,7 @@ export const getStaticProps = async () => {
       skillsExpert,
       skillsAdvanced,
       githubContributions,
+      ...(await serverSideTranslations(locale)),
     },
   };
 };

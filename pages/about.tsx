@@ -3,9 +3,13 @@ import Container from "../components/container";
 import Layout from "../components/layout";
 import urls from "../helpers/urls";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function About() {
   const { locale } = useRouter();
+
+  const { t } = useTranslation();
 
   return (
     <>
@@ -19,6 +23,7 @@ export default function About() {
         hreflangUrl={urls.about({
           locale: locale === "en" ? "es" : "en",
         })}
+        t={t}
       >
         <Container>
           <div className="prose dark:prose-invert">
@@ -88,3 +93,11 @@ export default function About() {
     </>
   );
 }
+
+export const getStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale)),
+    },
+  };
+};

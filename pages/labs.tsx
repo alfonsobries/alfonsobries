@@ -7,9 +7,13 @@ import { getProjects } from "../lib/api";
 import { BORDER_COLOR } from "../lib/cssClasses";
 import urls from "../helpers/urls";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function Labs({ projects }) {
   const { locale } = useRouter();
+
+  const { t } = useTranslation();
 
   return (
     <>
@@ -23,6 +27,7 @@ export default function Labs({ projects }) {
         hreflangUrl={urls.labs({
           locale: locale === "en" ? "es" : "en",
         })}
+        t={t}
       >
         <Container>
           <div className="prose dark:prose-invert">
@@ -97,12 +102,13 @@ export default function Labs({ projects }) {
   );
 }
 
-export const getStaticProps = async () => {
+export const getStaticProps = async ({ locale }) => {
   const projects = await getProjects();
 
   return {
     props: {
       projects,
+      ...(await serverSideTranslations(locale)),
     },
   };
 };

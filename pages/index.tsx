@@ -19,7 +19,7 @@ type Props = {
 export default function Index({ posts, hasMorePosts, ...rest }: Props) {
   const { locale } = useRouter();
 
-  const { t } = useTranslation("common");
+  const { t } = useTranslation();
 
   return (
     <>
@@ -80,7 +80,7 @@ export const getStaticProps = async ({ locale }) => {
     props: {
       posts: posts.data,
       hasMorePosts: posts.next_page_url !== null,
-      ...(await serverSideTranslations(locale, ["menu", "common"])),
+      ...(await serverSideTranslations(locale)),
     },
   };
 };

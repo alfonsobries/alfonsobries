@@ -10,6 +10,8 @@ import TypoForm from "../../../../components/typo-form";
 import { getAllDraftPostsSlugs, getDraftPostBySlug } from "../../../../lib/api";
 import { LocaleCode } from "../../../../interfaces/localization";
 import urls from "../../../../helpers/urls";
+import { useTranslation } from "react-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 type Props = {
   post: PostType;
@@ -19,6 +21,8 @@ type Props = {
 
 export default function Post({ post, content, secret }: Props) {
   const router = useRouter();
+
+  const { t } = useTranslation();
 
   if (!router.isFallback && !post?.slug) {
     return <ErrorPage statusCode={404} />;
@@ -36,6 +40,7 @@ export default function Post({ post, content, secret }: Props) {
         secret,
         locale: router.locale === "en" ? "es" : "en",
       })}
+      t={t}
     >
       <Container>
         {router.isFallback ? (
@@ -87,6 +92,7 @@ export async function getStaticProps({ params, locale }: Params) {
       content,
       post,
       secret: params.secret,
+      ...serverSideTranslations(locale),
     },
   };
 }

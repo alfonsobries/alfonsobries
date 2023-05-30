@@ -242,7 +242,7 @@ const MainMenu = ({
           </Link>
 
           <span className="truncate font-cursive text-2xl font-bold text-gray-900 dark:text-gray-300">
-            {navigationTitle || "Alfonso's Website"}
+            {navigationTitle || t("common:site_title")}
           </span>
         </div>
 

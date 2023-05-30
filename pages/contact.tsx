@@ -11,6 +11,8 @@ import FormTextarea from "../components/form/form-textarea";
 import Alert from "../components/alert";
 import urls from "../helpers/urls";
 import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 export default function Contact() {
   const [errored, setErrored] = useState(false);
@@ -29,6 +31,8 @@ export default function Contact() {
   };
   const { locale } = useRouter();
 
+  const { t } = useTranslation();
+
   return (
     <>
       <Layout
@@ -41,6 +45,7 @@ export default function Contact() {
         hreflangUrl={urls.contact({
           locale: locale === "en" ? "es" : "en",
         })}
+        t={t}
       >
         <Container>
           <Alert show={errored}>Something went wrong. Please try again.</Alert>
@@ -159,3 +164,11 @@ export default function Contact() {
     </>
   );
 }
+
+export const getStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale)),
+    },
+  };
+};
