@@ -2,6 +2,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { CMS_NAME, SITE_URL } from "../lib/constants";
 import { TFunction } from "next-i18next";
+import { useMemo } from "react";
 
 type Props = {
   children?: React.ReactNode;
@@ -28,19 +29,22 @@ const Meta = ({ meta, children, hreflangUrl, t }: Props) => {
     meta.image ||
     `https://og.alfonsobries.com/${encodeURIComponent(meta.title)}.png`;
 
+  const title = useMemo(() => {
+    if (meta.hidePageName) {
+      return meta.title;
+    }
+
+    if (meta.title) {
+      return `${meta.title} • ${t("common:site_title")}`;
+    }
+
+    return t("common:site_title");
+  }, [meta, t]);
+
   return (
     <Head>
-      {meta.hidePageName ? (
-        <title>{meta.title}</title>
-      ) : (
-        <title>
-          <>
-            {meta.title
-              ? `${meta.title} • ${t("common:site_title")}`
-              : t("common:site_title")}
-          </>
-        </title>
-      )}
+      <title>{title}</title>
+
       <meta name="description" content={meta.description} />
       <link
         rel="apple-touch-icon"
