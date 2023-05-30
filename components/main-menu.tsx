@@ -54,11 +54,6 @@ const links: MenuLink[] = [
   },
   {
     selected: (router) => false,
-    href: ({ locale }) => urls.about({ locale }),
-    label: "About",
-  },
-  {
-    selected: (router) => false,
     href: ({ locale }) => urls.contact({ locale }),
     label: "Contact",
   },

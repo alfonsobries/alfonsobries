@@ -6,9 +6,14 @@ import Github from "./icons/github";
 import LazySvg from "./lazy-svg";
 import Heart from "./icons/heart";
 import { useMemo } from "react";
+import urls from "../helpers/urls";
+import { useRouter } from "next/router";
+import { LocaleCode } from "../interfaces/localization";
+import Link from "next/link";
 
 const Footer = () => {
   const year = useMemo(() => new Date().getFullYear(), []);
+  const { locale } = useRouter();
   return (
     <footer className="text-sm text-gray-500">
       <Container>
@@ -41,6 +46,21 @@ const Footer = () => {
                   <span className="sr-only">Love</span>
                 </span>
               </span>
+
+              <span className="text-xs text-gray-300 dark:text-gray-700">
+                ●
+              </span>
+
+              <Link href={urls.about({ locale } as { locale: LocaleCode })}>
+                <a
+                  className={
+                    "text-gray-900  hover:text-gray-800 hover:underline dark:text-gray-300 dark:hover:text-gray-200"
+                  }
+                  rel="noreferrer"
+                >
+                  About Me
+                </a>
+              </Link>
             </span>
             <span className={classNames(BORDER_COLOR, "border-l")}></span>
             <div className="flex space-x-4">
