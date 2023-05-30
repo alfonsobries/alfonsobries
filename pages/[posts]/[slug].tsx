@@ -46,7 +46,10 @@ export default function Post({ post, content }: Props) {
         ) : (
           <>
             <div className="mb-2 flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
-              <DateFormatter dateString={post.published_at} />
+              <DateFormatter
+                dateString={post.published_at}
+                locale={router.locale as LocaleCode}
+              />
               <span className="text-xs text-gray-300 dark:text-gray-700">
                 ●
               </span>

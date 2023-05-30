@@ -32,7 +32,7 @@ const ArticleListItem: React.FC<{
 
       <p className="flex items-center justify-between">
         <span className="flex items-center space-x-2 text-sm text-gray-500">
-          <DateFormatter dateString={post.published_at} />
+          <DateFormatter dateString={post.published_at} locale={locale} />
           <span className="hidden text-xs text-gray-300 dark:text-gray-700 sm:inline">
             ●
           </span>
