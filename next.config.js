@@ -2,20 +2,20 @@ const axios = require("axios");
 const { i18n } = require("./next-i18next.config");
 
 const Api = axios.create({
-  baseURL: process.env.API_URL || "https://api.alfonsobries.test/api",
+  baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
 });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // async redirects() {
-  //   const { data } = await Api.get(`/slug-history`);
+  async redirects() {
+    const { data } = await Api.get(`/slug-history`);
 
-  //   return data.map(({ slug, new_slug }) => ({
-  //     source: `/posts/${slug}`,
-  //     destination: `/posts/${new_slug}`,
-  //     permanent: true,
-  //   }));
-  // },
+    return data.map(({ slug, new_slug }) => ({
+      source: `/posts/${slug}`,
+      destination: `/posts/${new_slug}`,
+      permanent: true,
+    }));
+  },
   reactStrictMode: true,
   swcMinify: true,
   experimental: { images: { allowFutureImage: true } },
