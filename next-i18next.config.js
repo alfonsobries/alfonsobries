@@ -4,6 +4,6 @@ module.exports = {
     locales: ["en", "es"],
     defaultNS: "common",
     // @TODO: remove
-    // localeDetection: false,
+    localeDetection: false,
   },
 };
