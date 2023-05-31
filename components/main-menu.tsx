@@ -208,7 +208,7 @@ const MainMenu = ({
           "mx-auto before:absolute before:-my-1 before:hidden before:h-14 before:w-5 before:bg-gradient-to-r before:from-white/100 before:to-white/0 before:content-[''] after:absolute after:right-0 after:top-0 after:-my-1 after:hidden after:h-14 after:w-5 after:bg-gradient-to-l after:from-white/100 after:to-white/0 after:content-[''] dark:before:from-gray-900/100 dark:before:to-gray-900/0 dark:after:from-gray-900/100 dark:after:to-gray-900/0 sm:before:block sm:after:block":
             !isSticky,
           "fixed h-screen w-screen bg-white dark:bg-gray-900": showDropdownMenu,
-          "sticky bg-white/30 backdrop-blur-lg dark:bg-gray-900/30":
+          "sticky bg-white/30 backdrop-blur-lg dark:bg-gray-900/80":
             !showDropdownMenu,
         }
       )}
@@ -258,7 +258,7 @@ const MainMenu = ({
                 "flex h-full items-center space-x-1 whitespace-nowrap px-2 text-blue-700 dark:text-blue-200",
                 {
                   "px-2": !useDropdownMenu,
-                  [`${BORDER_COLOR} border-t py-3`]: useDropdownMenu,
+                  [`${BORDER_COLOR} py-3`]: useDropdownMenu,
                 }
               )}
             >
@@ -268,14 +268,18 @@ const MainMenu = ({
             </a>
           </Link>
 
-          <span className={`border-l ${BORDER_COLOR} mx-2 h-5`}></span>
+          <span
+            className={`mx-2 h-5 w-[1px] bg-white/10 backdrop-blur-lg dark:bg-gray-900/80`}
+          ></span>
 
           <SwitchButton
             className="flex h-8 items-center px-2 text-blue-700 hover:text-blue-600 dark:text-blue-200 dark:hover:text-blue-300"
             icon
           />
 
-          <span className={`border-l ${BORDER_COLOR} mx-2 h-5`}></span>
+          <span
+            className={`mx-2 h-5 w-[1px] bg-white/10 backdrop-blur-lg dark:bg-gray-900/80`}
+          ></span>
 
           <button
             type="button"
