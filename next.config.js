@@ -7,15 +7,15 @@ const Api = axios.create({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async redirects() {
-    const { data } = await Api.get(`/slug-history`);
+  // async redirects() {
+  //   const { data } = await Api.get(`/slug-history`);
 
-    return data.map(({ slug, new_slug }) => ({
-      source: `/posts/${slug}`,
-      destination: `/posts/${new_slug}`,
-      permanent: true,
-    }));
-  },
+  //   return data.map(({ slug, new_slug }) => ({
+  //     source: `/posts/${slug}`,
+  //     destination: `/posts/${new_slug}`,
+  //     permanent: true,
+  //   }));
+  // },
   reactStrictMode: true,
   swcMinify: true,
   experimental: { images: { allowFutureImage: true } },
