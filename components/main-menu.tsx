@@ -262,7 +262,7 @@ const MainMenu = ({
                 }
               )}
             >
-              <span className="text-sm">
+              <span className="text-sm font-semibold">
                 {router.locale === "en" ? "ES" : "EN"}
               </span>
             </a>
