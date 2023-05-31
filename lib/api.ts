@@ -8,8 +8,9 @@ import { FilteredPost, Post, PostProperties } from "../interfaces/post";
 import markdownToHtml from "./markdownToHtml";
 import { Project } from "../interfaces/project";
 import { LocaleCode } from "../interfaces/localization";
+
 export const Api = axios.create({
-  baseURL: process.env.API_URL || "https://api.alfonsobries.test/api",
+  baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
 });
 
 const USERNAME = "alfonsobries";

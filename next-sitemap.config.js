@@ -5,7 +5,7 @@ const frontBaseUrl = `${
 }`;
 
 const Api = axios.create({
-  baseURL: process.env.API_URL || "https://api.alfonsobries.test/api",
+  baseURL: process.env.API_URL || "https://api.alfonsobries.com/api",
 });
 
 const alternates = {
