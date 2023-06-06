@@ -19,7 +19,7 @@ I'm a full-stack developer living in Mexico City. For the past 15 years, I've be
 
 ## 📫 How to reach me
 
-- Personal Website [/alfonsobries.com]([mailto:alfonso@vexilo.com](https://www.alfonsobries.com/))
+- Personal Website [/alfonsobries.com](https://www.alfonsobries.com/)
 - Email: [alfonso@vexilo.com](mailto:alfonso@vexilo.com)
 - Twitter: [@alfonsobries](https://twitter.com/alfonsobries)
 
