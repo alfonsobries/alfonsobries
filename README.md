@@ -6,7 +6,7 @@ I'm a full-stack developer living in Mexico City. For the past 15 years, I've be
 
 💻 My tech stack includes, but is not limited to, Laravel, VueJs, React, Next.js, PHP, SQL, JS, TypeScript, and more.
 
-📝 In my spare time, you can find me engrossed in a good book, binge-watching a new TV series, spending quality time with my kids, or training for triathlons.
+📝 When I'm not coding, I'm probably chilling with a good book, catching up on my favorite TV shows, goofing around with my kids, or sweating it out in triathlon training.
 
 🔗 Feel free to check out my [website](https://www.alfonsobries.com/) or delve into my Github profile for a look at my other open-source tools and experiments.
 
