@@ -25,6 +25,10 @@ I'm a full-stack developer living in Mexico City. For the past 15 years, I've be
 
 ## 📊 My Github Stats
 
-![Alfonso's GitHub stats](https://github-readme-stats.vercel.app/api?username=alfonsobries&show_icons=true&theme=radical)
+![Alfonso's GitHub stats](https://github-readme-stats.vercel.app/api?username=alfonsobries&theme=dark)
 
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=alfonsobries&show_icons=true&theme=radical)](https://github.com/alfonsobries/github-readme-stats)
+[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=alfonsobries&theme=dark)](https://github.com/alfonsobries/github-readme-stats)
+
+
+![isthis](https://github.com/alfonsobries/alfonsobries/assets/17262776/de6cd94c-846d-4f41-b437-24b6779347c8)
+
