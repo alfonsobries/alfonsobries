@@ -10,7 +10,7 @@ I'm a full-stack developer living in Mexico City. For the past 15 years, I've be
 
 🔗 Feel free to check out my [website](https://www.alfonsobries.com/) or delve into my Github profile for a look at my other open-source tools and experiments.
 
-## ⚡ Recent Projects
+## ⚡ Recent Side-Projects
 
 - *********:  Secret 👀
 - [VueTailwind](https://vue-tailwind.com): A popular library of Vue components with fully configurable theme classes.
