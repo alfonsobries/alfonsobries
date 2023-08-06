@@ -12,7 +12,7 @@ I'm a full-stack developer living in Mexico City. For the past 15 years, I've be
 
 ## ⚡ Recent Side-Projects
 
-- *********:  Secret 👀
+- [Pricesaurus] (https://www.pricesaurus.com) [WIP] Online stores price tracer & price drop alerts.
 - [VueTailwind](https://vue-tailwind.com): A popular library of Vue components with fully configurable theme classes.
 - [VariantJS](https://github.com/variantjs): The next iteration of the VueTailwind package, built from scratch for Vue 3 and React.
 - [Dona.me](https://www.dona.me): A tool empowering nonprofit organizations to create a website, share their mission, and receive financial support.
