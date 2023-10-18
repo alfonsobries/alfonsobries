@@ -29,6 +29,8 @@ class ResumeControler extends Controller
                 ->waitUntilNetworkIdle()
                 ->timeout(180)
                 ->ignoreHttpsErrors()
+                ->setNodeBinary(config('site.node_binary'))
+                ->setNpmBinary(config('site.npm_binary'))
                 ->waitForFunction("document.getElementById('header') !== null")
                 ->save(storage_path('alfonso.bribiesca.resume.pdf'));
 
