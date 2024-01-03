@@ -20,11 +20,12 @@ const ArticleListItem: React.FC<{
 
   return (
     <article>
-      <h2 className="not-prose">
-        <Link href={postUrl}>
-          <a className="font-semibold text-gray-800 no-underline hover:underline dark:text-gray-200">
-            {post.title}
-          </a>
+      <h2>
+        <Link
+          href={postUrl}
+          className="font-semibold text-gray-800 no-underline hover:underline dark:text-gray-200"
+        >
+          {post.title}
         </Link>
       </h2>
 
@@ -33,16 +34,17 @@ const ArticleListItem: React.FC<{
       <p className="flex items-center justify-between">
         <span className="flex items-center space-x-2 text-sm text-gray-500">
           <DateFormatter dateString={post.published_at} locale={locale} />
-          <span className="hidden text-xs text-gray-300 dark:text-gray-700 sm:inline">
+          <span className="hidden text-xs text-gray-300 sm:inline dark:text-gray-700">
             ●
           </span>
           <ReadTime t={t} content={post.body} className="hidden sm:inline" />
         </span>
 
-        <Link href={postUrl}>
-          <a className={classNames(LINK_COLOR_TEXT, "text-sm hover:underline")}>
-            {t("common:read_more")} →
-          </a>
+        <Link
+          href={postUrl}
+          className={classNames(LINK_COLOR_TEXT, "text-sm hover:underline")}
+        >
+          {t("common:read_more")} →
         </Link>
       </p>
     </article>

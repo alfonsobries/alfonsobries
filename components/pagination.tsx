@@ -59,15 +59,14 @@ const Pagination = ({
       </div>
       <div className="flex flex-1 justify-between space-x-4 sm:justify-end">
         {prevPageUrl !== null ? (
-          <Link href={prevPageUrl}>
-            <a
-              className={classNames(
-                LINK_COLOR_TEXT,
-                "relative inline-flex items-center hover:underline"
-              )}
-            >
-              ← {t("pagination:previous")}
-            </a>
+          <Link
+            href={prevPageUrl}
+            className={classNames(
+              LINK_COLOR_TEXT,
+              "relative inline-flex items-center hover:underline"
+            )}
+          >
+            ← {t("pagination:previous")}
           </Link>
         ) : (
           <span
@@ -81,15 +80,14 @@ const Pagination = ({
         )}
 
         {nextPageUrl !== null ? (
-          <Link href={nextPageUrl}>
-            <a
-              className={classNames(
-                LINK_COLOR_TEXT,
-                "relative inline-flex items-center hover:underline"
-              )}
-            >
-              {t("pagination:next")} →
-            </a>
+          <Link
+            href={nextPageUrl}
+            className={classNames(
+              LINK_COLOR_TEXT,
+              "relative inline-flex items-center hover:underline"
+            )}
+          >
+            {t("pagination:next")} →
           </Link>
         ) : (
           <span

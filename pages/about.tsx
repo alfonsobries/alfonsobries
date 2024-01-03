@@ -88,7 +88,7 @@ export default function About() {
                 <p>
                   Do you like the site? Let me know! I Would love to hear{" "}
                   <Link href={urls.contact({ locale: "en" })}>
-                    <a>your thoughts.</a>
+                    your thoughts.
                   </Link>
                 </p>
               </>
@@ -154,7 +154,7 @@ export default function About() {
                 <p>
                   ¿Te gusta el sitio? ¡Házmelo saber! Me encantaría escuchar{" "}
                   <Link href={urls.contact({ locale: "es" })}>
-                    <a>tus comentarios.</a>
+                    tus comentarios.
                   </Link>
                 </p>
               </>

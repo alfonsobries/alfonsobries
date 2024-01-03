@@ -35,7 +35,7 @@ export default function Index({ posts, hasMorePosts }: Props) {
         t={t}
       >
         <Container>
-          <div className="prose prose-h2:text-lg dark:prose-invert">
+          <div className="prose dark:prose-invert prose-h2:text-lg">
             <h1>{t("common:latest_posts")}</h1>
 
             {posts.map((post) => (
@@ -49,16 +49,15 @@ export default function Index({ posts, hasMorePosts }: Props) {
           </div>
 
           {hasMorePosts && (
-            <Link href={`/posts`}>
-              <a
-                className={classNames(
-                  LINK_COLOR_BORDER,
-                  LINK_COLOR_TEXT,
-                  "mt-8 block rounded border p-2 text-center"
-                )}
-              >
-                {t("common:more_posts")} →
-              </a>
+            <Link
+              href={`/posts`}
+              className={classNames(
+                LINK_COLOR_BORDER,
+                LINK_COLOR_TEXT,
+                "mt-8 block rounded border p-2 text-center"
+              )}
+            >
+              {t("common:more_posts")} →
             </Link>
           )}
         </Container>

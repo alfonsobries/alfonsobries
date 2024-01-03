@@ -52,15 +52,14 @@ const Footer = ({ t }: { t: TFunction }) => {
                 ●
               </span>
 
-              <Link href={urls.about({ locale } as { locale: LocaleCode })}>
-                <a
-                  className={
-                    "text-gray-900  hover:text-gray-800 hover:underline dark:text-gray-300 dark:hover:text-gray-200"
-                  }
-                  rel="noreferrer"
-                >
-                  {t("menu:about")}
-                </a>
+              <Link
+                href={urls.about({ locale } as { locale: LocaleCode })}
+                className={
+                  "text-gray-900  hover:text-gray-800 hover:underline dark:text-gray-300 dark:hover:text-gray-200"
+                }
+                rel="noreferrer"
+              >
+                {t("menu:about")}
               </Link>
             </span>
             <span className={classNames(BORDER_COLOR, "border-l")}></span>

@@ -72,13 +72,13 @@ export default function Error404() {
       />
 
       <LazySvg
-        className="absolute left-[10%] bottom-[50%] z-20 h-auto w-[600px]"
+        className="absolute bottom-[50%] left-[10%] z-20 h-auto w-[600px]"
         src="/images/door.svg"
         showLoading={false}
       />
 
       <LazySvg
-        className="absolute right-[-50%] bottom-[40%] z-20 w-[500px] max-w-full sm:bottom-[30%] sm:right-[-30%] md:right-0"
+        className="absolute bottom-[40%] right-[-50%] z-20 w-[500px] max-w-full sm:bottom-[30%] sm:right-[-30%] md:right-0"
         src="/images/flame-top-right.svg"
         showLoading={false}
       />
@@ -89,7 +89,7 @@ export default function Error404() {
       >
         <div
           id="globe"
-          className="flex-0 aspect-video absolute inset-0 z-50 mt-[-40px] ml-[40%] flex max-h-[34vh] w-[220px] max-w-[60vw] flex-col items-center justify-center bg-[url('/images/globe.svg')] bg-contain bg-center bg-no-repeat text-center text-black opacity-0 transition-opacity duration-200 ease-in-out sm:w-[300px]"
+          className="flex-0 aspect-video absolute inset-0 z-50 ml-[40%] mt-[-40px] flex max-h-[34vh] w-[220px] max-w-[60vw] flex-col items-center justify-center bg-[url('/images/globe.svg')] bg-contain bg-center bg-no-repeat text-center text-black opacity-0 transition-opacity duration-200 ease-in-out sm:w-[300px]"
         >
           <span id="message" className="font-cursive text-4xl sm:text-5xl">
             Error 404
@@ -108,13 +108,13 @@ export default function Error404() {
       </div>
 
       <LazySvg
-        className="absolute left-[70%] bottom-0 z-40 max-h-[60%] w-[500px] max-w-full md:left-auto md:right-0"
+        className="absolute bottom-0 left-[70%] z-40 max-h-[60%] w-[500px] max-w-full md:left-auto md:right-0"
         src="/images/flame-bottom-right.svg"
         showLoading={false}
       />
 
       <LazySvg
-        className="absolute left-[-30%] bottom-[-30%] z-40 max-h-[70%] w-[400px] max-w-full sm:bottom-0 md:left-0"
+        className="absolute bottom-[-30%] left-[-30%] z-40 max-h-[70%] w-[400px] max-w-full sm:bottom-0 md:left-0"
         src="/images/flame-bottom-left.svg"
         showLoading={false}
       />
@@ -128,10 +128,11 @@ export default function Error404() {
           <ArrowLeft className="h-4 w-4 text-white/50" /> <span>Back</span>
         </button>
 
-        <Link href="/">
-          <a className="flex items-center space-x-2 rounded-xl bg-black/50 px-4 py-2 text-base text-white hover:bg-black">
-            <Home className="h-4 w-4 text-white/50" /> <span>Go Home</span>
-          </a>
+        <Link
+          href="/"
+          className="flex items-center space-x-2 rounded-xl bg-black/50 px-4 py-2 text-base text-white hover:bg-black"
+        >
+          <Home className="h-4 w-4 text-white/50" /> <span>Go Home</span>
         </Link>
       </div>
     </div>

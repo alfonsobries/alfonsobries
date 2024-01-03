@@ -33,17 +33,15 @@ const PageHeader: React.FC<{
             )}
           >
             {small ? (
-              <Link href="/">
-                <a className="flex w-full items-center space-x-4">
-                  <LazySvg
-                    src="/images/me-face.svg"
-                    className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200"
-                  />
+              <Link href="/" className="flex w-full items-center space-x-4">
+                <LazySvg
+                  src="/images/me-face.svg"
+                  className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200"
+                />
 
-                  <span className="font-cursive text-4xl font-bold text-gray-900 dark:text-gray-300">
-                    {t("common:site_title")}
-                  </span>
-                </a>
+                <span className="font-cursive text-4xl font-bold text-gray-900 dark:text-gray-300">
+                  {t("common:site_title")}
+                </span>
               </Link>
             ) : (
               <>
@@ -55,9 +53,9 @@ const PageHeader: React.FC<{
                 />
 
                 <div className="mt-4 w-full sm:ml-4 sm:mt-0 sm:w-auto sm:flex-grow sm:space-y-4">
-                  <p className="whitespace-nowrap text-center font-cursive text-6xl font-bold text-gray-900 dark:text-gray-300 sm:text-left">
+                  <p className="whitespace-nowrap text-center font-cursive text-6xl font-bold text-gray-900 sm:text-left dark:text-gray-300">
                     {t("common:hello_im")}{" "}
-                    <span className="relative after:absolute after:left-0 after:-mt-[15px] after:-ml-[5%] after:block after:h-3 after:w-[110%] after:bg-[#fbd68b] after:opacity-50 after:content-['']">
+                    <span className="relative after:absolute after:left-0 after:-ml-[5%] after:-mt-[15px] after:block after:h-3 after:w-[110%] after:bg-[#fbd68b] after:opacity-50 after:content-['']">
                       Alfonso
                     </span>
                   </p>

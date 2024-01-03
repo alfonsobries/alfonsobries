@@ -73,10 +73,11 @@ export default function Index({
         className="mx-auto mb-4 flex max-w-4xl items-center px-4 pb-4"
       >
         <div className="flex flex-1 items-center space-x-2">
-          <Link href="/">
-            <a className="flex h-8 w-8 shrink-0 origin-bottom items-center justify-center rounded-full bg-blue-700 p-1">
-              <img src="/images/face-icon-light.svg" alt="" />
-            </a>
+          <Link
+            href="/"
+            className="flex h-8 w-8 shrink-0 origin-bottom items-center justify-center rounded-full bg-blue-700 p-1"
+          >
+            <img src="/images/face-icon-light.svg" alt="" />
           </Link>
 
           <span className="prose flex items-center space-x-2 font-sans text-xl font-normal uppercase">
@@ -87,9 +88,7 @@ export default function Index({
         </div>
 
         <Link href="/resume">
-          <a>
-            <Sphere className="h-5 w-5 text-blue-700" />
-          </a>
+          <Sphere className="h-5 w-5 text-blue-700" />
         </Link>
       </div>
 
@@ -107,7 +106,7 @@ export default function Index({
         </div>
         <div className="flex flex-1 flex-col">
           <ResumeSection
-            className="mt-0 mb-8"
+            className="mb-8 mt-0"
             title="Contact Information"
             icon={<Contact />}
             noMargin
