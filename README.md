@@ -1,6 +1,6 @@
 # Hi there, I'm Alfonso 👋
 
-I'm a full-stack developer living in Mexico City. For the past 15 years, I've been crafting software for a variety of companies worldwide, alongside a few personal projects of my own.
+I'm a full-stack developer living in Mérida Yucatán. For the past 15 years, I've been crafting software for a variety of companies worldwide, alongside a few personal projects of my own.
 
 👨‍💻 Currently, I'm a Full-Stack Software Developer by day at [Ark Ecosystem](https://ark.io), and by night, I work on interesting side projects.
 
