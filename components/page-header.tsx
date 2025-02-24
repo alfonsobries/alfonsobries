@@ -5,12 +5,16 @@ import SwitchButton from "./switch-button";
 import LazySvg from "./lazy-svg";
 import Link from "next/link";
 import { TFunction } from "next-i18next";
+import { useEffect } from "react";
+import { useEyes } from "../hooks/useEyes";
 
 const PageHeader: React.FC<{
   small?: boolean;
   pinned?: boolean;
   t: TFunction;
 }> = ({ small = false, pinned = false, t }) => {
+  const { onReady } = useEyes();
+
   if (pinned) {
     return <></>;
   }
@@ -50,6 +54,7 @@ const PageHeader: React.FC<{
                   width={110}
                   height={150}
                   className="flex h-[150px] w-[130px] flex-shrink-0 items-center justify-center"
+                  onReady={onReady}
                 />
 
                 <div className="mt-4 w-full sm:ml-4 sm:mt-0 sm:w-auto sm:flex-grow sm:space-y-4">
