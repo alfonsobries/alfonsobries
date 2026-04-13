@@ -11,6 +11,7 @@ import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import urls from "../helpers/urls";
 import { LocaleCode } from "../interfaces/localization";
+import { personSchema, websiteSchema } from "../lib/jsonLd";
 type Props = {
   posts: Post[];
   hasMorePosts: boolean;
@@ -32,6 +33,7 @@ export default function Index({ posts, hasMorePosts }: Props) {
         hreflangUrl={urls.home({
           locale: locale === "en" ? "es" : "en",
         })}
+        jsonLd={[personSchema(), websiteSchema(t("common:site_title"))]}
         t={t}
       >
         <Container>

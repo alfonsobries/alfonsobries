@@ -13,6 +13,7 @@ type Props = {
   navigationTitle?: string | React.ReactNode;
   maxWidthClass?: string;
   hreflangUrl?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   t: TFunction;
   meta: {
     title?: string;
@@ -33,13 +34,14 @@ const Layout = ({
   useLightLogo,
   maxWidthClass,
   hreflangUrl,
+  jsonLd,
   t,
 }: Props) => {
   const isHome = useIsHome();
 
   return (
     <>
-      <Meta meta={meta} hreflangUrl={hreflangUrl} t={t} />
+      <Meta meta={meta} hreflangUrl={hreflangUrl} jsonLd={jsonLd} t={t} />
 
       <main>
         <PageHeader small={!isHome} pinned={pinned} t={t} />

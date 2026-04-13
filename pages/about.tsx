@@ -5,6 +5,7 @@ import urls from "../helpers/urls";
 import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { personSchema } from "../lib/jsonLd";
 
 export default function About() {
   const { locale } = useRouter();
@@ -23,6 +24,7 @@ export default function About() {
         hreflangUrl={urls.about({
           locale: locale === "en" ? "es" : "en",
         })}
+        jsonLd={personSchema()}
         t={t}
       >
         <Container>

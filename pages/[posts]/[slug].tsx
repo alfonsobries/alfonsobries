@@ -12,6 +12,8 @@ import { LocaleCode } from "../../interfaces/localization";
 import urls from "../../helpers/urls";
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { blogPostingSchema } from "../../lib/jsonLd";
+import { SITE_URL } from "../../lib/constants";
 
 type Props = {
   post: PostType;
@@ -27,6 +29,10 @@ export default function Post({ post, content }: Props) {
     return <ErrorPage statusCode={404} />;
   }
 
+  const currentUrl = `${SITE_URL}${
+    router.locale === "es" ? "/es" : ""
+  }${urls.post({ post, locale: router.locale as LocaleCode })}`;
+
   return (
     <Layout
       meta={{
@@ -37,6 +43,11 @@ export default function Post({ post, content }: Props) {
       hreflangUrl={urls.post({
         post,
         locale: router.locale === "en" ? "es" : "en",
+      })}
+      jsonLd={blogPostingSchema({
+        post,
+        url: currentUrl,
+        locale: router.locale || "en",
       })}
       t={t}
     >
