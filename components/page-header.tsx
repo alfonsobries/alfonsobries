@@ -60,8 +60,22 @@ const PageHeader: React.FC<{
                 <div className="mt-4 w-full sm:ml-4 sm:mt-0 sm:w-auto sm:flex-grow sm:space-y-4">
                   <p className="whitespace-nowrap text-center font-cursive text-6xl font-bold text-gray-900 sm:text-left dark:text-gray-300">
                     {t("common:hello_im")}{" "}
-                    <span className="relative after:absolute after:left-0 after:-ml-[5%] after:-mt-[15px] after:block after:h-3 after:w-[110%] after:bg-[#fbd68b] after:opacity-50 after:content-[''] dark:after:bg-amber-300/30 dark:after:opacity-100">
+                    <span className="relative inline-block">
                       Alfonso
+                      <svg
+                        aria-hidden="true"
+                        viewBox="0 0 300 24"
+                        preserveAspectRatio="none"
+                        className="absolute bottom-0 left-[-3%] h-5 w-[106%] text-amber-400/50 dark:text-amber-400/40"
+                      >
+                        <path
+                          d="M6,14 Q150,6 294,12"
+                          stroke="currentColor"
+                          strokeWidth="14"
+                          strokeLinecap="round"
+                          fill="none"
+                        />
+                      </svg>
                     </span>
                   </p>
                 </div>
