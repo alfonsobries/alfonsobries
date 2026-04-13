@@ -24,8 +24,8 @@ const Footer = ({ t }: { t: TFunction }) => {
             "mt-8 flex flex-col space-y-4 border-t py-8 "
           )}
         >
-          <div className="mb-2 flex items-center justify-between space-x-4">
-            <span className="inline-flex items-center space-x-2">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
               <span className="inline-flex items-center space-x-2">
                 <span>{year} © </span>
                 <LazySvg

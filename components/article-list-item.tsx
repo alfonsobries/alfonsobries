@@ -19,12 +19,13 @@ const ArticleListItem: React.FC<{
   });
 
   return (
-    <article>
+    <article className="group relative transition-transform duration-200 ease-out hover:-translate-y-0.5">
       <h2>
         <Link
           href={postUrl}
-          className="font-semibold text-gray-800 no-underline hover:underline dark:text-gray-200"
+          className="font-semibold text-gray-800 no-underline decoration-blue-500/40 decoration-2 underline-offset-4 hover:underline dark:text-gray-200"
         >
+          <span className="absolute inset-0" aria-hidden="true" />
           {post.title}
         </Link>
       </h2>
@@ -32,20 +33,28 @@ const ArticleListItem: React.FC<{
       <p>{post.excerpt}</p>
 
       <p className="flex items-center justify-between">
-        <span className="flex items-center space-x-2 text-sm text-gray-500">
-          <DateFormatter dateString={post.published_at} locale={locale} />
+        <span className="flex items-center space-x-2 text-xs text-gray-500">
+          <span className="font-mono uppercase tracking-wider">
+            <DateFormatter dateString={post.published_at} locale={locale} />
+          </span>
           <span className="hidden text-xs text-gray-300 sm:inline dark:text-gray-700">
             ●
           </span>
-          <ReadTime t={t} content={post.body} className="hidden sm:inline" />
+          <ReadTime
+            t={t}
+            content={post.body}
+            className="hidden font-mono uppercase tracking-wider sm:inline"
+          />
         </span>
 
-        <Link
-          href={postUrl}
-          className={classNames(LINK_COLOR_TEXT, "text-sm hover:underline")}
+        <span
+          className={classNames(
+            LINK_COLOR_TEXT,
+            "relative z-10 text-sm transition-transform duration-200 ease-out group-hover:translate-x-1"
+          )}
         >
           {t("common:read_more")} →
-        </Link>
+        </span>
       </p>
     </article>
   );

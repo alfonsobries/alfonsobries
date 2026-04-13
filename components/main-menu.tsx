@@ -205,8 +205,10 @@ const MainMenu = ({
           "mx-auto before:absolute before:-my-1 before:hidden before:h-14 before:w-5 before:bg-gradient-to-r before:from-white/100 before:to-white/0 before:content-[''] after:absolute after:right-0 after:top-0 after:-my-1 after:hidden after:h-14 after:w-5 after:bg-gradient-to-l after:from-white/100 after:to-white/0 after:content-[''] sm:before:block sm:after:block dark:before:from-gray-900/100 dark:before:to-gray-900/0 dark:after:from-gray-900/100 dark:after:to-gray-900/0":
             !isSticky,
           "fixed h-screen w-screen bg-white dark:bg-gray-900": showDropdownMenu,
+          "sticky bg-white/70 shadow-sm ring-1 ring-black/5 backdrop-blur-lg dark:bg-gray-900/80 dark:ring-white/10":
+            !showDropdownMenu && isSticky,
           "sticky bg-white/30 backdrop-blur-lg dark:bg-gray-900/80":
-            !showDropdownMenu,
+            !showDropdownMenu && !isSticky,
         }
       )}
     >

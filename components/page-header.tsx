@@ -60,7 +60,7 @@ const PageHeader: React.FC<{
                 <div className="mt-4 w-full sm:ml-4 sm:mt-0 sm:w-auto sm:flex-grow sm:space-y-4">
                   <p className="whitespace-nowrap text-center font-cursive text-6xl font-bold text-gray-900 sm:text-left dark:text-gray-300">
                     {t("common:hello_im")}{" "}
-                    <span className="relative after:absolute after:left-0 after:-ml-[5%] after:-mt-[15px] after:block after:h-3 after:w-[110%] after:bg-[#fbd68b] after:opacity-50 after:content-['']">
+                    <span className="relative after:absolute after:left-0 after:-ml-[5%] after:-mt-[15px] after:block after:h-3 after:w-[110%] after:bg-[#fbd68b] after:opacity-50 after:content-[''] dark:after:bg-amber-300/30 dark:after:opacity-100">
                       Alfonso
                     </span>
                   </p>
