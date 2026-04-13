@@ -63,6 +63,19 @@ module.exports = {
           hrefIsAbsolute: true,
         },
       ];
+    } else if (path.startsWith("/labs/page")) {
+      overrides.changefreq = "monthly";
+      overrides.priority = 0.6;
+
+      const page = path.split("/labs/page/")[1];
+
+      overrides.alternateRefs = [
+        {
+          href: `${frontBaseUrl}/es/labs/page/${page}`,
+          hreflang: "es",
+          hrefIsAbsolute: true,
+        },
+      ];
     } else if (path === "/posts" || path.startsWith("/posts/page")) {
       overrides.changefreq = "weekly";
       overrides.priority = 0.9;

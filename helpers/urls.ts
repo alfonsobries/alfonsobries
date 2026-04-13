@@ -17,12 +17,9 @@ const urls = {
 
     return `/${locale}/publicaciones${page > 1 ? `/page/${page}` : ""}`;
   },
-  labs: ({ locale }: { locale: LocaleCode }) => {
-    if (locale === "en") {
-      return "/labs";
-    }
-
-    return `/${locale}/labs`;
+  labs: ({ locale, page = 1 }: { locale: LocaleCode; page?: number }) => {
+    const base = locale === "en" ? "/labs" : `/${locale}/labs`;
+    return `${base}${page > 1 ? `/page/${page}` : ""}`;
   },
   about: ({ locale }: { locale: LocaleCode }) => {
     if (locale === "en") {

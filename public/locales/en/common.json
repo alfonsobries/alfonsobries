@@ -7,6 +7,7 @@
   "more_posts": "More Posts",
   "made_with": "Made with",
   "latest_posts": "Latest Posts",
+  "pagination_page": "Page {{page}}",
   "read_time": "{{minutes}} min read time",
   "something_went_wrong": "Something went wrong. Please try again.",
   "send": "Send",
@@ -24,7 +25,7 @@
   "labs": {
     "title": "Labs",
     "description": "In this section you can find some personal side-projects and experiments that I am doing during my spare time.",
-    "meta_title": "Labs",
+    "meta_title": "Side Projects & Experiments",
     "meta_description": "In this section, I want to share some of the personal projects and experiments that I am doing in addition to my daily job"
   },
   "about": {

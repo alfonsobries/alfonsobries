@@ -1,5 +1,6 @@
 import { SITE_URL } from "./constants";
 import { Post } from "../interfaces/post";
+import { Project } from "../interfaces/project";
 
 export const personSchema = () => ({
   "@context": "https://schema.org",
@@ -25,6 +26,55 @@ export const websiteSchema = (siteName: string) => ({
   author: {
     "@type": "Person",
     name: "Alfonso Bribiesca",
+  },
+});
+
+export const labsCollectionSchema = ({
+  projects,
+  url,
+  locale,
+  name,
+  description,
+}: {
+  projects: Project[];
+  url: string;
+  locale: string;
+  name: string;
+  description: string;
+}) => ({
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name,
+  description,
+  url,
+  inLanguage: locale,
+  isPartOf: {
+    "@type": "WebSite",
+    name: "Alfonso's Website",
+    url: SITE_URL,
+  },
+  author: {
+    "@type": "Person",
+    name: "Alfonso Bribiesca",
+    url: SITE_URL,
+  },
+  mainEntity: {
+    "@type": "ItemList",
+    itemListElement: projects.map((project, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "SoftwareApplication",
+        name: project.title[locale as "en" | "es"] || project.title.en,
+        url: project.url,
+        image: project.banner_url,
+        applicationCategory: "WebApplication",
+        author: {
+          "@type": "Person",
+          name: "Alfonso Bribiesca",
+        },
+      },
+    })),
   },
 });
 

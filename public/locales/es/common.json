@@ -7,6 +7,7 @@
   "more_posts": "Más publicaciones",
   "made_with": "Hecho con",
   "latest_posts": "Últimas publicaciones",
+  "pagination_page": "Página {{page}}",
   "read_time": "{{minutes}} min de lectura",
   "something_went_wrong": "Algo salió mal. Por favor intenta de nuevo.",
   "send": "Enviar",
@@ -24,7 +25,7 @@
   "labs": {
     "title": "Labs",
     "description": "En esta sección puedes encontrar algunos proyectos personales y experimentos que hecho durante mi tiempo libre.",
-    "meta_title": "Labs",
+    "meta_title": "Proyectos y Experimentos Personales",
     "meta_description": "En esta sección, quiero compartir algunos de los proyectos personales y experimentos que realizo además de mi trabajo diario."
   },
   "about": {

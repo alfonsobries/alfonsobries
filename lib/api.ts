@@ -7,6 +7,7 @@ import {
 import { FilteredPost, Post, PostProperties } from "../interfaces/post";
 import markdownToHtml from "./markdownToHtml";
 import { Project } from "../interfaces/project";
+import { Pagination } from "../interfaces/pagination";
 import { LocaleCode } from "../interfaces/localization";
 
 export const Api = axios.create({
@@ -171,7 +172,13 @@ const parseProject = async (project: Project) => {
   };
 };
 
-export async function getProjects() {
+export async function getProjects({
+  page = 1,
+  perPage = 3,
+}: {
+  page?: number;
+  perPage?: number;
+} = {}): Promise<Pagination<Project>> {
   const {
     data,
   }: {
@@ -184,7 +191,26 @@ export async function getProjects() {
     })
   );
 
-  return projects;
+  const total = projects.length;
+  const lastPage = Math.max(1, Math.ceil(total / perPage));
+  const currentPage = Math.min(Math.max(1, page), lastPage);
+  const fromIndex = (currentPage - 1) * perPage;
+  const paged = projects.slice(fromIndex, fromIndex + perPage);
+
+  return {
+    current_page: currentPage,
+    data: paged,
+    first_page_url: "",
+    from: total === 0 ? 0 : fromIndex + 1,
+    last_page: lastPage,
+    last_page_url: "",
+    next_page_url: currentPage < lastPage ? `?page=${currentPage + 1}` : null,
+    path: "",
+    per_page: perPage,
+    prev_page_url: currentPage > 1 ? `?page=${currentPage - 1}` : null,
+    to: Math.min(fromIndex + perPage, total),
+    total,
+  };
 }
 
 enum ContributionLevel {
