@@ -40,14 +40,16 @@ export default function Index({ posts, hasMorePosts }: Props) {
           <div className="prose dark:prose-invert prose-h2:text-lg">
             <h1>{t("common:latest_posts")}</h1>
 
-            {posts.map((post) => (
-              <ArticleListItem
-                key={post.slug}
-                post={post}
-                locale={locale as LocaleCode}
-                t={t}
-              />
-            ))}
+            <div className="mt-8 space-y-12">
+              {posts.map((post) => (
+                <ArticleListItem
+                  key={post.slug}
+                  post={post}
+                  locale={locale as LocaleCode}
+                  t={t}
+                />
+              ))}
+            </div>
           </div>
 
           {hasMorePosts && (

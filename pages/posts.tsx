@@ -67,14 +67,16 @@ export default function Posts({ pagination, locale }: Props) {
               )}
             </h1>
 
-            {pagination.data.map((post) => (
-              <ArticleListItem
-                t={t}
-                key={post.slug}
-                post={post}
-                locale={locale}
-              />
-            ))}
+            <div className="mt-8 space-y-12">
+              {pagination.data.map((post) => (
+                <ArticleListItem
+                  t={t}
+                  key={post.slug}
+                  post={post}
+                  locale={locale}
+                />
+              ))}
+            </div>
           </div>
 
           <Pagination
