@@ -29,7 +29,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        sans: ["Open Sans", "sans-serif"],
+        sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
         cursive: ["Square Peg", "cursive"],
       },
       typography: (theme) => ({

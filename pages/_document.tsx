@@ -33,7 +33,7 @@ class MyDocument extends Document {
             crossOrigin="anonymous"
           />
           <link
-            href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Square+Peg&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&family=Square+Peg&display=swap"
             rel="stylesheet"
           />
         </Head>
