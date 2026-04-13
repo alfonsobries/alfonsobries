@@ -1,5 +1,6 @@
 import { TFunction } from "next-i18next";
 import useIsHome from "../hooks/useIsHome";
+import BackgroundLayer from "./background-layer";
 import Footer from "./footer";
 import MainMenu from "./main-menu";
 import Meta from "./meta";
@@ -43,7 +44,9 @@ const Layout = ({
     <>
       <Meta meta={meta} hreflangUrl={hreflangUrl} jsonLd={jsonLd} t={t} />
 
-      <main>
+      <BackgroundLayer />
+
+      <main className="relative z-10">
         <PageHeader small={!isHome} pinned={pinned} t={t} />
 
         <MainMenu
@@ -58,7 +61,11 @@ const Layout = ({
         <div>{children}</div>
       </main>
 
-      {hideFooter || <Footer t={t} />}
+      {hideFooter || (
+        <div className="relative z-10">
+          <Footer t={t} />
+        </div>
+      )}
     </>
   );
 };
