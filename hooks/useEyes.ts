@@ -1,6 +1,17 @@
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useRef } from "react";
 
+// Estado de un eje del resorte: posición actual y velocidad.
+type SpringAxis = { value: number; velocity: number };
+type EyeState = { x: SpringAxis; y: SpringAxis; targetX: number; targetY: number };
+
+const createEyeState = (): EyeState => ({
+  x: { value: 0, velocity: 0 },
+  y: { value: 0, velocity: 0 },
+  targetX: 0,
+  targetY: 0,
+});
+
 export function useEyes() {
   const { resolvedTheme } = useTheme();
 
@@ -12,65 +23,134 @@ export function useEyes() {
   const irisRightRef = useRef<SVGPathElement | null>(null);
   const centerLensLeftRef = useRef<{ x: number; y: number } | null>(null);
   const centerLensRightRef = useRef<{ x: number; y: number } | null>(null);
-  const bboxLensLeftRef = useRef<DOMRect | null>(null);
-  const bboxLensRightRef = useRef<DOMRect | null>(null);
-  const bboxIrisLeftRef = useRef<DOMRect | null>(null);
-  const bboxIrisRightRef = useRef<DOMRect | null>(null);
 
-  // Función para mover los iris
-  const moveIris = useCallback((event: MouseEvent) => {
-    if (
-      !svgRef.current ||
-      !lensLeftRef.current ||
-      !lensRightRef.current ||
-      !irisLeftRef.current ||
-      !irisRightRef.current
-    ) {
-      return;
-    }
+  // Estado del resorte por ojo (objetivo vs posición animada)
+  const eyeLeftRef = useRef<EyeState>(createEyeState());
+  const eyeRightRef = useRef<EyeState>(createEyeState());
 
-    // Obtener la posición del mouse en la pantalla
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
+  // Control del loop de animación
+  const rafRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number | null>(null);
+  const reducedMotionRef = useRef(false);
 
-    // Obtener posición y dimensiones del SVG en la ventana
-    const bboxSvg = svgRef.current.getBoundingClientRect();
-    const svgX = bboxSvg.left + window.scrollX;
-    const svgY = bboxSvg.top + window.scrollY;
+  // Parámetros del resorte. Más stiffness = más rápido; menos damping = más
+  // rebote. Estos valores dan un seguimiento ágil con un overshoot leve.
+  const STIFFNESS = 120;
+  const DAMPING = 13;
+  const MAX_MOVE = 8; // Desplazamiento máximo del iris (unidades del viewBox)
 
-    // Convertir la posición del mouse al sistema de coordenadas del SVG
-    const relativeX = ((mouseX - svgX) / bboxSvg.width) * 347; // 347 es el ancho del viewBox
-    const relativeY = ((mouseY - svgY) / bboxSvg.height) * 482; // 482 es el alto del viewBox
-
-    // Calcular el desplazamiento para el iris izquierdo
-    if (centerLensLeftRef.current && centerLensRightRef.current) {
-      let moveXLeft = (relativeX - centerLensLeftRef.current.x) * 0.1; // Factor 0.1 para suavizar
-      let moveYLeft = (relativeY - centerLensLeftRef.current.y) * 0.1;
-
-      // Calcular el desplazamiento para el iris derecho
-      let moveXRight = (relativeX - centerLensRightRef.current.x) * 0.1;
-      let moveYRight = (relativeY - centerLensRightRef.current.y) * 0.1;
-
-      // Definir el desplazamiento máximo permitido (en píxeles del SVG)
-      const maxMove = 8; // Límite fijo de 8 unidades
-
-      // Limitar el movimiento dentro del desplazamiento máximo
-      moveXLeft = Math.max(-maxMove, Math.min(maxMove, moveXLeft));
-      moveYLeft = Math.max(-maxMove, Math.min(maxMove, moveYLeft));
-      moveXRight = Math.max(-maxMove, Math.min(maxMove, moveXRight));
-      moveYRight = Math.max(-maxMove, Math.min(maxMove, moveYRight));
-
-      // Aplicar el movimiento a los iris
-      irisLeftRef.current.setAttribute(
-        "transform",
-        `translate(${moveXLeft}, ${moveYLeft})`
-      );
-      irisRightRef.current.setAttribute(
-        "transform",
-        `translate(${moveXRight}, ${moveYRight})`
-      );
-    }
+  // Integra un eje del resorte hacia su objetivo en un paso de tiempo dt.
+  const stepSpring = useCallback((axis: SpringAxis, target: number, dt: number) => {
+    const force = -STIFFNESS * (axis.value - target) - DAMPING * axis.velocity;
+    axis.velocity += force * dt;
+    axis.value += axis.velocity * dt;
   }, []);
+
+  // Loop de animación: acerca cada iris a su objetivo cuadro a cuadro.
+  const animate = useCallback(
+    (time: number) => {
+      if (lastTimeRef.current === null) {
+        lastTimeRef.current = time;
+      }
+      // dt en segundos, acotado para evitar saltos al volver de una pestaña
+      // inactiva o tras un frame muy lento.
+      const dt = Math.min((time - lastTimeRef.current) / 1000, 1 / 30);
+      lastTimeRef.current = time;
+
+      const left = eyeLeftRef.current;
+      const right = eyeRightRef.current;
+
+      stepSpring(left.x, left.targetX, dt);
+      stepSpring(left.y, left.targetY, dt);
+      stepSpring(right.x, right.targetX, dt);
+      stepSpring(right.y, right.targetY, dt);
+
+      if (irisLeftRef.current) {
+        irisLeftRef.current.setAttribute(
+          "transform",
+          `translate(${left.x.value.toFixed(2)}, ${left.y.value.toFixed(2)})`
+        );
+      }
+      if (irisRightRef.current) {
+        irisRightRef.current.setAttribute(
+          "transform",
+          `translate(${right.x.value.toFixed(2)}, ${right.y.value.toFixed(2)})`
+        );
+      }
+
+      rafRef.current = requestAnimationFrame(animate);
+    },
+    [stepSpring]
+  );
+
+  const ensureLoop = useCallback(() => {
+    if (rafRef.current === null) {
+      lastTimeRef.current = null;
+      rafRef.current = requestAnimationFrame(animate);
+    }
+  }, [animate]);
+
+  // Aplica un objetivo directo (sin animar) — para reduced motion.
+  const snapTo = useCallback(
+    (eye: EyeState, targetX: number, targetY: number, iris: SVGPathElement | null) => {
+      eye.x.value = targetX;
+      eye.x.velocity = 0;
+      eye.y.value = targetY;
+      eye.y.velocity = 0;
+      iris?.setAttribute("transform", `translate(${targetX}, ${targetY})`);
+    },
+    []
+  );
+
+  // Función para actualizar el objetivo de los iris según el mouse.
+  const moveIris = useCallback(
+    (event: MouseEvent) => {
+      if (
+        !svgRef.current ||
+        !centerLensLeftRef.current ||
+        !centerLensRightRef.current
+      ) {
+        return;
+      }
+
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+
+      // Posición y dimensiones del SVG en la ventana
+      const bboxSvg = svgRef.current.getBoundingClientRect();
+      const svgX = bboxSvg.left + window.scrollX;
+      const svgY = bboxSvg.top + window.scrollY;
+
+      // Mouse en el sistema de coordenadas del SVG (viewBox 347x482)
+      const relativeX = ((mouseX - svgX) / bboxSvg.width) * 347;
+      const relativeY = ((mouseY - svgY) / bboxSvg.height) * 482;
+
+      const clamp = (v: number) => Math.max(-MAX_MOVE, Math.min(MAX_MOVE, v));
+
+      const targetXLeft = clamp((relativeX - centerLensLeftRef.current.x) * 0.1);
+      const targetYLeft = clamp((relativeY - centerLensLeftRef.current.y) * 0.1);
+      const targetXRight = clamp((relativeX - centerLensRightRef.current.x) * 0.1);
+      const targetYRight = clamp((relativeY - centerLensRightRef.current.y) * 0.1);
+
+      const left = eyeLeftRef.current;
+      const right = eyeRightRef.current;
+
+      if (reducedMotionRef.current) {
+        snapTo(left, targetXLeft, targetYLeft, irisLeftRef.current);
+        snapTo(right, targetXRight, targetYRight, irisRightRef.current);
+        return;
+      }
+
+      // Solo guardamos el objetivo; el loop hace el seguimiento suave.
+      left.targetX = targetXLeft;
+      left.targetY = targetYLeft;
+      right.targetX = targetXRight;
+      right.targetY = targetYRight;
+
+      ensureLoop();
+    },
+    [ensureLoop, snapTo]
+  );
 
   // Función para inicializar o re-inicializar los elementos
   const initializeEyes = useCallback(() => {
@@ -116,26 +196,27 @@ export function useEyes() {
     // Calcular las cajas delimitadoras
     const bboxLensLeft = lensLeft.getBBox();
     const bboxLensRight = lensRight.getBBox();
-    const bboxIrisLeft = irisLeft.getBBox();
-    const bboxIrisRight = irisRight.getBBox();
-
-    bboxLensLeftRef.current = bboxLensLeft;
-    bboxLensRightRef.current = bboxLensRight;
-    bboxIrisLeftRef.current = bboxIrisLeft;
-    bboxIrisRightRef.current = bboxIrisRight;
 
     // Calcular los centros de los lentes
-    const centerLensLeft = {
+    centerLensLeftRef.current = {
       x: bboxLensLeft.x + bboxLensLeft.width / 2,
       y: bboxLensLeft.y + bboxLensLeft.height / 2,
     };
-    const centerLensRight = {
+    centerLensRightRef.current = {
       x: bboxLensRight.x + bboxLensRight.width / 2,
       y: bboxLensRight.y + bboxLensRight.height / 2,
     };
 
-    centerLensLeftRef.current = centerLensLeft;
-    centerLensRightRef.current = centerLensRight;
+    // Conservar la posición actual del iris recién seleccionado (puede haber
+    // cambiado de variante al alternar el tema).
+    irisLeft.setAttribute(
+      "transform",
+      `translate(${eyeLeftRef.current.x.value.toFixed(2)}, ${eyeLeftRef.current.y.value.toFixed(2)})`
+    );
+    irisRight.setAttribute(
+      "transform",
+      `translate(${eyeRightRef.current.x.value.toFixed(2)}, ${eyeRightRef.current.y.value.toFixed(2)})`
+    );
   }, []);
 
   // Función onReady para manejar la carga inicial del SVG
@@ -148,10 +229,14 @@ export function useEyes() {
 
       svgRef.current = svg;
 
-      // Inicializar los elementos por primera vez
+      // Detectar preferencia de movimiento reducido.
+      reducedMotionRef.current =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
       initializeEyes();
 
-      // Añadir el listener para el movimiento del mouse
+      // Listener para el movimiento del mouse
       document.addEventListener("mousemove", moveIris);
     },
     [initializeEyes, moveIris]
@@ -163,6 +248,17 @@ export function useEyes() {
       initializeEyes();
     }
   }, [resolvedTheme, initializeEyes]);
+
+  // Limpieza al desmontar: quitar listener y detener el loop.
+  useEffect(() => {
+    return () => {
+      document.removeEventListener("mousemove", moveIris);
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+  }, [moveIris]);
 
   // Retornar la función onReady
   return { onReady };
