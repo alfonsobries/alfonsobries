@@ -14,6 +14,7 @@
         "guzzlehttp/guzzle": "^7.8",
         "laravel-notification-channels/telegram": "^7.0",
         "laravel/framework": "^13.0",
+        "laravel/horizon": "^5.47",
         "laravel/nova": "dev-main as 5.7.7",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^3.0",
