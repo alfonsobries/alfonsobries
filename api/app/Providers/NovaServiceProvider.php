@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
-use Laravel\Nova\Nova;
+use App\Nova\Dashboards\Main;
 use Illuminate\Support\Facades\Gate;
-use Spatie\NovaTranslatable\Translatable;
+use Laravel\Fortify\Features;
+use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
+use Spatie\NovaTranslatable\Translatable;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
 {
@@ -20,6 +22,20 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     }
 
     /**
+     * Register the configurations for Laravel Fortify.
+     *
+     * @return void
+     */
+    protected function fortify()
+    {
+        Nova::fortify()
+            ->features([
+                Features::updatePasswords(),
+            ])
+            ->register();
+    }
+
+    /**
      * Register the Nova routes.
      *
      * @return void
@@ -27,9 +43,10 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function routes()
     {
         Nova::routes()
-                ->withAuthenticationRoutes()
-                ->withPasswordResetRoutes()
-                ->register();
+            ->withAuthenticationRoutes()
+            ->withPasswordResetRoutes()
+            ->withoutEmailVerificationRoutes()
+            ->register();
     }
 
     /**
@@ -56,7 +73,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     protected function dashboards()
     {
         return [
-            new \App\Nova\Dashboards\Main,
+            new Main,
         ];
     }
 
@@ -77,6 +94,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     public function register()
     {
+        parent::register();
+
         Translatable::defaultLocales(['en', 'es']);
     }
 }
