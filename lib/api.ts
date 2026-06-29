@@ -321,7 +321,10 @@ export async function getGithubContributions() {
 
   const { data } = await response.json();
 
-  return parseGithubContributions(
-    data.user.contributionsCollection.contributionCalendar.weeks
-  );
+  const weeks: ContributionWeeks | undefined =
+    data?.user?.contributionsCollection?.contributionCalendar?.weeks;
+
+  // Render an empty calendar instead of failing the build when the GitHub token
+  // is missing or the API call fails.
+  return parseGithubContributions(weeks ?? []);
 }
