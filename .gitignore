@@ -40,3 +40,4 @@ public/robots.txt
 public/sitemap-0.xml
 public/sitemap.xml
 api/.env.production
+CLAUDE.local.md
