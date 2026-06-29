@@ -15,6 +15,11 @@ return new class extends Migration
         'excerpt',
         'meta_description',
     ];
+
+    protected $nullableColumns = [
+        'meta_description',
+    ];
+
     /**
      * Run the migrations.
      *
@@ -25,7 +30,13 @@ return new class extends Migration
         // 1. Make it text so we can store the whole text
         Schema::table('articles', function (Blueprint $table) {
             collect($this->translatableColumns)->each(function ($columnName) use ($table) {
-                $table->text($columnName)->change();
+                $column = $table->text($columnName);
+
+                if (in_array($columnName, $this->nullableColumns, true)) {
+                    $column->nullable();
+                }
+
+                $column->change();
             });
         });
 
@@ -41,7 +52,13 @@ return new class extends Migration
         // 3. Make it JSON
         Schema::table('articles', function (Blueprint $table) {
             collect($this->translatableColumns)->each(function ($columnName) use ($table) {
-                $table->json($columnName)->change();
+                $column = $table->json($columnName);
+
+                if (in_array($columnName, $this->nullableColumns, true)) {
+                    $column->nullable();
+                }
+
+                $column->change();
             });
         });
     }
@@ -56,7 +73,13 @@ return new class extends Migration
         // 1. Make it text so we can store the whole text
         Schema::table('articles', function (Blueprint $table) {
             collect($this->translatableColumns)->each(function ($columnName) use ($table) {
-                $table->text($columnName)->change();
+                $column = $table->text($columnName);
+
+                if (in_array($columnName, $this->nullableColumns, true)) {
+                    $column->nullable();
+                }
+
+                $column->change();
             });
         });
 
@@ -76,7 +99,7 @@ return new class extends Migration
             $table->string('slug')->change();
             $table->text('body')->change();
             $table->string('excerpt')->change();
-            $table->string('meta_description')->change();
+            $table->string('meta_description')->nullable()->change();
         });
     }
 };
