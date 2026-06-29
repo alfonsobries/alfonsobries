@@ -59,6 +59,7 @@ final class ResumeProject extends Resource
                 ->placeholder('https://vue-tailwind.com'),
 
             Markdown::make('Description')
+                ->withFiles('public_s3', '/resume_project')
                 ->rules('required', 'string')
                 ->hideFromIndex(),
         ];
