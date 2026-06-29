@@ -8,7 +8,7 @@ return [
     'admin' => [
         'name' => env('ADMIN_NAME'),
         'email' => env('ADMIN_EMAIL'),
-        'passsword' => env('ADMIN_PASSWORD'),
+        'password' => env('ADMIN_PASSWORD'),
     ],
     'node_binary' => env('NODE_BINARY', '/usr/local/bin/node'),
     'npm_binary' => env('NPM_BINARY', '/usr/local/bin/npm'),
