@@ -9,11 +9,11 @@ Personal website and blog (alfonsobries.com) with a **Next.js frontend** and a *
 ## Commands
 
 ### Frontend (root directory)
-- `yarn dev` — Start Next.js dev server
-- `yarn build` — Production build (also generates sitemap via postbuild)
-- `yarn typecheck` — Run TypeScript type checking (`tsc`)
-- `yarn lint` — Run ESLint (`next lint`)
-- `yarn prepare` — SVG optimize + typecheck + lint (runs on install)
+- `pnpm dev` — Start Next.js dev server
+- `pnpm build` — Production build (also generates sitemap via postbuild)
+- `pnpm typecheck` — Run TypeScript type checking (`tsc`)
+- `pnpm lint` — Run ESLint (`eslint .`, flat config)
+- `pnpm prepare` — SVG optimize + typecheck + lint (runs on install)
 
 ### Backend (`api/` directory)
 - `./vendor/bin/pest` — Run PHP tests
@@ -28,7 +28,7 @@ Personal website and blog (alfonsobries.com) with a **Next.js frontend** and a *
 - **Bilingual**: English and Spanish via `next-i18next`. Translations in `public/locales/{en,es}/`
 - **Dark mode**: `next-themes` with Tailwind dark classes
 - **API client**: `lib/api.ts` fetches from the Laravel backend at build time
-- **Styling**: Tailwind CSS 3 with typography, forms, aspect-ratio, and line-clamp plugins. Prettier plugin for class sorting.
+- **Styling**: Tailwind CSS 4 (CSS-first `@import "tailwindcss"`, JS config via `@config`) with the typography and forms plugins. Prettier plugin for class sorting.
 - **SVG system**: Custom SVGO config adds dark mode class variants automatically based on layer naming
 
 ### Backend (Laravel 9 + PHP)
@@ -75,7 +75,8 @@ Order before pushing: **formatter → linter → static analysis → tests**. Fo
 
 ### JavaScript / TypeScript
 - Prefer **pnpm** over `npm`/`yarn`, and prefer `package.json` scripts over invoking tools directly
-- TypeScript strict mode — don't disable it per file. Avoid `any`; use `unknown` and narrow, or a precise type. Add explicit return types to exported functions
+- `pnpm typecheck` and `pnpm lint` must pass clean. Don't silence errors with `@ts-ignore`, `eslint-disable`, or by loosening config — fix the cause. Suppress only with a strong, documented justification
+- Avoid `any` (use `unknown` and narrow, or a precise type) unless there's a strong justification. Add explicit return types to exported functions
 - Named exports over default exports, except where a framework requires a default (e.g. a Next.js page)
 - Use curly braces for every control structure; don't mutate arguments — return new values
 
