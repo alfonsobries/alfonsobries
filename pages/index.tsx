@@ -58,7 +58,7 @@ export default function Index({ posts, hasMorePosts }: Props) {
               className={classNames(
                 LINK_COLOR_BORDER,
                 LINK_COLOR_TEXT,
-                "mt-8 block rounded border p-2 text-center"
+                "mt-8 block rounded-sm border p-2 text-center"
               )}
             >
               {t("common:more_posts")} →

@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  mode: "jit",
   darkMode: "class",
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -55,13 +54,8 @@ module.exports = {
         },
       }),
     },
-    corePlugins: {
-      aspectRatio: false,
-    },
   },
   plugins: [
-    require("@tailwindcss/aspect-ratio"),
-    require("@tailwindcss/line-clamp"),
     require("@tailwindcss/typography"),
     require("@tailwindcss/forms")({
       strategy: "base", // only generate global styles

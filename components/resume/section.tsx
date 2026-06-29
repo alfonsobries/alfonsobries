@@ -24,7 +24,7 @@ const ResumeSection = ({
       })}
     >
       {title && icon && (
-        <div className="relative flex min-h-[2.5rem]">
+        <div className="relative flex min-h-10">
           <div
             className={classNames("flex", {
               "absolute inset-0 -ml-9 h-full": !noMargin,

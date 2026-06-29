@@ -119,7 +119,7 @@ export default function Contact() {
                     <button
                       type="submit"
                       className={classNames(
-                        "flex w-full justify-center rounded bg-blue-700 p-3 text-sm font-semibold text-white shadow-sm disabled:opacity-50 dark:bg-blue-500",
+                        "flex w-full justify-center rounded-sm bg-blue-700 p-3 text-sm font-semibold text-white shadow-xs disabled:opacity-50 dark:bg-blue-500",
                         {
                           "hover:bg-blue-600 dark:hover:bg-blue-600":
                             !form.busy,

@@ -24,7 +24,7 @@ const FormButton: React.FC<ButtonProps> = ({
       type={type}
       className={classNames(
         className,
-        "flex justify-center rounded bg-blue-700 p-3 text-sm font-semibold text-white shadow-sm disabled:opacity-50 dark:bg-blue-500",
+        "flex justify-center rounded-sm bg-blue-700 p-3 text-sm font-semibold text-white shadow-xs disabled:opacity-50 dark:bg-blue-500",
         {
           "hover:bg-blue-600 dark:hover:bg-blue-600": !form.busy && !disabled,
         }

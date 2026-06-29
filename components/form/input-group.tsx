@@ -19,7 +19,7 @@ const InputGrup: React.FC<
         </label>
       )}
 
-      <div className="relative mt-1 shadow-sm">{children}</div>
+      <div className="relative mt-1 shadow-xs">{children}</div>
 
       {form.errors.has(inputName) && (
         <span
