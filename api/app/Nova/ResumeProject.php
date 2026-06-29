@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Nova;
 
 use App\Models\ResumeProject as Model;
-use Ardenthq\EnhancedMarkdown\EnhancedMarkdown;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Markdown;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
@@ -58,9 +58,7 @@ final class ResumeProject extends Resource
                 ->rules('required', 'url')
                 ->placeholder('https://vue-tailwind.com'),
 
-            EnhancedMarkdown::make('Description')
-                ->disk('public_s3')
-                ->path('/resume_project')
+            Markdown::make('Description')
                 ->rules('required', 'string')
                 ->hideFromIndex(),
         ];

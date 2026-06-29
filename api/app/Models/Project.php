@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
-use Spatie\Image\Manipulations;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\File;
@@ -19,12 +19,12 @@ use Spatie\Translatable\HasTranslations;
 
 class Project extends Model implements HasMedia, Sortable
 {
-    use HasFactory;
-    use InteractsWithMedia;
-    use SortableTrait;
-    use SoftDeletes;
     use ExpiresFrontend;
+    use HasFactory;
     use HasTranslations;
+    use InteractsWithMedia;
+    use SoftDeletes;
+    use SortableTrait;
 
     public $translatable = [
         'description',
@@ -99,10 +99,10 @@ class Project extends Model implements HasMedia, Sortable
             ->registerMediaConversions(function (Media $media) {
                 $this
                     ->addMediaConversion('1x')
-                    ->fit(Manipulations::FIT_CROP, self::BANNER_WIDTH, self::BANNER_HEIGHT);
+                    ->fit(Fit::Crop, self::BANNER_WIDTH, self::BANNER_HEIGHT);
                 $this
                     ->addMediaConversion('2x')
-                    ->fit(Manipulations::FIT_CROP, self::BANNER_WIDTH * 2, self::BANNER_HEIGHT * 2);
+                    ->fit(Fit::Crop, self::BANNER_WIDTH * 2, self::BANNER_HEIGHT * 2);
             });
     }
 

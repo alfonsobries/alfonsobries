@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Nova;
 
 use App\Models\Project as Model;
-use Ardenthq\EnhancedMarkdown\EnhancedMarkdown;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
+use Laravel\Nova\Fields\Markdown;
 use Laravel\Nova\Fields\MultiSelect;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -59,9 +59,7 @@ final class Project extends Resource
                     ->sortable()
                     ->rules('required', 'string', 'max:120'),
 
-                EnhancedMarkdown::make('Description', 'description')
-                    ->disk('public_s3')
-                    ->path('/project')
+                Markdown::make('Description', 'description')
                     ->rules('nullable', 'string'),
             ]),
 
@@ -78,9 +76,9 @@ final class Project extends Resource
 
                     return [];
                 })
-                ->delete(fn (Request $request, Model|null $model) => $model->getFirstMedia('banner')->delete())
-                ->thumbnail(fn (mixed $value, string $disk, Model|null $model) => $model?->getFirstMediaUrl('banner', '1x'))
-                ->preview(fn (mixed $value, string $disk, Model|null $model) => $model?->getFirstMediaUrl('banner', '1x'))
+                ->delete(fn (Request $request, ?Model $model) => $model->getFirstMedia('banner')->delete())
+                ->thumbnail(fn (mixed $value, string $disk, ?Model $model) => $model?->getFirstMediaUrl('banner', '1x'))
+                ->preview(fn (mixed $value, string $disk, ?Model $model) => $model?->getFirstMediaUrl('banner', '1x'))
                 ->help(sprintf('Try to use a banner that is at least %spx wide and %spx tall.', Model::BANNER_WIDTH * 2, Model::BANNER_HEIGHT * 2)),
 
             MultiSelect::make('Technologies', 'technologies')

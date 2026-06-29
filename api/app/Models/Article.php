@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
-use Spatie\Image\Manipulations;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\File;
@@ -21,13 +21,13 @@ use Spatie\Translatable\HasTranslations;
 
 class Article extends Model implements HasMedia
 {
+    use ExpiresFrontend;
     use HasFactory;
+    use HasSlugHistory;
     use HasTranslatableSlug;
+    use HasTranslations;
     use InteractsWithMedia;
     use SoftDeletes;
-    use ExpiresFrontend;
-    use HasSlugHistory;
-    use HasTranslations;
 
     protected $casts = [
         'published_at' => 'datetime',
@@ -91,11 +91,11 @@ class Article extends Model implements HasMedia
             ->registerMediaConversions(function (Media $media) {
                 $this
                     ->addMediaConversion('og')
-                    ->fit(Manipulations::FIT_CROP, 1200, 630);
+                    ->fit(Fit::Crop, 1200, 630);
 
                 $this
                     ->addMediaConversion('thumbnail')
-                    ->fit(Manipulations::FIT_CROP, 30, 30);
+                    ->fit(Fit::Crop, 30, 30);
             });
     }
 

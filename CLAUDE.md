@@ -31,9 +31,9 @@ Personal website and blog (alfonsobries.com) with a **Next.js frontend** and a *
 - **Styling**: Tailwind CSS 4 (CSS-first `@import "tailwindcss"`, JS config via `@config`) with the typography and forms plugins. Prettier plugin for class sorting.
 - **SVG system**: Custom SVGO config adds dark mode class variants automatically based on layer naming
 
-### Backend (Laravel 9 + PHP)
+### Backend (Laravel 13 + PHP 8.3+)
 - **API-only**: Routes in `api/routes/api.php` — articles, projects, resume, contact form, typo reporting
-- **Admin**: Laravel Nova for content management
+- **Admin**: Laravel Nova 5 for content management
 - **Content features**: Spatie Translatable (multilingual), Spatie Sluggable (URLs), slug history for redirects
 - **Resume PDF**: Generated via Spatie Browsershot + Puppeteer
 - **Testing**: Pest PHP with SQLite in-memory DB

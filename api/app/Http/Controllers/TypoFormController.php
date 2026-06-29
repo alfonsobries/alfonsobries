@@ -6,13 +6,16 @@ use App\Models\Article;
 use App\Models\User;
 use App\Notifications\TypoNotification;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TypoFormController extends Controller
 {
     public function __invoke(Request $request)
     {
+        $locale = app()->getLocale();
+
         $this->validate($request, [
-            'post_slug' => 'required|max:255|exists:articles,slug',
+            'post_slug' => ['required', 'max:255', Rule::exists('articles', "slug->{$locale}")],
             'message' => 'required|string',
             'typo_excerpt' => 'nullable|string',
         ]);
@@ -20,7 +23,7 @@ class TypoFormController extends Controller
         $notifable = User::whereEmail(config('site.admin.email'))->first();
 
         $notifable->notify(new TypoNotification(
-            article: Article::whereSlug($request->get('post_slug'))->first(),
+            article: Article::where("slug->{$locale}", $request->get('post_slug'))->first(),
             message: $request->get('message'),
             excerpt: $request->get('typo_excerpt'),
         ));

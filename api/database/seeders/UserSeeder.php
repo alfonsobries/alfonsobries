@@ -14,8 +14,8 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        $name = config('site.admin.email');
-        $email = config('site.admin.name');
+        $name = config('site.admin.name');
+        $email = config('site.admin.email');
         $password = config('site.admin.password');
 
         if ($name && $email && $password) {

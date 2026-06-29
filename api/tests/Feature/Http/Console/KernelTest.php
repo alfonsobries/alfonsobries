@@ -4,13 +4,13 @@ use Carbon\Carbon;
 use Illuminate\Console\Scheduling\CallbackEvent;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Contracts\Container\Container;
-use Laravel\Nova\Trix\PendingAttachment;
+use Laravel\Nova\Fields\Attachments\PendingAttachment;
 
 it('schedules the command for deploy the site every minute', function () {
     $schedule = resolve(Schedule::class);
 
     $events = $schedule->events();
-    expect($events)->toHaveCount(2);
+    expect($events)->toHaveCount(3);
 
     expect($events[0])->toBeInstanceof(CallbackEvent::class);
     expect($events[1]->command)->toContain('alfonsobries:deploy');
