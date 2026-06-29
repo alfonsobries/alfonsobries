@@ -8,7 +8,7 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "coconutcraig/laravel-postmark": "^3.4",
         "davidbadura/faker-markdown-generator": "^1.1",
         "guzzlehttp/guzzle": "^7.8",
@@ -16,6 +16,7 @@
         "laravel/framework": "^13.0",
         "laravel/nova": "dev-main as 5.7.7",
         "laravel/sanctum": "^4.0",
+        "laravel/tinker": "^3.0",
         "league/flysystem-aws-s3-v3": "^3.0",
         "outl1ne/nova-sortable": "^4.0",
         "spatie/browsershot": "^5.0",
