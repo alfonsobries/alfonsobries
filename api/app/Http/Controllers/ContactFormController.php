@@ -18,7 +18,9 @@ class ContactFormController extends Controller
 
         $notifable = User::whereEmail(config('site.admin.email'))->first();
 
-        $notifable->notify(new ContactFormNotification(
+        // Send synchronously: this site has no queue worker, so a queued
+        // notification would never be delivered.
+        $notifable->notifyNow(new ContactFormNotification(
             name: $request->get('name'),
             email: $request->get('email'),
             message: $request->get('message'),
