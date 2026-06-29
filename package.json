@@ -1,5 +1,9 @@
 {
   "private": true,
+  "packageManager": "pnpm@10.18.3",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next",
     "build": "next build",
@@ -9,7 +13,7 @@
     "lint": "next lint",
     "svg-optimize": "svgo -f ./public/images -o ./public/images",
     "svg-animate": "svgo --config ./svgo.animate.config.js -f ./assets/animations -o ./public/images",
-    "prepare": "yarn svg-optimize && yarn typecheck && yarn lint"
+    "prepare": "pnpm svg-optimize && pnpm typecheck && pnpm lint"
   },
   "dependencies": {
     "@alfonsobries/react-use-form": "^0.1.15",
