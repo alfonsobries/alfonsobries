@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Nova;
 
 use App\Models\ResumeExperience as Model;
-use Ardenthq\EnhancedMarkdown\EnhancedMarkdown;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Markdown;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -73,9 +73,7 @@ final class ResumeExperience extends Resource
                 ->rules('required', 'string')
                 ->placeholder('Remote'),
 
-            EnhancedMarkdown::make('Description')
-                ->disk('public_s3')
-                ->path('/resume_experience')
+            Markdown::make('Description')
                 ->rules('required', 'string')
                 ->hideFromIndex(),
         ];
