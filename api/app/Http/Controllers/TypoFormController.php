@@ -22,7 +22,9 @@ class TypoFormController extends Controller
 
         $notifable = User::whereEmail(config('site.admin.email'))->first();
 
-        $notifable->notify(new TypoNotification(
+        // Send synchronously: this site has no queue worker, so a queued
+        // notification would never be delivered.
+        $notifable->notifyNow(new TypoNotification(
             article: Article::where("slug->{$locale}", $request->get('post_slug'))->first(),
             message: $request->get('message'),
             excerpt: $request->get('typo_excerpt'),
