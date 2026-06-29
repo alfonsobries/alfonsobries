@@ -6,7 +6,7 @@ import DateFormatter from "./date-formatter";
 import ReadTime from "./read-time";
 import urls from "../helpers/urls";
 import { LocaleCode } from "../interfaces/localization";
-import { TFunction } from "next-i18next";
+import type { TFunction } from "i18next";
 
 const ArticleListItem: React.FC<{
   post: Post;

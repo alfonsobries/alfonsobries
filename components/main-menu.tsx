@@ -12,7 +12,7 @@ import Home from "./icons/home";
 import classNames from "classnames";
 import { LocaleCode } from "../interfaces/localization";
 import urls from "../helpers/urls";
-import { TFunction } from "next-i18next";
+import type { TFunction } from "i18next";
 
 type MenuLink = {
   selected: (router: NextRouter) => boolean;

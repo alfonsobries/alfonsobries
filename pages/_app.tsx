@@ -3,7 +3,7 @@ import "../styles/index.css";
 import { FormContext } from "@alfonsobries/react-use-form";
 import { ThemeProvider } from "next-themes";
 import { Api } from "../lib/api";
-import { appWithTranslation } from "next-i18next";
+import { appWithTranslation } from "next-i18next/pages";
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   return (

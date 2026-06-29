@@ -1,8 +1,8 @@
 import React from "react";
 import Error404 from "../components/error-404";
 import Meta from "../components/meta";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 
 export default function Error404Page() {
   const { t } = useTranslation();

@@ -8,8 +8,8 @@ import { getAllPosts } from "../lib/api";
 import { useMemo } from "react";
 import { LocaleCode } from "../interfaces/localization";
 import urls from "../helpers/urls";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 
 export const POST_PER_PAGE = 5;
 

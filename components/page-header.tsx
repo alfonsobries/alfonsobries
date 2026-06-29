@@ -4,7 +4,7 @@ import { BORDER_COLOR } from "../lib/cssClasses";
 import SwitchButton from "./switch-button";
 import LazySvg from "./lazy-svg";
 import Link from "next/link";
-import { TFunction } from "next-i18next";
+import type { TFunction } from "i18next";
 import { useEffect } from "react";
 import { useEyes } from "../hooks/useEyes";
 

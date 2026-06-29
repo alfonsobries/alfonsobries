@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { SITE_URL } from "../lib/constants";
-import { TFunction } from "next-i18next";
+import type { TFunction } from "i18next";
 import { useMemo } from "react";
 
 type Props = {

@@ -10,7 +10,7 @@ import urls from "../helpers/urls";
 import { useRouter } from "next/router";
 import { LocaleCode } from "../interfaces/localization";
 import Link from "next/link";
-import { TFunction } from "next-i18next";
+import type { TFunction } from "i18next";
 
 const Footer = ({ t }: { t: TFunction }) => {
   const year = useMemo(() => new Date().getFullYear(), []);
