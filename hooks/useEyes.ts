@@ -221,12 +221,7 @@ export function useEyes() {
 
   // Función onReady para manejar la carga inicial del SVG
   const onReady = useCallback(
-    (error: { cause?: unknown } | null, svg?: SVGElement) => {
-      if (error || !svg) {
-        console.error("Error al cargar el SVG:", error?.cause);
-        return;
-      }
-
+    (svg: SVGSVGElement) => {
       svgRef.current = svg;
 
       // Detectar preferencia de movimiento reducido.

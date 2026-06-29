@@ -9,12 +9,7 @@ const LazySvg: React.FC<{
   height?: number | string;
   className?: string;
   svgClassName?: string;
-  onReady?: (
-    error: {
-      cause?: unknown;
-    } | null,
-    svg?: SVGElement
-  ) => void;
+  onReady?: (svg: SVGSVGElement) => void;
 }> = ({
   src,
   width,
