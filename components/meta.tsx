@@ -22,7 +22,6 @@ const Meta = ({ meta, children, hreflangUrl, jsonLd, t }: Props) => {
   const { asPath, locale } = useRouter();
 
   if (meta.description.length > 160 && process.env.NODE_ENV !== "production") {
-    // eslint-disable-next-line no-console
     console.warn(
       `Meta description exceeds 160 chars (${meta.description.length}): ${meta.description}`
     );

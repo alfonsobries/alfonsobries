@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-target-blank */
 import classNames from "classnames";
 import React from "react";
 import { cloneElement } from "react";
