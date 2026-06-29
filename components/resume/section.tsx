@@ -4,7 +4,7 @@ import { BORDER_COLOR } from "../../lib/cssClasses";
 
 type Props = {
   className?: string;
-  icon?: React.ReactElement;
+  icon?: React.ReactElement<{ className?: string }>;
   title?: string;
   children: React.ReactNode;
   noMargin?: boolean;

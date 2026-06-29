@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { LINK_COLOR_TEXT } from "../lib/cssClasses";
 
 type Props = {
-  children: React.ReactElement;
+  children: React.ReactElement<React.RefAttributes<HTMLElement>>;
 };
 
 const MORE_LABEL = "[More...]";

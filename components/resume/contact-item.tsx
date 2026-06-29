@@ -6,7 +6,7 @@ import { LINK_COLOR_TEXT } from "../../lib/cssClasses";
 
 type Props = {
   children: React.ReactNode;
-  icon: React.ReactElement;
+  icon: React.ReactElement<{ className?: string }>;
   link: string;
   external?: boolean;
 };
