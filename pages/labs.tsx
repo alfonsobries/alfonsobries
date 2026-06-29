@@ -9,8 +9,8 @@ import { BORDER_COLOR } from "../lib/cssClasses";
 import urls from "../helpers/urls";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import { Pagination as PaginationType } from "../interfaces/pagination";
 import { Project } from "../interfaces/project";
 import { LocaleCode } from "../interfaces/localization";
@@ -88,10 +88,11 @@ export default function Labs({ pagination }: Props) {
                     {project.title[locale as LocaleCode]}
                   </a>
                 </h2>
-                <div className="aspect-w-16 aspect-h-9 relative overflow-hidden rounded bg-gray-200">
+                <div className="relative aspect-video overflow-hidden rounded-sm bg-gray-200">
                   <span className="absolute h-full w-full animate-pulse bg-gray-200 dark:bg-gray-900"></span>
-                  <a href={project.url}>
+                  <a href={project.url} className="absolute inset-0 block">
                     <img
+                      className="h-full w-full object-cover"
                       src={project.banner_url}
                       srcSet={project.banner_url_2x + " 2x"}
                       alt={project.title[locale as LocaleCode] + " banner"}

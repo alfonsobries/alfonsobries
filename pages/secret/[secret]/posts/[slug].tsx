@@ -10,8 +10,8 @@ import TypoForm from "../../../../components/typo-form";
 import { getAllDraftPostsSlugs, getDraftPostBySlug } from "../../../../lib/api";
 import { LocaleCode } from "../../../../interfaces/localization";
 import urls from "../../../../helpers/urls";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 
 type Props = {
   post: PostType;

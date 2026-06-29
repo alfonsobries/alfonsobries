@@ -28,7 +28,7 @@ const FormInput: React.FC<InputProps> = ({
       name={name}
       id={name}
       className={classNames(
-        "block w-full rounded-sm focus:outline-none disabled:opacity-50 dark:bg-black",
+        "block w-full rounded-xs focus:outline-hidden disabled:opacity-50 dark:bg-black",
         {
           "border-gray-300 focus:ring-blue-600 dark:border-gray-800 dark:focus:ring-blue-500":
             !form.errors.has(name),

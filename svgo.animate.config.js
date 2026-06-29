@@ -4,6 +4,13 @@ const pathDataToPolysOptions = { tolerance: 5, decimals: 2 };
 
 const TRANSITION_DURATION = "400ms";
 
+const createElement = (name, attributes) => ({
+  type: "element",
+  name,
+  attributes,
+  children: [],
+});
+
 const convertChildPathToAnimate = (element, index, totalChildren, options) => {
   const id = `${options.id}-${index + 1}`;
 
@@ -61,19 +68,15 @@ const animateGroupByFrame = (group, options) => {
       .map((i) => (i === index ? "inline" : "none"))
       .join(";");
 
-    const animateChild = new group.constructor({
-      type: "element",
-      name: "animate",
-      attributes: {
-        id: `${options.id}-${index + 1}`,
-        attributeName: "display",
-        values,
-        keyTimes,
-        dur: options.duration,
-        begin: `0s`,
-        restart: "always",
-        fill: index > 0 ? "freeze" : "remove",
-      },
+    const animateChild = createElement("animate", {
+      id: `${options.id}-${index + 1}`,
+      attributeName: "display",
+      values,
+      keyTimes,
+      dur: options.duration,
+      begin: `0s`,
+      restart: "always",
+      fill: index > 0 ? "freeze" : "remove",
     });
 
     child.children.push(animateChild);
@@ -97,7 +100,7 @@ const animateGroup = (group, options) => {
   // Make the element a polygon
   group.name = isLine ? "polyline" : "polygon";
 
-  const style = firstChildren.style.styleValue
+  const style = (firstChildren.attributes.style || "")
     .split(";")
     .filter(Boolean)
     .reduce((obj, st) => {
@@ -125,17 +128,13 @@ const animateGroup = (group, options) => {
       )[0].join(" ");
     });
 
-    const lineAnimateChild = new group.constructor({
-      type: "element",
-      name: "animate",
-      attributes: {
-        attributeName: "points",
-        values: values.join(";") + ";" + values[0],
-        dur: options.duration,
-        begin: `0s`,
-        fill: "freeze",
-        repeatCount: "indefinite",
-      },
+    const lineAnimateChild = createElement("animate", {
+      attributeName: "points",
+      values: values.join(";") + ";" + values[0],
+      dur: options.duration,
+      begin: `0s`,
+      fill: "freeze",
+      repeatCount: "indefinite",
     });
 
     // Add begin attribute to every child
@@ -256,8 +255,10 @@ module.exports = {
   plugins: [
     {
       name: "animateSvg",
-      type: "full",
-      fn: animateSvg,
+      fn: (root) => {
+        animateSvg(root);
+        return null;
+      },
     },
   ],
 };

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { LINK_COLOR_TEXT } from "../lib/cssClasses";
 
 type Props = {
-  children: React.ReactElement;
+  children: React.ReactElement<React.RefAttributes<HTMLElement>>;
 };
 
 const MORE_LABEL = "[More...]";
@@ -51,7 +51,7 @@ const LineClamp = ({ children }: Props) => {
     if (isCurrentyClamped && el.querySelector("button") === null) {
       const readMoreButton = document.createElement("button");
       readMoreButton.type = "button";
-      readMoreButton.className = `${LINK_COLOR_TEXT} text-sm absolute bottom-0 right-0 before:absolute before:-ml-6 before:block before:h-full before:w-6 before:inset-0 before:bg-gradient-to-r before:from-transparent before:to-white dark:before:to-gray-900 before:content-[''] bg-white dark:bg-gray-900 block inline pl-1`;
+      readMoreButton.className = `${LINK_COLOR_TEXT} text-sm absolute bottom-0 right-0 before:absolute before:-ml-6 before:block before:h-full before:w-6 before:inset-0 before:bg-linear-to-r before:from-transparent before:to-white dark:before:to-gray-900 before:content-[''] bg-white dark:bg-gray-900 block inline pl-1`;
       readMoreButton.innerHTML = MORE_LABEL;
       readMoreButton.addEventListener("click", readMoreHandler);
       el.classList.add("relative");

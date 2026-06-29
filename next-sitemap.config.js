@@ -102,35 +102,42 @@ module.exports = {
     } else if (path.startsWith("/posts/")) {
       const slug = path.split("/posts/")[1];
 
-      const { data } = await Api.get(`/articles/${slug}`);
-
       overrides.priority = 0.8;
-      overrides.lastmod = new Date(Date.parse(data.updated_at)).toISOString();
 
-      overrides.images = [
-        {
-          loc: {
-            href: `https://og.alfonsobries.com/${encodeURIComponent(
-              data.title.en
-            )}.png`,
+      try {
+        const { data } = await Api.get(`/articles/${slug}`);
+
+        overrides.lastmod = new Date(Date.parse(data.updated_at)).toISOString();
+
+        overrides.images = [
+          {
+            loc: {
+              href: `https://og.alfonsobries.com/${encodeURIComponent(
+                data.title.en
+              )}.png`,
+            },
           },
-        },
-      ];
+        ];
 
-      overrides.news = {
-        title: data.title.en,
-        publicationName: "Alfonso's Blog",
-        publicationLanguage: "en",
-        date: overrides.lastmod,
-      };
+        overrides.news = {
+          title: data.title.en,
+          publicationName: "Alfonso's Blog",
+          publicationLanguage: "en",
+          date: overrides.lastmod,
+        };
 
-      overrides.alternateRefs = [
-        {
-          href: `${frontBaseUrl}/es/publicaciones/${data.slug.es}`,
-          hreflang: "es",
-          hrefIsAbsolute: true,
-        },
-      ];
+        overrides.alternateRefs = [
+          {
+            href: `${frontBaseUrl}/es/publicaciones/${data.slug.es}`,
+            hreflang: "es",
+            hrefIsAbsolute: true,
+          },
+        ];
+      } catch (error) {
+        // Keep the URL in the sitemap with default metadata if the article
+        // lookup fails (e.g. the API rate-limits) instead of failing the build.
+        console.warn(`next-sitemap: could not fetch /articles/${slug}:`, error.message);
+      }
     }
 
     return {

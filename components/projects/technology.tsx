@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-target-blank */
 import React from "react";
 import type { ProjectType } from "../../interfaces/project";
 import Laravel from "../icons/brands/laravel";

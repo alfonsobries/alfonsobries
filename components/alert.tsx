@@ -1,5 +1,5 @@
 type Props = {
-  children?: JSX.Element | string;
+  children?: React.JSX.Element | string;
   show?: boolean;
 };
 
@@ -17,9 +17,9 @@ const Alert = ({ children, show = false }: Props) => {
         leaveFrom="translate-y-0 opacity-100"
         leaveTo="translate-y-20 opacity-0"
       >
-        <div className="my-4 w-full max-w-xl rounded-md bg-red-50 p-4 shadow">
+        <div className="my-4 w-full max-w-xl rounded-md bg-red-50 p-4 shadow-sm">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"

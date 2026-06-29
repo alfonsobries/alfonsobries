@@ -11,8 +11,8 @@ import FormTextarea from "../components/form/form-textarea";
 import Alert from "../components/alert";
 import urls from "../helpers/urls";
 import { useRouter } from "next/router";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 
 export default function Contact() {
   const [errored, setErrored] = useState(false);
@@ -119,7 +119,7 @@ export default function Contact() {
                     <button
                       type="submit"
                       className={classNames(
-                        "flex w-full justify-center rounded bg-blue-700 p-3 text-sm font-semibold text-white shadow-sm disabled:opacity-50 dark:bg-blue-500",
+                        "flex w-full justify-center rounded-sm bg-blue-700 p-3 text-sm font-semibold text-white shadow-xs disabled:opacity-50 dark:bg-blue-500",
                         {
                           "hover:bg-blue-600 dark:hover:bg-blue-600":
                             !form.busy,

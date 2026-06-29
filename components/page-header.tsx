@@ -4,7 +4,7 @@ import { BORDER_COLOR } from "../lib/cssClasses";
 import SwitchButton from "./switch-button";
 import LazySvg from "./lazy-svg";
 import Link from "next/link";
-import { TFunction } from "next-i18next";
+import type { TFunction } from "i18next";
 import { useEffect } from "react";
 import { useEyes } from "../hooks/useEyes";
 
@@ -40,7 +40,7 @@ const PageHeader: React.FC<{
               <Link href="/" className="flex w-full items-center space-x-4">
                 <LazySvg
                   src="/images/me-face.svg"
-                  className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200"
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-700 p-1 dark:bg-blue-200"
                 />
 
                 <span className="font-cursive text-4xl font-bold text-gray-900 dark:text-gray-300">
@@ -53,11 +53,11 @@ const PageHeader: React.FC<{
                   src="/images/me.svg"
                   width={110}
                   height={150}
-                  className="flex h-[150px] w-[130px] flex-shrink-0 items-center justify-center"
+                  className="flex h-[150px] w-[130px] shrink-0 items-center justify-center"
                   onReady={onReady}
                 />
 
-                <div className="mt-4 w-full sm:ml-4 sm:mt-0 sm:w-auto sm:flex-grow sm:space-y-4">
+                <div className="mt-4 w-full sm:ml-4 sm:mt-0 sm:w-auto sm:grow sm:space-y-4">
                   <p className="whitespace-nowrap text-center font-cursive text-6xl font-bold text-gray-900 sm:text-left dark:text-gray-300">
                     {t("common:hello_im")}{" "}
                     <span className="relative inline-block">

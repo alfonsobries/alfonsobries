@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { ResumeProject } from "../../interfaces/resume";
+import type { ResumeProject } from "../../interfaces/resume";
 import { LINK_COLOR_TEXT } from "../../lib/cssClasses";
 import LinkIcon from "../icons/link";
 

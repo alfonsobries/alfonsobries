@@ -1,13 +1,13 @@
 import classNames from "classnames";
 import Link from "next/link";
 import { useMemo } from "react";
-import { Pagination } from "../interfaces/pagination";
+import type { Pagination } from "../interfaces/pagination";
 import {
   BORDER_COLOR,
   LINK_COLOR_TEXT,
   LINK_COLOR_TEXT_DISABLED,
 } from "../lib/cssClasses";
-import { TFunction } from "next-i18next";
+import type { TFunction } from "i18next";
 
 type Props = {
   t: TFunction;

@@ -12,7 +12,7 @@ import Home from "./icons/home";
 import classNames from "classnames";
 import { LocaleCode } from "../interfaces/localization";
 import urls from "../helpers/urls";
-import { TFunction } from "next-i18next";
+import type { TFunction } from "i18next";
 
 type MenuLink = {
   selected: (router: NextRouter) => boolean;
@@ -197,15 +197,15 @@ const MainMenu = ({
       ref={navRef}
       className={cn(
         BORDER_COLOR,
-        "no-scrollbar top-[-1px] z-50 mb-8 flex w-full flex-col border-y print:mb-4 print:border-transparent",
+        "no-scrollbar -top-px z-50 mb-8 flex w-full flex-col border-y print:mb-4 print:border-transparent",
         !isSticky && maxWidthClass,
         {
-          "overflow-auto border-transparent shadow-sm print:shadow-none":
+          "overflow-auto border-transparent shadow-xs print:shadow-none":
             isSticky,
-          "mx-auto before:absolute before:-my-1 before:hidden before:h-14 before:w-5 before:bg-gradient-to-r before:from-white/100 before:to-white/0 before:content-[''] after:absolute after:right-0 after:top-0 after:-my-1 after:hidden after:h-14 after:w-5 after:bg-gradient-to-l after:from-white/100 after:to-white/0 after:content-[''] sm:before:block sm:after:block dark:before:from-gray-900/100 dark:before:to-gray-900/0 dark:after:from-gray-900/100 dark:after:to-gray-900/0":
+          "mx-auto before:absolute before:-my-1 before:hidden before:h-14 before:w-5 before:bg-linear-to-r before:from-white before:to-white/0 before:content-[''] after:absolute after:right-0 after:top-0 after:-my-1 after:hidden after:h-14 after:w-5 after:bg-linear-to-l after:from-white after:to-white/0 after:content-[''] sm:before:block sm:after:block dark:before:from-gray-900 dark:before:to-gray-900/0 dark:after:from-gray-900 dark:after:to-gray-900/0":
             !isSticky,
           "fixed h-screen w-screen bg-white dark:bg-gray-900": showDropdownMenu,
-          "sticky bg-white/70 shadow-sm ring-1 ring-black/5 backdrop-blur-lg dark:bg-gray-900/80 dark:ring-white/10":
+          "sticky bg-white/70 shadow-xs ring-1 ring-black/5 backdrop-blur-lg dark:bg-gray-900/80 dark:ring-white/10":
             !showDropdownMenu && isSticky,
           "sticky bg-white/30 backdrop-blur-lg dark:bg-gray-900/80":
             !showDropdownMenu && !isSticky,
@@ -266,7 +266,7 @@ const MainMenu = ({
           </Link>
 
           <span
-            className={`mx-2 h-5 w-[1px] bg-white/10 backdrop-blur-lg dark:bg-gray-900/80`}
+            className={`mx-2 h-5 w-px bg-white/10 backdrop-blur-lg dark:bg-gray-900/80`}
           ></span>
 
           <SwitchButton
@@ -275,7 +275,7 @@ const MainMenu = ({
           />
 
           <span
-            className={`mx-2 h-5 w-[1px] bg-white/10 backdrop-blur-lg dark:bg-gray-900/80`}
+            className={`mx-2 h-5 w-px bg-white/10 backdrop-blur-lg dark:bg-gray-900/80`}
           ></span>
 
           <button
@@ -308,14 +308,14 @@ const MainMenu = ({
 
       <nav
         className={cn("mx-auto flex w-full flex-col px-4", maxWidthClass, {
-          "flex-grow overflow-auto": isSticky,
+          "grow overflow-auto": isSticky,
           hidden: isSticky && !menuOpened,
           "h-11": !isSticky,
         })}
       >
         <ul
-          className={cn("mb-[-1px] flex", {
-            "flex-grow justify-between justify-items-stretch": !isSticky,
+          className={cn("-mb-px flex", {
+            "grow justify-between justify-items-stretch": !isSticky,
             "flex-col": useDropdownMenu,
           })}
         >

@@ -7,8 +7,8 @@ import classNames from "classnames";
 import { LINK_COLOR_BORDER, LINK_COLOR_TEXT } from "../lib/cssClasses";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import urls from "../helpers/urls";
 import { LocaleCode } from "../interfaces/localization";
 import { personSchema, websiteSchema } from "../lib/jsonLd";
@@ -58,7 +58,7 @@ export default function Index({ posts, hasMorePosts }: Props) {
               className={classNames(
                 LINK_COLOR_BORDER,
                 LINK_COLOR_TEXT,
-                "mt-8 block rounded border p-2 text-center"
+                "mt-8 block rounded-sm border p-2 text-center"
               )}
             >
               {t("common:more_posts")} →

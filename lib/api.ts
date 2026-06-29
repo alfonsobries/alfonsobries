@@ -26,14 +26,18 @@ const getPostWithOnlyProperties = (
   };
 
   properties.forEach((property) => {
+    // The API returns Spatie Translatable fields as either a plain string or a
+    // { en, es } map depending on the request, so resolve the locale at runtime.
+    const value = post[property] as string | Record<LocaleCode, string>;
+
     if (
-      typeof post[property] === "object" &&
-      post[property] !== null &&
-      post[property][locale] !== undefined
+      typeof value === "object" &&
+      value !== null &&
+      value[locale] !== undefined
     ) {
-      newPost[property] = post[property][locale];
+      newPost[property] = value[locale];
     } else {
-      newPost[property] = post[property];
+      newPost[property] = value as string;
     }
   });
 
@@ -317,7 +321,10 @@ export async function getGithubContributions() {
 
   const { data } = await response.json();
 
-  return parseGithubContributions(
-    data.user.contributionsCollection.contributionCalendar.weeks
-  );
+  const weeks: ContributionWeeks | undefined =
+    data?.user?.contributionsCollection?.contributionCalendar?.weeks;
+
+  // Render an empty calendar instead of failing the build when the GitHub token
+  // is missing or the API call fails.
+  return parseGithubContributions(weeks ?? []);
 }
