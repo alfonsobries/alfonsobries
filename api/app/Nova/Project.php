@@ -60,6 +60,7 @@ final class Project extends Resource
                     ->rules('required', 'string', 'max:120'),
 
                 Markdown::make('Description', 'description')
+                    ->withFiles('public_s3', '/project')
                     ->rules('nullable', 'string'),
             ]),
 

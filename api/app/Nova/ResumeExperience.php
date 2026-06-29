@@ -74,6 +74,7 @@ final class ResumeExperience extends Resource
                 ->placeholder('Remote'),
 
             Markdown::make('Description')
+                ->withFiles('public_s3', '/resume_experience')
                 ->rules('required', 'string')
                 ->hideFromIndex(),
         ];
