@@ -62,7 +62,7 @@ it('returns a published article', function () {
     $response->assertSuccessful();
 
     expect($response->json('id'))->toBe($article->id);
-    expect($response->json('title'))->toBe($article->title);
+    expect($response->json('title.en'))->toBe($article->title);
 });
 
 it('returns 400 for an unpublished article', function () {

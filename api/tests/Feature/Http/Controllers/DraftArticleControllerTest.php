@@ -24,7 +24,11 @@ it('lists all the latest unpublished articles slugs', function () {
     expect($response->json())->toHaveCount(3);
 
     expect($response->json())->toEqual(
-        [$first->slug, $second->slug, $third->slug]
+        [
+            $first->getTranslations('slug'),
+            $second->getTranslations('slug'),
+            $third->getTranslations('slug'),
+        ]
     );
 });
 
@@ -36,7 +40,7 @@ it('returns a non published article', function () {
     $response->assertSuccessful();
 
     expect($response->json('id'))->toBe($article->id);
-    expect($response->json('title'))->toBe($article->title);
+    expect($response->json('title.en'))->toBe($article->title);
 });
 
 it('returns 404 for an published article', function () {
