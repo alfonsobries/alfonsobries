@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import Link from "next/link";
 import { useMemo } from "react";
-import { Pagination } from "../interfaces/pagination";
+import type { Pagination } from "../interfaces/pagination";
 import {
   BORDER_COLOR,
   LINK_COLOR_TEXT,
