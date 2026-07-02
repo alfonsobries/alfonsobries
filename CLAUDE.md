@@ -30,6 +30,7 @@ Personal website and blog (alfonsobries.com), split into top-level projects:
 - `pnpm typecheck` — TypeScript type checking (`tsc`)
 - `pnpm lint` — Run ESLint (`expo lint`)
 - `pnpm routes:generate` — Regenerate the typed Ziggy route map from the API (run after adding/renaming an `api.*` route)
+- `pnpm svg:optimize` — Compress the SVGs in `app/assets/` with SVGO
 
 ### Local API + app (repo root)
 - `./start-api.sh [ip]` — Serve the Laravel API; auto-detects the LAN IP (pass one for a physical device, or `127.0.0.1` for local only)
