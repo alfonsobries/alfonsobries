@@ -63,7 +63,10 @@
     "icons:segments": "node ./scripts/generate-segment-icons.mjs",
     "svg:optimize": "svgo -f assets",
     "local:build": "eas build --platform ios --local --non-interactive --freeze-credentials --output ./build/dev-client.ipa --profile local",
-    "local:install": "ios-deploy --bundle ./build/dev-client.ipa"
+    "local:install": "ios-deploy --bundle ./build/dev-client.ipa",
+    "ios:build:production": "eas build --platform ios --profile production",
+    "ios:submit": "eas submit --platform ios --latest --profile production",
+    "ios:release": "pnpm ios:build:production && pnpm ios:submit"
   },
   "name": "app"
 }
