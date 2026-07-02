@@ -9,13 +9,17 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.alfonsobries.com/api"
+      }
     }
   },
   "submit": {
     "production": {
       "ios": {
-        "appleTeamId": "TY2LB9Y7DK"
+        "appleTeamId": "TY2LB9Y7DK",
+        "ascAppId": "6786892996"
       }
     }
   }

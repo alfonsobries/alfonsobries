@@ -64,8 +64,8 @@
     "svg:optimize": "svgo -f assets",
     "local:build": "eas build --platform ios --local --non-interactive --freeze-credentials --output ./build/dev-client.ipa --profile local",
     "local:install": "ios-deploy --bundle ./build/dev-client.ipa",
-    "ios:build:production": "eas build --platform ios --profile production",
-    "ios:submit": "eas submit --platform ios --latest --profile production",
+    "ios:build:production": "eas build --platform ios --local --output ./build/app.ipa --profile production --freeze-credentials --non-interactive",
+    "ios:submit": "eas submit --platform ios --path ./build/app.ipa --profile production --non-interactive",
     "ios:release": "pnpm ios:build:production && pnpm ios:submit"
   },
   "name": "app"
