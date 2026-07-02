@@ -30,6 +30,18 @@ The app already declares the entitlement — `app.json` sets
 `ios.usesAppleSignIn: true` and loads the `expo-apple-authentication` plugin — so
 a fresh native build (`expo prebuild` / EAS build) picks it up automatically.
 
+The provisioning profile also has to carry the capability. Run one EAS build
+**without** frozen credentials so EAS enables it on the App ID and regenerates the
+profile:
+
+```bash
+cd app && eas build -p ios --local --profile local
+```
+
+After that, the frozen `pnpm local:build` reuses the updated profile. Skipping
+this step fails the build with *"Provisioning profile … doesn't include the
+com.apple.developer.applesignin entitlement"*.
+
 ### 2. Point the API at the bundle identifier
 
 The API checks that each identity token was minted for our app by comparing its
@@ -81,5 +93,10 @@ The API accepts a token whose `aud` matches either `APPLE_CLIENT_ID` or
 - **401 "Invalid Apple identity token"** — the token failed signature/expiry
   verification. Make sure the device clock is correct and the app is sending the
   `identityToken` (not the authorization code).
+- **Build fails: "Provisioning profile … doesn't include the
+  com.apple.developer.applesignin entitlement"** — the profile predates the
+  capability. Run `cd app && eas build -p ios --local --profile local` (no
+  `--freeze-credentials`) once to enable it on the App ID and regenerate the
+  profile, then the frozen build works.
 - **The Apple button doesn't appear** — Sign in with Apple only runs on iOS
   devices/simulators (iOS 13+). The login screen shows a note on other platforms.
