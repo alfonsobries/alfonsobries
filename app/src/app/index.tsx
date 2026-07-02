@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIcon } from '@/components/animated-icon';
 import { HintRow } from '@/components/hint-row';
-import { WebBadge } from '@/components/web-badge';
 
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
@@ -43,8 +42,6 @@ export default function HomeScreen() {
           <HintRow title="Dev tools" hint={getDevMenuHint()} />
           <HintRow title="Fresh start" hint={<Text className="font-mono text-xs">npm run reset-project</Text>} />
         </View>
-
-        {Platform.OS === 'web' && <WebBadge />}
       </SafeAreaView>
     </View>
   );

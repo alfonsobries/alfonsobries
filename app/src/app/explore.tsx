@@ -1,11 +1,9 @@
-import { Image } from 'expo-image';
 import { ArrowSquareOut } from 'phosphor-react-native';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ExternalLink } from '@/components/external-link';
 import { Collapsible } from '@/components/ui/collapsible';
-import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset } from '@/constants/theme';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -68,35 +66,6 @@ export default function TabTwoScreen() {
             </ExternalLink>
           </Collapsible>
 
-          <Collapsible title="Android, iOS, and web support">
-            <View className="items-center">
-              <Text className="text-sm font-medium text-foreground">
-                You can open this project on Android, iOS, and the web. To open the web version,
-                press <Text className="text-sm font-bold text-foreground">w</Text> in the terminal
-                running this project.
-              </Text>
-              <Image
-                source={require('@/assets/images/tutorial-web.png')}
-                style={{ width: '100%', aspectRatio: 296 / 171, borderRadius: 16, marginTop: 8 }}
-              />
-            </View>
-          </Collapsible>
-
-          <Collapsible title="Images">
-            <Text className="text-sm font-medium text-foreground">
-              For static images, you can use the <Text className="font-mono text-xs">@2x</Text> and{' '}
-              <Text className="font-mono text-xs">@3x</Text> suffixes to provide files for different
-              screen densities.
-            </Text>
-            <Image
-              source={require('@/assets/images/react-logo.png')}
-              style={{ width: 100, height: 100, alignSelf: 'center' }}
-            />
-            <ExternalLink href="https://reactnative.dev/docs/images">
-              <Text className="text-sm text-primary-emphasis">Learn more</Text>
-            </ExternalLink>
-          </Collapsible>
-
           <Collapsible title="Light and dark mode components">
             <Text className="text-sm font-medium text-foreground">
               This template has light and dark mode support. The{' '}
@@ -117,7 +86,6 @@ export default function TabTwoScreen() {
             </Text>
           </Collapsible>
         </View>
-        {Platform.OS === 'web' && <WebBadge />}
       </View>
     </ScrollView>
   );
