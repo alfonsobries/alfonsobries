@@ -15,6 +15,11 @@ const CATEGORIES = [
     subtitle: 'Variants, sizes, states',
     href: '/design-system/buttons',
   },
+  {
+    title: 'Inputs',
+    subtitle: 'Text field, switch, keyboard handling',
+    href: '/design-system/inputs',
+  },
 ] as const;
 
 export default function DesignSystemIndex() {

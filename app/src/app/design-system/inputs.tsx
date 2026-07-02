@@ -1,0 +1,64 @@
+import { Stack } from 'expo-router';
+import { MagnifyingGlass } from 'phosphor-react-native';
+import { ReactNode, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
+
+import { Input } from '@/components/ui/Input';
+import { Switch } from '@/components/ui/Switch';
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <View className="gap-3">
+      <Text className="text-xs font-semibold uppercase tracking-wider text-muted">{title}</Text>
+      {children}
+    </View>
+  );
+}
+
+export default function Inputs() {
+  const [notify, setNotify] = useState(true);
+
+  return (
+    <>
+      <Stack.Screen.Title large>Inputs</Stack.Screen.Title>
+      <ScrollView
+        className="flex-1 bg-background"
+        contentInsetAdjustmentBehavior="automatic"
+        automaticallyAdjustKeyboardInsets
+        keyboardDismissMode="interactive"
+        keyboardShouldPersistTaps="handled"
+        contentContainerClassName="gap-8 p-4">
+        <Section title="Text field">
+          <Input label="Item name" placeholder="e.g. Water filter" />
+        </Section>
+
+        <Section title="With icon">
+          <Input icon={MagnifyingGlass} placeholder="Search" />
+        </Section>
+
+        <Section title="Password">
+          <Input label="Password" placeholder="••••••••" secureTextEntry />
+        </Section>
+
+        <Section title="Error">
+          <Input label="Email" placeholder="you@example.com" defaultValue="not an email" error="Enter a valid email" />
+        </Section>
+
+        <Section title="Disabled">
+          <Input label="Household" defaultValue="Bribiesca family" editable={false} />
+        </Section>
+
+        <Section title="Textarea">
+          <Input label="Notes" placeholder="Anything to remember?" multiline />
+        </Section>
+
+        <Section title="Switch">
+          <View className="flex-row items-center justify-between rounded-2xl bg-surface px-4 py-3">
+            <Text className="text-base text-foreground">Notifications</Text>
+            <Switch value={notify} onValueChange={setNotify} />
+          </View>
+        </Section>
+      </ScrollView>
+    </>
+  );
+}
