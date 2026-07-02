@@ -54,7 +54,7 @@
     "tokens:build": "node ./scripts/build-tokens.mjs",
     "icons:tabs": "node ./scripts/generate-tab-icons.mjs",
     "icons:segments": "node ./scripts/generate-segment-icons.mjs",
-    "local:build": "eas build --platform ios --local --profile local --output ./build/dev-client.ipa",
+    "local:build": "eas build --platform ios --local --non-interactive --freeze-credentials --output ./build/dev-client.ipa --profile local",
     "local:install": "ios-deploy --bundle ./build/dev-client.ipa"
   },
   "name": "app"
