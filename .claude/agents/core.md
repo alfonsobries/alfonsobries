@@ -10,11 +10,13 @@ Shared rules for every repo in this project. Apply to any stack.
 - Commit incrementally as each logical chunk lands — don't batch everything at the end
 
 ## Pull Requests
+- Title follows the same [Conventional Commits](https://www.conventionalcommits.org) format as commit subjects (`feat:`, `fix:`, `chore:`, `refactor:`…)
 - Open as draft (`gh pr create --draft`) against the default branch
 - If `.github/PULL_REQUEST_TEMPLATE.md` exists, fill it in as the body (write it to a file and pass `--body-file`; `gh` ignores the template otherwise)
 - Never reference Claude / AI / agents in title, body, branch name, or comments
 - When new commits change what the PR does, update the title and description to match — don't leave them describing an earlier version
 - Keep the description brief: explain what the PR does and why, in its current final form. Don't narrate the round trip of requested changes that got it there
+- Delete the branch after merging (`gh pr merge --delete-branch`, or check the box on GitHub)
 
 ## Pre-push checks
 Order before pushing: **formatter → linter → static analysis → tests**. For long tasks run only the affected checks during the work and the full suite once at the end. If the formatter modifies files, commit those before pushing.
