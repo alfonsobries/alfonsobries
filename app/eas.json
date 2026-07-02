@@ -7,6 +7,16 @@
     "local": {
       "developmentClient": true,
       "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleTeamId": "TY2LB9Y7DK"
+      }
     }
   }
 }
