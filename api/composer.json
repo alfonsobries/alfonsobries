@@ -11,6 +11,7 @@
         "php": "^8.4",
         "coconutcraig/laravel-postmark": "^3.4",
         "davidbadura/faker-markdown-generator": "^1.1",
+        "firebase/php-jwt": "^7.1",
         "guzzlehttp/guzzle": "^7.8",
         "laravel-notification-channels/telegram": "^7.0",
         "laravel/framework": "^13.0",

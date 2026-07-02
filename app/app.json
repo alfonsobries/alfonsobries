@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.alfonsobries.app",
+      "usesAppleSignIn": true,
       "icon": {
         "light": "./assets/images/icon.png",
         "dark": "./assets/images/icon-dark.png",
@@ -34,6 +35,8 @@
     },
     "plugins": [
       "expo-router",
+      "expo-apple-authentication",
+      "expo-secure-store",
       [
         "expo-splash-screen",
         {
@@ -41,7 +44,8 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

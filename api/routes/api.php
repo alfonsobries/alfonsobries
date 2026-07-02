@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AppleAuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\DraftArticleController;
+use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResumeControler;
 use App\Http\Controllers\SlugHistoryController;
@@ -12,6 +14,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/status', StatusController::class)->name('status');
+
+Route::prefix('auth')->name('auth.')->group(function () {
+    Route::post('/apple', AppleAuthController::class)->name('apple');
+    Route::post('/logout', LogoutController::class)->middleware('auth:sanctum')->name('logout');
+});
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

@@ -40,4 +40,12 @@ return [
         'chat_id' => env('TELEGRAM_CHAT_ID'),
     ],
 
+    'apple' => [
+        // The iOS bundle identifier, used as the expected `aud` of the identity
+        // tokens issued by expo-apple-authentication.
+        'client_id' => env('APPLE_CLIENT_ID', 'com.alfonsobries.app'),
+        // Optional Services ID for a future web/Android sign-in flow.
+        'services_id' => env('APPLE_SERVICES_ID'),
+    ],
+
 ];
