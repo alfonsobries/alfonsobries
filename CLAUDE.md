@@ -4,11 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal website and blog (alfonsobries.com) with a **Next.js frontend** and a **Laravel API backend** in the `api/` directory.
+Personal website and blog (alfonsobries.com), split into top-level projects:
+
+- **`website/`** — Next.js frontend
+- **`api/`** — Laravel API backend
 
 ## Commands
 
-### Frontend (root directory)
+### Frontend (`website/` directory)
 - `pnpm dev` — Start Next.js dev server
 - `pnpm build` — Production build (also generates sitemap via postbuild)
 - `pnpm typecheck` — Run TypeScript type checking (`tsc`)
@@ -24,10 +27,10 @@ Personal website and blog (alfonsobries.com) with a **Next.js frontend** and a *
 ## Architecture
 
 ### Frontend (Next.js + TypeScript + Tailwind CSS)
-- **Pages router** (`pages/`) with `getStaticProps` for SSG
-- **Bilingual**: English and Spanish via `next-i18next`. Translations in `public/locales/{en,es}/`
+- **Pages router** (`website/pages/`) with `getStaticProps` for SSG
+- **Bilingual**: English and Spanish via `next-i18next`. Translations in `website/public/locales/{en,es}/`
 - **Dark mode**: `next-themes` with Tailwind dark classes
-- **API client**: `lib/api.ts` fetches from the Laravel backend at build time
+- **API client**: `website/lib/api.ts` fetches from the Laravel backend at build time
 - **Styling**: Tailwind CSS 4 (CSS-first `@import "tailwindcss"`, JS config via `@config`) with the typography and forms plugins. Prettier plugin for class sorting.
 - **SVG system**: Custom SVGO config adds dark mode class variants automatically based on layer naming
 
@@ -37,6 +40,7 @@ Personal website and blog (alfonsobries.com) with a **Next.js frontend** and a *
 - **Content features**: Spatie Translatable (multilingual), Spatie Sluggable (URLs), slug history for redirects
 - **Resume PDF**: Generated via Spatie Browsershot + Puppeteer
 - **Testing**: Pest PHP with SQLite in-memory DB
+- **Formatting**: Laravel Pint with the Laravel preset
 
 ### Key Data Flow
 - Laravel API serves content (articles, projects, resume) from a database
@@ -44,50 +48,17 @@ Personal website and blog (alfonsobries.com) with a **Next.js frontend** and a *
 - Draft articles viewable via secret preview URLs (`/secret/[secret]/posts/[slug]`)
 - Contact form POSTs directly to the API, which sends Telegram notifications
 
-## Working Conventions
+## Environment variables
 
-### Commits
-- [Conventional Commits](https://www.conventionalcommits.org): `feat:`, `fix:`, `chore:`, `style:`, `refactor:`, `test:`, `docs:`
-- Subject line only, ideally under 50 characters — no body
-- Human, direct tone. Avoid robotic phrasing ("this commit introduces…")
-- Never add `Co-Authored-By` or any mention of Claude / AI / agents
-- Commit incrementally as each logical chunk lands — don't batch everything at the end
+`website/` and `api/` each keep their own `.env`, gitignored and never shared between them. A few values must stay in sync by hand — check both `.env.example` files when changing one:
 
-### Pull Requests
-- Open as draft (`gh pr create --draft`) against the default branch
-- If `.github/PULL_REQUEST_TEMPLATE.md` exists, fill it in as the body (write it to a file and pass `--body-file`; `gh` ignores the template otherwise)
-- Never reference Claude / AI / agents in title, body, branch name, or comments
+- `SECRET_PREFIX` (`website/.env`) and `SECRET_PREFIX` (`api/.env`) — must match; it gates the draft-preview URLs
+- `API_URL` (`website/.env`) and `APP_URL` (`api/.env`) — each points at the other service
+- `FRONT_URL` (`api/.env`) — points at the frontend's public URL
 
-### Pre-push checks
-Order before pushing: **formatter → linter → static analysis → tests**. For long tasks run only the affected checks during the work and the full suite once at the end. If the formatter modifies files, commit those before pushing.
+---
 
-### Security
-- Never commit `.env`, credentials, tokens, or secrets
-- No destructive git operations (force-push, history rewrite, `git reset --hard`, `rm -rf`) without explicit confirmation
-- Treat any new dependency as suspect (typosquatting, unknown maintainer) before adding it
-
-## Code Style
-
-### General
-- Follow existing patterns and reuse existing components/helpers before introducing new ones
-- No comments except a non-obvious **why** (a hidden constraint, a subtle invariant, a workaround). Don't narrate changes in comments (`// renamed from…`, `// added for #123`) — git history tells that story
-- **Backend**: Laravel Pint with the Laravel preset
-
-### JavaScript / TypeScript
-- Prefer **pnpm** over `npm`/`yarn`, and prefer `package.json` scripts over invoking tools directly
-- `pnpm typecheck` and `pnpm lint` must pass clean. Don't silence errors with `@ts-ignore`, `eslint-disable`, or by loosening config — fix the cause. Suppress only with a strong, documented justification
-- Avoid `any` (use `unknown` and narrow, or a precise type) unless there's a strong justification. Add explicit return types to exported functions
-- Named exports over default exports, except where a framework requires a default (e.g. a Next.js page)
-- Use curly braces for every control structure; don't mutate arguments — return new values
-
-### React
-- One exported component per file; small private sub-components may share it
-- Component files are PascalCase matching the export (`VotesFilter.tsx`); hooks/utils are kebab-case (`use-validators.ts`)
-- Name the props type after the component with a `Properties` suffix (`ButtonProperties`). When wrapping a host element, extend its props (`React.ComponentPropsWithoutRef<'button'> & { … }`)
-- Callback props are `onX` (`onChange`); internal handlers are `handleX` (`handleSelectPage`)
-- Rendering stays pure — derive JSX from props/state; side effects live in handlers or effects
-- One source of truth per piece of state — don't copy props into state
-- Reach for context only for genuinely cross-cutting state
-
-## Overrides
-Personal, machine-local preferences go in `CLAUDE.local.md` (gitignored). Repo-wide conventions belong in this file.
+@.claude/agents/core.md
+@.claude/agents/js.md
+@.claude/agents/react.md
+@.claude/agents/design-system.md
