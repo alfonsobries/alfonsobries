@@ -6,6 +6,8 @@ export declare const Ziggy: Config;
 declare module 'ziggy-js' {
   interface RouteList {
     "api.status": [],
+    "api.auth.apple": [],
+    "api.auth.logout": [],
     "api.user": [],
     "api.articles.index": [],
     "api.articles.show": [
