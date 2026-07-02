@@ -1,6 +1,8 @@
 import NativeSegmentedControl from '@react-native-segmented-control/segmented-control';
 import { type ImageSourcePropType } from 'react-native';
 
+import { useThemeColor } from '@/hooks/use-theme-color';
+
 type SegmentOption<T> = { value: T; label?: string; icon?: ImageSourcePropType };
 
 type SegmentedControlProperties<T> = {
@@ -14,6 +16,10 @@ export function SegmentedControl<T extends string | number>({
   onChange,
   options,
 }: SegmentedControlProperties<T>) {
+  const track = useThemeColor('surface-selected');
+  const tint = useThemeColor('primary-emphasis');
+  const muted = useThemeColor('muted');
+  const activeLabel = useThemeColor('primary-emphasis-foreground');
   const selectedIndex = Math.max(
     0,
     options.findIndex((option) => option.value === value),
@@ -28,6 +34,10 @@ export function SegmentedControl<T extends string | number>({
       values={values}
       selectedIndex={selectedIndex}
       onChange={(event) => onChange(options[event.nativeEvent.selectedSegmentIndex].value)}
+      backgroundColor={track}
+      tintColor={tint}
+      fontStyle={{ color: muted }}
+      activeFontStyle={{ color: activeLabel }}
       style={{ height: 40 }}
     />
   );
