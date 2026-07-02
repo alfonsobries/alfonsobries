@@ -52,26 +52,27 @@ export function AuthProvider({ children }: AuthProviderProperties): ReactNode {
     let active = true;
 
     void (async () => {
-      const token = await SecureStore.getItemAsync(TOKEN_KEY);
-
-      if (!token) {
-        if (active) {
-          setStatus('unauthenticated');
-        }
-        return;
-      }
-
-      setAuthHeader(token);
-
       try {
+        const token = await SecureStore.getItemAsync(TOKEN_KEY);
+
+        if (!token) {
+          if (active) {
+            setStatus('unauthenticated');
+          }
+          return;
+        }
+
+        setAuthHeader(token);
         const { data } = await apiClient.get<AuthUser>(route('api.user'));
         if (active) {
           setUser(data);
           setStatus('authenticated');
         }
       } catch {
-        await SecureStore.deleteItemAsync(TOKEN_KEY);
+        // Stale/invalid token, or a platform without a secure store (web):
+        // drop it and fall back to the signed-out state.
         setAuthHeader(null);
+        await SecureStore.deleteItemAsync(TOKEN_KEY).catch(() => undefined);
         if (active) {
           setStatus('unauthenticated');
         }
