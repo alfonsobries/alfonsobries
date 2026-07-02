@@ -6,7 +6,7 @@ import {
   TabTriggerSlotProps,
   TabListProps,
 } from 'expo-router/ui';
-import { SymbolView } from 'expo-symbols';
+import { ArrowSquareOut } from 'phosphor-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 import { ExternalLink } from './external-link';
@@ -56,7 +56,7 @@ export function CustomTabList(props: TabListProps) {
         <ExternalLink href="https://docs.expo.dev" asChild>
           <Pressable className="ml-4 flex-row items-center justify-center gap-1">
             <Text className="text-sm text-foreground">Docs</Text>
-            <SymbolView tintColor={tint} name={{ ios: 'arrow.up.right.square', web: 'link' }} size={12} />
+            <ArrowSquareOut size={12} color={tint} />
           </Pressable>
         </ExternalLink>
       </View>

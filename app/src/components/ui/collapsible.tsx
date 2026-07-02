@@ -1,4 +1,4 @@
-import { SymbolView } from 'expo-symbols';
+import { CaretRight } from 'phosphor-react-native';
 import { PropsWithChildren, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -15,11 +15,10 @@ export function Collapsible({ children, title }: PropsWithChildren & { title: st
         className="flex-row items-center gap-2 active:opacity-70"
         onPress={() => setIsOpen((value) => !value)}>
         <View className="size-6 items-center justify-center rounded-xl bg-surface">
-          <SymbolView
-            name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }}
+          <CaretRight
             size={14}
             weight="bold"
-            tintColor={tint}
+            color={tint}
             style={{ transform: [{ rotate: isOpen ? '-90deg' : '90deg' }] }}
           />
         </View>

@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { SymbolView } from 'expo-symbols';
+import { ArrowSquareOut } from 'phosphor-react-native';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -47,7 +47,7 @@ export default function TabTwoScreen() {
             <Pressable className="active:opacity-70">
               <View className="flex-row items-center justify-center gap-1 rounded-full bg-surface px-6 py-2">
                 <Text className="text-sm text-foreground">Expo documentation</Text>
-                <SymbolView tintColor={tint} name={{ ios: 'arrow.up.right.square', android: 'link', web: 'link' }} size={12} />
+                <ArrowSquareOut size={12} color={tint} />
               </View>
             </Pressable>
           </ExternalLink>
