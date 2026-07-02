@@ -1,4 +1,4 @@
-import { Button as MenuButton, ContextMenu, Host, RNHostView } from '@expo/ui/swift-ui';
+import { Button as MenuButton, ContextMenu, Host, Menu, RNHostView } from '@expo/ui/swift-ui';
 import { router, Stack } from 'expo-router';
 import { ReactNode, useState } from 'react';
 import { ActionSheetIOS, ScrollView, Text, View } from 'react-native';
@@ -18,6 +18,7 @@ const ITEM_ACTIONS = ['Edit', 'Archive', 'Delete', 'Cancel'];
 
 export default function Overlays() {
   const [lastAction, setLastAction] = useState<string | null>(null);
+  const [sort, setSort] = useState('Newest');
 
   function openActionSheet() {
     ActionSheetIOS.showActionSheetWithOptions(
@@ -65,6 +66,26 @@ export default function Overlays() {
               Item actions
             </Button>
             {lastAction ? <Text className="text-sm text-foreground">Selected: {lastAction}</Text> : null}
+          </View>
+        </Section>
+
+        <Section title="Menu (dropdown)">
+          <Text className="text-sm text-muted">Tap for a native dropdown menu.</Text>
+          <View className="items-start">
+            <Host matchContents>
+              <Menu
+                label={
+                  <RNHostView matchContents>
+                    <Button variant="secondary" onPress={() => {}}>
+                      {`Sort: ${sort}`}
+                    </Button>
+                  </RNHostView>
+                }>
+                <MenuButton label="Newest" onPress={() => setSort('Newest')} />
+                <MenuButton label="Name (A–Z)" onPress={() => setSort('Name (A–Z)')} />
+                <MenuButton label="Due soonest" onPress={() => setSort('Due soonest')} />
+              </Menu>
+            </Host>
           </View>
         </Section>
 
