@@ -10,6 +10,11 @@ const CATEGORIES = [
     subtitle: 'Colors, typography, spacing, icons',
     href: '/design-system/foundations',
   },
+  {
+    title: 'Buttons',
+    subtitle: 'Variants, sizes, states',
+    href: '/design-system/buttons',
+  },
 ] as const;
 
 export default function DesignSystemIndex() {
