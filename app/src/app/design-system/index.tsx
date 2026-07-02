@@ -25,6 +25,11 @@ const CATEGORIES = [
     subtitle: 'Segmented control',
     href: '/design-system/navigation',
   },
+  {
+    title: 'Overlays',
+    subtitle: 'Form sheets',
+    href: '/design-system/overlays',
+  },
 ] as const;
 
 export default function DesignSystemIndex() {
