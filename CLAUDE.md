@@ -4,11 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Personal website and blog (alfonsobries.com) with a **Next.js frontend** and a **Laravel API backend** in the `api/` directory.
+Personal website and blog (alfonsobries.com), split into top-level projects:
+
+- **`website/`** — Next.js frontend
+- **`api/`** — Laravel API backend
 
 ## Commands
 
-### Frontend (root directory)
+### Frontend (`website/` directory)
 - `pnpm dev` — Start Next.js dev server
 - `pnpm build` — Production build (also generates sitemap via postbuild)
 - `pnpm typecheck` — Run TypeScript type checking (`tsc`)
@@ -24,10 +27,10 @@ Personal website and blog (alfonsobries.com) with a **Next.js frontend** and a *
 ## Architecture
 
 ### Frontend (Next.js + TypeScript + Tailwind CSS)
-- **Pages router** (`pages/`) with `getStaticProps` for SSG
-- **Bilingual**: English and Spanish via `next-i18next`. Translations in `public/locales/{en,es}/`
+- **Pages router** (`website/pages/`) with `getStaticProps` for SSG
+- **Bilingual**: English and Spanish via `next-i18next`. Translations in `website/public/locales/{en,es}/`
 - **Dark mode**: `next-themes` with Tailwind dark classes
-- **API client**: `lib/api.ts` fetches from the Laravel backend at build time
+- **API client**: `website/lib/api.ts` fetches from the Laravel backend at build time
 - **Styling**: Tailwind CSS 4 (CSS-first `@import "tailwindcss"`, JS config via `@config`) with the typography and forms plugins. Prettier plugin for class sorting.
 - **SVG system**: Custom SVGO config adds dark mode class variants automatically based on layer naming
 
@@ -44,6 +47,14 @@ Personal website and blog (alfonsobries.com) with a **Next.js frontend** and a *
 - Next.js fetches at build time via `getStaticProps` and generates static pages
 - Draft articles viewable via secret preview URLs (`/secret/[secret]/posts/[slug]`)
 - Contact form POSTs directly to the API, which sends Telegram notifications
+
+## Environment variables
+
+`website/` and `api/` each keep their own `.env`, gitignored and never shared between them. A few values must stay in sync by hand — check both `.env.example` files when changing one:
+
+- `SECRET_PREFIX` (`website/.env`) and `SECRET_PREFIX` (`api/.env`) — must match; it gates the draft-preview URLs
+- `API_URL` (`website/.env`) and `APP_URL` (`api/.env`) — each points at the other service
+- `FRONT_URL` (`api/.env`) — points at the frontend's public URL
 
 ---
 
