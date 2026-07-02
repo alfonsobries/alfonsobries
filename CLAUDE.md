@@ -58,6 +58,7 @@ Personal website and blog (alfonsobries.com), split into top-level projects:
 - **Expo Router** (`app/src/app/`) with a file-based routes tree
 - **Styling**: NativeWind v4 (Tailwind classes) with semantic tokens from `app/tokens.json`
 - **API access**: routes are consumed by their Laravel name. `pnpm routes:generate` runs `php artisan ziggy:generate` in `api/` and writes a typed route map to `app/src/api/ziggy.gen.{js,d.ts}` (committed). `ApiRouterProvider` exposes `useApiRouter()` → `route('api.status')`, which resolves an absolute URL against `EXPO_PUBLIC_API_URL`; requests go through the axios client in `app/src/api/client.ts`
+- **Auth**: Sign in with Apple only. `AuthProvider` (`app/src/api/auth.tsx`) exchanges the Apple identity token at `POST /api/auth/apple` for a Sanctum bearer token, persisted in `expo-secure-store`. The root layout gates routes with `Stack.Protected`: the `login` welcome screen when signed out, the `(app)` tab group when signed in. Credential setup: `docs/apple-sign-in.md`
 
 ### Key Data Flow
 - Laravel API serves content (articles, projects, resume) from a database
@@ -73,6 +74,7 @@ Personal website and blog (alfonsobries.com), split into top-level projects:
 - `API_URL` (`website/.env`) and `APP_URL` (`api/.env`) — each points at the other service
 - `FRONT_URL` (`api/.env`) — points at the frontend's public URL
 - `EXPO_PUBLIC_API_URL` (`app/.env`) — the API base URL (including `/api`) the mobile app calls; `start-mobile.sh` sets it to the local API's LAN IP
+- `APPLE_CLIENT_ID` (`api/.env`) — the iOS bundle identifier Apple identity tokens are verified against (defaults to `com.alfonsobries.app`); see `docs/apple-sign-in.md`
 
 ---
 
