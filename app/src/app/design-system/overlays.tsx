@@ -1,3 +1,4 @@
+import { Button as MenuButton, ContextMenu, Host, RNHostView } from '@expo/ui/swift-ui';
 import { router, Stack } from 'expo-router';
 import { ReactNode, useState } from 'react';
 import { ActionSheetIOS, ScrollView, Text, View } from 'react-native';
@@ -65,6 +66,35 @@ export default function Overlays() {
             </Button>
             {lastAction ? <Text className="text-sm text-foreground">Selected: {lastAction}</Text> : null}
           </View>
+        </Section>
+
+        <Section title="Context menu">
+          <Text className="text-sm text-muted">Long-press the card for native quick actions.</Text>
+          <Host matchContents>
+            <ContextMenu>
+              <ContextMenu.Items>
+                <MenuButton label="Edit" systemImage="pencil" onPress={() => setLastAction('Edit')} />
+                <MenuButton label="Archive" systemImage="archivebox" onPress={() => setLastAction('Archive')} />
+                <MenuButton
+                  label="Delete"
+                  systemImage="trash"
+                  role="destructive"
+                  onPress={() => setLastAction('Delete')}
+                />
+              </ContextMenu.Items>
+              <ContextMenu.Trigger>
+                <RNHostView matchContents>
+                  <View className="w-full flex-row items-center gap-3 rounded-2xl bg-surface p-3">
+                    <View className="size-12 rounded-xl bg-surface-selected" />
+                    <View className="flex-1">
+                      <Text className="text-base font-semibold text-foreground">Water filter</Text>
+                      <Text className="text-sm text-muted">Replace every 3 months</Text>
+                    </View>
+                  </View>
+                </RNHostView>
+              </ContextMenu.Trigger>
+            </ContextMenu>
+          </Host>
         </Section>
       </ScrollView>
     </>
