@@ -26,3 +26,13 @@ those are pre-rendered to PNGs:
   `scripts/generate-tab-icons.mjs`, then re-run.
 - Output is square, so icons never stretch. Point `NativeTabs.Trigger.Icon` at
   the PNG with `renderingMode="template"` so the OS tints it.
+
+## Avatar / brand art
+
+Alfonso's likeness, available as SVGs in `assets/` for in-app use (about
+screens, empty states, headers…):
+
+- `me.svg` — full-body avatar.
+- `face.svg` — just the face.
+- `face-simple.svg` — flat, simplified face; the version the app icon is built
+  from.
