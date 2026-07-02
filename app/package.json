@@ -5,6 +5,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~57.0.1",
+    "@react-native-segmented-control/segmented-control": "^2.5.7",
     "expo": "~57.0.1",
     "expo-constants": "~57.0.2",
     "expo-dev-client": "^57.0.4",
@@ -52,6 +53,7 @@
     "lint": "expo lint",
     "tokens:build": "node ./scripts/build-tokens.mjs",
     "icons:tabs": "node ./scripts/generate-tab-icons.mjs",
+    "icons:segments": "node ./scripts/generate-segment-icons.mjs",
     "local:build": "eas build --platform ios --local --profile local --output ./build/dev-client.ipa",
     "local:install": "ios-deploy --bundle ./build/dev-client.ipa"
   },

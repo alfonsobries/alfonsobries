@@ -20,6 +20,11 @@ const CATEGORIES = [
     subtitle: 'Fields, switch, checkbox, radio',
     href: '/design-system/inputs',
   },
+  {
+    title: 'Navigation',
+    subtitle: 'Segmented control',
+    href: '/design-system/navigation',
+  },
 ] as const;
 
 export default function DesignSystemIndex() {
