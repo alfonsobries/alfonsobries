@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-display:
+      Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
+      Segoe UI Symbol, Noto Color Emoji;
+    --font-mono:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+    --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
+    --font-serif: Georgia, 'Times New Roman', serif;
+
+    /* @tokens:light:start */
+    --color-gold-50: 255 249 239;
+    --color-gold-100: 255 238 207;
+    --color-gold-200: 255 215 139;
+    --color-gold-300: 241 197 112;
+    --color-gold-400: 221 174 75;
+    --color-gold-500: 199 149 30;
+    --color-gold-600: 169 124 0;
+    --color-gold-700: 138 101 0;
+    --color-gold-800: 107 77 0;
+    --color-gold-900: 77 54 0;
+    --color-gold-950: 49 33 0;
+    --color-neutral-50: 253 250 245;
+    --color-neutral-100: 243 240 234;
+    --color-neutral-200: 226 223 217;
+    --color-neutral-300: 207 204 197;
+    --color-neutral-400: 185 181 174;
+    --color-neutral-500: 162 158 150;
+    --color-neutral-600: 136 132 125;
+    --color-neutral-700: 111 107 100;
+    --color-neutral-800: 85 82 76;
+    --color-neutral-900: 61 58 53;
+    --color-neutral-950: 38 36 32;
+    --color-success-50: 240 255 242;
+    --color-success-100: 206 255 214;
+    --color-success-200: 174 243 188;
+    --color-success-300: 148 226 164;
+    --color-success-400: 118 204 138;
+    --color-success-500: 88 182 112;
+    --color-success-600: 55 155 85;
+    --color-success-700: 22 129 61;
+    --color-success-800: 0 100 43;
+    --color-success-900: 0 72 29;
+    --color-success-950: 0 45 16;
+    --color-warning-50: 255 249 245;
+    --color-warning-100: 255 236 224;
+    --color-warning-200: 255 214 188;
+    --color-warning-300: 255 187 141;
+    --color-warning-400: 252 155 83;
+    --color-warning-500: 230 128 45;
+    --color-warning-600: 200 103 0;
+    --color-warning-700: 164 83 0;
+    --color-warning-800: 127 63 0;
+    --color-warning-900: 92 44 0;
+    --color-warning-950: 59 26 0;
+    --color-danger-50: 255 248 248;
+    --color-danger-100: 255 235 233;
+    --color-danger-200: 255 212 207;
+    --color-danger-300: 255 183 176;
+    --color-danger-400: 255 147 139;
+    --color-danger-500: 244 111 105;
+    --color-danger-600: 216 81 78;
+    --color-danger-700: 185 55 54;
+    --color-danger-800: 150 29 33;
+    --color-danger-900: 114 4 15;
+    --color-danger-950: 75 0 6;
+    --color-background: 253 250 245;
+    --color-surface: 255 255 255;
+    --color-surface-selected: 243 240 234;
+    --color-foreground: 38 36 32;
+    --color-muted: 111 107 100;
+    --color-border: 226 223 217;
+    --color-primary: 255 215 139;
+    --color-primary-foreground: 38 36 32;
+    --color-primary-emphasis: 138 101 0;
+    --color-primary-emphasis-foreground: 253 250 245;
+    --color-success: 22 129 61;
+    --color-warning: 164 83 0;
+    --color-danger: 185 55 54;
+    /* @tokens:light:end */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      /* @tokens:dark:start */
+      --color-background: 38 36 32;
+      --color-surface: 61 58 53;
+      --color-surface-selected: 85 82 76;
+      --color-foreground: 253 250 245;
+      --color-muted: 162 158 150;
+      --color-border: 85 82 76;
+      --color-primary: 255 215 139;
+      --color-primary-foreground: 38 36 32;
+      --color-primary-emphasis: 241 197 112;
+      --color-primary-emphasis-foreground: 38 36 32;
+      --color-success: 88 182 112;
+      --color-warning: 230 128 45;
+      --color-danger: 244 111 105;
+      /* @tokens:dark:end */
+    }
+  }
+}
