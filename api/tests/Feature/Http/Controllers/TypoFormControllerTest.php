@@ -12,7 +12,7 @@ it('sends a typo notification with the parameters', function () {
 
     Notification::fake();
 
-    $response = $this->postJson(route('typo'), [
+    $response = $this->postJson(route('api.typo'), [
         'post_slug' => $article->slug,
         'message' => 'Hello there!',
         'typo_excerpt' => 'hello world',
@@ -36,7 +36,7 @@ it('validates the typo request', function () {
 
     User::factory()->me()->create();
 
-    $response = $this->postJson(route('typo'), [
+    $response = $this->postJson(route('api.typo'), [
         'post_slug' => 'does-not-exist',
         'message' => '',
         'typo_excerpt' => [],

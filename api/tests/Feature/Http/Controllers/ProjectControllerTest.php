@@ -11,7 +11,7 @@ it('lists all the published projects in order', function () {
 
     $third = Project::factory()->published()->create();
 
-    $response = $this->getJson(route('projects.index'));
+    $response = $this->getJson(route('api.projects.index'));
 
     $response->assertSuccessful();
 

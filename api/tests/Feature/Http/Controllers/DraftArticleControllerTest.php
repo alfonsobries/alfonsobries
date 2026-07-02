@@ -17,7 +17,7 @@ it('lists all the latest unpublished articles slugs', function () {
         'created_at' => now()->subDay(1),
     ]);
 
-    $response = $this->getJson(route('draft_articles.slugs'));
+    $response = $this->getJson(route('api.draft_articles.slugs'));
 
     $response->assertSuccessful();
 
@@ -35,7 +35,7 @@ it('lists all the latest unpublished articles slugs', function () {
 it('returns a non published article', function () {
     $article = Article::factory()->unpublished()->create();
 
-    $response = $this->getJson(route('draft_articles.show', $article));
+    $response = $this->getJson(route('api.draft_articles.show', $article));
 
     $response->assertSuccessful();
 
@@ -46,7 +46,7 @@ it('returns a non published article', function () {
 it('returns 404 for an published article', function () {
     $article = Article::factory()->published()->create();
 
-    $response = $this->getJson(route('draft_articles.show', $article));
+    $response = $this->getJson(route('api.draft_articles.show', $article));
 
     $response->assertNotFound();
 });

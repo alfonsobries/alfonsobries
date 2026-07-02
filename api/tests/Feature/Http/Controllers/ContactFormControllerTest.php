@@ -9,7 +9,7 @@ it('sends a contact form notification with the parameters', function () {
 
     Notification::fake();
 
-    $response = $this->postJson(route('contact'), [
+    $response = $this->postJson(route('api.contact'), [
         'name' => 'Alfonso',
         'email' => 'alfonso@gmail.com',
         'message' => 'Hello there!',
@@ -33,7 +33,7 @@ it('validates the form request', function () {
 
     Notification::fake();
 
-    $response = $this->postJson(route('contact'), [
+    $response = $this->postJson(route('api.contact'), [
         'name' => '',
         'email' => '123456',
         'message' => null,

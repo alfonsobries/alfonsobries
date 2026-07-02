@@ -24,7 +24,8 @@
         "spatie/laravel-medialibrary": "^11.9",
         "spatie/laravel-sluggable": "^4.0",
         "spatie/laravel-translatable": "^6.3",
-        "spatie/nova-translatable": "^4.1"
+        "spatie/nova-translatable": "^4.1",
+        "tightenco/ziggy": "^2.6"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
