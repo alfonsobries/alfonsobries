@@ -3,7 +3,7 @@ import { Switch as NativeSwitch, type SwitchProps } from 'react-native';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 export function Switch(props: SwitchProps) {
-  const on = useThemeColor('primary');
+  const on = useThemeColor('primary-emphasis');
   const off = useThemeColor('surface-selected');
 
   return (

@@ -14,6 +14,7 @@ module.exports = {
   'primary': 'rgb(var(--color-primary) / <alpha-value>)',
   'primary-foreground': 'rgb(var(--color-primary-foreground) / <alpha-value>)',
   'primary-emphasis': 'rgb(var(--color-primary-emphasis) / <alpha-value>)',
+  'primary-emphasis-foreground': 'rgb(var(--color-primary-emphasis-foreground) / <alpha-value>)',
   'success': 'rgb(var(--color-success) / <alpha-value>)',
   'warning': 'rgb(var(--color-warning) / <alpha-value>)',
   'danger': 'rgb(var(--color-danger) / <alpha-value>)',

@@ -17,7 +17,7 @@ const CATEGORIES = [
   },
   {
     title: 'Inputs',
-    subtitle: 'Text field, switch, keyboard handling',
+    subtitle: 'Fields, switch, checkbox, radio',
     href: '/design-system/inputs',
   },
 ] as const;
