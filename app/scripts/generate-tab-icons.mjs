@@ -24,6 +24,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ICONS = {
   home: 'House',
   explore: 'Compass',
+  design: 'Palette',
 };
 
 const LOGICAL_SIZE = 24; // pt — the tab icon's on-screen size
