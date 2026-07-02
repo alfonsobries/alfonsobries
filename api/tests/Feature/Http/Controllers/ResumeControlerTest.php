@@ -9,7 +9,7 @@ it('returns experience, projects and skills', function () {
     ResumeProject::factory()->count(2)->create();
     ResumeExperience::factory()->count(1)->create();
 
-    $response = $this->getJson(route('resume'));
+    $response = $this->getJson(route('api.resume'));
 
     $response->assertSuccessful();
 

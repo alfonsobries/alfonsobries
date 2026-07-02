@@ -16,7 +16,7 @@ it('lists all the latest published articles', function () {
         'published_at' => now()->subDay(1),
     ]);
 
-    $response = $this->getJson(route('articles.index'));
+    $response = $this->getJson(route('api.articles.index'));
 
     $response->assertSuccessful();
 
@@ -43,7 +43,7 @@ it('lists all the latest published articles without pagination if all param is p
         'published_at' => now()->subDay(1),
     ]);
 
-    $response = $this->getJson(route('articles.index', ['all' => true]));
+    $response = $this->getJson(route('api.articles.index', ['all' => true]));
 
     $response->assertSuccessful();
 
@@ -57,7 +57,7 @@ it('lists all the latest published articles without pagination if all param is p
 it('returns a published article', function () {
     $article = Article::factory()->published()->create();
 
-    $response = $this->getJson(route('articles.show', $article));
+    $response = $this->getJson(route('api.articles.show', $article));
 
     $response->assertSuccessful();
 
@@ -68,7 +68,7 @@ it('returns a published article', function () {
 it('returns 400 for an unpublished article', function () {
     $article = Article::factory()->unpublished()->create();
 
-    $response = $this->getJson(route('articles.show', $article));
+    $response = $this->getJson(route('api.articles.show', $article));
 
     $response->assertNotFound();
 });

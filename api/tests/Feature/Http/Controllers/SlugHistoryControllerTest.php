@@ -22,7 +22,7 @@ it('returns all the elements in the slug history with his equivalente element', 
         'title' => 'Article 2 Title 2',
     ]);
 
-    $response = $this->getJson(route('slug-history.index'));
+    $response = $this->getJson(route('api.slug-history.index'));
 
     $response->assertSuccessful();
 

@@ -3,7 +3,9 @@ import { Platform, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIcon } from '@/components/animated-icon';
+import { ApiStatusCard } from '@/components/api-status-card';
 import { HintRow } from '@/components/hint-row';
+import { useStatus } from '@/hooks/use-status';
 
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
@@ -25,15 +27,20 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const { status, isLoading, error, refetch } = useStatus();
+  const greeting = status?.message ?? "Welcome to Alfonso's App";
+
   return (
     <View className="flex-1 flex-row justify-center bg-background">
       <SafeAreaView className="w-full max-w-[800px] flex-1 items-center gap-4 px-6 pb-[66px]">
         <View className="flex-1 items-center justify-center gap-6 px-6">
           <AnimatedIcon />
           <Text className="text-center text-5xl font-semibold leading-[52px] text-foreground">
-            Welcome to&nbsp;Alfonso&apos;s App
+            {greeting}
           </Text>
         </View>
+
+        <ApiStatusCard status={status} isLoading={isLoading} error={error} onRetry={refetch} />
 
         <Text className="font-mono text-xs uppercase text-muted">get started</Text>
 
