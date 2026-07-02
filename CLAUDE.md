@@ -8,6 +8,7 @@ Personal website and blog (alfonsobries.com), split into top-level projects:
 
 - **`website/`** — Next.js frontend
 - **`api/`** — Laravel API backend
+- **`app/`** — Expo (React Native) mobile app
 
 ## Commands
 
@@ -23,6 +24,16 @@ Personal website and blog (alfonsobries.com), split into top-level projects:
 - `./vendor/bin/pest --filter=TestName` — Run a single test
 - `./vendor/bin/pest --coverage` — Run tests with coverage
 - `./vendor/bin/pint` — Format PHP code (Laravel Pint)
+
+### Mobile app (`app/` directory)
+- `pnpm start` — Start the Expo dev server
+- `pnpm typecheck` — TypeScript type checking (`tsc`)
+- `pnpm lint` — Run ESLint (`expo lint`)
+- `pnpm routes:generate` — Regenerate the typed Ziggy route map from the API (run after adding/renaming an `api.*` route)
+
+### Local API + app (repo root)
+- `./start-api.sh [ip]` — Serve the Laravel API; auto-detects the LAN IP (pass one for a physical device, or `127.0.0.1` for local only)
+- `./start-mobile.sh [ip]` — Start Expo pointed at the local API; sets `EXPO_PUBLIC_API_URL` from the same IP
 
 ## Architecture
 
@@ -42,6 +53,11 @@ Personal website and blog (alfonsobries.com), split into top-level projects:
 - **Testing**: Pest PHP with SQLite in-memory DB
 - **Formatting**: Laravel Pint with the Laravel preset
 
+### Mobile app (Expo + React Native + NativeWind)
+- **Expo Router** (`app/src/app/`) with a file-based routes tree
+- **Styling**: NativeWind v4 (Tailwind classes) with semantic tokens from `app/tokens.json`
+- **API access**: routes are consumed by their Laravel name. `pnpm routes:generate` runs `php artisan ziggy:generate` in `api/` and writes a typed route map to `app/src/api/ziggy.gen.{js,d.ts}` (committed). `ApiRouterProvider` exposes `useApiRouter()` → `route('api.status')`, which resolves an absolute URL against `EXPO_PUBLIC_API_URL`; requests go through the axios client in `app/src/api/client.ts`
+
 ### Key Data Flow
 - Laravel API serves content (articles, projects, resume) from a database
 - Next.js fetches at build time via `getStaticProps` and generates static pages
@@ -50,11 +66,12 @@ Personal website and blog (alfonsobries.com), split into top-level projects:
 
 ## Environment variables
 
-`website/` and `api/` each keep their own `.env`, gitignored and never shared between them. A few values must stay in sync by hand — check both `.env.example` files when changing one:
+`website/`, `api/`, and `app/` each keep their own `.env`, gitignored and never shared between them. A few values must stay in sync by hand — check the relevant `.env.example` files when changing one:
 
 - `SECRET_PREFIX` (`website/.env`) and `SECRET_PREFIX` (`api/.env`) — must match; it gates the draft-preview URLs
 - `API_URL` (`website/.env`) and `APP_URL` (`api/.env`) — each points at the other service
 - `FRONT_URL` (`api/.env`) — points at the frontend's public URL
+- `EXPO_PUBLIC_API_URL` (`app/.env`) — the API base URL (including `/api`) the mobile app calls; `start-mobile.sh` sets it to the local API's LAN IP
 
 ---
 
