@@ -31,7 +31,7 @@ export default function HomeScreen() {
         <View className="flex-1 items-center justify-center gap-6 px-6">
           <AnimatedIcon />
           <Text className="text-center text-5xl font-semibold leading-[52px] text-foreground">
-            Welcome to&nbsp;Alfonso Bries
+            Welcome to&nbsp;Alfonso&apos;s App
           </Text>
         </View>
 

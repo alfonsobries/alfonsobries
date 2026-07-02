@@ -52,7 +52,7 @@ export function CustomTabList(props: TabListProps) {
   return (
     <View {...props} className="absolute w-full flex-row items-center justify-center p-4">
       <View className="w-full max-w-[800px] grow flex-row items-center gap-2 rounded-full bg-surface px-8 py-2">
-        <Text className="mr-auto text-sm font-bold text-foreground">Alfonso Bries</Text>
+        <Text className="mr-auto text-sm font-bold text-foreground">Alfonso&apos;s App</Text>
 
         {props.children}
 
