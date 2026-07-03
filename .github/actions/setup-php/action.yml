@@ -5,6 +5,10 @@ inputs:
   working-directory:
     description: Directory holding the composer.json / composer.lock to install.
     required: true
+  github-token:
+    description: Token with read access to the private Composer VCS repositories (Nova).
+    required: false
+    default: ""
 
 runs:
   using: composite
@@ -21,6 +25,11 @@ runs:
         path: ${{ inputs.working-directory }}/vendor
         key: ${{ runner.os }}-composer-${{ hashFiles(format('{0}/composer.lock', inputs.working-directory)) }}
         restore-keys: ${{ runner.os }}-composer-
+
+    - name: Authenticate Composer for private repositories
+      if: inputs.github-token != ''
+      shell: bash
+      run: composer config --global github-oauth.github.com "${{ inputs.github-token }}"
 
     - shell: bash
       working-directory: ${{ inputs.working-directory }}

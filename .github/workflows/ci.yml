@@ -59,6 +59,7 @@ jobs:
       - uses: ./.github/actions/setup-php
         with:
           working-directory: ./api
+          github-token: ${{ secrets.GH_TOKEN }}
       - name: Prepare environment
         run: cp .env.example .env && php artisan key:generate
       - name: Format (Pint)
