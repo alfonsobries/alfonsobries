@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
+    timeout-minutes: 5
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      website: ${{ steps.filter.outputs.website }}
+      app: ${{ steps.filter.outputs.app }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            api:
+              - 'api/**'
+              - '.github/**'
+            website:
+              - 'website/**'
+              - '.github/**'
+            app:
+              - 'app/**'
+              - '.github/**'
+            docs:
+              - '**/*.md'
+              - '.markdownlint-cli2.jsonc'
+              - 'package.json'
+              - '.github/**'
+
+  api:
+    name: API (Laravel)
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ./api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-php
+        with:
+          working-directory: ./api
+      - name: Prepare environment
+        run: cp .env.example .env && php artisan key:generate
+      - name: Format (Pint)
+        run: ./vendor/bin/pint --test
+      - name: Static analysis (PHPStan)
+        run: ./vendor/bin/phpstan analyse --memory-limit=2G
+      - name: Tests (Pest)
+        run: ./vendor/bin/pest
+
+  website:
+    name: Website (Next.js)
+    needs: changes
+    if: needs.changes.outputs.website == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ./website
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          working-directory: ./website
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Lint
+        run: pnpm lint
+      - name: Format check
+        run: pnpm format:check
+
+  app:
+    name: App (Expo)
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: ./app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          working-directory: ./app
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Lint
+        run: pnpm lint
+      - name: Format check
+        run: pnpm format:check
+
+  docs:
+    name: Docs (Markdown)
+    needs: changes
+    if: needs.changes.outputs.docs == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-pnpm
+        with:
+          working-directory: .
+      - name: Format check
+        run: pnpm format:docs:check
+      - name: Lint markdown
+        run: pnpm lint:docs
