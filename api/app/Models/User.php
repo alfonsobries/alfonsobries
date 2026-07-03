@@ -43,4 +43,24 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isAlfonso(): bool
+    {
+        return $this->matchesFamilyAppleId(config('site.family.alfonso_apple_id'));
+    }
+
+    public function isSaida(): bool
+    {
+        return $this->matchesFamilyAppleId(config('site.family.saida_apple_id'));
+    }
+
+    public function isFamilyMember(): bool
+    {
+        return $this->isAlfonso() || $this->isSaida();
+    }
+
+    private function matchesFamilyAppleId(?string $appleId): bool
+    {
+        return $appleId !== null && $this->apple_id === $appleId;
+    }
 }
