@@ -3,29 +3,36 @@
 use App\Models\User;
 
 beforeEach(function () {
-    config()->set('site.family', [
-        ['key' => 'alfonso', 'name' => 'Alfonso', 'apple_id' => 'apple-sub-alfonso'],
-        ['key' => 'saida', 'name' => 'Saida', 'apple_id' => 'apple-sub-saida'],
-    ]);
+    config()->set('site.family.alfonso_apple_id', 'apple-sub-alfonso');
+    config()->set('site.family.saida_apple_id', 'apple-sub-saida');
 });
 
-it('resolves the family key from the apple sub', function () {
-    $user = User::factory()->make(['apple_id' => 'apple-sub-saida']);
+it('recognizes Alfonso by his apple sub', function () {
+    $user = User::factory()->make(['apple_id' => 'apple-sub-alfonso']);
 
-    expect($user->family_key)->toBe('saida');
+    expect($user->isAlfonso())->toBeTrue();
+    expect($user->isSaida())->toBeFalse();
     expect($user->isFamilyMember())->toBeTrue();
 });
 
-it('has no family key for an unknown apple sub', function () {
+it('recognizes Saida by her apple sub', function () {
+    $user = User::factory()->make(['apple_id' => 'apple-sub-saida']);
+
+    expect($user->isSaida())->toBeTrue();
+    expect($user->isAlfonso())->toBeFalse();
+    expect($user->isFamilyMember())->toBeTrue();
+});
+
+it('treats an unknown apple sub as not a family member', function () {
     $user = User::factory()->make(['apple_id' => 'apple-sub-stranger']);
 
-    expect($user->family_key)->toBeNull();
     expect($user->isFamilyMember())->toBeFalse();
 });
 
-it('has no family key without an apple sub', function () {
+it('never matches when the apple sub is null', function () {
+    config()->set('site.family.alfonso_apple_id', null);
     $user = User::factory()->make(['apple_id' => null]);
 
-    expect($user->family_key)->toBeNull();
+    expect($user->isAlfonso())->toBeFalse();
     expect($user->isFamilyMember())->toBeFalse();
 });

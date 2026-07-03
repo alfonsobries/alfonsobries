@@ -27,27 +27,25 @@ class UserSeeder extends Seeder
             ]);
         }
 
-        $this->seedFamilyMembers();
+        $this->seedFamilyMember('Alfonso', config('site.family.alfonso_apple_id'));
+        $this->seedFamilyMember('Saida', config('site.family.saida_apple_id'));
     }
 
     /**
-     * Create the known family members from `site.family` so their Apple sub is
-     * linked to a name before they ever sign in. Idempotent across seeds.
+     * Link an Apple sub to a name before they ever sign in. Idempotent.
      */
-    private function seedFamilyMembers(): void
+    private function seedFamilyMember(string $name, ?string $appleId): void
     {
-        foreach (config('site.family') as $member) {
-            if (empty($member['apple_id'])) {
-                continue;
-            }
-
-            User::firstOrCreate(
-                ['apple_id' => $member['apple_id']],
-                [
-                    'name' => $member['name'] ?? 'Friend',
-                    'password' => bcrypt(Str::random(40)),
-                ],
-            );
+        if (! $appleId) {
+            return;
         }
+
+        User::firstOrCreate(
+            ['apple_id' => $appleId],
+            [
+                'name' => $name,
+                'password' => bcrypt(Str::random(40)),
+            ],
+        );
     }
 }
