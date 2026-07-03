@@ -28,9 +28,9 @@ class TypoNotification extends Notification implements ShouldQueue
      * Get the notification's delivery channels.
      *
      * @param  mixed  $notifiable
-     * @return array
+     * @return array<int, string>
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         return ['mail', 'database', 'telegram'];
     }
@@ -39,17 +39,17 @@ class TypoNotification extends Notification implements ShouldQueue
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @return MailMessage
      */
     public function toMail($notifiable)
     {
         $message = (new MailMessage)
-                    ->subject($this->subject())
-                    ->greeting($this->subject())
-                    ->line($this->getHtmlableLine('<strong>Article Title:</strong> '.$this->article->title))
-                    ->line($this->getHtmlableLine('<strong>Article Slug:</strong> '.$this->article->slug))
-                    ->line($this->getHtmlableLine('<strong>Message:</strong>'))
-                    ->line($this->getHtmlableLine(nl2br($this->message)));
+            ->subject($this->subject())
+            ->greeting($this->subject())
+            ->line($this->getHtmlableLine('<strong>Article Title:</strong> '.$this->article->title))
+            ->line($this->getHtmlableLine('<strong>Article Slug:</strong> '.$this->article->slug))
+            ->line($this->getHtmlableLine('<strong>Message:</strong>'))
+            ->line($this->getHtmlableLine(nl2br($this->message)));
 
         if ($this->excerpt) {
             $message->line($this->getHtmlableLine('<strong>Message:</strong>'))
@@ -57,7 +57,7 @@ class TypoNotification extends Notification implements ShouldQueue
         }
 
         return $message->action('Edit Article', $this->editUrl())
-                    ->line($this->getHtmlableLine(sprintf('<p style="text-align: center"><a href="%s">View Article</a></p>', $this->viewUrl())));
+            ->line($this->getHtmlableLine(sprintf('<p style="text-align: center"><a href="%s">View Article</a></p>', $this->viewUrl())));
     }
 
     public function subject(): string
@@ -75,7 +75,7 @@ class TypoNotification extends Notification implements ShouldQueue
         return sprintf('%s/posts/%s', config('site.site_url'), $this->article->slug);
     }
 
-    public function getHtmlableLine($html): Htmlable
+    public function getHtmlableLine(string $html): Htmlable
     {
         return new class($html) implements Htmlable
         {
@@ -95,9 +95,9 @@ class TypoNotification extends Notification implements ShouldQueue
      * Get the array representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return array
+     * @return array<string, mixed>
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         return [
             'type' => 'contact-form',
@@ -109,7 +109,7 @@ class TypoNotification extends Notification implements ShouldQueue
         ];
     }
 
-    public function toTelegram($notifiable)
+    public function toTelegram(mixed $notifiable): TelegramMessage
     {
         $markdown = <<<'MARKDOWN'
 *%s*

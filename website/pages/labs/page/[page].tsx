@@ -5,7 +5,7 @@ export default Labs;
 
 export { getStaticProps };
 
-export async function getStaticPaths({ locales }) {
+export async function getStaticPaths({ locales }: { locales: string[] }) {
   const pagination = await getProjects({
     page: 1,
     perPage: PROJECTS_PER_PAGE,
@@ -13,7 +13,7 @@ export async function getStaticPaths({ locales }) {
 
   const pages = Array.from(
     { length: pagination.last_page },
-    (_, i) => i + 1
+    (_, i) => i + 1,
   ).slice(1);
 
   return {

@@ -83,7 +83,7 @@ export default function Index({
           <span className="prose flex items-center space-x-2 font-sans text-xl font-normal uppercase">
             <strong>Alfonso Bribiesca</strong>{" "}
             <span className="text-sm text-gray-200">●</span>
-            <span className="uppercase text-gray-500">Personal Resume</span>
+            <span className="text-gray-500 uppercase">Personal Resume</span>
           </span>
         </div>
 
@@ -92,7 +92,7 @@ export default function Index({
         </Link>
       </div>
 
-      <div className="relative z-0 mx-auto flex max-w-4xl flex-row space-x-8 space-y-0 px-4 pb-8 pt-0">
+      <div className="relative z-0 mx-auto flex max-w-4xl flex-row space-y-0 space-x-8 px-4 pt-0 pb-8">
         <div className="max-w-lg space-y-4">
           <ResumeSection title="Experience" icon={<Briefcase />}>
             <div className="space-y-4">
@@ -106,7 +106,7 @@ export default function Index({
         </div>
         <div className="flex flex-1 flex-col">
           <ResumeSection
-            className="mb-8 mt-0"
+            className="mt-0 mb-8"
             title="Contact Information"
             icon={<Contact />}
             noMargin
@@ -184,7 +184,7 @@ export default function Index({
 
       <PageBreak />
 
-      <div className="relative z-0 mx-auto flex max-w-4xl flex-row space-x-8 space-y-0 px-4 pb-8 pt-0">
+      <div className="relative z-0 mx-auto flex max-w-4xl flex-row space-y-0 space-x-8 px-4 pt-0 pb-8">
         <div className="max-w-lg space-y-4">
           <ResumeSection
             title="Open Source &amp; Personal Projects"
@@ -297,9 +297,9 @@ export const getStaticProps = async () => {
 
   const education = experience.filter((item) => item.type === "education");
 
-  const skillsExpert: SkillGroup = skills
+  const skillsExpert = skills
     .filter((item) => item.level === "expert")
-    .reduce(
+    .reduce<SkillGroup>(
       (acc, item) => {
         acc[item.category].push(item);
         return acc;
@@ -308,12 +308,12 @@ export const getStaticProps = async () => {
         framework: [],
         language: [],
         other: [],
-      }
+      },
     );
 
-  const skillsAdvanced: SkillGroup = skills
+  const skillsAdvanced = skills
     .filter((item) => item.level === "advanced")
-    .reduce(
+    .reduce<SkillGroup>(
       (acc, item) => {
         acc[item.category].push(item);
         return acc;
@@ -322,7 +322,7 @@ export const getStaticProps = async () => {
         framework: [],
         language: [],
         other: [],
-      }
+      },
     );
 
   return {

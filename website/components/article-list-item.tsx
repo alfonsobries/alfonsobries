@@ -34,7 +34,7 @@ const ArticleListItem: React.FC<{
 
       <p className="flex items-center justify-between">
         <span className="flex items-center space-x-2 text-xs text-gray-500">
-          <span className="font-mono uppercase tracking-wider">
+          <span className="font-mono tracking-wider uppercase">
             <DateFormatter dateString={post.published_at} locale={locale} />
           </span>
           <span className="hidden text-xs text-gray-300 sm:inline dark:text-gray-700">
@@ -43,14 +43,14 @@ const ArticleListItem: React.FC<{
           <ReadTime
             t={t}
             content={post.body}
-            className="hidden font-mono uppercase tracking-wider sm:inline"
+            className="hidden font-mono tracking-wider uppercase sm:inline"
           />
         </span>
 
         <span
           className={classNames(
             LINK_COLOR_TEXT,
-            "relative z-10 text-sm transition-transform duration-200 ease-out group-hover:translate-x-1"
+            "relative z-10 text-sm transition-transform duration-200 ease-out group-hover:translate-x-1",
           )}
         >
           {t("common:read_more")} →

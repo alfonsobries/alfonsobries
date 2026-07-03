@@ -33,7 +33,7 @@ const PageHeader: React.FC<{
               {
                 "flex-col sm:flex-row": !small,
                 "flex-row": small,
-              }
+              },
             )}
           >
             {small ? (
@@ -57,8 +57,8 @@ const PageHeader: React.FC<{
                   onReady={onReady}
                 />
 
-                <div className="mt-4 w-full sm:ml-4 sm:mt-0 sm:w-auto sm:grow sm:space-y-4">
-                  <p className="whitespace-nowrap text-center font-cursive text-6xl font-bold text-gray-900 sm:text-left dark:text-gray-300">
+                <div className="mt-4 w-full sm:mt-0 sm:ml-4 sm:w-auto sm:grow sm:space-y-4">
+                  <p className="font-cursive text-center text-6xl font-bold whitespace-nowrap text-gray-900 sm:text-left dark:text-gray-300">
                     {t("common:hello_im")}{" "}
                     <span className="relative inline-block">
                       Alfonso
@@ -84,10 +84,10 @@ const PageHeader: React.FC<{
 
             <SwitchButton
               className={classNames(
-                " flex w-10 items-center justify-center p-1",
+                "flex w-10 items-center justify-center p-1",
                 {
-                  "absolute right-0 top-0": !small,
-                }
+                  "absolute top-0 right-0": !small,
+                },
               )}
             />
           </div>

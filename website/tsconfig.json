@@ -3,15 +3,11 @@
     "target": "ES2022",
     "module": "esnext",
     "jsx": "react-jsx",
-    "strict": false,
+    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "noEmit": true,
     "moduleResolution": "bundler",
@@ -19,12 +15,6 @@
     "isolatedModules": true,
     "incremental": true
   },
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ]
+  "exclude": ["node_modules"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }

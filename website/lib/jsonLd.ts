@@ -93,7 +93,9 @@ export const blogPostingSchema = ({
   description: post.meta_description || post.excerpt,
   image: `https://og.alfonsobries.com/${encodeURIComponent(post.title)}.png`,
   datePublished: post.published_at,
-  dateModified: (post as unknown as { updated_at?: string }).updated_at || post.published_at,
+  dateModified:
+    (post as unknown as { updated_at?: string }).updated_at ||
+    post.published_at,
   inLanguage: locale,
   mainEntityOfPage: {
     "@type": "WebPage",

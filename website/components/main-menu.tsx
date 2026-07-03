@@ -99,7 +99,7 @@ type Props = {
   navigationTitle?: string | React.ReactNode;
   useLightLogo?: boolean;
   maxWidthClass?: string;
-  hreflangUrl: string;
+  hreflangUrl?: string;
   t: TFunction;
 };
 
@@ -123,6 +123,10 @@ const MainMenu = ({
 
     const nav = navRef.current;
 
+    if (nav === null) {
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([e]) => {
         setIsSticky(e.intersectionRatio < 1);
@@ -130,7 +134,7 @@ const MainMenu = ({
       {
         rootMargin: "-1px 0px 0px 0px",
         threshold: [1],
-      }
+      },
     );
 
     observer.observe(nav);
@@ -148,7 +152,7 @@ const MainMenu = ({
 
   const showDropdownMenu = useMemo(
     () => useDropdownMenu && menuOpened,
-    [menuOpened, useDropdownMenu]
+    [menuOpened, useDropdownMenu],
   );
 
   const renderMenuLink = ({
@@ -180,14 +184,14 @@ const MainMenu = ({
             [`${BORDER_COLOR} border-t py-3`]: useDropdownMenu,
             "font-semibold":
               useDropdownMenu && typeof link.label !== "function" && selected,
-          }
+          },
         )}
       >
         {typeof link.label === "function"
           ? link.label({ locale, t })
           : index === 0 && menuOpened
-          ? "Home"
-          : link.label}
+            ? "Home"
+            : link.label}
       </Link>
     );
   };
@@ -202,14 +206,14 @@ const MainMenu = ({
         {
           "overflow-auto border-transparent shadow-xs print:shadow-none":
             isSticky,
-          "mx-auto before:absolute before:-my-1 before:hidden before:h-14 before:w-5 before:bg-linear-to-r before:from-white before:to-white/0 before:content-[''] after:absolute after:right-0 after:top-0 after:-my-1 after:hidden after:h-14 after:w-5 after:bg-linear-to-l after:from-white after:to-white/0 after:content-[''] sm:before:block sm:after:block dark:before:from-gray-900 dark:before:to-gray-900/0 dark:after:from-gray-900 dark:after:to-gray-900/0":
+          "mx-auto before:absolute before:-my-1 before:hidden before:h-14 before:w-5 before:bg-linear-to-r before:from-white before:to-white/0 before:content-[''] after:absolute after:top-0 after:right-0 after:-my-1 after:hidden after:h-14 after:w-5 after:bg-linear-to-l after:from-white after:to-white/0 after:content-[''] sm:before:block sm:after:block dark:before:from-gray-900 dark:before:to-gray-900/0 dark:after:from-gray-900 dark:after:to-gray-900/0":
             !isSticky,
           "fixed h-screen w-screen bg-white dark:bg-gray-900": showDropdownMenu,
           "sticky bg-white/70 shadow-xs ring-1 ring-black/5 backdrop-blur-lg dark:bg-gray-900/80 dark:ring-white/10":
             !showDropdownMenu && isSticky,
           "sticky bg-white/30 backdrop-blur-lg dark:bg-gray-900/80":
             !showDropdownMenu && !isSticky,
-        }
+        },
       )}
     >
       <div
@@ -220,7 +224,7 @@ const MainMenu = ({
           {
             hidden: !isSticky,
             "mx-auto px-4": isSticky,
-          }
+          },
         )}
       >
         <div className="relative flex items-center space-x-3 overflow-auto">
@@ -241,23 +245,23 @@ const MainMenu = ({
             )}
           </Link>
 
-          <span className="truncate font-cursive text-2xl font-bold text-gray-900 dark:text-gray-300">
+          <span className="font-cursive truncate text-2xl font-bold text-gray-900 dark:text-gray-300">
             {navigationTitle || t("common:site_title")}
           </span>
         </div>
 
         <div className="flex items-center print:hidden">
           <Link
-            href={hreflangUrl}
+            href={hreflangUrl ?? "#"}
             locale={router.locale === "en" ? "es" : "en"}
             lang={router.locale}
             hrefLang={router.locale === "en" ? "es" : "en"}
             className={cn(
-              "flex h-full items-center space-x-1 whitespace-nowrap px-2 text-blue-700 dark:text-blue-200",
+              "flex h-full items-center space-x-1 px-2 whitespace-nowrap text-blue-700 dark:text-blue-200",
               {
                 "px-2": !useDropdownMenu,
                 [`${BORDER_COLOR} py-3`]: useDropdownMenu,
-              }
+              },
             )}
           >
             <span className="text-sm font-semibold">
@@ -290,7 +294,7 @@ const MainMenu = ({
                 {
                   "-translate-y-1": !menuOpened,
                   "translate-y-[2px] rotate-45": menuOpened,
-                }
+                },
               )}
             ></span>
             <span
@@ -299,7 +303,7 @@ const MainMenu = ({
                 {
                   "translate-y-1": !menuOpened,
                   "-rotate-45": menuOpened,
-                }
+                },
               )}
             ></span>
           </button>
@@ -346,7 +350,7 @@ const MainMenu = ({
                   {
                     "px-2": !useDropdownMenu,
                     [`${BORDER_COLOR} border-t py-3`]: useDropdownMenu,
-                  }
+                  },
                 )}
               >
                 <span className="text-xs">
@@ -377,7 +381,7 @@ const MainMenu = ({
             BORDER_COLOR,
             {
               hidden: !isSticky,
-            }
+            },
           )}
         >
           <a

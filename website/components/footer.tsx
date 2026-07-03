@@ -21,7 +21,7 @@ const Footer = ({ t }: { t: TFunction }) => {
         <div
           className={classNames(
             BORDER_COLOR,
-            "mt-8 flex flex-col space-y-4 border-t py-8 "
+            "mt-8 flex flex-col space-y-4 border-t py-8",
           )}
         >
           <div className="mb-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
@@ -55,7 +55,7 @@ const Footer = ({ t }: { t: TFunction }) => {
               <Link
                 href={urls.about({ locale } as { locale: LocaleCode })}
                 className={
-                  "text-gray-900  hover:text-gray-800 hover:underline dark:text-gray-300 dark:hover:text-gray-200"
+                  "text-gray-900 hover:text-gray-800 hover:underline dark:text-gray-300 dark:hover:text-gray-200"
                 }
                 rel="noreferrer"
               >

@@ -13,8 +13,8 @@ const ResumeProject = ({
 }) => {
   return (
     <div className={classNames("space-y-4", className)}>
-      <div className="prose relative flex flex-col before:absolute before:inset-0 before:-ml-8 before:block before:h-full before:w-1 before:border-r before:border-gray-100 before:content-[''] dark:prose-invert dark:before:border-gray-800">
-        <h4 className="mb-0 justify-start uppercase text-black dark:text-gray-200">
+      <div className="prose dark:prose-invert relative flex flex-col before:absolute before:inset-0 before:-ml-8 before:block before:h-full before:w-1 before:border-r before:border-gray-100 before:content-[''] dark:before:border-gray-800">
+        <h4 className="mb-0 justify-start text-black uppercase dark:text-gray-200">
           {title}
         </h4>
 
@@ -23,8 +23,8 @@ const ResumeProject = ({
           className="text-sm"
         />
 
-        <div className="relative flex items-center text-sm text-gray-400 ">
-          <span className="absolute inset-0 -ml-11 -mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-gray-900">
+        <div className="relative flex items-center text-sm text-gray-400">
+          <span className="absolute inset-0 -mt-1 -ml-11 flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-gray-900">
             <LinkIcon className="h-4 w-4" />
           </span>
           <a

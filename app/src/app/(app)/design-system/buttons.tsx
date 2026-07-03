@@ -21,7 +21,8 @@ export default function Buttons() {
       <ScrollView
         className="flex-1 bg-background"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerClassName="gap-8 p-4">
+        contentContainerClassName="gap-8 p-4"
+      >
         <Section title="Variants">
           <View className="items-start gap-3">
             <Button onPress={() => {}}>Primary</Button>

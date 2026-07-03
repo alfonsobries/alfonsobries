@@ -19,7 +19,7 @@ const USERNAME = "alfonsobries";
 const getPostWithOnlyProperties = (
   post: Post,
   properties: PostProperties = [],
-  locale: LocaleCode
+  locale: LocaleCode,
 ): FilteredPost => {
   const newPost: FilteredPost = {
     slugs: post.slug as unknown as Record<LocaleCode, string>,
@@ -47,7 +47,7 @@ const getPostWithOnlyProperties = (
 export async function getPostBySlug(
   slug: string,
   properties: PostProperties = [],
-  locale: LocaleCode
+  locale: LocaleCode,
 ): Promise<FilteredPost> {
   const { data: post } = await Api.get(`/articles/${slug}`, {
     headers: {
@@ -62,7 +62,7 @@ export async function getDraftPostBySlug(
   slug: string,
   secretPath: string,
   properties: PostProperties = [],
-  locale: LocaleCode
+  locale: LocaleCode,
 ): Promise<FilteredPost> {
   const { data: post } = await Api.get(`/${secretPath}/articles/${slug}`, {
     headers: {
@@ -80,39 +80,42 @@ export async function getAllPosts(
     limit?: number;
     page?: number;
   },
-  locale: LocaleCode
+  locale: LocaleCode,
 ) {
   const queryString =
     params === undefined
       ? ""
       : "?" +
-        Object.keys(params)
-          .map((key) => `${key}=${params[key]}`)
+        Object.entries(params)
+          .map(([key, value]) => `${key}=${value}`)
           .join("&");
 
   const { data: posts } = await Api.get(`/articles${queryString}`);
 
   if (params.all) {
-    return posts.map((post) =>
-      getPostWithOnlyProperties(post, properties, locale)
+    return posts.map((post: Post) =>
+      getPostWithOnlyProperties(post, properties, locale),
     );
   }
 
   return {
     ...posts,
-    data: posts.data.map((post) => {
+    data: posts.data.map((post: Post) => {
       return getPostWithOnlyProperties(post, properties, locale);
     }),
   };
 }
 
-export async function getSlugs() {
+export async function getSlugs(): Promise<Record<LocaleCode, string>[]> {
   const { data: posts } = await Api.get(`/articles?all=true`);
 
-  return posts.map((post) => post.slug);
+  // The API returns each slug as a { en, es } translatable map for path generation.
+  return posts.map((post: { slug: Record<LocaleCode, string> }) => post.slug);
 }
 
-export async function getAllDraftPostsSlugs(secretPath: string) {
+export async function getAllDraftPostsSlugs(
+  secretPath: string,
+): Promise<Record<LocaleCode, string>[]> {
   const { data: slugs } = await Api.get(`/${secretPath}/articles/slugs`);
 
   return slugs;
@@ -149,13 +152,13 @@ export async function getResumeData() {
   const experience = await Promise.all(
     data.experience.map(async (item) => {
       return parseExperience(item);
-    })
+    }),
   );
 
   const projects = await Promise.all(
     data.projects.map(async (item) => {
       return parseResumeProject(item);
-    })
+    }),
   );
 
   const skills = data.skills;
@@ -192,7 +195,7 @@ export async function getProjects({
   const projects = await Promise.all(
     data.map(async (item) => {
       return parseProject(item);
-    })
+    }),
   );
 
   const total = projects.length;
@@ -246,7 +249,7 @@ const parseGithubContributions = (weeks: ContributionWeeks) => {
       const month = new Date(
         firstDay.getFullYear(),
         firstDay.getMonth(),
-        1
+        1,
       ).getTime();
 
       const groupedByDayOfWeek = week.contributionDays.reduce(
@@ -256,7 +259,7 @@ const parseGithubContributions = (weeks: ContributionWeeks) => {
         },
         {} as {
           [key: number]: ContributionDay;
-        }
+        },
       );
 
       if (!acc[month]) {
@@ -269,7 +272,7 @@ const parseGithubContributions = (weeks: ContributionWeeks) => {
     },
     {} as {
       [key: number]: any[];
-    }
+    },
   );
 
   // Sorts by key date
@@ -283,7 +286,7 @@ const parseGithubContributions = (weeks: ContributionWeeks) => {
       },
       {} as {
         [key: number]: any[];
-      }
+      },
     );
 };
 

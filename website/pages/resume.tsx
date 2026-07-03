@@ -81,16 +81,16 @@ export default function Resume({
       <Layout
         pinned={true}
         navigationTitle={
-          <span className="prose inline-flex items-center space-x-2 font-sans font-normal dark:prose-invert">
+          <span className="prose dark:prose-invert inline-flex items-center space-x-2 font-sans font-normal">
             <strong>
               Alfonso{" "}
-              <span className="hidden print:inline sm:inline">Bribiesca</span>
+              <span className="hidden sm:inline print:inline">Bribiesca</span>
             </strong>{" "}
             <span className="text-sm text-gray-200 dark:text-gray-700">●</span>
             <span className="text-gray-500">
               {locale === "en" ? (
                 <>
-                  <span className="hidden print:inline sm:inline">
+                  <span className="hidden sm:inline print:inline">
                     Personal
                   </span>{" "}
                   Resume
@@ -101,7 +101,7 @@ export default function Resume({
             </span>
             <div className="flex items-center">
               <span
-                className={`sm:border-l ${BORDER_COLOR}  ml-2 block h-5 sm:mr-4 sm:ml-2`}
+                className={`sm:border-l ${BORDER_COLOR} ml-2 block h-5 sm:mr-4 sm:ml-2`}
               ></span>
               <a
                 href="https://api.alfonsobries.com/api/resume/pdf"
@@ -124,7 +124,7 @@ export default function Resume({
             yearsOfExperience,
           }),
           image: `https://og.alfonsobries.com/${encodeURIComponent(
-            t("common:resume.meta_title")
+            t("common:resume.meta_title"),
           )}.png`,
         }}
         hreflangUrl={urls.resume({
@@ -132,8 +132,8 @@ export default function Resume({
         })}
         t={t}
       >
-        <div className="relative z-0 mx-auto flex max-w-4xl flex-col space-y-8 px-4 pb-8 print:flex-row print:space-x-8 print:space-y-0 print:pt-0 sm:flex-row sm:space-x-8 sm:space-y-0">
-          <div className="space-y-8 print:max-w-md print:space-y-4 sm:max-w-sm md:max-w-md lg:max-w-lg">
+        <div className="relative z-0 mx-auto flex max-w-4xl flex-col space-y-8 px-4 pb-8 sm:flex-row sm:space-y-0 sm:space-x-8 print:flex-row print:space-y-0 print:space-x-8 print:pt-0">
+          <div className="space-y-8 sm:max-w-sm md:max-w-md lg:max-w-lg print:max-w-md print:space-y-4">
             <ResumeSection
               title={t("common:resume.experience")}
               icon={<Briefcase />}
@@ -181,7 +181,7 @@ export default function Resume({
                   <ResumeExperience
                     {...item}
                     key={item.id}
-                    className={index > 0 && "print:hidden"}
+                    className={index > 0 ? "print:hidden" : undefined}
                   />
                 ))}
 
@@ -197,9 +197,9 @@ export default function Resume({
               </div>
             </ResumeSection>
           </div>
-          <div className="flex flex-1 flex-col-reverse print:flex-col sm:flex-col">
+          <div className="flex flex-1 flex-col-reverse sm:flex-col print:flex-col">
             <ResumeSection
-              className="mt-8 print:mt-0 print:mb-8 sm:mt-0 sm:mb-8"
+              className="mt-8 sm:mt-0 sm:mb-8 print:mt-0 print:mb-8"
               title={t("common:resume.contact_information")}
               icon={<Contact />}
               noMargin
@@ -303,7 +303,7 @@ export default function Resume({
                 icon={<Dna />}
                 noMargin
               >
-                <div className="prose text-sm dark:prose-invert ">
+                <div className="prose dark:prose-invert text-sm">
                   <LineClamp>
                     <p className="line-clamp-6 print:line-clamp-none">
                       {locale === "en" ? (
@@ -353,7 +353,7 @@ export default function Resume({
   );
 }
 
-export const getStaticProps = async ({ locale }) => {
+export const getStaticProps = async ({ locale }: { locale: string }) => {
   const [{ experience, projects, skills }, githubContributions] =
     await Promise.all([getResumeData(), getGithubContributions()]);
 
@@ -361,9 +361,9 @@ export const getStaticProps = async ({ locale }) => {
 
   const education = experience.filter((item) => item.type === "education");
 
-  const skillsExpert: SkillGroup = skills
+  const skillsExpert = skills
     .filter((item) => item.level === "expert")
-    .reduce(
+    .reduce<SkillGroup>(
       (acc, item) => {
         acc[item.category].push(item);
         return acc;
@@ -372,12 +372,12 @@ export const getStaticProps = async ({ locale }) => {
         framework: [],
         language: [],
         other: [],
-      }
+      },
     );
 
-  const skillsAdvanced: SkillGroup = skills
+  const skillsAdvanced = skills
     .filter((item) => item.level === "advanced")
-    .reduce(
+    .reduce<SkillGroup>(
       (acc, item) => {
         acc[item.category].push(item);
         return acc;
@@ -386,7 +386,7 @@ export const getStaticProps = async ({ locale }) => {
         framework: [],
         language: [],
         other: [],
-      }
+      },
     );
 
   return {

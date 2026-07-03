@@ -3,7 +3,8 @@
 namespace App\Models;
 
 use App\Models\Traits\ExpiresFrontend;
-use Illuminate\Database\Eloquent\Builder;
+use Database\Factories\ProjectFactory;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,12 +21,18 @@ use Spatie\Translatable\HasTranslations;
 class Project extends Model implements HasMedia, Sortable
 {
     use ExpiresFrontend;
+
+    /** @use HasFactory<ProjectFactory> */
     use HasFactory;
+
     use HasTranslations;
     use InteractsWithMedia;
     use SoftDeletes;
     use SortableTrait;
 
+    /**
+     * @var list<string>
+     */
     public $translatable = [
         'description',
         'title',
@@ -52,6 +59,9 @@ class Project extends Model implements HasMedia, Sortable
         'html',
     ];
 
+    /**
+     * @var array<string, mixed>
+     */
     public $sortable = [
         'order_column_name' => 'sort_order',
         'sort_when_creating' => true,
@@ -65,7 +75,7 @@ class Project extends Model implements HasMedia, Sortable
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<string>
+     * @var list<string>
      */
     protected $fillable = [
         'title',

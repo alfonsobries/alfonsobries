@@ -23,7 +23,8 @@ export default function GithubHeatmap({
   };
 }) {
   const months = Object.keys(githubContributions).filter(
-    (month, index) => index > 7 && githubContributions[month].length > 2
+    (month, index) =>
+      index > 7 && githubContributions[Number(month)].length > 2,
   );
 
   return (
@@ -36,10 +37,10 @@ export default function GithubHeatmap({
               "print:hidden": index <= 0,
             })}
             style={{
-              flex: githubContributions[month].length,
+              flex: githubContributions[Number(month)].length,
             }}
           >
-            <span className="truncate px-2 text-xs font-semibold uppercase text-gray-400 dark:text-gray-500 ">
+            <span className="truncate px-2 text-xs font-semibold text-gray-400 uppercase dark:text-gray-500">
               {formatMonth(month)}
             </span>
             <div className="flex">
@@ -50,7 +51,7 @@ export default function GithubHeatmap({
                     className="mt-2 flex flex-1 flex-col"
                   >
                     {Object.keys(
-                      githubContributions[Number(month)][Number(week)]
+                      githubContributions[Number(month)][Number(week)],
                     ).map((day) => {
                       return (
                         <div key={`${month}:${week}:${day}`} className="p-0.5">
@@ -78,12 +79,12 @@ export default function GithubHeatmap({
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
                                   ContributionLevel.THIRD_QUARTILE,
-                                "bg-blue-900  dark:bg-gray-100":
+                                "bg-blue-900 dark:bg-gray-100":
                                   githubContributions[Number(month)][
                                     Number(week)
                                   ][Number(day)].contributionLevel ===
                                   ContributionLevel.FOURTH_QUARTILE,
-                              }
+                              },
                             )}
                           ></div>
                         </div>

@@ -17,7 +17,8 @@ Keeping the focused input visible when the on-screen keyboard opens.
   automaticallyAdjustKeyboardInsets
   keyboardDismissMode="interactive"
   keyboardShouldPersistTaps="handled"
-  contentInsetAdjustmentBehavior="automatic">
+  contentInsetAdjustmentBehavior="automatic"
+>
   {/* fields */}
 </ScrollView>
 ```

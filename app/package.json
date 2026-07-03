@@ -46,6 +46,9 @@
     "eas-cli": "^20.5.1",
     "eslint": "^9.39.4",
     "eslint-config-expo": "~57.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.4",
+    "prettier-plugin-tailwindcss": "^0.8.0",
     "react-native-svg-transformer": "^1.5.3",
     "svgo": "^4.0.1",
     "typescript": "~6.0.3"
@@ -58,6 +61,8 @@
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "routes:generate": "node ./scripts/generate-routes.mjs",
     "tokens:build": "node ./scripts/build-tokens.mjs",
     "icons:tabs": "node ./scripts/generate-tab-icons.mjs",

@@ -1,0 +1,12 @@
+node_modules/
+.expo/
+.expo/types/
+dist/
+build/
+android/
+ios/
+pnpm-lock.yaml
+assets/
+src/api/ziggy.gen.js
+src/api/ziggy.gen.d.ts
+src/constants/colors.gen.ts

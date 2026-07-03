@@ -47,11 +47,13 @@ function RadioGroupRow({
       accessibilityState={{ selected, disabled }}
       disabled={disabled}
       onPress={onPress}
-      className={`flex-row items-center gap-3 ${disabled ? 'opacity-50' : 'active:opacity-70'}`}>
+      className={`flex-row items-center gap-3 ${disabled ? 'opacity-50' : 'active:opacity-70'}`}
+    >
       <View
         className={`size-6 items-center justify-center rounded-full border-2 ${
           selected ? 'border-primary-emphasis' : 'border-border'
-        }`}>
+        }`}
+      >
         {selected ? <View className="size-3 rounded-full bg-primary-emphasis" /> : null}
       </View>
       <Text className="flex-1 text-base text-foreground">{label}</Text>

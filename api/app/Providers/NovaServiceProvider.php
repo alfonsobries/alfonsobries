@@ -5,8 +5,10 @@ namespace App\Providers;
 use App\Nova\Dashboards\Main;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Fortify\Features;
+use Laravel\Nova\Dashboard;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
+use Laravel\Nova\Tool;
 use Spatie\NovaTranslatable\Translatable;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
@@ -68,7 +70,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     /**
      * Get the dashboards that should be listed in the Nova sidebar.
      *
-     * @return array
+     * @return array<int, Dashboard>
      */
     protected function dashboards()
     {
@@ -80,7 +82,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     /**
      * Get the tools that should be listed in the Nova sidebar.
      *
-     * @return array
+     * @return array<int, Tool>
      */
     public function tools()
     {

@@ -7,7 +7,11 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        mono: platformSelect({ ios: 'ui-monospace', android: 'monospace', default: 'var(--font-mono)' }),
+        mono: platformSelect({
+          ios: 'ui-monospace',
+          android: 'monospace',
+          default: 'var(--font-mono)',
+        }),
       },
       colors: require('./tailwind.tokens.cjs'),
     },

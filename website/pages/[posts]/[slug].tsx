@@ -93,7 +93,7 @@ export async function getStaticProps({ params, locale }: Params) {
   const post = await getPostBySlug(
     params.slug,
     ["title", "meta_description", "excerpt", "body", "published_at", "slug"],
-    locale
+    locale,
   );
 
   const content = await markdownToHtml(post.body || "");
@@ -107,7 +107,7 @@ export async function getStaticProps({ params, locale }: Params) {
   };
 }
 
-export async function getStaticPaths({ locales }) {
+export async function getStaticPaths({ locales }: { locales: LocaleCode[] }) {
   const slugs = await getSlugs();
 
   return {

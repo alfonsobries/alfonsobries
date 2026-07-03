@@ -21,7 +21,7 @@ const ResumeContactItem = ({
       <a
         className={classNames(
           LINK_COLOR_TEXT,
-          "inline-flex items-center space-x-2"
+          "inline-flex items-center space-x-2",
         )}
         href={link}
         target={external ? "_blank" : undefined}

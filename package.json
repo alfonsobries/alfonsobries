@@ -1,0 +1,14 @@
+{
+  "name": "alfonsobries-monorepo",
+  "private": true,
+  "scripts": {
+    "format:docs": "prettier --write \"**/*.md\"",
+    "format:docs:check": "prettier --check \"**/*.md\"",
+    "lint:docs": "markdownlint-cli2",
+    "lint:docs:fix": "markdownlint-cli2 --fix"
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "^0.18.1",
+    "prettier": "^3.9.4"
+  }
+}

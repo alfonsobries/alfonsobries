@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * @return LengthAwarePaginator<int, Article>|Collection<int, Article>
+     */
+    public function index(Request $request): LengthAwarePaginator|Collection
     {
         $query = Article::published()->latest('published_at');
 
@@ -18,7 +23,7 @@ class ArticleController extends Controller
         return $query->paginate($request->get('limit', 10));
     }
 
-    public function show(Article $article)
+    public function show(Article $article): Article
     {
         if (! $article->isPublished()) {
             abort(404);

@@ -38,8 +38,8 @@ const ResumeSection = ({
 
           <h3
             className={classNames(
-              "mb-0 flex flex-1 items-center border-b text-xl uppercase text-gray-800 dark:text-gray-200",
-              BORDER_COLOR
+              "mb-0 flex flex-1 items-center border-b text-xl text-gray-800 uppercase dark:text-gray-200",
+              BORDER_COLOR,
             )}
           >
             <span>{title}</span>

@@ -104,7 +104,7 @@ export const getStaticProps = async ({ params, locale }: Params) => {
       limit: POST_PER_PAGE,
       ...params,
     },
-    locale
+    locale,
   );
 
   return {

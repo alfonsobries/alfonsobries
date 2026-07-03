@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class ContactFormController extends Controller
 {
-    public function __invoke(Request $request)
+    public function __invoke(Request $request): void
     {
         $this->validate($request, [
             'name' => 'required|max:255',

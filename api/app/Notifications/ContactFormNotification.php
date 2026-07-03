@@ -27,9 +27,9 @@ class ContactFormNotification extends Notification implements ShouldQueue
      * Get the notification's delivery channels.
      *
      * @param  mixed  $notifiable
-     * @return array
+     * @return array<int, string>
      */
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         return ['mail', 'database', 'telegram'];
     }
@@ -38,17 +38,17 @@ class ContactFormNotification extends Notification implements ShouldQueue
      * Get the mail representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
+     * @return MailMessage
      */
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject($this->subject())
-                    ->greeting($this->subject())
-                    ->line($this->getHtmlableLine('<strong>Name:</strong> '.$this->name))
-                    ->line($this->getHtmlableLine('<strong>Email:</strong> '.$this->email))
-                    ->line($this->getHtmlableLine('<strong>Message:</strong>'))
-                    ->line($this->getHtmlableLine(nl2br($this->message)));
+            ->subject($this->subject())
+            ->greeting($this->subject())
+            ->line($this->getHtmlableLine('<strong>Name:</strong> '.$this->name))
+            ->line($this->getHtmlableLine('<strong>Email:</strong> '.$this->email))
+            ->line($this->getHtmlableLine('<strong>Message:</strong>'))
+            ->line($this->getHtmlableLine(nl2br($this->message)));
     }
 
     public function subject(): string
@@ -56,7 +56,7 @@ class ContactFormNotification extends Notification implements ShouldQueue
         return 'Alfonso Website Contact Form';
     }
 
-    public function getHtmlableLine($html): Htmlable
+    public function getHtmlableLine(string $html): Htmlable
     {
         return new class($html) implements Htmlable
         {
@@ -76,9 +76,9 @@ class ContactFormNotification extends Notification implements ShouldQueue
      * Get the array representation of the notification.
      *
      * @param  mixed  $notifiable
-     * @return array
+     * @return array<string, mixed>
      */
-    public function toArray($notifiable)
+    public function toArray($notifiable): array
     {
         return [
             'type' => 'contact-form',
@@ -90,7 +90,7 @@ class ContactFormNotification extends Notification implements ShouldQueue
         ];
     }
 
-    public function toTelegram($notifiable)
+    public function toTelegram(mixed $notifiable): TelegramMessage
     {
         // // Response is an array of updates.
         // $updates = TelegramUpdates::create()
@@ -115,9 +115,9 @@ class ContactFormNotification extends Notification implements ShouldQueue
 
         return TelegramMessage::create()
                     // Optional recipient user id.
-                    ->to(config('services.telegram-bot-api.chat_id'))
+            ->to(config('services.telegram-bot-api.chat_id'))
                     // Markdown supported.
-                    ->content(sprintf(<<<'MARKDOWN'
+            ->content(sprintf(<<<'MARKDOWN'
 *%s*
 
 *Name:* %s

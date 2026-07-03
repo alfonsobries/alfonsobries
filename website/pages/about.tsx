@@ -168,7 +168,7 @@ export default function About() {
   );
 }
 
-export const getStaticProps = async ({ locale }) => {
+export const getStaticProps = async ({ locale }: { locale: string }) => {
   return {
     props: {
       ...(await serverSideTranslations(locale)),

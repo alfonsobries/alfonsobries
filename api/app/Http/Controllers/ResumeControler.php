@@ -5,11 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\ResumeExperience;
 use App\Models\ResumeProject;
 use App\Models\ResumeSkill;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Spatie\Browsershot\Browsershot;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ResumeControler extends Controller
 {
+    /**
+     * @return array{
+     *     experience: Collection<int, ResumeExperience>,
+     *     projects: Collection<int, ResumeProject>,
+     *     skills: Collection<int, ResumeSkill>,
+     * }
+     */
     public function __invoke(): array
     {
         return [
@@ -19,7 +28,7 @@ class ResumeControler extends Controller
         ];
     }
 
-    public function pdf()
+    public function pdf(): BinaryFileResponse
     {
         if ($this->shouldGeneratePdf()) {
             Browsershot::url(config('site.site_url').'/resume/print')
@@ -40,7 +49,7 @@ class ResumeControler extends Controller
         return response()->download(storage_path('alfonso.bribiesca.resume.pdf'));
     }
 
-    private function shouldGeneratePdf()
+    private function shouldGeneratePdf(): bool
     {
         return ! file_exists(storage_path('alfonso.bribiesca.resume.pdf')) || Cache::has(config('site.expireResumeKey'));
     }

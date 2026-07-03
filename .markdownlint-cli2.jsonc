@@ -1,0 +1,27 @@
+{
+  "config": {
+    "default": true,
+    // Line length — prose wraps freely, prettier owns wrapping.
+    "MD013": false,
+    // Inline HTML is used in some docs.
+    "MD033": false,
+    // Emphasis-as-heading is intentional in a few places.
+    "MD036": false,
+    // First line need not be a top-level heading.
+    "MD041": false,
+    // Repeated sibling headings are fine across sections.
+    "MD024": false,
+    // Fenced blocks without a language are allowed.
+    "MD040": false
+  },
+  "globs": ["**/*.md"],
+  "ignores": [
+    "**/node_modules/**",
+    "api/vendor/**",
+    "app/**",
+    "website/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/CHANGELOG.md"
+  ]
+}

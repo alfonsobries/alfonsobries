@@ -1,13 +1,6 @@
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as SecureStore from 'expo-secure-store';
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 
 import { apiClient } from './client';
 import { useApiRouter } from './router';
@@ -101,11 +94,14 @@ export function AuthProvider({ children }: AuthProviderProperties): ReactNode {
       ? [credential.fullName.givenName, credential.fullName.familyName].filter(Boolean).join(' ')
       : undefined;
 
-    const { data } = await apiClient.post<{ token: string; user: AuthUser }>(route('api.auth.apple'), {
-      id_token: credential.identityToken,
-      name: name || undefined,
-      email: credential.email ?? undefined,
-    });
+    const { data } = await apiClient.post<{ token: string; user: AuthUser }>(
+      route('api.auth.apple'),
+      {
+        id_token: credential.identityToken,
+        name: name || undefined,
+        email: credential.email ?? undefined,
+      },
+    );
 
     await SecureStore.setItemAsync(TOKEN_KEY, data.token);
     setAuthHeader(data.token);

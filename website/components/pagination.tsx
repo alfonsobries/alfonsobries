@@ -44,7 +44,7 @@ const Pagination = ({
     <nav
       className={classNames(
         BORDER_COLOR,
-        "mt-8 flex items-center justify-between border-t pt-8"
+        "mt-8 flex items-center justify-between border-t pt-8",
       )}
       aria-label={t("pagination:pagination")}
     >
@@ -63,7 +63,7 @@ const Pagination = ({
             href={prevPageUrl}
             className={classNames(
               LINK_COLOR_TEXT,
-              "relative inline-flex items-center hover:underline"
+              "relative inline-flex items-center hover:underline",
             )}
           >
             ← {t("pagination:previous")}
@@ -72,7 +72,7 @@ const Pagination = ({
           <span
             className={classNames(
               LINK_COLOR_TEXT_DISABLED,
-              "relative inline-flex items-center text-sm"
+              "relative inline-flex items-center text-sm",
             )}
           >
             ← {t("pagination:previous")}
@@ -84,7 +84,7 @@ const Pagination = ({
             href={nextPageUrl}
             className={classNames(
               LINK_COLOR_TEXT,
-              "relative inline-flex items-center hover:underline"
+              "relative inline-flex items-center hover:underline",
             )}
           >
             {t("pagination:next")} →
@@ -93,7 +93,7 @@ const Pagination = ({
           <span
             className={classNames(
               LINK_COLOR_TEXT_DISABLED,
-              "relative inline-flex items-center text-sm"
+              "relative inline-flex items-center text-sm",
             )}
           >
             {t("pagination:next")} →

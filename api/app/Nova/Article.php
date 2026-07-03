@@ -6,17 +6,22 @@ namespace App\Nova;
 
 use App\Models\Article as Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\MergeValue;
 use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Markdown;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Resource;
+use Laravel\Nova\Resource as NovaResource;
 use Spatie\NovaTranslatable\Translatable;
 
-final class Article extends Resource
+/**
+ * @extends NovaResource<Model>
+ */
+final class Article extends NovaResource
 {
     /**
      * The model the resource corresponds to.
@@ -35,7 +40,7 @@ final class Article extends Resource
     /**
      * The columns that should be searched.
      *
-     * @var array
+     * @var array<int, string>
      */
     public static $search = [
         'id', 'title', 'body',
@@ -44,9 +49,9 @@ final class Article extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @return array
+     * @return array<int, Field|MergeValue>
      */
-    public function fields(NovaRequest $request)
+    public function fields(NovaRequest $request): array
     {
         return [
             ID::make()->sortable(),
@@ -82,9 +87,11 @@ final class Article extends Resource
             Image::make('Banner', 'banner')
                 ->rules('image')
                 ->store(function ($request, $model) {
-                    $model
-                        ->addMedia($request->file('banner'))
-                        ->toMediaCollection('banner');
+                    if ($model instanceof Model) {
+                        $model
+                            ->addMedia($request->file('banner'))
+                            ->toMediaCollection('banner');
+                    }
 
                     return [];
                 })

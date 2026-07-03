@@ -6,18 +6,23 @@ namespace App\Nova;
 
 use App\Models\Project as Model;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\MergeValue;
 use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Markdown;
 use Laravel\Nova\Fields\MultiSelect;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Resource;
+use Laravel\Nova\Resource as NovaResource;
 use Outl1ne\NovaSortable\Traits\HasSortableRows;
 use Spatie\NovaTranslatable\Translatable;
 
-final class Project extends Resource
+/**
+ * @extends NovaResource<Model>
+ */
+final class Project extends NovaResource
 {
     use HasSortableRows;
 
@@ -38,7 +43,7 @@ final class Project extends Resource
     /**
      * The columns that should be searched.
      *
-     * @var array
+     * @var array<int, string>
      */
     public static $search = [
         'id', 'title', 'description',
@@ -47,9 +52,9 @@ final class Project extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @return array
+     * @return array<int, Field|MergeValue>
      */
-    public function fields(NovaRequest $request)
+    public function fields(NovaRequest $request): array
     {
         return [
             ID::make()->sortable(),
@@ -71,9 +76,11 @@ final class Project extends Resource
             Image::make('Banner', 'banner')
                 ->rules('image')
                 ->store(function ($request, $model) {
-                    $model
-                        ->addMedia($request->file('banner'))
-                        ->toMediaCollection('banner');
+                    if ($model instanceof Model) {
+                        $model
+                            ->addMedia($request->file('banner'))
+                            ->toMediaCollection('banner');
+                    }
 
                     return [];
                 })

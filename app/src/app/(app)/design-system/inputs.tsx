@@ -38,7 +38,8 @@ export default function Inputs() {
         automaticallyAdjustKeyboardInsets
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
-        contentContainerClassName="gap-8 p-4">
+        contentContainerClassName="gap-8 p-4"
+      >
         <Section title="Text field">
           <Input label="Item name" placeholder="e.g. Water filter" />
         </Section>
@@ -52,7 +53,12 @@ export default function Inputs() {
         </Section>
 
         <Section title="Error">
-          <Input label="Email" placeholder="you@example.com" defaultValue="not an email" error="Enter a valid email" />
+          <Input
+            label="Email"
+            placeholder="you@example.com"
+            defaultValue="not an email"
+            error="Enter a valid email"
+          />
         </Section>
 
         <Section title="Disabled">
@@ -78,7 +84,11 @@ export default function Inputs() {
         </Section>
 
         <Section title="Radio">
-          <RadioGroup value={frequency} onChange={setFrequency} options={[...REMINDER_FREQUENCIES]} />
+          <RadioGroup
+            value={frequency}
+            onChange={setFrequency}
+            options={[...REMINDER_FREQUENCIES]}
+          />
         </Section>
       </ScrollView>
     </>

@@ -3,7 +3,12 @@ import { useCallback, useEffect, useRef } from "react";
 
 // Estado de un eje del resorte: posición actual y velocidad.
 type SpringAxis = { value: number; velocity: number };
-type EyeState = { x: SpringAxis; y: SpringAxis; targetX: number; targetY: number };
+type EyeState = {
+  x: SpringAxis;
+  y: SpringAxis;
+  targetX: number;
+  targetY: number;
+};
 
 const createEyeState = (): EyeState => ({
   x: { value: 0, velocity: 0 },
@@ -40,11 +45,15 @@ export function useEyes() {
   const MAX_MOVE = 8; // Desplazamiento máximo del iris (unidades del viewBox)
 
   // Integra un eje del resorte hacia su objetivo en un paso de tiempo dt.
-  const stepSpring = useCallback((axis: SpringAxis, target: number, dt: number) => {
-    const force = -STIFFNESS * (axis.value - target) - DAMPING * axis.velocity;
-    axis.velocity += force * dt;
-    axis.value += axis.velocity * dt;
-  }, []);
+  const stepSpring = useCallback(
+    (axis: SpringAxis, target: number, dt: number) => {
+      const force =
+        -STIFFNESS * (axis.value - target) - DAMPING * axis.velocity;
+      axis.velocity += force * dt;
+      axis.value += axis.velocity * dt;
+    },
+    [],
+  );
 
   // Loop de animación: acerca cada iris a su objetivo cuadro a cuadro.
   const animate = useCallback(
@@ -68,19 +77,19 @@ export function useEyes() {
       if (irisLeftRef.current) {
         irisLeftRef.current.setAttribute(
           "transform",
-          `translate(${left.x.value.toFixed(2)}, ${left.y.value.toFixed(2)})`
+          `translate(${left.x.value.toFixed(2)}, ${left.y.value.toFixed(2)})`,
         );
       }
       if (irisRightRef.current) {
         irisRightRef.current.setAttribute(
           "transform",
-          `translate(${right.x.value.toFixed(2)}, ${right.y.value.toFixed(2)})`
+          `translate(${right.x.value.toFixed(2)}, ${right.y.value.toFixed(2)})`,
         );
       }
 
       rafRef.current = requestAnimationFrame(animate);
     },
-    [stepSpring]
+    [stepSpring],
   );
 
   const ensureLoop = useCallback(() => {
@@ -92,14 +101,19 @@ export function useEyes() {
 
   // Aplica un objetivo directo (sin animar) — para reduced motion.
   const snapTo = useCallback(
-    (eye: EyeState, targetX: number, targetY: number, iris: SVGPathElement | null) => {
+    (
+      eye: EyeState,
+      targetX: number,
+      targetY: number,
+      iris: SVGPathElement | null,
+    ) => {
       eye.x.value = targetX;
       eye.x.velocity = 0;
       eye.y.value = targetY;
       eye.y.velocity = 0;
       iris?.setAttribute("transform", `translate(${targetX}, ${targetY})`);
     },
-    []
+    [],
   );
 
   // Función para actualizar el objetivo de los iris según el mouse.
@@ -127,10 +141,18 @@ export function useEyes() {
 
       const clamp = (v: number) => Math.max(-MAX_MOVE, Math.min(MAX_MOVE, v));
 
-      const targetXLeft = clamp((relativeX - centerLensLeftRef.current.x) * 0.1);
-      const targetYLeft = clamp((relativeY - centerLensLeftRef.current.y) * 0.1);
-      const targetXRight = clamp((relativeX - centerLensRightRef.current.x) * 0.1);
-      const targetYRight = clamp((relativeY - centerLensRightRef.current.y) * 0.1);
+      const targetXLeft = clamp(
+        (relativeX - centerLensLeftRef.current.x) * 0.1,
+      );
+      const targetYLeft = clamp(
+        (relativeY - centerLensLeftRef.current.y) * 0.1,
+      );
+      const targetXRight = clamp(
+        (relativeX - centerLensRightRef.current.x) * 0.1,
+      );
+      const targetYRight = clamp(
+        (relativeY - centerLensRightRef.current.y) * 0.1,
+      );
 
       const left = eyeLeftRef.current;
       const right = eyeRightRef.current;
@@ -149,7 +171,7 @@ export function useEyes() {
 
       ensureLoop();
     },
-    [ensureLoop, snapTo]
+    [ensureLoop, snapTo],
   );
 
   // Función para inicializar o re-inicializar los elementos
@@ -162,10 +184,10 @@ export function useEyes() {
 
     // Seleccionar los elementos
     const lensLeft = svg.querySelector(
-      '[id^="LenteIzquierdo"]'
+      '[id^="LenteIzquierdo"]',
     ) as SVGPathElement;
     const lensRight = svg.querySelector(
-      '[id^="LenteDerecho"]'
+      '[id^="LenteDerecho"]',
     ) as SVGPathElement;
 
     const irisLefts = svg.querySelectorAll('[id^="IrisIzquierdo"]');
@@ -182,7 +204,7 @@ export function useEyes() {
 
     if (!lensLeft || !lensRight || !irisLeft || !irisRight) {
       console.error(
-        "No se encontraron los elementos del SVG con los IDs especificados."
+        "No se encontraron los elementos del SVG con los IDs especificados.",
       );
       return;
     }
@@ -211,11 +233,11 @@ export function useEyes() {
     // cambiado de variante al alternar el tema).
     irisLeft.setAttribute(
       "transform",
-      `translate(${eyeLeftRef.current.x.value.toFixed(2)}, ${eyeLeftRef.current.y.value.toFixed(2)})`
+      `translate(${eyeLeftRef.current.x.value.toFixed(2)}, ${eyeLeftRef.current.y.value.toFixed(2)})`,
     );
     irisRight.setAttribute(
       "transform",
-      `translate(${eyeRightRef.current.x.value.toFixed(2)}, ${eyeRightRef.current.y.value.toFixed(2)})`
+      `translate(${eyeRightRef.current.x.value.toFixed(2)}, ${eyeRightRef.current.y.value.toFixed(2)})`,
     );
   }, []);
 
@@ -234,7 +256,7 @@ export function useEyes() {
       // Listener para el movimiento del mouse
       document.addEventListener("mousemove", moveIris);
     },
-    [initializeEyes, moveIris]
+    [initializeEyes, moveIris],
   );
 
   // Re-inicializar cuando cambie el resolvedTheme

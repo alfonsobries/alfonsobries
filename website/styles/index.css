@@ -1,6 +1,6 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-@config '../tailwind.config.js';
+@config "../tailwind.config.js";
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
@@ -27,7 +27,7 @@
   }
 
   :focus-visible {
-    @apply rounded-xs outline-hidden ring-2 ring-blue-500/60 ring-offset-2 ring-offset-white dark:ring-blue-400/60 dark:ring-offset-gray-900;
+    @apply rounded-xs ring-2 ring-blue-500/60 ring-offset-2 ring-offset-white outline-hidden dark:ring-blue-400/60 dark:ring-offset-gray-900;
   }
 
   ::selection {

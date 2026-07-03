@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Cache;
 
 trait ExpiresResume
 {
-    public static function bootExpiresResume()
+    public static function bootExpiresResume(): void
     {
         static::saved(function ($model) {
             self::markResumeAsExpired();
@@ -17,7 +17,7 @@ trait ExpiresResume
         });
     }
 
-    private static function markResumeAsExpired()
+    private static function markResumeAsExpired(): void
     {
         Cache::set(config('site.expireResumeKey'), true);
     }

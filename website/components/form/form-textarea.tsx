@@ -2,8 +2,12 @@ import React, { useCallback } from "react";
 import { Form } from "@alfonsobries/react-use-form";
 import classNames from "classnames";
 
-type TextareaProps = Omit<React.HTMLProps<HTMLTextAreaElement>, "form"> & {
+type TextareaProps = Omit<
+  React.HTMLProps<HTMLTextAreaElement>,
+  "form" | "name"
+> & {
   form: Form;
+  name: string;
 };
 
 const FormTextarea: React.FC<TextareaProps> = ({
@@ -16,7 +20,7 @@ const FormTextarea: React.FC<TextareaProps> = ({
       form.set(name, event.currentTarget.value);
       form.errors.clear(name);
     },
-    [form, name]
+    [form, name],
   );
 
   return (
@@ -32,7 +36,7 @@ const FormTextarea: React.FC<TextareaProps> = ({
             !form.errors.has(name),
           "border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500 dark:text-red-100":
             form.errors.has(name),
-        }
+        },
       )}
       disabled={form.busy}
       aria-invalid={form.errors.has(name) ? "true" : undefined}

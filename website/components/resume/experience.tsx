@@ -24,8 +24,8 @@ const ResumeExperience = ({
         )}
       </div>
 
-      <div className="prose relative flex flex-col before:absolute before:inset-0 before:-ml-8 before:block before:h-full before:w-1 before:border-r before:border-gray-100 before:content-[''] dark:prose-invert dark:before:border-gray-800">
-        <h4 className="mb-0 justify-start uppercase text-black dark:text-gray-200">
+      <div className="prose dark:prose-invert relative flex flex-col before:absolute before:inset-0 before:-ml-8 before:block before:h-full before:w-1 before:border-r before:border-gray-100 before:content-[''] dark:before:border-gray-800">
+        <h4 className="mb-0 justify-start text-black uppercase dark:text-gray-200">
           {title}
         </h4>
 

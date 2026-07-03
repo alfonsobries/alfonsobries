@@ -40,8 +40,7 @@ const BackgroundLayer = () => {
       points = computePoints();
     };
 
-    const isDark = () =>
-      document.documentElement.classList.contains("dark");
+    const isDark = () => document.documentElement.classList.contains("dark");
 
     const draw = () => {
       const w = window.innerWidth;

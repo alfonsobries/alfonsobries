@@ -12,6 +12,7 @@ return new class extends Migration
         'title',
         'description',
     ];
+
     /**
      * Run the migrations.
      *
