@@ -1,0 +1,11 @@
+name: OTA Update (Production)
+on:
+  push:
+    branches: ['main']
+    paths: ['app/**']
+jobs:
+  send_update:
+    type: update
+    environment: production
+    params:
+      channel: production
