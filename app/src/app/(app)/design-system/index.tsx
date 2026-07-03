@@ -21,6 +21,11 @@ const CATEGORIES = [
     href: '/design-system/cards',
   },
   {
+    title: 'Avatars',
+    subtitle: 'Family avatars, full body and circle, any size',
+    href: '/design-system/avatars',
+  },
+  {
     title: 'Inputs',
     subtitle: 'Fields, switch, checkbox, radio',
     href: '/design-system/inputs',
