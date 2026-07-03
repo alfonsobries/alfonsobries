@@ -14,23 +14,14 @@ export default function HomeScreen() {
   const greeting = firstName ? `Hey ${firstName} 👋` : "Welcome to Alfonso's App";
 
   return (
-    <View className="flex-1 items-center justify-center gap-8 bg-background px-6">
-      <View className="items-center gap-2">
-        <Text className="text-center text-4xl font-semibold leading-tight text-foreground">
-          {greeting}
-        </Text>
-        <Text className="text-center text-lg text-muted">
-          Here&apos;s how everyone&apos;s feeling
-        </Text>
-      </View>
+    <View className="pt-safe-offset-4 flex-1 bg-background px-4">
+      <Text className="text-3xl font-semibold leading-tight text-foreground">{greeting}</Text>
+      <Text className="mt-1 text-base text-muted">Here&apos;s how everyone&apos;s feeling</Text>
 
       {status === 'loading' ? (
-        <ActivityIndicator />
+        <ActivityIndicator className="mt-8" />
       ) : (
-        <Animated.View
-          entering={FadeIn.duration(500)}
-          className="flex-row items-end justify-center gap-4"
-        >
+        <Animated.View entering={FadeIn.duration(500)} className="mt-5 flex-row gap-3">
           {members.map((member) => (
             <MoodCard key={member.family_member} member={member} />
           ))}
@@ -48,10 +39,10 @@ function MoodCard({ member }: { member: MoodMember }) {
       accessibilityRole="button"
       accessibilityLabel={`${firstName} feels ${moodLabel(member.mood).toLowerCase()}`}
       onPress={() => router.push(`/mood?member=${member.family_member}`)}
-      className="items-center gap-2 rounded-3xl px-2 py-3 active:opacity-80"
+      className="flex-1 items-center gap-2 rounded-3xl bg-surface px-3 pb-4 pt-5 active:opacity-80"
     >
-      <MoodAvatar member={member.family_member} mood={member.mood} width={140} height={184} />
-      <Text className="text-xl font-semibold text-foreground">{firstName}</Text>
+      <MoodAvatar member={member.family_member} mood={member.mood} width={120} height={158} />
+      <Text className="text-lg font-semibold text-foreground">{firstName}</Text>
       <Text className="text-sm text-muted">{moodLabel(member.mood)}</Text>
     </Pressable>
   );
