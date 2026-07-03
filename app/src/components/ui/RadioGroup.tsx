@@ -51,10 +51,10 @@ function RadioGroupRow({
     >
       <View
         className={`size-6 items-center justify-center rounded-full border-2 ${
-          selected ? 'border-primary-emphasis' : 'border-border'
+          selected ? 'border-primary' : 'border-border'
         }`}
       >
-        {selected ? <View className="size-3 rounded-full bg-primary-emphasis" /> : null}
+        {selected ? <View className="size-3 rounded-full bg-primary" /> : null}
       </View>
       <Text className="flex-1 text-base text-foreground">{label}</Text>
     </Pressable>

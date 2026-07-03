@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { useColorScheme } from 'nativewind';
 import { ReactNode, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -16,11 +17,26 @@ const STATUSES = [
   { label: 'Paused', value: 'paused' },
 ] as const;
 
-const VIEWS = [
-  { value: 'list', icon: require('@/assets/images/segmentIcons/list.png') },
-  { value: 'grid', icon: require('@/assets/images/segmentIcons/grid.png') },
-  { value: 'chart', icon: require('@/assets/images/segmentIcons/chart.png') },
-] as const;
+// The native control bakes the segment image color. `glyphDark` reads on light
+// surfaces and on the gold selected fill; `glyphLight` reads on the dark-mode
+// track. The selected segment always uses the dark glyph; unselected follows
+// the scheme.
+const VIEW_ICONS = {
+  list: {
+    glyphDark: require('@/assets/images/segmentIcons/list.png'),
+    glyphLight: require('@/assets/images/segmentIcons/list-dark.png'),
+  },
+  grid: {
+    glyphDark: require('@/assets/images/segmentIcons/grid.png'),
+    glyphLight: require('@/assets/images/segmentIcons/grid-dark.png'),
+  },
+  chart: {
+    glyphDark: require('@/assets/images/segmentIcons/chart.png'),
+    glyphLight: require('@/assets/images/segmentIcons/chart-dark.png'),
+  },
+} as const;
+
+const VIEW_VALUES = ['list', 'grid', 'chart'] as const;
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -32,9 +48,16 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export default function Navigation() {
+  const { colorScheme } = useColorScheme();
   const [period, setPeriod] = useState<(typeof PERIODS)[number]['value']>('week');
   const [status, setStatus] = useState<(typeof STATUSES)[number]['value']>('active');
-  const [view, setView] = useState<(typeof VIEWS)[number]['value']>('list');
+  const [view, setView] = useState<(typeof VIEW_VALUES)[number]>('list');
+
+  const viewOptions = VIEW_VALUES.map((value) => ({
+    value,
+    icon: VIEW_ICONS[value][colorScheme === 'dark' ? 'glyphLight' : 'glyphDark'],
+    iconSelected: VIEW_ICONS[value].glyphDark,
+  }));
 
   return (
     <>
@@ -53,7 +76,7 @@ export default function Navigation() {
         </Section>
 
         <Section title="With icons">
-          <SegmentedControl value={view} onChange={setView} options={[...VIEWS]} />
+          <SegmentedControl value={view} onChange={setView} options={viewOptions} />
         </Section>
       </ScrollView>
     </>
