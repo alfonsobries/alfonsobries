@@ -36,3 +36,12 @@ it('never matches when the apple sub is null', function () {
     expect($user->isAlfonso())->toBeFalse();
     expect($user->isFamilyMember())->toBeFalse();
 });
+
+it('exposes the family member as a serialized attribute', function () {
+    expect(User::factory()->make(['apple_id' => 'apple-sub-alfonso'])->toArray())
+        ->toHaveKey('family_member', 'alfonso');
+    expect(User::factory()->make(['apple_id' => 'apple-sub-saida'])->toArray())
+        ->toHaveKey('family_member', 'saida');
+    expect(User::factory()->make(['apple_id' => 'apple-sub-stranger'])->toArray())
+        ->toHaveKey('family_member', null);
+});
