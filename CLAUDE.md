@@ -69,8 +69,11 @@ and local dev — see [`commands.md`](commands.md).
 
 ### Mobile app (Expo + React Native + NativeWind)
 
+**Purpose**: a private, growing set of utilities for Alfonso and his family (not a public product) — e.g. shared expenses, tools for the kids.
+
 - **Expo Router** (`app/src/app/`) with a file-based routes tree
 - **Styling**: NativeWind v4 (Tailwind classes) with semantic tokens from `app/tokens.json`
+- **Art**: family avatars and brand art live in `app/assets/`; `app/.claude/agents/icons.md` says which file is whose
 - **API access**: routes are consumed by their Laravel name. `pnpm routes:generate` runs `php artisan ziggy:generate` in `api/` and writes a typed route map to `app/src/api/ziggy.gen.{js,d.ts}` (committed). `ApiRouterProvider` exposes `useApiRouter()` → `route('api.status')`, which resolves an absolute URL against `EXPO_PUBLIC_API_URL`; requests go through the axios client in `app/src/api/client.ts`
 - **Auth**: Sign in with Apple only. `AuthProvider` (`app/src/api/auth.tsx`) exchanges the Apple identity token at `POST /api/auth/apple` for a Sanctum bearer token, persisted in `expo-secure-store`. The root layout gates routes with `Stack.Protected`: the `login` welcome screen when signed out, the `(app)` tab group when signed in. Credential setup: `docs/apple-sign-in.md`
 - **OTA updates**: `runtimeVersion` in `app/app.json` is a fixed manual string; OTA updates only reach builds on the same runtime. ⚠️ **Any native-layer change MUST bump `runtimeVersion` in the same change, then rebuild + submit** — otherwise the OTA ships JS the installed binary can't run and it crashes. Native change = adding/removing/upgrading a native module, editing `plugins`/`ios`/`android` in `app.json`, changing the Expo SDK, or native entitlements/permissions. JS/asset-only changes ship over OTA to the same runtime — no bump. Details in [`commands.md`](commands.md).
