@@ -51,7 +51,8 @@ export default function LoginScreen() {
               accessibilityRole="button"
               disabled={busy}
               onPress={handleAppleSignIn}
-              className={`h-[52px] flex-row items-center justify-center gap-2 rounded-full bg-neutral-950 ${busy ? 'opacity-60' : 'active:opacity-80'}`}>
+              className={`h-[52px] flex-row items-center justify-center gap-2 rounded-full bg-neutral-950 ${busy ? 'opacity-60' : 'active:opacity-80'}`}
+            >
               {busy ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (

@@ -29,10 +29,13 @@ export function SettingsRow({
       accessibilityRole="button"
       disabled={disabled}
       onPress={onPress}
-      className={`flex-row items-center gap-3 px-4 py-3.5 ${disabled ? '' : 'active:bg-surface-selected'}`}>
+      className={`flex-row items-center gap-3 px-4 py-3.5 ${disabled ? '' : 'active:bg-surface-selected'}`}
+    >
       {Glyph ? <Glyph size={22} color={iconTint} weight="regular" /> : null}
 
-      <Text className={`flex-1 text-base ${destructive ? 'font-medium text-danger' : 'text-foreground'}`}>
+      <Text
+        className={`flex-1 text-base ${destructive ? 'font-medium text-danger' : 'text-foreground'}`}
+      >
         {label}
       </Text>
 

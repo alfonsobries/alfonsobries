@@ -40,7 +40,12 @@ function RootNavigator() {
           <Stack.Screen name="login" />
         </Stack.Protected>
       </Stack>
-      <EasUpdatePill status={update.status} onRestart={update.applyUpdate} onDismiss={update.dismissUpdate} dismissed={update.dismissed} />
+      <EasUpdatePill
+        status={update.status}
+        onRestart={update.applyUpdate}
+        onDismiss={update.dismissUpdate}
+        dismissed={update.dismissed}
+      />
     </>
   );
 }

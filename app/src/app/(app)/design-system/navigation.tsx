@@ -42,7 +42,8 @@ export default function Navigation() {
       <ScrollView
         className="flex-1 bg-background"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerClassName="gap-8 p-4">
+        contentContainerClassName="gap-8 p-4"
+      >
         <Section title="Segmented control">
           <SegmentedControl value={period} onChange={setPeriod} options={[...PERIODS]} />
         </Section>

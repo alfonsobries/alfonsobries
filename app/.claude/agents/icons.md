@@ -10,7 +10,7 @@ Import the icon by name and set `size`, `color`, and `weight`:
 ```tsx
 import { CaretRight } from 'phosphor-react-native';
 
-<CaretRight size={16} weight="regular" color={tint} />
+<CaretRight size={16} weight="regular" color={tint} />;
 ```
 
 Phosphor takes a `color` prop (a string), not a `className`. For theme-aware

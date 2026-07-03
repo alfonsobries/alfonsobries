@@ -30,7 +30,8 @@ export function Input({
       <View
         className={`flex-row gap-2 rounded-2xl border bg-surface px-4 ${
           multiline ? 'items-start py-3' : 'h-12 items-center'
-        } ${hasError ? 'border-danger' : 'border-border'} ${editable ? '' : 'opacity-50'}`}>
+        } ${hasError ? 'border-danger' : 'border-border'} ${editable ? '' : 'opacity-50'}`}
+      >
         {Glyph ? <Glyph size={18} color={iconColor} /> : null}
         {/* `text-[16px]` sets only font-size: a lineHeight on a TextInput
             mis-positions the text vertically on iOS (RN issue #28012). */}

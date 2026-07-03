@@ -72,9 +72,12 @@ export function Button({
       accessibilityState={{ disabled: isDisabled, busy: loading }}
       disabled={isDisabled}
       className={`flex-row items-center justify-center rounded-full ${sizing.frame} ${CONTAINER[variant]} ${fullWidth ? 'w-full' : ''} ${isDisabled ? 'opacity-50' : PRESS[variant]} ${className ?? ''}`}
-      {...props}>
+      {...props}
+    >
       {/* Kept mounted (just hidden) while loading so the button doesn't resize. */}
-      <View className={`flex-row items-center justify-center ${sizing.gap} ${loading ? 'opacity-0' : ''}`}>
+      <View
+        className={`flex-row items-center justify-center ${sizing.gap} ${loading ? 'opacity-0' : ''}`}
+      >
         {Glyph ? <Glyph size={sizing.icon} color={tint} weight="bold" /> : null}
         <Text className={`font-semibold ${sizing.label} ${LABEL[variant]}`}>{children}</Text>
       </View>

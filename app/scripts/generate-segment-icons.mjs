@@ -42,7 +42,11 @@ function render(d, px) {
 
 for (const [file, iconName] of Object.entries(ICONS)) {
   const d = regularPath(iconName);
-  for (const [suffix, scale] of [['', 1], ['@2x', 2], ['@3x', 3]]) {
+  for (const [suffix, scale] of [
+    ['', 1],
+    ['@2x', 2],
+    ['@3x', 3],
+  ]) {
     writeFileSync(join(OUT_DIR, `${file}${suffix}.png`), render(d, LOGICAL_SIZE * scale));
   }
   console.log(`✓ ${file} (${iconName})`);

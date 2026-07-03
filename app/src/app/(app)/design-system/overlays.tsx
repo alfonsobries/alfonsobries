@@ -42,7 +42,8 @@ export default function Overlays() {
       <ScrollView
         className="flex-1 bg-background"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerClassName="gap-8 p-4">
+        contentContainerClassName="gap-8 p-4"
+      >
         <Section title="Sheet · medium → full">
           <Text className="text-sm text-muted">
             Native form sheet, draggable between half and full height.
@@ -55,7 +56,9 @@ export default function Overlays() {
         <Section title="Sheet · compact">
           <Text className="text-sm text-muted">A shorter native sheet at a fixed height.</Text>
           <View className="items-start">
-            <Button onPress={() => router.push('/design-system/sheet-fit')}>Open compact sheet</Button>
+            <Button onPress={() => router.push('/design-system/sheet-fit')}>
+              Open compact sheet
+            </Button>
           </View>
         </Section>
 
@@ -65,7 +68,9 @@ export default function Overlays() {
             <Button variant="secondary" onPress={openActionSheet}>
               Item actions
             </Button>
-            {lastAction ? <Text className="text-sm text-foreground">Selected: {lastAction}</Text> : null}
+            {lastAction ? (
+              <Text className="text-sm text-foreground">Selected: {lastAction}</Text>
+            ) : null}
           </View>
         </Section>
 
@@ -80,7 +85,8 @@ export default function Overlays() {
                       {`Sort: ${sort}`}
                     </Button>
                   </RNHostView>
-                }>
+                }
+              >
                 <MenuButton label="Newest" onPress={() => setSort('Newest')} />
                 <MenuButton label="Name (A–Z)" onPress={() => setSort('Name (A–Z)')} />
                 <MenuButton label="Due soonest" onPress={() => setSort('Due soonest')} />
@@ -94,8 +100,16 @@ export default function Overlays() {
           <Host matchContents>
             <ContextMenu>
               <ContextMenu.Items>
-                <MenuButton label="Edit" systemImage="pencil" onPress={() => setLastAction('Edit')} />
-                <MenuButton label="Archive" systemImage="archivebox" onPress={() => setLastAction('Archive')} />
+                <MenuButton
+                  label="Edit"
+                  systemImage="pencil"
+                  onPress={() => setLastAction('Edit')}
+                />
+                <MenuButton
+                  label="Archive"
+                  systemImage="archivebox"
+                  onPress={() => setLastAction('Archive')}
+                />
                 <MenuButton
                   label="Delete"
                   systemImage="trash"

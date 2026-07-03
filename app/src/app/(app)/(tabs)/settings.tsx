@@ -26,7 +26,8 @@ export default function SettingsScreen() {
       <SafeAreaView edges={['top']} className="flex-1">
         <ScrollView
           contentContainerClassName="gap-7 px-4 pb-16 pt-4"
-          contentInsetAdjustmentBehavior="automatic">
+          contentInsetAdjustmentBehavior="automatic"
+        >
           <Text className="px-1 text-4xl font-bold text-foreground">Settings</Text>
 
           <SettingsSection title="Developer">
@@ -39,7 +40,13 @@ export default function SettingsScreen() {
           </SettingsSection>
 
           <SettingsSection>
-            <SettingsRow icon={SignOut} label="Sign out" destructive loading={signingOut} onPress={handleSignOut} />
+            <SettingsRow
+              icon={SignOut}
+              label="Sign out"
+              destructive
+              loading={signingOut}
+              onPress={handleSignOut}
+            />
           </SettingsSection>
         </ScrollView>
       </SafeAreaView>

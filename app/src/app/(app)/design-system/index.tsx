@@ -41,7 +41,8 @@ export default function DesignSystemIndex() {
       <ScrollView
         className="flex-1 bg-background"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerClassName="gap-3 p-4">
+        contentContainerClassName="gap-3 p-4"
+      >
         {CATEGORIES.map((category) => (
           <Link key={category.href} href={category.href} asChild>
             <Pressable className="active:opacity-70">

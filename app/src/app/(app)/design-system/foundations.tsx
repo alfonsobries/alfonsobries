@@ -75,7 +75,8 @@ export default function Foundations() {
       <ScrollView
         className="flex-1 bg-background"
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerClassName="gap-8 p-4">
+        contentContainerClassName="gap-8 p-4"
+      >
         <Text className="text-sm text-muted">
           Tokens carry both light and dark values — switch your system appearance to see them flip.
         </Text>
