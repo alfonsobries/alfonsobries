@@ -7,9 +7,11 @@ use App\Http\Controllers\DraftArticleController;
 use App\Http\Controllers\FamilyMoodController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\PushTokenController;
 use App\Http\Controllers\ResumeControler;
 use App\Http\Controllers\SlugHistoryController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\TestNotificationController;
 use App\Http\Controllers\TypoFormController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +30,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/moods', [FamilyMoodController::class, 'index'])->name('moods.index');
     Route::patch('/moods/{member}', [FamilyMoodController::class, 'update'])->name('moods.update');
+
+    Route::post('/push-tokens', [PushTokenController::class, 'store'])->name('push-tokens.store');
+    Route::post('/notifications/test', TestNotificationController::class)->name('notifications.test');
 });
 
 Route::name('articles.')
