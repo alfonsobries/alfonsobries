@@ -4,6 +4,7 @@ use App\Http\Controllers\AppleAuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\DraftArticleController;
+use App\Http\Controllers\FamilyMoodController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResumeControler;
@@ -23,6 +24,11 @@ Route::prefix('auth')->name('auth.')->group(function () {
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 })->name('user');
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/moods', [FamilyMoodController::class, 'index'])->name('moods.index');
+    Route::patch('/moods/{member}', [FamilyMoodController::class, 'update'])->name('moods.update');
+});
 
 Route::name('articles.')
     ->prefix('/articles')

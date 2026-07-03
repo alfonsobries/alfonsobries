@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "alfonsobries",
     "userInterfaceStyle": "automatic",
-    "runtimeVersion": "1.0.0",
+    "runtimeVersion": "1.1.0",
     "updates": {
       "url": "https://u.expo.dev/fbd135b1-6baa-4be2-b789-254386da114d"
     },
@@ -41,6 +41,12 @@
       "expo-router",
       "expo-apple-authentication",
       "expo-secure-store",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Confirm it's you to do certain actions."
+        }
+      ],
       [
         "expo-splash-screen",
         {

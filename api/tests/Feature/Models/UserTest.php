@@ -7,41 +7,37 @@ beforeEach(function () {
     config()->set('site.family.saida_apple_id', 'apple-sub-saida');
 });
 
-it('recognizes Alfonso by his apple sub', function () {
-    $user = User::factory()->make(['apple_id' => 'apple-sub-alfonso']);
-
-    expect($user->isAlfonso())->toBeTrue();
-    expect($user->isSaida())->toBeFalse();
-    expect($user->isFamilyMember())->toBeTrue();
+it('recognizes each family member from the family_member column', function () {
+    expect(User::factory()->make(['family_member' => 'alfonso'])->isAlfonso())->toBeTrue();
+    expect(User::factory()->make(['family_member' => 'saida'])->isSaida())->toBeTrue();
+    expect(User::factory()->make(['family_member' => 'regina'])->isRegina())->toBeTrue();
+    expect(User::factory()->make(['family_member' => 'andres'])->isAndres())->toBeTrue();
 });
 
-it('recognizes Saida by her apple sub', function () {
-    $user = User::factory()->make(['apple_id' => 'apple-sub-saida']);
-
-    expect($user->isSaida())->toBeTrue();
-    expect($user->isAlfonso())->toBeFalse();
-    expect($user->isFamilyMember())->toBeTrue();
-});
-
-it('treats an unknown apple sub as not a family member', function () {
-    $user = User::factory()->make(['apple_id' => 'apple-sub-stranger']);
+it('treats anyone without a family_member as not family', function () {
+    $user = User::factory()->make(['family_member' => null]);
 
     expect($user->isFamilyMember())->toBeFalse();
-});
-
-it('never matches when the apple sub is null', function () {
-    config()->set('site.family.alfonso_apple_id', null);
-    $user = User::factory()->make(['apple_id' => null]);
-
     expect($user->isAlfonso())->toBeFalse();
-    expect($user->isFamilyMember())->toBeFalse();
 });
 
-it('exposes the family member as a serialized attribute', function () {
-    expect(User::factory()->make(['apple_id' => 'apple-sub-alfonso'])->toArray())
+it('only gives the parents a mood', function () {
+    expect(User::factory()->make(['family_member' => 'alfonso'])->hasMood())->toBeTrue();
+    expect(User::factory()->make(['family_member' => 'saida'])->hasMood())->toBeTrue();
+    expect(User::factory()->make(['family_member' => 'regina'])->hasMood())->toBeFalse();
+    expect(User::factory()->make(['family_member' => null])->hasMood())->toBeFalse();
+});
+
+it('maps an Apple sub to the right family member', function () {
+    expect(User::familyMemberForAppleId('apple-sub-alfonso'))->toBe('alfonso');
+    expect(User::familyMemberForAppleId('apple-sub-saida'))->toBe('saida');
+    expect(User::familyMemberForAppleId('apple-sub-stranger'))->toBeNull();
+    expect(User::familyMemberForAppleId(null))->toBeNull();
+});
+
+it('serializes the family_member', function () {
+    expect(User::factory()->make(['family_member' => 'alfonso'])->toArray())
         ->toHaveKey('family_member', 'alfonso');
-    expect(User::factory()->make(['apple_id' => 'apple-sub-saida'])->toArray())
-        ->toHaveKey('family_member', 'saida');
-    expect(User::factory()->make(['apple_id' => 'apple-sub-stranger'])->toArray())
+    expect(User::factory()->make(['family_member' => null])->toArray())
         ->toHaveKey('family_member', null);
 });

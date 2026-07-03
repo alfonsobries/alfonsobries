@@ -55,8 +55,9 @@ if [ ! -d api/vendor ]; then
 fi
 
 mkdir -p logs
+# Start each run with empty logs so what you see belongs to this session.
 LOG_FILES=(logs/api.log api/storage/logs/laravel.log)
-rm -f logs/api.log
+rm -f "${LOG_FILES[@]}"
 touch "${LOG_FILES[@]}"
 
 cleanup() {

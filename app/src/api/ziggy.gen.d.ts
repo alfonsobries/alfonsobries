@@ -9,6 +9,13 @@ declare module 'ziggy-js' {
     "api.auth.apple": [],
     "api.auth.logout": [],
     "api.user": [],
+    "api.moods.index": [],
+    "api.moods.update": [
+        {
+            "name": "member",
+            "required": true
+        }
+    ],
     "api.articles.index": [],
     "api.articles.show": [
         {
