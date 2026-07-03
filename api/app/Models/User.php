@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -44,7 +45,17 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'mood' => 'integer',
     ];
+
+    /**
+     * Bounds of the 1–9 mood scale, with 5 as the neutral centre.
+     */
+    public const MOOD_MIN = 1;
+
+    public const MOOD_MAX = 9;
+
+    public const MOOD_NEUTRAL = 5;
 
     /**
      * The accessors to append to the model's array form.
@@ -62,6 +73,21 @@ class User extends Authenticatable
             $this->isSaida() => 'saida',
             default => null,
         };
+    }
+
+    /**
+     * Limit the query to the people recognised as family members.
+     *
+     * @param  Builder<User>  $query
+     */
+    public function scopeFamily($query): void
+    {
+        $appleIds = array_filter([
+            config('site.family.alfonso_apple_id'),
+            config('site.family.saida_apple_id'),
+        ]);
+
+        $query->whereIn('apple_id', $appleIds);
     }
 
     public function isAlfonso(): bool
