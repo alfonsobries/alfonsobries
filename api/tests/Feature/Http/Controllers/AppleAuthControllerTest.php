@@ -75,6 +75,18 @@ it('tags a login with the matching family member', function () {
     ]);
 });
 
+it('attaches a login to a family profile created before they signed in', function () {
+    config()->set('site.family.alfonso_apple_id', 'apple-sub-alfonso');
+    $profile = User::factory()->create(['family_member' => 'alfonso', 'apple_id' => null]);
+
+    fakeAppleVerifier(new AppleVerifiedUser('apple-sub-alfonso', null, false));
+
+    $this->postJson(route('api.auth.apple'), ['id_token' => 'signed.jwt.token'])->assertOk();
+
+    expect(User::where('family_member', 'alfonso')->count())->toBe(1);
+    $this->assertDatabaseHas('users', ['id' => $profile->id, 'apple_id' => 'apple-sub-alfonso']);
+});
+
 it('rejects an invalid apple token', function () {
     $this->instance(AppleTokenVerifier::class, new class extends AppleTokenVerifier
     {

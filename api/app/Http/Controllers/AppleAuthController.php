@@ -23,11 +23,18 @@ class AppleAuthController extends Controller
         $email = $verified->email ?? $request->input('email');
         $name = $request->input('name');
 
+        $familyMember = User::familyMemberForAppleId($verified->id);
+
         $user = User::where('apple_id', $verified->id)->first();
 
         if (! $user && $email) {
             // Link Apple to a pre-existing account that shares the email.
             $user = User::where('email', $email)->first();
+        }
+
+        if (! $user && $familyMember) {
+            // Attach to the family profile created ahead of their first login.
+            $user = User::where('family_member', $familyMember)->first();
         }
 
         if ($user) {
@@ -36,7 +43,7 @@ class AppleAuthController extends Controller
             // fill them when we don't already have a value.
             $user->name = $user->name ?: ($name ?? 'Friend');
             $user->email = $user->email ?: $email;
-            $user->family_member = $user->family_member ?? User::familyMemberForAppleId($verified->id);
+            $user->family_member = $user->family_member ?? $familyMember;
             $user->save();
         } else {
             $user = User::create([
@@ -44,7 +51,7 @@ class AppleAuthController extends Controller
                 'name' => $name ?: 'Friend',
                 'email' => $email,
                 'password' => Hash::make(Str::random(40)),
-                'family_member' => User::familyMemberForAppleId($verified->id),
+                'family_member' => $familyMember,
             ]);
         }
 
