@@ -14,10 +14,11 @@ use Spatie\EloquentSortable\SortableTrait;
 class ResumeProject extends Model implements Sortable
 {
     use ExpiresFrontend;
-
     use ExpiresResume;
+
     /** @use HasFactory<ResumeProjectFactory> */
     use HasFactory;
+
     use SoftDeletes;
     use SortableTrait;
 
