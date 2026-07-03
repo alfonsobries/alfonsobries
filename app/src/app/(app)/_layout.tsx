@@ -9,6 +9,10 @@ export default function AppLayout() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="design-system" />
         <Stack.Screen
+          name="profile"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
+        <Stack.Screen
           name="mood"
           options={{
             presentation: 'formSheet',
