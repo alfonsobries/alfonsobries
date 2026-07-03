@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/api/auth';
 import { moodLabel, useMoods, type MoodMember } from '@/api/moods';
 import { MoodAvatar } from '@/components/moods/MoodAvatar';
+import { Card } from '@/components/ui/Card';
 
 export default function HomeScreen() {
   const { user } = useAuth();
@@ -37,15 +38,13 @@ function MoodCard({ member }: { member: MoodMember }) {
   const firstName = member.name?.split(' ')[0] ?? '';
 
   return (
-    <Pressable
-      accessibilityRole="button"
+    <Card
       accessibilityLabel={`${firstName} feels ${moodLabel(member.mood).toLowerCase()}`}
       onPress={() => router.push(`/mood?member=${member.family_member}`)}
-      className="flex-1 items-center gap-2 rounded-3xl bg-surface px-3 pb-4 pt-5 active:opacity-80"
+      className="flex-1 items-center gap-2"
     >
       <MoodAvatar member={member.family_member} mood={member.mood} width={120} height={158} />
       <Text className="text-lg font-semibold text-foreground">{firstName}</Text>
-      <Text className="text-sm text-muted">{moodLabel(member.mood)}</Text>
-    </Pressable>
+    </Card>
   );
 }
