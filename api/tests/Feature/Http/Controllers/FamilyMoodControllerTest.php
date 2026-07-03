@@ -36,30 +36,50 @@ it('requires authentication to read moods', function () {
     $this->getJson(route('api.moods.index'))->assertUnauthorized();
 });
 
-it('updates the signed-in member own mood', function () {
+it('lets a family member set their own mood', function () {
     $user = User::factory()->create(['apple_id' => 'apple-sub-alfonso', 'mood' => 5]);
 
     $this->actingAs($user)
-        ->patchJson(route('api.mood.update'), ['mood' => 2])
+        ->patchJson(route('api.moods.update', ['member' => 'alfonso']), ['mood' => 2])
         ->assertOk()
         ->assertJson(['data' => ['family_member' => 'alfonso', 'mood' => 2]]);
 
     expect($user->fresh()->mood)->toBe(2);
 });
 
+it('lets a family member set another member mood', function () {
+    $alfonso = User::factory()->create(['apple_id' => 'apple-sub-alfonso']);
+    $saida = User::factory()->create(['apple_id' => 'apple-sub-saida', 'mood' => 5]);
+
+    $this->actingAs($alfonso)
+        ->patchJson(route('api.moods.update', ['member' => 'saida']), ['mood' => 8])
+        ->assertOk()
+        ->assertJson(['data' => ['family_member' => 'saida', 'mood' => 8]]);
+
+    expect($saida->fresh()->mood)->toBe(8);
+});
+
 it('rejects a mood outside the 1-9 scale', function () {
     $user = User::factory()->create(['apple_id' => 'apple-sub-alfonso']);
 
     $this->actingAs($user)
-        ->patchJson(route('api.mood.update'), ['mood' => 12])
+        ->patchJson(route('api.moods.update', ['member' => 'alfonso']), ['mood' => 12])
         ->assertUnprocessable()
         ->assertJsonValidationErrorFor('mood');
+});
+
+it('returns 404 for an unknown member', function () {
+    $user = User::factory()->create(['apple_id' => 'apple-sub-alfonso']);
+
+    $this->actingAs($user)
+        ->patchJson(route('api.moods.update', ['member' => 'regina']), ['mood' => 3])
+        ->assertNotFound();
 });
 
 it('forbids a non family member from setting a mood', function () {
     $user = User::factory()->create(['apple_id' => 'apple-sub-stranger']);
 
     $this->actingAs($user)
-        ->patchJson(route('api.mood.update'), ['mood' => 3])
+        ->patchJson(route('api.moods.update', ['member' => 'alfonso']), ['mood' => 3])
         ->assertForbidden();
 });

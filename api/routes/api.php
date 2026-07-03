@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/moods', [FamilyMoodController::class, 'index'])->name('moods.index');
-    Route::patch('/mood', [FamilyMoodController::class, 'update'])->name('mood.update');
+    Route::patch('/moods/{member}', [FamilyMoodController::class, 'update'])->name('moods.update');
 });
 
 Route::name('articles.')

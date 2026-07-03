@@ -24,24 +24,29 @@ class FamilyMoodController extends Controller
     }
 
     /**
-     * Update the signed-in person's own mood.
+     * Update a family member's mood. Any family member may set any member's
+     * mood (the app gates this behind Face ID on the device).
      */
-    public function update(Request $request): JsonResponse
+    public function update(Request $request, string $member): JsonResponse
     {
-        $user = $request->user();
-
-        if (! $user->isFamilyMember()) {
-            return response()->json(['message' => 'Only family members have a mood.'], 403);
+        if (! $request->user()->isFamilyMember()) {
+            return response()->json(['message' => 'Only family members can set a mood.'], 403);
         }
 
         $validated = $request->validate([
             'mood' => ['required', 'integer', 'between:'.User::MOOD_MIN.','.User::MOOD_MAX],
         ]);
 
-        $user->mood = $validated['mood'];
-        $user->save();
+        $target = User::family()->get()->firstWhere('family_member', $member);
 
-        return response()->json(['data' => $this->present($user)]);
+        if (! $target) {
+            return response()->json(['message' => 'Unknown family member.'], 404);
+        }
+
+        $target->mood = $validated['mood'];
+        $target->save();
+
+        return response()->json(['data' => $this->present($target)]);
     }
 
     /**
