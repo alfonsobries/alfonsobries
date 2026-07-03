@@ -20,11 +20,13 @@ class UserSeeder extends Seeder
         $password = config('site.admin.password');
 
         if ($name && $email && $password) {
-            User::factory()->create([
-                'name' => $name,
-                'email' => $email,
-                'password' => bcrypt($password),
-            ]);
+            User::firstOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $name,
+                    'password' => bcrypt($password),
+                ],
+            );
         }
 
         $this->seedFamilyMember('Alfonso', config('site.family.alfonso_apple_id'));
