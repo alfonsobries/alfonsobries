@@ -36,11 +36,6 @@ const CATEGORIES = [
     href: '/design-system/inputs',
   },
   {
-    title: 'Emoji',
-    subtitle: 'Native iOS emoji keyboard picker',
-    href: '/design-system/emoji',
-  },
-  {
     title: 'Navigation',
     subtitle: 'Segmented control',
     href: '/design-system/navigation',
@@ -49,6 +44,11 @@ const CATEGORIES = [
     title: 'Overlays',
     subtitle: 'Form sheets',
     href: '/design-system/overlays',
+  },
+  {
+    title: 'Advanced',
+    subtitle: 'Emoji picker and other composite controls',
+    href: '/design-system/advanced',
   },
 ] as const;
 
