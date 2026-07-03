@@ -2,17 +2,13 @@
 
 use App\Models\User;
 
-beforeEach(function () {
-    config()->set('site.family.alfonso_apple_id', 'apple-sub-alfonso');
-    config()->set('site.family.saida_apple_id', 'apple-sub-saida');
-});
+it('lists the mood of the parents only', function () {
+    User::factory()->create(['family_member' => 'alfonso', 'name' => 'Alfonso', 'mood' => 7]);
+    User::factory()->create(['family_member' => 'saida', 'name' => 'Saida', 'mood' => 3]);
+    User::factory()->create(['family_member' => 'regina', 'name' => 'Regina']);
+    User::factory()->create(['family_member' => null, 'name' => 'Stranger']);
 
-it('lists the mood of every family member', function () {
-    User::factory()->create(['apple_id' => 'apple-sub-alfonso', 'name' => 'Alfonso', 'mood' => 7]);
-    User::factory()->create(['apple_id' => 'apple-sub-saida', 'name' => 'Saida', 'mood' => 3]);
-    User::factory()->create(['apple_id' => 'apple-sub-stranger', 'name' => 'Stranger']);
-
-    $me = User::where('apple_id', 'apple-sub-alfonso')->first();
+    $me = User::where('family_member', 'alfonso')->first();
 
     $this->actingAs($me)
         ->getJson(route('api.moods.index'))
@@ -27,7 +23,7 @@ it('lists the mood of every family member', function () {
 });
 
 it('defaults a new family member to the neutral mood', function () {
-    $user = User::factory()->create(['apple_id' => 'apple-sub-alfonso']);
+    $user = User::factory()->create(['family_member' => 'alfonso']);
 
     expect($user->fresh()->mood)->toBe(User::MOOD_NEUTRAL);
 });
@@ -37,7 +33,7 @@ it('requires authentication to read moods', function () {
 });
 
 it('lets a family member set their own mood', function () {
-    $user = User::factory()->create(['apple_id' => 'apple-sub-alfonso', 'mood' => 5]);
+    $user = User::factory()->create(['family_member' => 'alfonso', 'mood' => 5]);
 
     $this->actingAs($user)
         ->patchJson(route('api.moods.update', ['member' => 'alfonso']), ['mood' => 2])
@@ -48,8 +44,8 @@ it('lets a family member set their own mood', function () {
 });
 
 it('lets a family member set another member mood', function () {
-    $alfonso = User::factory()->create(['apple_id' => 'apple-sub-alfonso']);
-    $saida = User::factory()->create(['apple_id' => 'apple-sub-saida', 'mood' => 5]);
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $saida = User::factory()->create(['family_member' => 'saida', 'mood' => 5]);
 
     $this->actingAs($alfonso)
         ->patchJson(route('api.moods.update', ['member' => 'saida']), ['mood' => 8])
@@ -60,7 +56,7 @@ it('lets a family member set another member mood', function () {
 });
 
 it('rejects a mood outside the 1-9 scale', function () {
-    $user = User::factory()->create(['apple_id' => 'apple-sub-alfonso']);
+    $user = User::factory()->create(['family_member' => 'alfonso']);
 
     $this->actingAs($user)
         ->patchJson(route('api.moods.update', ['member' => 'alfonso']), ['mood' => 12])
@@ -68,16 +64,25 @@ it('rejects a mood outside the 1-9 scale', function () {
         ->assertJsonValidationErrorFor('mood');
 });
 
-it('returns 404 for an unknown member', function () {
-    $user = User::factory()->create(['apple_id' => 'apple-sub-alfonso']);
+it('will not set a mood for a kid, who has none', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    User::factory()->create(['family_member' => 'regina']);
 
-    $this->actingAs($user)
+    $this->actingAs($alfonso)
         ->patchJson(route('api.moods.update', ['member' => 'regina']), ['mood' => 3])
         ->assertNotFound();
 });
 
+it('returns 404 for an unknown member', function () {
+    $user = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($user)
+        ->patchJson(route('api.moods.update', ['member' => 'nobody']), ['mood' => 3])
+        ->assertNotFound();
+});
+
 it('forbids a non family member from setting a mood', function () {
-    $user = User::factory()->create(['apple_id' => 'apple-sub-stranger']);
+    $user = User::factory()->create(['family_member' => null]);
 
     $this->actingAs($user)
         ->patchJson(route('api.moods.update', ['member' => 'alfonso']), ['mood' => 3])

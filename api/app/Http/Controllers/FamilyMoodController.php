@@ -9,12 +9,12 @@ use Illuminate\Http\Request;
 class FamilyMoodController extends Controller
 {
     /**
-     * The current mood of every family member, so the app can show how
-     * everyone is doing at a glance.
+     * The current mood of the family members who have one — the parents — so
+     * the app can show how everyone is doing at a glance.
      */
     public function index(): JsonResponse
     {
-        $moods = User::family()
+        $moods = User::whereIn('family_member', User::MOOD_MEMBERS)
             ->orderBy('id')
             ->get()
             ->map(fn (User $user): array => $this->present($user))
@@ -37,9 +37,9 @@ class FamilyMoodController extends Controller
             'mood' => ['required', 'integer', 'between:'.User::MOOD_MIN.','.User::MOOD_MAX],
         ]);
 
-        $target = User::family()->get()->firstWhere('family_member', $member);
+        $target = User::where('family_member', $member)->first();
 
-        if (! $target) {
+        if (! $target || ! $target->hasMood()) {
             return response()->json(['message' => 'Unknown family member.'], 404);
         }
 

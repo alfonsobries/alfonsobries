@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'apple_id',
+        'family_member',
     ];
 
     /**
@@ -58,55 +59,66 @@ class User extends Authenticatable
     public const MOOD_NEUTRAL = 5;
 
     /**
-     * The accessors to append to the model's array form.
+     * The family members who have a mood — only the parents.
      *
      * @var list<string>
      */
-    protected $appends = [
-        'family_member',
-    ];
+    public const MOOD_MEMBERS = ['alfonso', 'saida'];
 
-    public function getFamilyMemberAttribute(): ?string
+    /**
+     * Which family member an Apple sign-in identity maps to, so a login can be
+     * tied to the right seeded person. Null for anyone who isn't family.
+     */
+    public static function familyMemberForAppleId(?string $appleId): ?string
     {
-        return match (true) {
-            $this->isAlfonso() => 'alfonso',
-            $this->isSaida() => 'saida',
+        if ($appleId === null) {
+            return null;
+        }
+
+        return match ($appleId) {
+            config('site.family.alfonso_apple_id') => 'alfonso',
+            config('site.family.saida_apple_id') => 'saida',
             default => null,
         };
     }
 
     /**
-     * Limit the query to the people recognised as family members.
+     * Limit the query to the people who represent a family member.
      *
      * @param  Builder<User>  $query
      */
     public function scopeFamily($query): void
     {
-        $appleIds = array_filter([
-            config('site.family.alfonso_apple_id'),
-            config('site.family.saida_apple_id'),
-        ]);
-
-        $query->whereIn('apple_id', $appleIds);
+        $query->whereNotNull('family_member');
     }
 
     public function isAlfonso(): bool
     {
-        return $this->matchesFamilyAppleId(config('site.family.alfonso_apple_id'));
+        return $this->family_member === 'alfonso';
     }
 
     public function isSaida(): bool
     {
-        return $this->matchesFamilyAppleId(config('site.family.saida_apple_id'));
+        return $this->family_member === 'saida';
+    }
+
+    public function isRegina(): bool
+    {
+        return $this->family_member === 'regina';
+    }
+
+    public function isAndres(): bool
+    {
+        return $this->family_member === 'andres';
     }
 
     public function isFamilyMember(): bool
     {
-        return $this->isAlfonso() || $this->isSaida();
+        return $this->family_member !== null;
     }
 
-    private function matchesFamilyAppleId(?string $appleId): bool
+    public function hasMood(): bool
     {
-        return $appleId !== null && $this->apple_id === $appleId;
+        return in_array($this->family_member, self::MOOD_MEMBERS, true);
     }
 }

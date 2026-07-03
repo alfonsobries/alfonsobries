@@ -36,6 +36,7 @@ class AppleAuthController extends Controller
             // fill them when we don't already have a value.
             $user->name = $user->name ?: ($name ?? 'Friend');
             $user->email = $user->email ?: $email;
+            $user->family_member = $user->family_member ?? User::familyMemberForAppleId($verified->id);
             $user->save();
         } else {
             $user = User::create([
@@ -43,6 +44,7 @@ class AppleAuthController extends Controller
                 'name' => $name ?: 'Friend',
                 'email' => $email,
                 'password' => Hash::make(Str::random(40)),
+                'family_member' => User::familyMemberForAppleId($verified->id),
             ]);
         }
 

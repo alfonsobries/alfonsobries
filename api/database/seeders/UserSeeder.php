@@ -29,25 +29,34 @@ class UserSeeder extends Seeder
             );
         }
 
-        $this->seedFamilyMember('Alfonso', config('site.family.alfonso_apple_id'));
-        $this->seedFamilyMember('Saida', config('site.family.saida_apple_id'));
+        // The parents sign in with Apple; the kids never log in but still get a
+        // row (with a placeholder email) so data can be attributed to them.
+        $this->seedFamilyMember('alfonso', 'Alfonso', config('site.family.alfonso_apple_id'));
+        $this->seedFamilyMember('saida', 'Saida', config('site.family.saida_apple_id'));
+        $this->seedFamilyMember('regina', 'Regina', null, 'regina@bribiesca.local');
+        $this->seedFamilyMember('andres', 'Andrés', null, 'andres@bribiesca.local');
     }
 
     /**
-     * Link an Apple sub to a name before they ever sign in. Idempotent.
+     * Ensure a family member exists and carries their canonical name and role.
+     * Matched by Apple sub when they sign in, otherwise by their role. Idempotent.
      */
-    private function seedFamilyMember(string $name, ?string $appleId): void
+    private function seedFamilyMember(string $key, string $name, ?string $appleId, ?string $email = null): void
     {
-        if (! $appleId) {
-            return;
+        $match = $appleId ? ['apple_id' => $appleId] : ['family_member' => $key];
+
+        $user = User::firstOrNew($match);
+        $user->family_member = $key;
+        $user->name = $name;
+
+        if ($email && ! $user->email) {
+            $user->email = $email;
         }
 
-        User::firstOrCreate(
-            ['apple_id' => $appleId],
-            [
-                'name' => $name,
-                'password' => bcrypt(Str::random(40)),
-            ],
-        );
+        if (! $user->exists) {
+            $user->password = bcrypt(Str::random(40));
+        }
+
+        $user->save();
     }
 }
