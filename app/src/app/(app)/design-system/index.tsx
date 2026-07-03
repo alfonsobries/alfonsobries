@@ -26,6 +26,11 @@ const CATEGORIES = [
     href: '/design-system/avatars',
   },
   {
+    title: 'Actions',
+    subtitle: 'Icon-forward card buttons in a grid',
+    href: '/design-system/actions',
+  },
+  {
     title: 'Inputs',
     subtitle: 'Fields, switch, checkbox, radio',
     href: '/design-system/inputs',

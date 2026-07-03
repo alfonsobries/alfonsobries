@@ -1,18 +1,15 @@
 import { Redirect, router, Stack, useLocalSearchParams } from 'expo-router';
-import { CaretRight, SlidersHorizontal } from 'phosphor-react-native';
+import { Smiley, Star } from 'phosphor-react-native';
 import { ScrollView, Text, View } from 'react-native';
 
 import { getPerson } from '@/api/family';
 import { moodLabel, useMoods } from '@/api/moods';
 import { AvatarCircle } from '@/components/family/AvatarCircle';
-import { Card } from '@/components/ui/Card';
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { ActionTile } from '@/components/ui/ActionTile';
 
 export default function ProfileScreen() {
   const { member } = useLocalSearchParams<{ member?: string }>();
   const { members } = useMoods();
-  const accent = useThemeColor('primary-emphasis');
-  const muted = useThemeColor('muted');
 
   const person = getPerson(member);
 
@@ -46,17 +43,18 @@ export default function ProfileScreen() {
         </View>
 
         {person.hasMood ? (
-          <Card
-            accessibilityLabel="Adjust mood"
-            onPress={() => router.push(`/mood?member=${person.key}`)}
-            className="flex-row items-center gap-3"
-          >
-            <View className="size-10 items-center justify-center rounded-full bg-surface-selected">
-              <SlidersHorizontal size={20} color={accent} weight="bold" />
+          <View className="flex-row flex-wrap">
+            <View className="w-1/2 p-1.5">
+              <ActionTile
+                icon={Smiley}
+                label="Adjust mood"
+                onPress={() => router.push(`/mood?member=${person.key}`)}
+              />
             </View>
-            <Text className="flex-1 text-base font-semibold text-foreground">Adjust mood</Text>
-            <CaretRight size={18} color={muted} weight="bold" />
-          </Card>
+            <View className="w-1/2 p-1.5">
+              <ActionTile icon={Star} label="Coming soon" disabled />
+            </View>
+          </View>
         ) : (
           <Text className="text-center text-sm text-muted">Nothing here yet.</Text>
         )}
