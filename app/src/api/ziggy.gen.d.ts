@@ -16,6 +16,8 @@ declare module 'ziggy-js' {
             "required": true
         }
     ],
+    "api.push-tokens.store": [],
+    "api.notifications.test": [],
     "api.articles.index": [],
     "api.articles.show": [
         {

@@ -1,8 +1,11 @@
 import { Stack } from 'expo-router';
 
 import { MoodsProvider } from '@/api/moods';
+import { usePushRegistration } from '@/hooks/use-push-registration';
 
 export default function AppLayout() {
+  usePushRegistration();
+
   return (
     <MoodsProvider>
       <Stack screenOptions={{ headerShown: false }}>

@@ -1,16 +1,20 @@
 import { router } from 'expo-router';
-import { PaintBrush, SignOut } from 'phosphor-react-native';
+import { BellRinging, PaintBrush, SignOut } from 'phosphor-react-native';
 import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/api/auth';
+import { apiClient } from '@/api/client';
+import { useApiRouter } from '@/api/router';
 import { SettingsRow } from '@/components/settings/SettingsRow';
 import { SettingsSection } from '@/components/settings/SettingsSection';
 
 export default function SettingsScreen() {
   const { signOut } = useAuth();
+  const route = useApiRouter();
   const [signingOut, setSigningOut] = useState(false);
+  const [notifying, setNotifying] = useState(false);
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -18,6 +22,18 @@ export default function SettingsScreen() {
       await signOut();
     } finally {
       setSigningOut(false);
+    }
+  };
+
+  const handleTestNotification = async () => {
+    setNotifying(true);
+    try {
+      await apiClient.post(route('api.notifications.test'));
+      Alert.alert('Sent', 'A test notification is on its way.');
+    } catch {
+      Alert.alert('Could not send', 'Make sure notifications are allowed, then try again.');
+    } finally {
+      setNotifying(false);
     }
   };
 
@@ -29,6 +45,15 @@ export default function SettingsScreen() {
           contentInsetAdjustmentBehavior="automatic"
         >
           <Text className="px-1 text-4xl font-bold text-foreground">Settings</Text>
+
+          <SettingsSection title="Notifications">
+            <SettingsRow
+              icon={BellRinging}
+              label="Send a test notification"
+              loading={notifying}
+              onPress={handleTestNotification}
+            />
+          </SettingsSection>
 
           <SettingsSection title="Developer">
             <SettingsRow
