@@ -44,6 +44,24 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = [
+        'family_member',
+    ];
+
+    public function getFamilyMemberAttribute(): ?string
+    {
+        return match (true) {
+            $this->isAlfonso() => 'alfonso',
+            $this->isSaida() => 'saida',
+            default => null,
+        };
+    }
+
     public function isAlfonso(): bool
     {
         return $this->matchesFamilyAppleId(config('site.family.alfonso_apple_id'));

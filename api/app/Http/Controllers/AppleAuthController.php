@@ -51,7 +51,7 @@ class AppleAuthController extends Controller
         return response()->json([
             'token' => $user->createToken($device)->plainTextToken,
             'token_type' => 'Bearer',
-            'user' => $user->only(['id', 'name', 'email']),
+            'user' => $user->only(['id', 'name', 'email', 'family_member']),
         ]);
     }
 }

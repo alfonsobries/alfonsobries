@@ -14,10 +14,13 @@ import { useApiRouter } from './router';
 
 const TOKEN_KEY = 'auth_token';
 
+export type FamilyMember = 'alfonso' | 'saida';
+
 export type AuthUser = {
   id: number;
   name: string | null;
   email: string | null;
+  family_member: FamilyMember | null;
 };
 
 type AuthStatus = 'loading' | 'authenticated' | 'unauthenticated';
