@@ -16,6 +16,11 @@ const CATEGORIES = [
     href: '/design-system/buttons',
   },
   {
+    title: 'Cards',
+    subtitle: 'Surface container, pressable',
+    href: '/design-system/cards',
+  },
+  {
     title: 'Inputs',
     subtitle: 'Fields, switch, checkbox, radio',
     href: '/design-system/inputs',
