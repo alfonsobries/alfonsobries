@@ -30,6 +30,4 @@ I'm a full-stack developer living in Mérida Yucatán. For the past 15 years, I'
 
 [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=alfonsobries&theme=dark)](https://github.com/alfonsobries/github-readme-stats)
 
-
 ![isthis](https://github.com/alfonsobries/alfonsobries/assets/17262776/de6cd94c-846d-4f41-b437-24b6779347c8)
-

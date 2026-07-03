@@ -10,35 +10,47 @@ Personal website and blog (alfonsobries.com), split into top-level projects:
 - **`api/`** — Laravel API backend
 - **`app/`** — Expo (React Native) mobile app
 
+For the full command reference across all three projects — quality gates, builds,
+and local dev — see [`commands.md`](commands.md).
+
 ## Commands
 
 ### Frontend (`website/` directory)
+
 - `pnpm dev` — Start Next.js dev server
 - `pnpm build` — Production build (also generates sitemap via postbuild)
-- `pnpm typecheck` — Run TypeScript type checking (`tsc`)
+- `pnpm typecheck` — Run TypeScript type checking (`tsc`, strict)
 - `pnpm lint` — Run ESLint (`eslint .`, flat config)
-- `pnpm prepare` — SVG optimize + typecheck + lint (runs on install)
+- `pnpm format` / `pnpm format:check` — Prettier write / check
 
 ### Backend (`api/` directory)
-- `./vendor/bin/pest` — Run PHP tests
-- `./vendor/bin/pest --filter=TestName` — Run a single test
-- `./vendor/bin/pest --coverage` — Run tests with coverage
-- `./vendor/bin/pint` — Format PHP code (Laravel Pint)
+
+- `composer test` — Run PHP tests (Pest); `./vendor/bin/pest --filter=TestName` for one
+- `composer analyse` — PHPStan/Larastan static analysis
+- `composer fix` — Format PHP code (Laravel Pint); `composer lint` for check-only
 
 ### Mobile app (`app/` directory)
+
 - `pnpm start` — Start the Expo dev server
-- `pnpm typecheck` — TypeScript type checking (`tsc`)
+- `pnpm typecheck` — TypeScript type checking (`tsc`, strict)
 - `pnpm lint` — Run ESLint (`expo lint`)
+- `pnpm format` / `pnpm format:check` — Prettier write / check
 - `pnpm routes:generate` — Regenerate the typed Ziggy route map from the API (run after adding/renaming an `api.*` route)
 - `pnpm svg:optimize` — Compress the SVGs in `app/assets/` with SVGO
 
+### Documentation (repo root)
+
+- `pnpm lint:docs` / `pnpm format:docs` — markdownlint / Prettier for repo-wide Markdown
+
 ### Local API + app (repo root)
+
 - `./start-api.sh [ip]` — Serve the Laravel API; auto-detects the LAN IP (pass one for a physical device, or `127.0.0.1` for local only)
 - `./start-mobile.sh [ip]` — Start Expo pointed at the local API; sets `EXPO_PUBLIC_API_URL` from the same IP
 
 ## Architecture
 
 ### Frontend (Next.js + TypeScript + Tailwind CSS)
+
 - **Pages router** (`website/pages/`) with `getStaticProps` for SSG
 - **Bilingual**: English and Spanish via `next-i18next`. Translations in `website/public/locales/{en,es}/`
 - **Dark mode**: `next-themes` with Tailwind dark classes
@@ -46,7 +58,8 @@ Personal website and blog (alfonsobries.com), split into top-level projects:
 - **Styling**: Tailwind CSS 4 (CSS-first `@import "tailwindcss"`, JS config via `@config`) with the typography and forms plugins. Prettier plugin for class sorting.
 - **SVG system**: Custom SVGO config adds dark mode class variants automatically based on layer naming
 
-### Backend (Laravel 13 + PHP 8.3+)
+### Backend (Laravel 13 + PHP 8.4+)
+
 - **API-only**: Routes in `api/routes/api.php` — articles, projects, resume, contact form, typo reporting
 - **Admin**: Laravel Nova 5 for content management
 - **Content features**: Spatie Translatable (multilingual), Spatie Sluggable (URLs), slug history for redirects
@@ -55,12 +68,14 @@ Personal website and blog (alfonsobries.com), split into top-level projects:
 - **Formatting**: Laravel Pint with the Laravel preset
 
 ### Mobile app (Expo + React Native + NativeWind)
+
 - **Expo Router** (`app/src/app/`) with a file-based routes tree
 - **Styling**: NativeWind v4 (Tailwind classes) with semantic tokens from `app/tokens.json`
 - **API access**: routes are consumed by their Laravel name. `pnpm routes:generate` runs `php artisan ziggy:generate` in `api/` and writes a typed route map to `app/src/api/ziggy.gen.{js,d.ts}` (committed). `ApiRouterProvider` exposes `useApiRouter()` → `route('api.status')`, which resolves an absolute URL against `EXPO_PUBLIC_API_URL`; requests go through the axios client in `app/src/api/client.ts`
 - **Auth**: Sign in with Apple only. `AuthProvider` (`app/src/api/auth.tsx`) exchanges the Apple identity token at `POST /api/auth/apple` for a Sanctum bearer token, persisted in `expo-secure-store`. The root layout gates routes with `Stack.Protected`: the `login` welcome screen when signed out, the `(app)` tab group when signed in. Credential setup: `docs/apple-sign-in.md`
 
 ### Key Data Flow
+
 - Laravel API serves content (articles, projects, resume) from a database
 - Next.js fetches at build time via `getStaticProps` and generates static pages
 - Draft articles viewable via secret preview URLs (`/secret/[secret]/posts/[slug]`)

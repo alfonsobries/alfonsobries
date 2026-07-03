@@ -11,9 +11,9 @@ native token exchange:
 4. The app stores that token in the device keychain (`expo-secure-store`) and
    sends it as `Authorization: Bearer <token>` on every request.
 
-Because the API only *verifies* tokens Apple already signed, most of the setup is
+Because the API only _verifies_ tokens Apple already signed, most of the setup is
 about telling Apple which app is allowed to sign in. For the iOS build you only
-need the two steps in [Minimum setup](#minimum-setup).
+need the two steps in [Minimum setup](#minimum-setup-ios-only).
 
 ## Minimum setup (iOS only)
 
@@ -39,8 +39,8 @@ cd app && eas build -p ios --local --profile local
 ```
 
 After that, the frozen `pnpm local:build` reuses the updated profile. Skipping
-this step fails the build with *"Provisioning profile … doesn't include the
-com.apple.developer.applesignin entitlement"*.
+this step fails the build with _"Provisioning profile … doesn't include the
+com.apple.developer.applesignin entitlement"_.
 
 ### 2. Point the API at the bundle identifier
 
