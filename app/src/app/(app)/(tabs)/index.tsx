@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/api/auth';
 import { moodLabel, useMoods, type MoodMember } from '@/api/moods';
@@ -9,12 +10,13 @@ import { MoodAvatar } from '@/components/moods/MoodAvatar';
 export default function HomeScreen() {
   const { user } = useAuth();
   const { members, status } = useMoods();
+  const insets = useSafeAreaInsets();
 
   const firstName = user?.name?.split(' ')[0];
   const greeting = firstName ? `Hey ${firstName} 👋` : "Welcome to Alfonso's App";
 
   return (
-    <View className="pt-safe-offset-4 flex-1 bg-background px-4">
+    <View className="flex-1 bg-background px-4" style={{ paddingTop: insets.top + 16 }}>
       <Text className="text-3xl font-semibold leading-tight text-foreground">{greeting}</Text>
       <Text className="mt-1 text-base text-muted">Here&apos;s how everyone&apos;s feeling</Text>
 
