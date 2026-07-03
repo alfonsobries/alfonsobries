@@ -13,6 +13,10 @@ component once, demo it there, and reuse it everywhere.
 - **Mobile-first**, but each piece should hold up on web too.
 - **Light + dark from the start** — prefer tokens so components flip with the
   scheme; a raw value is fine for a deliberate one-off.
+- **Quality over OTA convenience** — pick the best solution on its merits;
+  OTA-friendliness never sways the call. If the best option needs native code (a
+  `runtimeVersion` bump + rebuild), that's an acceptable cost — choose it anyway.
+  Never settle for a weaker JS-only option just to keep shipping over OTA.
 
 ## Structure
 
