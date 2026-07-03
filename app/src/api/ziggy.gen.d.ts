@@ -10,7 +10,12 @@ declare module 'ziggy-js' {
     "api.auth.logout": [],
     "api.user": [],
     "api.moods.index": [],
-    "api.mood.update": [],
+    "api.moods.update": [
+        {
+            "name": "member",
+            "required": true
+        }
+    ],
     "api.articles.index": [],
     "api.articles.show": [
         {

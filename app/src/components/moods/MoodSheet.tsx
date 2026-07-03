@@ -5,7 +5,7 @@ import { useState, type ReactNode } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useAuth, type FamilyMember } from '@/api/auth';
+import { type FamilyMember } from '@/api/auth';
 import { MOOD_MAX, MOOD_MIN, MOOD_NEUTRAL, moodLabel, useMoods, type MoodLevel } from '@/api/moods';
 import { MoodAvatar } from '@/components/moods/MoodAvatar';
 import { Button } from '@/components/ui/Button';
@@ -21,12 +21,10 @@ type MoodSheetProperties = {
 
 export function MoodSheet({ member }: MoodSheetProperties): ReactNode {
   const insets = useSafeAreaInsets();
-  const { members, updateMyMood } = useMoods();
-  const { user } = useAuth();
+  const { members, updateMood } = useMoods();
   const tint = useThemeColor('foreground');
 
   const record = members.find((entry) => entry.family_member === member);
-  const isMe = user?.family_member === member;
 
   const [unlocked, setUnlocked] = useState(false);
   const [draft, setDraft] = useState<MoodLevel>(MOOD_NEUTRAL);
@@ -37,7 +35,7 @@ export function MoodSheet({ member }: MoodSheetProperties): ReactNode {
 
   async function handleUnlock(): Promise<void> {
     const result = await LocalAuthentication.authenticateAsync({
-      promptMessage: "Confirm it's you to change your mood",
+      promptMessage: "Confirm it's you to change the mood",
       cancelLabel: 'Cancel',
     });
 
@@ -51,7 +49,7 @@ export function MoodSheet({ member }: MoodSheetProperties): ReactNode {
   async function handleSave(): Promise<void> {
     setSaving(true);
     try {
-      await updateMyMood(draft);
+      await updateMood(member, draft);
       router.back();
     } catch {
       setSaving(false);
@@ -72,7 +70,7 @@ export function MoodSheet({ member }: MoodSheetProperties): ReactNode {
       <MoodScale mood={shownMood} />
 
       <View className="mt-8 w-full">
-        {!isMe ? null : unlocked ? (
+        {unlocked ? (
           <View className="gap-6">
             <View className="flex-row items-center justify-center gap-8">
               <StepButton
@@ -96,7 +94,7 @@ export function MoodSheet({ member }: MoodSheetProperties): ReactNode {
           </View>
         ) : (
           <Button fullWidth icon={LockKey} onPress={handleUnlock}>
-            Change my mood
+            Change mood
           </Button>
         )}
       </View>

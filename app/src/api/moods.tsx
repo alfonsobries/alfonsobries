@@ -24,7 +24,7 @@ type MoodsContextValue = {
   status: MoodsStatus;
   members: MoodMember[];
   refresh: () => Promise<void>;
-  updateMyMood: (mood: MoodLevel) => Promise<void>;
+  updateMood: (member: FamilyMember, mood: MoodLevel) => Promise<void>;
 };
 
 const MoodsContext = createContext<MoodsContextValue | undefined>(undefined);
@@ -52,7 +52,7 @@ type MoodsProviderProperties = {
 
 export function MoodsProvider({ children }: MoodsProviderProperties): ReactNode {
   const route = useApiRouter();
-  const { user, status: authStatus } = useAuth();
+  const { status: authStatus } = useAuth();
   const [status, setStatus] = useState<MoodsStatus>('loading');
   const [members, setMembers] = useState<MoodMember[]>([]);
 
@@ -76,25 +76,21 @@ export function MoodsProvider({ children }: MoodsProviderProperties): ReactNode 
     })();
   }, [authStatus, refresh]);
 
-  const updateMyMood = useCallback(
-    async (mood: MoodLevel) => {
-      const mine = user?.family_member;
-      if (!mine) {
-        return;
-      }
-
+  const updateMood = useCallback(
+    async (member: FamilyMember, mood: MoodLevel) => {
       // Optimistically reflect the change, then reconcile with the API's copy.
       setMembers((current) =>
-        current.map((member) => (member.family_member === mine ? { ...member, mood } : member)),
+        current.map((entry) => (entry.family_member === member ? { ...entry, mood } : entry)),
       );
 
       try {
-        const { data } = await apiClient.patch<{ data: MoodMember }>(route('api.mood.update'), {
-          mood,
-        });
+        const { data } = await apiClient.patch<{ data: MoodMember }>(
+          route('api.moods.update', { member }),
+          { mood },
+        );
         setMembers((current) =>
-          current.map((member) =>
-            member.family_member === data.data.family_member ? data.data : member,
+          current.map((entry) =>
+            entry.family_member === data.data.family_member ? data.data : entry,
           ),
         );
       } catch (error) {
@@ -102,11 +98,11 @@ export function MoodsProvider({ children }: MoodsProviderProperties): ReactNode 
         throw error;
       }
     },
-    [route, user?.family_member, refresh],
+    [route, refresh],
   );
 
   return (
-    <MoodsContext.Provider value={{ status, members, refresh, updateMyMood }}>
+    <MoodsContext.Provider value={{ status, members, refresh, updateMood }}>
       {children}
     </MoodsContext.Provider>
   );
