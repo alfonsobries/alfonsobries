@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/api/auth';
 import { PEOPLE, type Person } from '@/api/family';
-import { useMoods } from '@/api/moods';
+import { moodEmoji, useMoods } from '@/api/moods';
 import { PersonAvatar } from '@/components/family/PersonAvatar';
 import { Card } from '@/components/ui/Card';
 
@@ -42,7 +42,10 @@ function PersonCard({ person, mood }: { person: Person; mood?: number }) {
       className="items-center gap-2"
     >
       <PersonAvatar person={person.key} mood={mood} width={110} height={144} />
-      <Text className="text-lg font-semibold text-foreground">{person.name}</Text>
+      <View className="flex-row items-center gap-1.5">
+        <Text className="text-lg font-semibold text-foreground">{person.name}</Text>
+        {mood != null ? <Text className="text-lg">{moodEmoji(mood)}</Text> : null}
+      </View>
     </Card>
   );
 }

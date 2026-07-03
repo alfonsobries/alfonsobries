@@ -3,7 +3,7 @@ import { Smiley, Star } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
 import type { Person } from '@/api/family';
-import { moodLabel, useMoods } from '@/api/moods';
+import { moodEmoji, moodLabel, useMoods } from '@/api/moods';
 import { AvatarCircle } from '@/components/family/AvatarCircle';
 import { ActionTile } from '@/components/ui/ActionTile';
 
@@ -22,7 +22,12 @@ export function ProfileView({ person }: { person: Person }) {
         <AvatarCircle person={person.key} mood={record?.mood} size={176} />
 
         <View className="items-center gap-1">
-          <Text className="text-2xl font-semibold text-foreground">{person.name}</Text>
+          <View className="flex-row items-center gap-2">
+            <Text className="text-2xl font-semibold text-foreground">{person.name}</Text>
+            {person.hasMood && record ? (
+              <Text className="text-2xl">{moodEmoji(record.mood)}</Text>
+            ) : null}
+          </View>
           {person.hasMood && record ? (
             <Text className="text-base text-muted">
               Feels {moodLabel(record.mood).toLowerCase()}

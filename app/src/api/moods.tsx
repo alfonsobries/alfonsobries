@@ -29,6 +29,15 @@ type MoodsContextValue = {
 
 const MoodsContext = createContext<MoodsContextValue | undefined>(undefined);
 
+// One emoji per level, from most upset (1) to happiest (9); index 0 is level 1.
+const MOOD_EMOJI = ['😭', '😢', '😞', '🙁', '😐', '🙂', '😊', '😄', '🤩'];
+
+/** The emoji that stands in for a mood level. */
+export function moodEmoji(mood: MoodLevel): string {
+  const index = Math.min(MOOD_MAX, Math.max(MOOD_MIN, Math.round(mood))) - 1;
+  return MOOD_EMOJI[index];
+}
+
 /** A short, kid-readable word for a mood level. */
 export function moodLabel(mood: MoodLevel): string {
   if (mood <= 2) {
