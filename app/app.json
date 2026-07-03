@@ -7,6 +7,12 @@
     "icon": "./assets/images/icon.png",
     "scheme": "alfonsobries",
     "userInterfaceStyle": "automatic",
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fbd135b1-6baa-4be2-b789-254386da114d"
+    },
     "ios": {
       "bundleIdentifier": "com.alfonsobries.app",
       "usesAppleSignIn": true,

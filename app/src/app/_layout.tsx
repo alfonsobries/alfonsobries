@@ -7,11 +7,14 @@ import { useColorScheme } from 'react-native';
 
 import { AuthProvider, useAuth } from '@/api/auth';
 import { ApiRouterProvider } from '@/api/router';
+import { EasUpdatePill } from '@/components/ui/EasUpdatePill';
+import { useEasUpdate } from '@/hooks/use-eas-update';
 
 SplashScreen.preventAutoHideAsync();
 
 function RootNavigator() {
   const { status } = useAuth();
+  const update = useEasUpdate();
 
   useEffect(() => {
     if (status !== 'loading') {
@@ -28,14 +31,17 @@ function RootNavigator() {
   const isAuthenticated = status === 'authenticated';
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Protected guard={isAuthenticated}>
-        <Stack.Screen name="(app)" />
-      </Stack.Protected>
-      <Stack.Protected guard={!isAuthenticated}>
-        <Stack.Screen name="login" />
-      </Stack.Protected>
-    </Stack>
+    <>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Protected guard={isAuthenticated}>
+          <Stack.Screen name="(app)" />
+        </Stack.Protected>
+        <Stack.Protected guard={!isAuthenticated}>
+          <Stack.Screen name="login" />
+        </Stack.Protected>
+      </Stack>
+      <EasUpdatePill status={update.status} onRestart={update.applyUpdate} onDismiss={update.dismissUpdate} dismissed={update.dismissed} />
+    </>
   );
 }
 
