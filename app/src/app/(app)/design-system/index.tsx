@@ -45,6 +45,11 @@ const CATEGORIES = [
     subtitle: 'Form sheets',
     href: '/design-system/overlays',
   },
+  {
+    title: 'Advanced',
+    subtitle: 'Emoji picker and other composite controls',
+    href: '/design-system/advanced',
+  },
 ] as const;
 
 export default function DesignSystemIndex() {

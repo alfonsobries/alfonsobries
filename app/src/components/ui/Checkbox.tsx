@@ -11,7 +11,7 @@ type CheckboxProperties = {
 };
 
 export function Checkbox({ checked, onChange, label, disabled }: CheckboxProperties) {
-  const checkColor = useThemeColor('primary-emphasis-foreground');
+  const checkColor = useThemeColor('primary-foreground');
 
   return (
     <Pressable
@@ -23,7 +23,7 @@ export function Checkbox({ checked, onChange, label, disabled }: CheckboxPropert
     >
       <View
         className={`size-6 items-center justify-center rounded-md border-2 ${
-          checked ? 'border-primary-emphasis bg-primary-emphasis' : 'border-border'
+          checked ? 'border-primary bg-primary' : 'border-border'
         }`}
       >
         {checked ? <Check size={16} weight="bold" color={checkColor} /> : null}
