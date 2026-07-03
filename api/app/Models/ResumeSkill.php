@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Traits\ExpiresFrontend;
 use App\Models\Traits\ExpiresResume;
+use Database\Factories\ResumeSkillFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,11 +13,13 @@ use Spatie\EloquentSortable\SortableTrait;
 
 class ResumeSkill extends Model implements Sortable
 {
-    use HasFactory;
-    use SortableTrait;
-    use SoftDeletes;
     use ExpiresFrontend;
+
     use ExpiresResume;
+    /** @use HasFactory<ResumeSkillFactory> */
+    use HasFactory;
+    use SoftDeletes;
+    use SortableTrait;
 
     const LEVEL_EXPERT = 'expert';
 
@@ -28,6 +31,9 @@ class ResumeSkill extends Model implements Sortable
 
     const CATEGORY_OTHER = 'other';
 
+    /**
+     * @var array<string, mixed>
+     */
     public $sortable = [
         'order_column_name' => 'sort_order',
         'sort_when_creating' => true,

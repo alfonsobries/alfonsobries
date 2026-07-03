@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace App\Nova;
 
 use App\Models\ResumeProject as Model;
+use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Markdown;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Resource;
+use Laravel\Nova\Resource as NovaResource;
 use Outl1ne\NovaSortable\Traits\HasSortableRows;
 
-final class ResumeProject extends Resource
+/**
+ * @extends NovaResource<Model>
+ */
+final class ResumeProject extends NovaResource
 {
     use HasSortableRows;
 
@@ -33,7 +37,7 @@ final class ResumeProject extends Resource
     /**
      * The columns that should be searched.
      *
-     * @var array
+     * @var array<int, string>
      */
     public static $search = [
         'id', 'title', 'description',
@@ -42,9 +46,9 @@ final class ResumeProject extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @return array
+     * @return array<int, Field>
      */
-    public function fields(NovaRequest $request)
+    public function fields(NovaRequest $request): array
     {
         return [
             ID::make()->sortable(),

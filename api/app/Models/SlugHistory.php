@@ -19,10 +19,13 @@ final class SlugHistory extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<string>
+     * @var list<string>
      */
     protected $fillable = ['slug'];
 
+    /**
+     * @return MorphTo<Model, $this>
+     */
     public function sluggable(): MorphTo
     {
         return $this->morphTo();

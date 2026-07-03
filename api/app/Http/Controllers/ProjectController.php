@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Collection;
 
 class ProjectController extends Controller
 {
+    /**
+     * @return Collection<int, Project>
+     */
     public function __invoke(): Collection
     {
-        info( Project::ordered()->published()->get());
         return Project::ordered()->published()->get();
     }
 }

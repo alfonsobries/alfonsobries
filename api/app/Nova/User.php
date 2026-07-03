@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use App\Nova\Resource as NovaResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\MergeValue;
 use Laravel\Nova\Actions\Action;
@@ -18,7 +19,10 @@ use Laravel\Nova\Lenses\Lens;
 use Laravel\Nova\Panel;
 use Laravel\Nova\ResourceTool;
 
-class User extends Resource
+/**
+ * @extends NovaResource<\App\Models\User>
+ */
+class User extends NovaResource
 {
     use PasswordValidationRules;
 
@@ -39,7 +43,7 @@ class User extends Resource
     /**
      * The columns that should be searched.
      *
-     * @var array
+     * @var array<int, string>
      */
     public static $search = [
         'id', 'name', 'email',

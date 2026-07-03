@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Support\Facades\App;
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Illuminate\Support\Facades\App;
 
 class Localize extends Middleware
 {
@@ -20,7 +20,10 @@ class Localize extends Middleware
         return $next($request);
     }
 
-    private function isValidLocale($locale)
+    /**
+     * @param  string|array<mixed>|null  $locale
+     */
+    private function isValidLocale(string|array|null $locale): bool
     {
         return in_array($locale, ['en', 'es']);
     }

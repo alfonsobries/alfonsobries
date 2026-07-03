@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\ExpiresFrontend;
 use App\Models\Traits\HasSlugHistory;
 use Carbon\Carbon;
+use Database\Factories\ArticleFactory;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,7 +23,10 @@ use Spatie\Translatable\HasTranslations;
 class Article extends Model implements HasMedia
 {
     use ExpiresFrontend;
+
+    /** @use HasFactory<ArticleFactory> */
     use HasFactory;
+
     use HasSlugHistory;
     use HasTranslatableSlug;
     use HasTranslations;
@@ -36,7 +40,7 @@ class Article extends Model implements HasMedia
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<string>
+     * @var list<string>
      */
     protected $fillable = [
         'title',
@@ -46,6 +50,9 @@ class Article extends Model implements HasMedia
         'published_at',
     ];
 
+    /**
+     * @var list<string>
+     */
     public $translatable = [
         'title',
         'slug',

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait HasSlugHistory
 {
-    public static function bootHasSlugHistory()
+    public static function bootHasSlugHistory(): void
     {
         static::saving(static function (self $article) {
             if ($article->shouldStoreTheSlug()) {
@@ -16,6 +16,9 @@ trait HasSlugHistory
         });
     }
 
+    /**
+     * @return MorphMany<SlugHistory, $this>
+     */
     public function slugHistory(): MorphMany
     {
         return $this->morphMany(SlugHistory::class, 'sluggable');
@@ -30,7 +33,7 @@ trait HasSlugHistory
 
     private function shouldStoreTheSlug(): bool
     {
-        if ($this->slug === null) {
+        if (blank($this->slug)) {
             return false;
         }
 

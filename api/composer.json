@@ -30,6 +30,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "larastan/larastan": "^3.10",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.26",
         "mockery/mockery": "^1.6",
@@ -64,6 +65,8 @@
             "@php artisan key:generate --ansi"
         ],
         "fix": "./vendor/bin/pint",
+        "lint": "./vendor/bin/pint --test",
+        "analyse": "./vendor/bin/phpstan analyse --memory-limit=2G",
         "test": "./vendor/bin/pest",
         "test:coverage": "./vendor/bin/pest --coverage"
     },
