@@ -4,7 +4,7 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { getPerson } from '@/api/family';
 import { moodLabel, useMoods } from '@/api/moods';
-import { PersonAvatar } from '@/components/family/PersonAvatar';
+import { AvatarCircle } from '@/components/family/AvatarCircle';
 import { Card } from '@/components/ui/Card';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -33,9 +33,7 @@ export default function ProfileScreen() {
         contentContainerClassName="gap-6 p-4"
       >
         <View className="items-center gap-3 pt-2">
-          <View className="size-48 items-center justify-start overflow-hidden rounded-full bg-surface pt-12">
-            <PersonAvatar person={person.key} mood={record?.mood} width={168} height={220} />
-          </View>
+          <AvatarCircle person={person.key} mood={record?.mood} size={176} />
 
           <View className="items-center gap-1">
             <Text className="text-2xl font-semibold text-foreground">{person.name}</Text>

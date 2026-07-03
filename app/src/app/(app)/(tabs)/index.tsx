@@ -19,7 +19,7 @@ export default function HomeScreen() {
   const moodFor = (key: Person['key']) => members.find((m) => m.family_member === key)?.mood;
 
   return (
-    <View className="flex-1 bg-background px-4" style={{ paddingTop: insets.top + 16 }}>
+    <View className="flex-1 bg-background px-4" style={{ paddingTop: insets.top + 4 }}>
       <Text className="text-3xl font-semibold leading-tight text-foreground">{greeting}</Text>
       <Text className="mt-1 text-base text-muted">Here&apos;s the family</Text>
 
