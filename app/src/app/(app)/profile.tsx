@@ -33,8 +33,8 @@ export default function ProfileScreen() {
         contentContainerClassName="gap-6 p-4"
       >
         <View className="items-center gap-3 pt-2">
-          <View className="size-44 items-center justify-start overflow-hidden rounded-full bg-surface">
-            <PersonAvatar person={person.key} mood={record?.mood} width={176} height={232} />
+          <View className="size-48 items-center justify-start overflow-hidden rounded-full bg-surface pt-7">
+            <PersonAvatar person={person.key} mood={record?.mood} width={168} height={220} />
           </View>
 
           <View className="items-center gap-1">
