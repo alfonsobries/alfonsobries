@@ -77,6 +77,26 @@ JS build tooling (pnpm — Vite/Nova components, Puppeteer for the resume PDF):
   `eas-update-production.yml` EAS Workflow, which needs an available EAS worker.
 - `eas workflow:run create-production-builds.yml` — trigger a full production build.
 
+#### Runtime version — do not forget to bump it
+
+The runtime version is a **fixed string** (`runtimeVersion` in `app.json`), so
+every build and OTA update share it and updates reliably reach installed builds.
+JS/asset-only changes ship over OTA to the same runtime — no bump needed.
+
+⚠️ **Whenever a change touches the native layer, bump `runtimeVersion` in the
+same change, then rebuild and submit a new binary.** Shipping such a change as an
+OTA update to the old runtime pushes JS that expects native code the installed
+binary doesn't have — it crashes. Bump when you:
+
+- add, remove, or upgrade a native module / library with native code
+- change a config plugin, or anything under `plugins` / `ios` / `android` in
+  `app.json`
+- change the Expo SDK version
+- change native entitlements, permissions, or app icons/splash handled natively
+
+Rule of thumb: **native change → bump the runtime + rebuild; JS-only → OTA, no
+bump.** Use a plain incrementing string (`"1.0.0"` → `"1.0.1"` → …).
+
 ## Documentation (repo root)
 
 Markdown across the repo (excluding the JS subprojects, which format their own):
