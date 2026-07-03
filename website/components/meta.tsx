@@ -23,14 +23,14 @@ const Meta = ({ meta, children, hreflangUrl, jsonLd, t }: Props) => {
 
   if (meta.description.length > 160 && process.env.NODE_ENV !== "production") {
     console.warn(
-      `Meta description exceeds 160 chars (${meta.description.length}): ${meta.description}`
+      `Meta description exceeds 160 chars (${meta.description.length}): ${meta.description}`,
     );
   }
 
   const image =
     meta.image ||
     `https://og.alfonsobries.com/${encodeURIComponent(
-      meta.title || t("common:site_title")
+      meta.title || t("common:site_title"),
     )}.png`;
 
   const title = useMemo(() => {
@@ -132,9 +132,7 @@ const Meta = ({ meta, children, hreflangUrl, jsonLd, t }: Props) => {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(
-              Array.isArray(jsonLd) ? jsonLd : [jsonLd]
-            ),
+            __html: JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd]),
           }}
         />
       )}

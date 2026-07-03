@@ -113,7 +113,7 @@ module.exports = {
           {
             loc: {
               href: `https://og.alfonsobries.com/${encodeURIComponent(
-                data.title.en
+                data.title.en,
               )}.png`,
             },
           },
@@ -136,7 +136,10 @@ module.exports = {
       } catch (error) {
         // Keep the URL in the sitemap with default metadata if the article
         // lookup fails (e.g. the API rate-limits) instead of failing the build.
-        console.warn(`next-sitemap: could not fetch /articles/${slug}:`, error.message);
+        console.warn(
+          `next-sitemap: could not fetch /articles/${slug}:`,
+          error.message,
+        );
       }
     }
 

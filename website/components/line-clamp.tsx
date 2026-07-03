@@ -10,7 +10,7 @@ const MORE_LABEL = "[More...]";
 const LESS_LABEL = "[...Less]";
 let lineClampClasses: string[] = [];
 
-const readMoreHandler = (event) => {
+const readMoreHandler = (event: MouseEvent) => {
   const button = event.target as HTMLButtonElement;
   const wrapper = button.parentElement as HTMLElement;
   button.innerHTML = LESS_LABEL;
@@ -18,7 +18,7 @@ const readMoreHandler = (event) => {
   button.classList.add("relative", "before:hidden", "bg-transparent");
 
   lineClampClasses = Array.from(wrapper.classList).filter((cl) =>
-    cl.includes("line-clamp")
+    cl.includes("line-clamp"),
   );
 
   lineClampClasses.forEach((cl) => wrapper.classList.remove(cl));
@@ -27,7 +27,7 @@ const readMoreHandler = (event) => {
   button.addEventListener("click", readLessHandler);
 };
 
-const readLessHandler = (event) => {
+const readLessHandler = (event: MouseEvent) => {
   const button = event.target as HTMLButtonElement;
   const wrapper = button.parentElement as HTMLElement;
 
@@ -46,6 +46,11 @@ const LineClamp = ({ children }: Props) => {
 
   useEffect(() => {
     const el = elRef.current;
+
+    if (el === null) {
+      return;
+    }
+
     const isCurrentyClamped = el.scrollHeight > el.clientHeight;
 
     if (isCurrentyClamped && el.querySelector("button") === null) {

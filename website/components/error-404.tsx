@@ -8,7 +8,12 @@ let resetTimeout: NodeJS.Timeout | null = null;
 let messageIndex = 0;
 
 const toggleGlobe = () => {
-  const globe = document.getElementById("globe")!;
+  const globe = document.getElementById("globe");
+
+  if (globe === null) {
+    return;
+  }
+
   const isHidden = globe.classList.contains("opacity-0");
 
   if (resetTimeout) {
@@ -19,19 +24,26 @@ const toggleGlobe = () => {
   if (isHidden) {
     document
       .getElementById("Cara")
-      .querySelectorAll("animate")
+      ?.querySelectorAll("animate")
       .forEach((el) => el.beginElement());
 
     globe.classList.remove("opacity-0");
     globe.classList.add("opacity-100");
 
+    const message = document.getElementById("message");
+    const message2 = document.getElementById("message2");
+
     if (messageIndex === 0) {
-      document.getElementById("message").innerHTML = "This is fine!";
-      document.getElementById("message2").classList.add("hidden");
+      if (message) {
+        message.innerHTML = "This is fine!";
+      }
+      message2?.classList.add("hidden");
       messageIndex = 1;
     } else {
-      document.getElementById("message").innerHTML = "Error 404";
-      document.getElementById("message2").classList.remove("hidden");
+      if (message) {
+        message.innerHTML = "Error 404";
+      }
+      message2?.classList.remove("hidden");
       messageIndex = 0;
     }
 
@@ -50,7 +62,11 @@ const toggleGlobe = () => {
 
 export default function Error404() {
   useEffect(() => {
-    return () => clearTimeout(resetTimeout);
+    return () => {
+      if (resetTimeout) {
+        clearTimeout(resetTimeout);
+      }
+    };
   }, []);
 
   return (
@@ -58,14 +74,14 @@ export default function Error404() {
       <div className="absolute bottom-0 left-0 z-0 h-[50%] w-full border-t-2 border-black bg-[#AD8665]"></div>
 
       <LazySvg
-        className="absolute right-0 top-0 z-30 w-full"
+        className="absolute top-0 right-0 z-30 w-full"
         svgClassName="object-cover"
         src="/images/cloud-2.svg"
         showLoading={false}
       />
 
       <LazySvg
-        className="absolute right-0 top-0 z-50 w-full"
+        className="absolute top-0 right-0 z-50 w-full"
         svgClassName="object-cover"
         src="/images/cloud.svg"
         showLoading={false}
@@ -78,7 +94,7 @@ export default function Error404() {
       />
 
       <LazySvg
-        className="absolute bottom-[40%] right-[-50%] z-20 w-[500px] max-w-full sm:bottom-[30%] sm:right-[-30%] md:right-0"
+        className="absolute right-[-50%] bottom-[40%] z-20 w-[500px] max-w-full sm:right-[-30%] sm:bottom-[30%] md:right-0"
         src="/images/flame-top-right.svg"
         showLoading={false}
       />
@@ -89,7 +105,7 @@ export default function Error404() {
       >
         <div
           id="globe"
-          className="flex-0 aspect-video absolute inset-0 z-50 ml-[40%] mt-[-40px] flex max-h-[34vh] w-[220px] max-w-[60vw] flex-col items-center justify-center bg-[url('/images/globe.svg')] bg-contain bg-center bg-no-repeat text-center text-black opacity-0 transition-opacity duration-200 ease-in-out sm:w-[300px]"
+          className="absolute inset-0 z-50 mt-[-40px] ml-[40%] flex aspect-video max-h-[34vh] w-[220px] max-w-[60vw] flex-0 flex-col items-center justify-center bg-[url('/images/globe.svg')] bg-contain bg-center bg-no-repeat text-center text-black opacity-0 transition-opacity duration-200 ease-in-out sm:w-[300px]"
         >
           <span id="message" className="font-cursive text-4xl sm:text-5xl">
             Error 404
@@ -108,7 +124,7 @@ export default function Error404() {
       </div>
 
       <LazySvg
-        className="absolute bottom-0 left-[70%] z-40 max-h-[60%] w-[500px] max-w-full md:left-auto md:right-0"
+        className="absolute bottom-0 left-[70%] z-40 max-h-[60%] w-[500px] max-w-full md:right-0 md:left-auto"
         src="/images/flame-bottom-right.svg"
         showLoading={false}
       />

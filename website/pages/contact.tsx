@@ -4,7 +4,7 @@ import classNames from "classnames";
 import LazySvg from "../components/lazy-svg";
 import React, { useState } from "react";
 import Spinner from "../components/spinner";
-import useForm, { Form } from "@alfonsobries/react-use-form";
+import useForm from "@alfonsobries/react-use-form";
 import InputGrup from "../components/form/input-group";
 import FormInput from "../components/form/form-input";
 import FormTextarea from "../components/form/form-textarea";
@@ -16,7 +16,7 @@ import { serverSideTranslations } from "next-i18next/pages/serverSideTranslation
 
 export default function Contact() {
   const [errored, setErrored] = useState(false);
-  const form: Form = useForm({
+  const form = useForm<Record<string, string>>({
     name: "",
     email: "",
     message: "",
@@ -69,7 +69,7 @@ export default function Contact() {
                 <p>{t("common:contact.intro")}</p>
 
                 <form onSubmit={formHandler} className="mt-4 space-y-6">
-                  <div className="flex flex-col space-y-6 sm:flex-row sm:space-x-6 sm:space-y-0">
+                  <div className="flex flex-col space-y-6 sm:flex-row sm:space-y-0 sm:space-x-6">
                     <InputGrup
                       className="flex-1"
                       form={form}
@@ -123,7 +123,7 @@ export default function Contact() {
                         {
                           "hover:bg-blue-600 dark:hover:bg-blue-600":
                             !form.busy,
-                        }
+                        },
                       )}
                       disabled={form.busy}
                     >
@@ -136,22 +136,20 @@ export default function Contact() {
                   </div>
                 </form>
 
-                {form.successful !== true && (
-                  <div className="mt-8 flex flex-col items-center space-y-2 text-center">
-                    <span className="flex space-x-3">
-                      <img
-                        src="/images/is-this-a.svg"
-                        alt="Alfonso Bribiesca"
-                        width={120}
-                        height={120}
-                      />
+                <div className="mt-8 flex flex-col items-center space-y-2 text-center">
+                  <span className="flex space-x-3">
+                    <img
+                      src="/images/is-this-a.svg"
+                      alt="Alfonso Bribiesca"
+                      width={120}
+                      height={120}
+                    />
 
-                      <span className="mt-4 font-cursive text-4xl text-gray-900 dark:text-gray-200">
-                        is this engagement?
-                      </span>
+                    <span className="font-cursive mt-4 text-4xl text-gray-900 dark:text-gray-200">
+                      is this engagement?
                     </span>
-                  </div>
-                )}
+                  </span>
+                </div>
               </>
             )}
           </div>
@@ -161,7 +159,7 @@ export default function Contact() {
   );
 }
 
-export const getStaticProps = async ({ locale }) => {
+export const getStaticProps = async ({ locale }: { locale: string }) => {
   return {
     props: {
       ...(await serverSideTranslations(locale, ["common", "menu"])),

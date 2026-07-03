@@ -18,7 +18,7 @@ const DateFormatter = ({ dateString, locale }: Props) => {
       {capitalize(
         format(date, "LLLL	d, yyyy", {
           locale: locale === "es" ? es : undefined,
-        })
+        }),
       )}
     </time>
   );

@@ -20,7 +20,7 @@ const LazySvg: React.FC<{
   showLoading = true,
 }) => {
   const beforeInjection = useMemo(() => {
-    return (svg) => {
+    return (svg: SVGSVGElement) => {
       if (height) {
         svg.style.height = typeof height === "number" ? `${height}px` : height;
       }

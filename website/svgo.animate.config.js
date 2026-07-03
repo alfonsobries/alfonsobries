@@ -36,7 +36,7 @@ const convertChildPathToAnimate = (element, index, totalChildren, options) => {
 
   const points = pathDataToPolys(
     element.attributes.d,
-    pathDataToPolysOptions
+    pathDataToPolysOptions,
   )[0].join(" ");
 
   element.name = "animate";
@@ -55,7 +55,7 @@ const convertChildPathToAnimate = (element, index, totalChildren, options) => {
 
 const animateGroupByFrame = (group, options) => {
   const frames = Array.from({ length: group.children.length + 1 }).map(
-    (_, i) => i
+    (_, i) => i,
   );
 
   const seconds = 1;
@@ -90,10 +90,10 @@ const animateGroup = (group, options) => {
   const firstChildren = group.children[0];
   const firstChildrenPoints = pathDataToPolys(
     firstChildren.attributes.d,
-    pathDataToPolysOptions
+    pathDataToPolysOptions,
   )[0].join(" ");
   const totalChildren = group.children.filter(
-    (ch) => ch.name === "path"
+    (ch) => ch.name === "path",
   ).length;
 
   const isLine = options.type === "Line";
@@ -124,7 +124,7 @@ const animateGroup = (group, options) => {
     const values = group.children.map((child) => {
       return pathDataToPolys(
         child.attributes.d,
-        pathDataToPolysOptions
+        pathDataToPolysOptions,
       )[0].join(" ");
     });
 
@@ -158,7 +158,7 @@ const handleChildren = (child, options) => {
   // Animate the svg groups
   if (child.name === "g" && child.children.length) {
     const isGroupOfPaths = child.children.every(
-      (child) => child.name === "path"
+      (child) => child.name === "path",
     );
     const isGroupOfGroups = child.children.every((child) => child.name === "g");
 
@@ -175,7 +175,7 @@ const handleChildren = (child, options) => {
       child = animateGroup(child, localOptions);
     } else {
       child.children = child.children.map((ch) =>
-        handleChildren(ch, localOptions)
+        handleChildren(ch, localOptions),
       );
     }
   }
@@ -208,7 +208,7 @@ const getOptionsFromId = (groupId) => {
       (part) =>
         !part.startsWith("Effect") &&
         !part.startsWith("Duration") &&
-        !part.startsWith("Type")
+        !part.startsWith("Type"),
     )
     .find(Boolean);
 

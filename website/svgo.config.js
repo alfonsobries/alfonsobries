@@ -37,10 +37,12 @@ module.exports = {
             const { id } = node.attributes;
 
             if (id?.startsWith("Light.")) {
-              node.children.forEach((child) => addClasses(child, "dark:hidden"));
+              node.children.forEach((child) =>
+                addClasses(child, "dark:hidden"),
+              );
             } else if (id?.startsWith("Dark.")) {
               node.children.forEach((child) =>
-                addClasses(child, "hidden dark:block")
+                addClasses(child, "hidden dark:block"),
               );
             }
           },

@@ -82,7 +82,7 @@ export default function Labs({ pagination }: Props) {
 
           <div className="space-y-8">
             {pagination.data.map((project) => (
-              <div key={project.id} className="mt-8 space-y-4 ">
+              <div key={project.id} className="mt-8 space-y-4">
                 <h2 className="text-2xl font-bold dark:text-gray-200">
                   <a className="hover:underline" href={project.url}>
                     {project.title[locale as LocaleCode]}
@@ -100,7 +100,7 @@ export default function Labs({ pagination }: Props) {
                   </a>
                 </div>
                 <div
-                  className="prose text-sm dark:prose-invert"
+                  className="prose dark:prose-invert text-sm"
                   dangerouslySetInnerHTML={{
                     __html: project.description[locale as LocaleCode],
                   }}
@@ -138,7 +138,7 @@ export default function Labs({ pagination }: Props) {
             <div
               className={classNames(
                 BORDER_COLOR,
-                "mt-8 flex flex-col items-center space-y-2 border-t pt-8"
+                "mt-8 flex flex-col items-center space-y-2 border-t pt-8",
               )}
             >
               <span className="flex space-x-3">

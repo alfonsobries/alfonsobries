@@ -11,6 +11,8 @@
     "start": "next start",
     "typecheck": "tsc",
     "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "svg-optimize": "svgo -f ./public/images -o ./public/images",
     "svg-animate": "svgo --config ./svgo.animate.config.js -f ./assets/animations -o ./public/images",
     "prepare": "pnpm svg-optimize && pnpm typecheck && pnpm lint"

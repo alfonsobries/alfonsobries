@@ -85,7 +85,7 @@ export async function getStaticProps({ params, locale }: Params) {
     params.slug,
     params.secret,
     ["title", "meta_description", "excerpt", "body", "published_at", "slug"],
-    locale
+    locale,
   );
 
   const content = await markdownToHtml(post.body || "");
@@ -100,7 +100,7 @@ export async function getStaticProps({ params, locale }: Params) {
   };
 }
 
-export async function getStaticPaths({ locales }) {
+export async function getStaticPaths({ locales }: { locales: LocaleCode[] }) {
   const secretPath = process.env.SECRET_PREFIX;
 
   if (secretPath === undefined) {
