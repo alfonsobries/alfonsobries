@@ -72,7 +72,8 @@
     "local:install": "ios-deploy --bundle ./build/dev-client.ipa",
     "ios:build:production": "eas build --platform ios --local --output ./build/app.ipa --profile production --freeze-credentials --non-interactive",
     "ios:submit": "eas submit --platform ios --path ./build/app.ipa --profile production --non-interactive",
-    "ios:release": "pnpm ios:build:production && pnpm ios:submit"
+    "ios:release": "pnpm ios:build:production && pnpm ios:submit",
+    "ota:production": "eas update --channel production --environment production --message \"Production release\" --non-interactive"
   },
   "name": "app"
 }

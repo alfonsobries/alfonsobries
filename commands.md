@@ -70,8 +70,11 @@ JS build tooling (pnpm — Vite/Nova components, Puppeteer for the resume PDF):
 
 ### OTA updates
 
-- Pushing to `main` with changes under `app/**` ships an OTA update to the
-  `production` channel via the `eas-update-production.yml` EAS Workflow.
+- `pnpm ota:production` — publish an OTA update to the `production` channel
+  straight from your machine (bundles locally, no EAS worker needed). The
+  reliable fallback when the cloud workflow is stuck waiting for a worker.
+- Pushing to `main` with changes under `app/**` also triggers the
+  `eas-update-production.yml` EAS Workflow, which needs an available EAS worker.
 - `eas workflow:run create-production-builds.yml` — trigger a full production build.
 
 ## Documentation (repo root)
