@@ -3,6 +3,7 @@
 *.pem
 *~lock~
 logs/
+node_modules/
 
 # claude
 CLAUDE.local.md
