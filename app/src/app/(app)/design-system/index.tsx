@@ -30,6 +30,11 @@ const CATEGORIES = [
     subtitle: 'Form sheets',
     href: '/design-system/overlays',
   },
+  {
+    title: 'Moods',
+    subtitle: 'The 1–9 expression scale for each person',
+    href: '/design-system/moods',
+  },
 ] as const;
 
 export default function DesignSystemIndex() {
