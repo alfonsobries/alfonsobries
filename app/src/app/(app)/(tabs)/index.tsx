@@ -13,7 +13,7 @@ const AVATARS: Record<FamilyMember, typeof AlfonsoAvatar> = {
 export default function HomeScreen() {
   const { user } = useAuth();
   const firstName = user?.name?.split(' ')[0];
-  const greeting = firstName ? `Hey ${firstName}` : "Welcome to Alfonso's App";
+  const greeting = firstName ? `Hey ${firstName} 👋` : "Welcome to Alfonso's App";
   const Avatar = AVATARS[user?.family_member ?? 'alfonso'];
 
   return (
