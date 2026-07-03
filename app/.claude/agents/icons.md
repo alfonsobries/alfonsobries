@@ -29,10 +29,21 @@ those are pre-rendered to PNGs:
 
 ## Avatar / brand art
 
-Alfonso's likeness, available as SVGs in `assets/` for in-app use (about
-screens, empty states, headers…):
+SVGs in `assets/` for in-app use (about screens, empty states, headers…). When a
+feature asks to show "their avatar", pick the person's file here.
 
-- `me.svg` — full-body avatar.
-- `face.svg` — just the face.
-- `face-simple.svg` — flat, simplified face; the version the app icon is built
-  from.
+**Family avatars** (the primary set — full-body likeness of each person):
+
+- `me.svg` — Alfonso.
+- `saida.svg` — Saida (Alfonso's wife).
+- `andres.svg` — Andrés.
+- `regina.svg` — Regina.
+
+**Alfonso's personal avatar**:
+
+- `face.svg` — Alfonso's face only (no body).
+
+**App icon source**:
+
+- `face-simple.svg` — flat, simplified face; the artwork the app icon is built
+  from. Not a per-person avatar.
