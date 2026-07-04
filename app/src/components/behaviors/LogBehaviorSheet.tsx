@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { HandPalm, LockKey, Smiley } from 'phosphor-react-native';
+import { HandPalm, LockKey } from 'phosphor-react-native';
 import { useState, type ReactNode } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -11,7 +11,6 @@ import { getPerson } from '@/api/family';
 import { useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
-import { pickEmoji } from '@/components/ui/emoji-keyboard';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 type LogBehaviorSheetProperties = {
@@ -19,8 +18,8 @@ type LogBehaviorSheetProperties = {
 };
 
 // The confirmation sheet after tapping a behavior tile. A parent unlocks it
-// with Face ID, says whether it hit their mood (optionally picking the emoji
-// the kids will see in the feed), and the log is saved.
+// with Face ID, says whether it hit their mood, and the log is saved — the
+// feed then shows their avatar (and a sad face when it did).
 export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): ReactNode {
   const insets = useSafeAreaInsets();
   const route = useApiRouter();
@@ -29,7 +28,6 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
 
   const [unlocked, setUnlocked] = useState(false);
   const [affectedMood, setAffectedMood] = useState<boolean | null>(null);
-  const [emoji, setEmoji] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const kidName = getPerson(behavior.family_member)?.name ?? behavior.family_member;
@@ -45,13 +43,6 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
     }
   }
 
-  async function handlePickEmoji(): Promise<void> {
-    const picked = await pickEmoji();
-    if (picked) {
-      setEmoji(picked);
-    }
-  }
-
   async function handleSave(): Promise<void> {
     if (affectedMood === null) {
       return;
@@ -61,7 +52,6 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
     try {
       await logBehavior(route, behavior.id, {
         affected_mood: affectedMood,
-        mood_emoji: affectedMood ? emoji : null,
       });
       // Logging may have lowered the parent's mood on the API side.
       await refreshMoods();
@@ -111,24 +101,6 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
                 onPress={() => setAffectedMood(true)}
               />
             </View>
-
-            {affectedMood ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Pick the emoji the kids will see"
-                onPress={() => void handlePickEmoji()}
-                className="flex-row items-center justify-center gap-2 rounded-2xl bg-surface px-4 py-3 active:opacity-80"
-              >
-                {emoji ? (
-                  <Text className="text-2xl">{emoji}</Text>
-                ) : (
-                  <Smiley size={24} color={accent} />
-                )}
-                <Text className="text-base text-foreground">
-                  {emoji ? 'Change the emoji' : 'Pick an emoji for the feed (optional)'}
-                </Text>
-              </Pressable>
-            ) : null}
 
             <Button
               fullWidth

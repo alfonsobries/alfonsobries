@@ -4,6 +4,7 @@ import { Alert, Pressable, Text, View } from 'react-native';
 
 import type { BehaviorLogEntry } from '@/api/behaviors';
 import { getPerson } from '@/api/family';
+import { AvatarCircle } from '@/components/family/AvatarCircle';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 type BehaviorFeedProperties = {
@@ -13,9 +14,10 @@ type BehaviorFeedProperties = {
   onUndo?: (entry: BehaviorLogEntry) => void;
 };
 
-// The history of logged behaviors, newest first. Each row shows the emoji the
-// parent picked so the kids can see how it landed. Long-press a row to undo
-// an accidental tap.
+// The history of logged behaviors, newest first. The behavior's illustration
+// leads each row; the parent who logged it floats on it as a small avatar,
+// with a sad face when it hit their mood. Long-press a row to undo an
+// accidental tap.
 export function BehaviorFeed({ entries, showKid = false, onUndo }: BehaviorFeedProperties) {
   const muted = useThemeColor('muted');
 
@@ -57,7 +59,7 @@ function FeedRow({
   const accent = useThemeColor('primary-emphasis');
 
   const kidName = getPerson(entry.family_member)?.name ?? entry.family_member;
-  const loggerName = entry.logged_by.name?.split(' ')[0];
+  const logger = getPerson(entry.logged_by.family_member ?? undefined);
   const title = showKid ? `${kidName} — ${entry.behavior.name}` : entry.behavior.name;
 
   function handleLongPress(): void {
@@ -79,16 +81,28 @@ function FeedRow({
         divider ? 'border-t border-border' : ''
       }`}
     >
-      <View className="size-12 items-center justify-center overflow-hidden rounded-xl bg-surface-selected">
-        {entry.behavior.image_url ? (
-          <Image
-            source={{ uri: entry.behavior.image_url }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-          />
-        ) : (
-          <HandPalm size={22} color={accent} weight="fill" />
-        )}
+      {/* The illustration is the story; the parent who logged it floats on
+          its corner, with a sad face when it hit their mood. */}
+      <View className="relative">
+        <View className="size-16 items-center justify-center overflow-hidden rounded-xl bg-surface-selected">
+          {entry.behavior.image_url ? (
+            <Image
+              source={{ uri: entry.behavior.image_url }}
+              style={{ width: '100%', height: '100%' }}
+              contentFit="cover"
+            />
+          ) : (
+            <HandPalm size={26} color={accent} weight="fill" />
+          )}
+        </View>
+        {logger ? (
+          <View className="absolute -bottom-1.5 -right-1.5 flex-row items-center">
+            <View className="rounded-full border-2 border-surface">
+              <AvatarCircle person={logger.key} size={24} />
+            </View>
+            {entry.affected_mood ? <Text className="-ml-1.5 text-sm">😢</Text> : null}
+          </View>
+        ) : null}
       </View>
 
       <View className="flex-1 gap-0.5">
@@ -97,11 +111,8 @@ function FeedRow({
         </Text>
         <Text className="text-sm text-muted" numberOfLines={1}>
           {timeAgo(entry.created_at)}
-          {loggerName ? ` · by ${loggerName}` : ''}
         </Text>
       </View>
-
-      {entry.affected_mood ? <Text className="text-xl">{entry.mood_emoji ?? '💔'}</Text> : null}
     </Pressable>
   );
 }
