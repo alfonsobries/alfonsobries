@@ -57,6 +57,23 @@ class BehaviorIllustration extends Model
     }
 
     /**
+     * The shape the app receives, both over HTTP and on the broadcast channel.
+     *
+     * @return array{id: int, name: string, status: string, path: string|null, url: string|null, error: string|null}
+     */
+    public function toApiPayload(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'status' => $this->status,
+            'path' => $this->isCompleted() ? $this->path : null,
+            'url' => $this->url(),
+            'error' => $this->error,
+        ];
+    }
+
+    /**
      * A short-lived URL for previewing the generated image in the app.
      */
     public function url(): ?string

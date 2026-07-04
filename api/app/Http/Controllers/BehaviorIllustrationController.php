@@ -63,13 +63,6 @@ class BehaviorIllustrationController extends Controller
      */
     private function present(BehaviorIllustration $illustration): array
     {
-        return [
-            'id' => $illustration->id,
-            'name' => $illustration->name,
-            'status' => $illustration->status,
-            'path' => $illustration->isCompleted() ? $illustration->path : null,
-            'url' => $illustration->url(),
-            'error' => $illustration->error,
-        ];
+        return $illustration->toApiPayload();
     }
 }

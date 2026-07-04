@@ -23,6 +23,7 @@
         "laravel/tinker": "^3.0",
         "league/flysystem-aws-s3-v3": "^3.0",
         "outl1ne/nova-sortable": "^4.0",
+        "pusher/pusher-php-server": "^7.2",
         "spatie/browsershot": "^5.0",
         "spatie/laravel-medialibrary": "^11.9",
         "spatie/laravel-sluggable": "^4.0",

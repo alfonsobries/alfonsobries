@@ -1,13 +1,17 @@
 <?php
 
+use App\Events\BehaviorIllustrationUpdated;
+use App\Jobs\GenerateBehaviorIllustration;
 use App\Models\BehaviorIllustration;
 use App\Models\User;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Ai\Image;
 
 it('generates an illustration and stores it in temp storage', function () {
     Storage::fake('s3')->buildTemporaryUrlsUsing(fn (string $path): string => "https://s3.test/{$path}");
     Image::fake();
+    Event::fake([BehaviorIllustrationUpdated::class]);
 
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
@@ -23,9 +27,40 @@ it('generates an illustration and stores it in temp storage', function () {
     Image::assertGenerated(fn ($generation): bool => str_contains($generation->prompt, 'Shouting'));
 });
 
+it('broadcasts when the generation completes', function () {
+    Storage::fake('s3');
+    Image::fake();
+    Event::fake([BehaviorIllustrationUpdated::class]);
+
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $response = $this->actingAs($alfonso)
+        ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Shouting'])
+        ->assertCreated();
+
+    Event::assertDispatched(
+        BehaviorIllustrationUpdated::class,
+        fn (BehaviorIllustrationUpdated $event): bool => $event->illustration->id === $response->json('data.id')
+            && $event->broadcastOn()[0]->name === 'private-behavior-illustration.'.$response->json('data.id'),
+    );
+});
+
+it('broadcasts when the generation fails', function () {
+    Event::fake([BehaviorIllustrationUpdated::class]);
+
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $illustration = BehaviorIllustration::factory()->create(['user_id' => $alfonso->id]);
+
+    (new GenerateBehaviorIllustration($illustration))->failed(new RuntimeException('no access to model'));
+
+    expect($illustration->fresh()->status)->toBe(BehaviorIllustration::STATUS_FAILED);
+    Event::assertDispatched(BehaviorIllustrationUpdated::class);
+});
+
 it('sends the style guide with every generation', function () {
     Storage::fake('s3');
     Image::fake();
+    Event::fake([BehaviorIllustrationUpdated::class]);
 
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\BehaviorIllustrationUpdated;
 use App\Models\BehaviorIllustration;
 use Illuminate\Support\Facades\File as FileSystem;
 use Illuminate\Support\Str;
@@ -47,6 +48,8 @@ class BehaviorIllustrator
             'path' => $path,
             'error' => null,
         ]);
+
+        BehaviorIllustrationUpdated::dispatch($illustration);
     }
 
     private function composePrompt(string $subject): string

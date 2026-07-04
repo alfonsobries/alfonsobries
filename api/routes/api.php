@@ -18,6 +18,7 @@ use App\Http\Controllers\TempFileController;
 use App\Http\Controllers\TestNotificationController;
 use App\Http\Controllers\TypoFormController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/status', StatusController::class)->name('status');
@@ -51,6 +52,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/behavior-illustrations/{behaviorIllustration}', [BehaviorIllustrationController::class, 'show'])->name('behavior-illustrations.show');
 
     Route::post('/temp-files/presign', [TempFileController::class, 'presign'])->name('temp-files.presign');
+
+    // The framework's /broadcasting/auth route is session-guarded; this one
+    // authorizes the app's private channels with a Sanctum bearer token.
+    Route::post('/broadcasting/auth', fn (Request $request) => Broadcast::auth($request))->name('broadcasting.auth');
 });
 
 Route::name('articles.')

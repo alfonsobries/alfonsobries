@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\BehaviorIllustrationUpdated;
 use App\Models\BehaviorIllustration;
 use App\Services\BehaviorIllustrator;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,5 +35,7 @@ class GenerateBehaviorIllustration implements ShouldQueue
             'status' => BehaviorIllustration::STATUS_FAILED,
             'error' => $exception?->getMessage() ?? 'Generation failed.',
         ]);
+
+        BehaviorIllustrationUpdated::dispatch($this->illustration);
     }
 }
