@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasIllustration;
-use Database\Factories\BehaviorFactory;
+use Database\Factories\ChoreFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,11 +11,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
- * A behavior a kid is working on — the thing a parent taps when it happens.
+ * A daily routine a kid is building — the positive mirror of a behavior.
+ * The kid checks it off during the day; a parent reviews in the evening.
  */
-class Behavior extends Model implements HasMedia
+class Chore extends Model implements HasMedia
 {
-    /** @use HasFactory<BehaviorFactory> */
+    /** @use HasFactory<ChoreFactory> */
     use HasFactory;
 
     use HasIllustration;
@@ -38,10 +39,10 @@ class Behavior extends Model implements HasMedia
     ];
 
     /**
-     * @return HasMany<BehaviorLog, $this>
+     * @return HasMany<ChoreLog, $this>
      */
     public function logs(): HasMany
     {
-        return $this->hasMany(BehaviorLog::class);
+        return $this->hasMany(ChoreLog::class);
     }
 }
