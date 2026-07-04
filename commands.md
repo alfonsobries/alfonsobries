@@ -45,6 +45,7 @@ PHP (composer):
 - `composer fix` — format with Laravel Pint (`./vendor/bin/pint`)
 - `composer lint` — Pint in check-only mode (`./vendor/bin/pint --test`)
 - `php artisan …` — the usual Laravel CLI
+- `php artisan illustrate "…" [--member=] [--out=]` — generate art with the family style guides ([docs/illustrations.md](docs/illustrations.md))
 
 JS build tooling (pnpm — Vite/Nova components, Puppeteer for the resume PDF):
 

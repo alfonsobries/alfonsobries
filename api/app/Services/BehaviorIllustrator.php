@@ -63,6 +63,48 @@ class BehaviorIllustrator
         BehaviorIllustrationUpdated::dispatch($illustration);
     }
 
+    /**
+     * Freeform generation in the family's visual language, for tooling and
+     * one-off art. With a member, their character sheet leads the scene;
+     * without one, the style still applies but the scene stays object-only.
+     * Returns the raw image bytes.
+     */
+    public function illustrate(?string $member, string $subject): string
+    {
+        $referenceMember = $member ?? 'alfonso';
+        $references = $this->referenceImages($referenceMember);
+
+        $parts = [];
+
+        if ($references !== []) {
+            $parts[] = $member === null
+                ? 'Use the attached image ONLY as a reference for line style and palette.'
+                : 'Use the attached image as the canonical character and style reference sheet.';
+        }
+
+        $parts[] = $this->stylePrompt();
+
+        if ($member !== null && ($character = $this->characterPrompt($member)) !== null) {
+            $parts[] = $character;
+        }
+
+        $parts[] = 'Subject: '.trim($subject).($member === null
+            ? ' Strictly NO people, NO characters, NO faces — an object-only illustration.'
+            : '');
+
+        $image = Image::of(implode(' ', $parts))
+            ->attachments($references)
+            ->square()
+            ->quality(config('site.illustrations.quality'))
+            ->timeout(self::TIMEOUT)
+            ->generate(
+                Lab::from(config('site.illustrations.provider')),
+                config('site.illustrations.model'),
+            );
+
+        return $image->firstImage()->content();
+    }
+
     private function composePrompt(BehaviorIllustration $illustration): string
     {
         $member = $illustration->family_member;
