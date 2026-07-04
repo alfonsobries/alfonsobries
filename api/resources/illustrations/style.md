@@ -3,8 +3,9 @@
 This file is the style prompt for AI-generated behavior illustrations. The
 `BehaviorIllustrator` service collapses it into a single paragraph and prepends
 it to every generation request, so keep it written as generation-ready prose.
-Reference images dropped into `references/` are attached to every request as
-canonical style samples.
+The canonical style reference image — a single guide with the colors, line
+style and characters — lives next to this file as `style-reference.png` (jpg
+and webp also work) and is attached to every request when present.
 
 Friendly flat vector illustration for a young child, in a warm and calm
 children's book style. Clean simple shapes with soft rounded corners and a

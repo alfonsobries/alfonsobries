@@ -12,14 +12,17 @@ use Laravel\Ai\Image;
 
 /**
  * Generates the kid-friendly illustration for a behavior. The visual language
- * lives in resources/illustrations/style.md; any images dropped into
- * resources/illustrations/references/ are attached as canonical style samples.
+ * lives in resources/illustrations/style.md, and the single canonical style
+ * reference image (colors, line style, characters) sits next to it as
+ * style-reference.png — attached to every request when present.
  */
 class BehaviorIllustrator
 {
     private const STYLE_GUIDE = 'illustrations/style.md';
 
-    private const REFERENCES_DIR = 'illustrations/references';
+    private const STYLE_REFERENCE = 'illustrations/style-reference';
+
+    private const STYLE_REFERENCE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp'];
 
     /**
      * Image edits with reference images regularly take 40-90s, longer under
@@ -57,7 +60,7 @@ class BehaviorIllustrator
         $style = $this->stylePrompt();
 
         if ($this->referenceImages() !== []) {
-            $style = 'Use the attached images as the canonical style reference. '.$style;
+            $style = 'Use the attached image as the canonical style reference. '.$style;
         }
 
         return $style.' Subject: a child doing "'.trim($subject).'".';
@@ -80,20 +83,20 @@ class BehaviorIllustrator
     }
 
     /**
+     * The canonical style reference, when it has been dropped in place.
+     *
      * @return array<int, Files\Image>
      */
     private function referenceImages(): array
     {
-        $directory = resource_path(self::REFERENCES_DIR);
+        foreach (self::STYLE_REFERENCE_EXTENSIONS as $extension) {
+            $path = resource_path(self::STYLE_REFERENCE.'.'.$extension);
 
-        if (! FileSystem::isDirectory($directory)) {
-            return [];
+            if (FileSystem::exists($path)) {
+                return [Files\Image::fromPath($path)];
+            }
         }
 
-        return collect(FileSystem::files($directory))
-            ->filter(fn ($file): bool => in_array(strtolower($file->getExtension()), ['png', 'jpg', 'jpeg', 'webp'], true))
-            ->map(fn ($file): Files\Image => Files\Image::fromPath($file->getPathname()))
-            ->values()
-            ->all();
+        return [];
     }
 }
