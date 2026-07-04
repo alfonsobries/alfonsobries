@@ -16,7 +16,24 @@ export default function AppLayout() {
           options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
         />
         <Stack.Screen
+          name="behaviors/manage"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
+        <Stack.Screen
+          name="behaviors/edit"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
+        <Stack.Screen
           name="mood"
+          options={{
+            presentation: 'formSheet',
+            sheetAllowedDetents: [0.85],
+            sheetGrabberVisible: true,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="behavior-log"
           options={{
             presentation: 'formSheet',
             sheetAllowedDetents: [0.85],

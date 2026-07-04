@@ -36,6 +36,11 @@ const CATEGORIES = [
     href: '/design-system/inputs',
   },
   {
+    title: 'Media',
+    subtitle: 'Image upload, behavior tiles and feed',
+    href: '/design-system/media',
+  },
+  {
     title: 'Navigation',
     subtitle: 'Segmented control',
     href: '/design-system/navigation',
