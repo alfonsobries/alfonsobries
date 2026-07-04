@@ -1,4 +1,5 @@
 import { Button as MenuButton, Host, Image as MenuIcon, Menu } from '@expo/ui/swift-ui';
+import { contentShape, frame, shapes } from '@expo/ui/swift-ui/modifiers';
 import { router } from 'expo-router';
 import * as LocalAuthentication from 'expo-local-authentication';
 
@@ -24,16 +25,24 @@ export function KidHeaderMenu({ member }: { member: KidMember }) {
   }
 
   return (
-    <Host matchContents>
+    // A fixed 44pt host: `matchContents` measures late, which left the first
+    // taps landing on a zero-sized view.
+    <Host style={{ width: 44, height: 44 }}>
       {/* Plain "…" tinted like the other header items — the default renders
-          as a blue circled glyph that doesn't match the native chrome. */}
-      <Menu label={<MenuIcon systemName="ellipsis" color={tint} size={17} />}>
-        <Menu label="Chores" systemImage="checkmark.circle">
-          <MenuButton
-            label="Review today"
-            systemImage="moon.stars"
-            onPress={() => router.push({ pathname: '/chores-review', params: { member } })}
+          as a blue circled glyph that doesn't match the native chrome. The
+          frame + contentShape make the whole 44pt square hit-testable, not
+          just the tiny glyph. */}
+      <Menu
+        label={
+          <MenuIcon
+            systemName="ellipsis"
+            color={tint}
+            size={17}
+            modifiers={[frame({ width: 44, height: 44 }), contentShape(shapes.rectangle())]}
           />
+        }
+      >
+        <Menu label="Chores" systemImage="checkmark.circle">
           <MenuButton
             label="Add chore"
             systemImage="plus"

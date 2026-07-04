@@ -1,4 +1,5 @@
-import { Redirect, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { Redirect, router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { LockKey } from 'phosphor-react-native';
 import { useCallback, useState } from 'react';
 import { Alert, ScrollView, Text } from 'react-native';
 
@@ -6,6 +7,7 @@ import { checkChore, fetchChores, uncheckChore, type Chore } from '@/api/chores'
 import { getPerson, isKid } from '@/api/family';
 import { useApiRouter } from '@/api/router';
 import { ChoreChecklist } from '@/components/chores/ChoreChecklist';
+import { Button } from '@/components/ui/Button';
 
 // Today's full checklist, opened from the kid's profile. The kids check each
 // chore in the moment they do it; parents confirm later in the evening
@@ -91,6 +93,18 @@ export default function ChoresTodayScreen() {
           />
         ) : loaded ? (
           <Text className="py-6 text-center text-sm text-muted">No chores yet.</Text>
+        ) : null}
+
+        {chores.length > 0 ? (
+          // The parents' evening pass lives here, next to the day it reviews.
+          // The review sheet asks for Face ID itself.
+          <Button
+            variant="outline"
+            icon={LockKey}
+            onPress={() => router.push({ pathname: '/chores-review', params: { member: kid } })}
+          >
+            Parents: review the day
+          </Button>
         ) : null}
       </ScrollView>
     </>
