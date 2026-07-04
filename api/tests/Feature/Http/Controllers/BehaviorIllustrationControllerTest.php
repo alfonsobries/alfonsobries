@@ -16,7 +16,7 @@ it('generates an illustration and stores it in temp storage', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
     $response = $this->actingAs($alfonso)
-        ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Shouting'])
+        ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Shouting', 'family_member' => 'regina'])
         ->assertCreated();
 
     // The sync test queue runs the generation inline, so it's already done.
@@ -27,6 +27,23 @@ it('generates an illustration and stores it in temp storage', function () {
     Image::assertGenerated(fn ($generation): bool => str_contains($generation->prompt, 'Shouting'));
 });
 
+it('draws the kid the behavior belongs to', function () {
+    Storage::fake('s3');
+    Image::fake();
+    Event::fake([BehaviorIllustrationUpdated::class]);
+
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Tantrum', 'family_member' => 'andres'])
+        ->assertCreated();
+
+    Image::assertGenerated(
+        fn ($generation): bool => str_contains($generation->prompt, 'Andrés')
+            && str_contains($generation->prompt, 'Main character: Andrés'),
+    );
+});
+
 it('broadcasts when the generation completes', function () {
     Storage::fake('s3');
     Image::fake();
@@ -35,7 +52,7 @@ it('broadcasts when the generation completes', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
     $response = $this->actingAs($alfonso)
-        ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Shouting'])
+        ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Shouting', 'family_member' => 'regina'])
         ->assertCreated();
 
     Event::assertDispatched(
@@ -65,10 +82,10 @@ it('sends the style guide with every generation', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
     $this->actingAs($alfonso)
-        ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Hitting'])
+        ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Hitting', 'family_member' => 'regina'])
         ->assertCreated();
 
-    Image::assertGenerated(fn ($generation): bool => str_contains($generation->prompt, 'flat vector illustration'));
+    Image::assertGenerated(fn ($generation): bool => str_contains($generation->prompt, 'hand-drawn illustration'));
 });
 
 it('shows a pending illustration while it is still generating', function () {
@@ -98,24 +115,24 @@ it('reports a failed generation', function () {
         ->assertJsonPath('data.error', 'Generation failed.');
 });
 
-it('validates the illustration name', function () {
+it('validates the illustration payload', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
     $this->actingAs($alfonso)
-        ->postJson(route('api.behavior-illustrations.store'), ['name' => ''])
+        ->postJson(route('api.behavior-illustrations.store'), ['name' => '', 'family_member' => 'saida'])
         ->assertUnprocessable()
-        ->assertJsonValidationErrorFor('name');
+        ->assertJsonValidationErrors(['name', 'family_member']);
 });
 
 it('forbids a non family member from generating illustrations', function () {
     $stranger = User::factory()->create(['family_member' => null]);
 
     $this->actingAs($stranger)
-        ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Shouting'])
+        ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Shouting', 'family_member' => 'regina'])
         ->assertForbidden();
 });
 
 it('requires authentication', function () {
-    $this->postJson(route('api.behavior-illustrations.store'), ['name' => 'Shouting'])
+    $this->postJson(route('api.behavior-illustrations.store'), ['name' => 'Shouting', 'family_member' => 'regina'])
         ->assertUnauthorized();
 });

@@ -102,6 +102,7 @@ export default function EditBehaviorScreen() {
 
         <IllustrationField
           ref={illustrationRef}
+          member={kid}
           name={name}
           value={illustration}
           onChange={setIllustration}

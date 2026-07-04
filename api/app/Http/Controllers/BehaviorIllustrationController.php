@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Jobs\GenerateBehaviorIllustration;
 use App\Models\BehaviorIllustration;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Throwable;
 
 class BehaviorIllustrationController extends Controller
@@ -22,10 +24,12 @@ class BehaviorIllustrationController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
+            'family_member' => ['required', Rule::in(User::KID_MEMBERS)],
         ]);
 
         $illustration = BehaviorIllustration::create([
             'user_id' => $request->user()->id,
+            'family_member' => $validated['family_member'],
             'name' => $validated['name'],
         ]);
 

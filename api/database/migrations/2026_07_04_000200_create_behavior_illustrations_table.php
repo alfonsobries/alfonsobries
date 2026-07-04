@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('behavior_illustrations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
+            $table->string('family_member');
             $table->string('name');
             $table->string('status')->default('pending');
             $table->string('path')->nullable();

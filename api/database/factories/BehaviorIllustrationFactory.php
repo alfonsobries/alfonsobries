@@ -17,6 +17,7 @@ class BehaviorIllustrationFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
+            'family_member' => $this->faker->randomElement(User::KID_MEMBERS),
             'name' => $this->faker->words(2, true),
             'status' => BehaviorIllustration::STATUS_PENDING,
             'path' => null,

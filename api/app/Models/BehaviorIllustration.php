@@ -37,6 +37,7 @@ class BehaviorIllustration extends Model
      */
     protected $fillable = [
         'user_id',
+        'family_member',
         'name',
         'status',
         'path',

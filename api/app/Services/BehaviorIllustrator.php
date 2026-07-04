@@ -11,18 +11,26 @@ use Laravel\Ai\Files;
 use Laravel\Ai\Image;
 
 /**
- * Generates the kid-friendly illustration for a behavior. The visual language
- * lives in resources/illustrations/style.md, and the single canonical style
- * reference image (colors, line style, characters) sits next to it as
- * style-reference.png — attached to every request when present.
+ * Generates the kid-friendly illustration for a behavior. The shared visual
+ * language lives in resources/illustrations/style-base.md; each family member
+ * adds their own character prompt (character-<member>.md) and style reference
+ * sheet (<member>-style-reference.png), both attached per generation.
  */
 class BehaviorIllustrator
 {
-    private const STYLE_GUIDE = 'illustrations/style.md';
+    private const STYLE_BASE = 'illustrations/style-base.md';
 
-    private const STYLE_REFERENCE = 'illustrations/style-reference';
+    private const REFERENCE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp'];
 
-    private const STYLE_REFERENCE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp'];
+    /**
+     * How each member is named inside the prompts.
+     */
+    private const DISPLAY_NAMES = [
+        'regina' => 'Regina',
+        'andres' => 'Andrés',
+        'saida' => 'Saida',
+        'alfonso' => 'Alfonso',
+    ];
 
     /**
      * Image edits with reference images regularly take 40-90s, longer under
@@ -34,8 +42,8 @@ class BehaviorIllustrator
     {
         $illustration->update(['status' => BehaviorIllustration::STATUS_GENERATING]);
 
-        $image = Image::of($this->composePrompt($illustration->name))
-            ->attachments($this->referenceImages())
+        $image = Image::of($this->composePrompt($illustration))
+            ->attachments($this->referenceImages($illustration->family_member))
             ->square()
             ->quality(config('site.illustrations.quality'))
             ->timeout(self::TIMEOUT)
@@ -55,24 +63,40 @@ class BehaviorIllustrator
         BehaviorIllustrationUpdated::dispatch($illustration);
     }
 
-    private function composePrompt(string $subject): string
+    private function composePrompt(BehaviorIllustration $illustration): string
     {
-        $style = $this->stylePrompt();
+        $member = $illustration->family_member;
+        $name = self::DISPLAY_NAMES[$member] ?? Str::ucfirst($member);
 
-        if ($this->referenceImages() !== []) {
-            $style = 'Use the attached image as the canonical style reference. '.$style;
+        $parts = [$this->stylePrompt()];
+
+        if ($this->referenceImages($member) !== []) {
+            array_unshift($parts, 'Use the attached image as the canonical character and style reference sheet.');
         }
 
-        return $style.' Subject: a child doing "'.trim($subject).'".';
+        if (($character = $this->characterPrompt($member)) !== null) {
+            $parts[] = $character;
+        }
+
+        $parts[] = sprintf(
+            'Subject: the behavior "%s". Show %s doing it in a gentle, didactic, kid-friendly way that a 4-6 year old '
+            .'instantly recognizes — cartoonish energy, never aggression, fear or shame. If a simple symbolic scene '
+            .'with one or two props from the reference sheet communicates the behavior better than the character, '
+            .'draw that prop-only scene in the same style instead.',
+            trim($illustration->name),
+            $name,
+        );
+
+        return implode(' ', $parts);
     }
 
     /**
-     * The style guide markdown collapsed into a single generation-ready
+     * The shared style guide collapsed into a single generation-ready
      * paragraph — everything after the heading and intro notes.
      */
     private function stylePrompt(): string
     {
-        $contents = FileSystem::get(resource_path(self::STYLE_GUIDE));
+        $contents = FileSystem::get(resource_path(self::STYLE_BASE));
 
         $paragraphs = collect(explode("\n\n", $contents))
             ->map(fn (string $block): string => trim(Str::squish($block)))
@@ -83,14 +107,28 @@ class BehaviorIllustrator
     }
 
     /**
-     * The canonical style reference, when it has been dropped in place.
+     * The member's short character sheet, when it exists.
+     */
+    private function characterPrompt(string $member): ?string
+    {
+        $path = resource_path("illustrations/character-{$member}.md");
+
+        if (! FileSystem::exists($path)) {
+            return null;
+        }
+
+        return Str::squish(FileSystem::get($path));
+    }
+
+    /**
+     * The member's style reference sheet, when it has been dropped in place.
      *
      * @return array<int, Files\Image>
      */
-    private function referenceImages(): array
+    private function referenceImages(string $member): array
     {
-        foreach (self::STYLE_REFERENCE_EXTENSIONS as $extension) {
-            $path = resource_path(self::STYLE_REFERENCE.'.'.$extension);
+        foreach (self::REFERENCE_EXTENSIONS as $extension) {
+            $path = resource_path("illustrations/{$member}-style-reference.{$extension}");
 
             if (FileSystem::exists($path)) {
                 return [Files\Image::fromPath($path)];

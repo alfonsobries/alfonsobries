@@ -123,11 +123,12 @@ export async function deleteBehaviorLog(route: ApiRoute, behaviorLog: number): P
  */
 export async function requestIllustration(
   route: ApiRoute,
+  member: KidMember,
   name: string,
 ): Promise<BehaviorIllustration> {
   const { data } = await apiClient.post<{ data: BehaviorIllustration }>(
     route('api.behavior-illustrations.store'),
-    { name },
+    { name, family_member: member },
   );
 
   return data.data;

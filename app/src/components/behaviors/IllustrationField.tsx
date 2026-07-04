@@ -8,6 +8,7 @@ import {
   isSettled,
   requestIllustration,
   type BehaviorIllustration,
+  type KidMember,
 } from '@/api/behaviors';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
@@ -28,6 +29,8 @@ export type IllustrationFieldHandle = {
 };
 
 type IllustrationFieldProperties = {
+  /** The kid the behavior belongs to — picks the character that gets drawn. */
+  member: KidMember;
   /** The behavior name the illustration is generated from. */
   name: string;
   value: IllustrationValue | null;
@@ -46,7 +49,7 @@ const GENERATION_TIMEOUT_MS = 3 * 60 * 1000;
 // name (with a busy state while the API works), can regenerate, or accepts a
 // photo of your own uploaded straight to S3.
 export const IllustrationField = forwardRef<IllustrationFieldHandle, IllustrationFieldProperties>(
-  function IllustrationField({ name, value, onChange, currentUrl, onBusyChange }, ref) {
+  function IllustrationField({ member, name, value, onChange, currentUrl, onBusyChange }, ref) {
     const route = useApiRouter();
     const accent = useThemeColor('primary-emphasis');
     const { isUploading, pickAndUpload } = useImageUpload();
@@ -114,7 +117,7 @@ export const IllustrationField = forwardRef<IllustrationFieldHandle, Illustratio
 
       setError(null);
       try {
-        const illustration = await requestIllustration(route, name.trim());
+        const illustration = await requestIllustration(route, member, name.trim());
 
         // On a sync queue the API already finished the work in the request.
         if (isSettled(illustration)) {
