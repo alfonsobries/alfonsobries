@@ -24,3 +24,7 @@ export function getPerson(key: string | undefined): Person | undefined {
 export function isMoodPerson(key: PersonKey): key is FamilyMember {
   return key === 'alfonso' || key === 'saida';
 }
+
+export function isKid(key: PersonKey): key is 'regina' | 'andres' {
+  return key === 'regina' || key === 'andres';
+}

@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AppleAuthController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\BehaviorController;
+use App\Http\Controllers\BehaviorIllustrationController;
+use App\Http\Controllers\BehaviorLogController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\DraftArticleController;
 use App\Http\Controllers\FamilyMoodController;
@@ -11,9 +14,11 @@ use App\Http\Controllers\PushTokenController;
 use App\Http\Controllers\ResumeControler;
 use App\Http\Controllers\SlugHistoryController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\TempFileController;
 use App\Http\Controllers\TestNotificationController;
 use App\Http\Controllers\TypoFormController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/status', StatusController::class)->name('status');
@@ -33,6 +38,24 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/push-tokens', [PushTokenController::class, 'store'])->name('push-tokens.store');
     Route::post('/notifications/test', TestNotificationController::class)->name('notifications.test');
+
+    Route::get('/kids/{member}/behaviors', [BehaviorController::class, 'index'])->name('kids.behaviors.index');
+    Route::post('/behaviors', [BehaviorController::class, 'store'])->name('behaviors.store');
+    Route::patch('/behaviors/{behavior}', [BehaviorController::class, 'update'])->name('behaviors.update');
+    Route::delete('/behaviors/{behavior}', [BehaviorController::class, 'destroy'])->name('behaviors.destroy');
+    Route::post('/behaviors/{behavior}/logs', [BehaviorLogController::class, 'store'])->name('behaviors.logs.store');
+
+    Route::get('/behavior-logs', [BehaviorLogController::class, 'index'])->name('behavior-logs.index');
+    Route::delete('/behavior-logs/{behaviorLog}', [BehaviorLogController::class, 'destroy'])->name('behavior-logs.destroy');
+
+    Route::post('/behavior-illustrations', [BehaviorIllustrationController::class, 'store'])->name('behavior-illustrations.store');
+    Route::get('/behavior-illustrations/{behaviorIllustration}', [BehaviorIllustrationController::class, 'show'])->name('behavior-illustrations.show');
+
+    Route::post('/temp-files/presign', [TempFileController::class, 'presign'])->name('temp-files.presign');
+
+    // The framework's /broadcasting/auth route is session-guarded; this one
+    // authorizes the app's private channels with a Sanctum bearer token.
+    Route::post('/broadcasting/auth', fn (Request $request) => Broadcast::auth($request))->name('broadcasting.auth');
 });
 
 Route::name('articles.')

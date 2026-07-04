@@ -13,7 +13,8 @@
       "autoIncrement": true,
       "channel": "production",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://api.alfonsobries.com/api"
+        "EXPO_PUBLIC_API_URL": "https://api.alfonsobries.com/api",
+        "EXPO_PUBLIC_REVERB_KEY": "key-VSrqEvxFytlOSU6pdh7XR3VGd3VMW0fg"
       }
     }
   },

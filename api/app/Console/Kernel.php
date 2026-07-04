@@ -19,9 +19,11 @@ class Kernel extends ConsoleKernel
             (new PruneStaleAttachments)();
         })->daily();
 
-        $schedule->command('alfonsobries:deploy')->everyMinute();
+        // Deploys only fire from the real server — a local scheduler must
+        // never trigger a Vercel build.
+        $schedule->command('alfonsobries:deploy')->everyMinute()->environments(['production']);
 
-        $schedule->command('alfonsobries:deploy --force')->dailyAt('00:00')->sundays();
+        $schedule->command('alfonsobries:deploy --force')->dailyAt('00:00')->sundays()->environments(['production']);
     }
 
     /**

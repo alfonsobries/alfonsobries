@@ -16,6 +16,13 @@ return [
         'alfonso_apple_id' => env('ALFONSO_APPLE_ID'),
         'saida_apple_id' => env('SAIDA_APPLE_ID'),
     ],
+    // AI-generated behavior illustrations. The model defaults to the cheapest
+    // setting that still matches the style guide; tune via env once tested.
+    'illustrations' => [
+        'provider' => env('AI_ILLUSTRATIONS_PROVIDER', 'openai'),
+        'model' => env('AI_ILLUSTRATIONS_MODEL', 'gpt-image-2'),
+        'quality' => env('AI_ILLUSTRATIONS_QUALITY', 'low'),
+    ],
     'node_binary' => env('NODE_BINARY', '/usr/local/bin/node'),
     'npm_binary' => env('NPM_BINARY', '/usr/local/bin/npm'),
 ];

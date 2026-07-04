@@ -69,6 +69,13 @@ class User extends Authenticatable
     public const MOOD_MEMBERS = ['alfonso', 'saida'];
 
     /**
+     * The kids — the family members whose behaviors are tracked.
+     *
+     * @var list<string>
+     */
+    public const KID_MEMBERS = ['regina', 'andres'];
+
+    /**
      * Which family member an Apple sign-in identity maps to, so a login can be
      * tied to the right seeded person. Null for anyone who isn't family.
      */

@@ -1,7 +1,8 @@
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
 import { ScrollView } from 'react-native';
 
-import { getPerson } from '@/api/family';
+import { getPerson, isKid } from '@/api/family';
+import { KidHeaderMenu } from '@/components/behaviors/KidHeaderMenu';
 import { ProfileView } from '@/components/family/ProfileView';
 
 export default function ProfileScreen() {
@@ -12,9 +13,16 @@ export default function ProfileScreen() {
     return <Redirect href="/" />;
   }
 
+  const kid = isKid(person.key) ? person.key : undefined;
+
   return (
     <>
-      <Stack.Screen options={{ title: person.name }} />
+      <Stack.Screen
+        options={{
+          title: person.name,
+          headerRight: kid ? () => <KidHeaderMenu member={kid} /> : undefined,
+        }}
+      />
       <ScrollView
         className="flex-1 bg-background"
         contentInsetAdjustmentBehavior="automatic"

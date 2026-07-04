@@ -2,8 +2,9 @@ import { router } from 'expo-router';
 import { Smiley, Star } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
-import type { Person } from '@/api/family';
+import { isKid, type Person } from '@/api/family';
 import { moodEmoji, moodLabel, useMoods } from '@/api/moods';
+import { KidBehaviorsSection } from '@/components/behaviors/KidBehaviorsSection';
 import { AvatarCircle } from '@/components/family/AvatarCircle';
 import { ActionTile } from '@/components/ui/ActionTile';
 
@@ -49,6 +50,8 @@ export function ProfileView({ person }: { person: Person }) {
             <ActionTile icon={Star} label="Coming soon" disabled />
           </View>
         </View>
+      ) : isKid(person.key) ? (
+        <KidBehaviorsSection member={person.key} />
       ) : (
         <Text className="text-center text-sm text-muted">Nothing here yet.</Text>
       )}

@@ -29,5 +29,13 @@
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="ADMIN_EMAIL" value="alfonso@vexilo.com"/>
         <env name="SECRET_PREFIX" value="secret"/>
+        <env name="AWS_ACCESS_KEY_ID" value="testing"/>
+        <env name="AWS_SECRET_ACCESS_KEY" value="testing"/>
+        <env name="AWS_BUCKET" value="testing"/>
+        <env name="BROADCAST_DRIVER" value="reverb"/>
+        <env name="REVERB_APP_ID" value="testing"/>
+        <env name="REVERB_APP_KEY" value="testing"/>
+        <env name="REVERB_APP_SECRET" value="testing"/>
+        <env name="REVERB_HOST" value="ws.test"/>
     </php>
 </phpunit>
