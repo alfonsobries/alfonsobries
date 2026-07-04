@@ -2,7 +2,7 @@ import { Redirect, router, Stack, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Alert, ScrollView } from 'react-native';
 
-import { createBehavior, updateBehavior } from '@/api/behaviors';
+import { createReward, updateReward } from '@/api/chores';
 import { getPerson, isKid } from '@/api/family';
 import { useApiRouter } from '@/api/router';
 import {
@@ -14,29 +14,29 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Stepper } from '@/components/ui/Stepper';
 
-const MAX_POINTS = 9;
+const MAX_COST = 999;
 
-// The behavior form. Typing a name and leaving the field kicks off the AI
-// illustration on its own; saving attaches whatever image ended up chosen.
-export default function EditBehaviorScreen() {
+// The reward form: what the kid is saving for and how many chore points it
+// takes. The illustration flow matches behaviors and chores.
+export default function EditRewardScreen() {
   const params = useLocalSearchParams<{
     member?: string;
     id?: string;
     name?: string;
-    points?: string;
+    cost?: string;
     image?: string;
   }>();
   const route = useApiRouter();
 
-  const behaviorId = params.id ? Number(params.id) : undefined;
+  const rewardId = params.id ? Number(params.id) : undefined;
   const person = params.member ? getPerson(params.member) : undefined;
   const kid = person && isKid(person.key) ? person.key : undefined;
 
   const illustrationRef = useRef<IllustrationFieldHandle>(null);
   const [name, setName] = useState(params.name ?? '');
-  const [points, setPoints] = useState(() => {
-    const parsed = Number(params.points);
-    return parsed >= 1 && parsed <= MAX_POINTS ? parsed : 1;
+  const [cost, setCost] = useState(() => {
+    const parsed = Number(params.cost);
+    return parsed >= 1 && parsed <= MAX_COST ? parsed : 10;
   });
   const [illustration, setIllustration] = useState<IllustrationValue | null>(null);
   const [illustrationBusy, setIllustrationBusy] = useState(false);
@@ -57,14 +57,14 @@ export default function EditBehaviorScreen() {
     try {
       const payload = {
         name: name.trim(),
-        points,
+        cost,
         ...(illustration ? { image_path: illustration.path } : {}),
       };
 
-      if (behaviorId) {
-        await updateBehavior(route, behaviorId, payload);
+      if (rewardId) {
+        await updateReward(route, rewardId, payload);
       } else {
-        await createBehavior(route, kid, payload);
+        await createReward(route, kid, payload);
       }
 
       router.back();
@@ -77,7 +77,7 @@ export default function EditBehaviorScreen() {
   return (
     <>
       <Stack.Screen
-        options={{ title: behaviorId ? 'Edit behavior' : `New behavior for ${person.name}` }}
+        options={{ title: rewardId ? 'Edit reward' : `New reward for ${person.name}` }}
       />
       <ScrollView
         className="flex-1 bg-background"
@@ -89,20 +89,20 @@ export default function EditBehaviorScreen() {
       >
         <Input
           label="Name"
-          placeholder="e.g. Shouting"
+          placeholder="e.g. Ir al cine"
           value={name}
           onChangeText={setName}
           onBlur={() => illustrationRef.current?.generateIfEmpty()}
-          autoFocus={!behaviorId}
+          autoFocus={!rewardId}
           maxLength={60}
         />
 
         <Stepper
-          label="Mood points"
-          value={points}
-          onChange={setPoints}
-          max={MAX_POINTS}
-          helperText="How much this weighs on your mood when it happens."
+          label="Cost in points"
+          value={cost}
+          onChange={setCost}
+          max={MAX_COST}
+          helperText="How many approved chore points it takes to claim it."
         />
 
         <IllustrationField

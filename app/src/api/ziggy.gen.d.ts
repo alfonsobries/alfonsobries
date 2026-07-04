@@ -54,6 +54,77 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "api.kids.chores.index": [
+        {
+            "name": "member",
+            "required": true
+        }
+    ],
+    "api.chores.store": [],
+    "api.chores.update": [
+        {
+            "name": "chore",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.chores.destroy": [
+        {
+            "name": "chore",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.chores.logs.store": [
+        {
+            "name": "chore",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.chore-logs.index": [],
+    "api.chore-logs.destroy": [
+        {
+            "name": "choreLog",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.chore-logs.review": [
+        {
+            "name": "choreLog",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.kids.rewards.index": [
+        {
+            "name": "member",
+            "required": true
+        }
+    ],
+    "api.rewards.store": [],
+    "api.rewards.update": [
+        {
+            "name": "reward",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.rewards.destroy": [
+        {
+            "name": "reward",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.rewards.redeem": [
+        {
+            "name": "reward",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "api.behavior-illustrations.store": [],
     "api.behavior-illustrations.show": [
         {
@@ -63,6 +134,7 @@ declare module 'ziggy-js' {
         }
     ],
     "api.temp-files.presign": [],
+    "api.broadcasting.auth": [],
     "api.articles.index": [],
     "api.articles.show": [
         {

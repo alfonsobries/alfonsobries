@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 import { isKid, type Person } from '@/api/family';
 import { moodEmoji, moodLabel, useMoods } from '@/api/moods';
 import { KidBehaviorsSection } from '@/components/behaviors/KidBehaviorsSection';
+import { KidChoresSection } from '@/components/chores/KidChoresSection';
 import { AvatarCircle } from '@/components/family/AvatarCircle';
 import { ActionTile } from '@/components/ui/ActionTile';
 
@@ -51,7 +52,10 @@ export function ProfileView({ person }: { person: Person }) {
           </View>
         </View>
       ) : isKid(person.key) ? (
-        <KidBehaviorsSection member={person.key} />
+        <>
+          <KidChoresSection member={person.key} />
+          <KidBehaviorsSection member={person.key} />
+        </>
       ) : (
         <Text className="text-center text-sm text-muted">Nothing here yet.</Text>
       )}

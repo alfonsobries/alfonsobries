@@ -3,8 +3,11 @@ import { useState, type ReactNode } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import type { Behavior, BehaviorLogEntry } from '@/api/behaviors';
+import type { Chore, Reward } from '@/api/chores';
 import { BehaviorFeed } from '@/components/behaviors/BehaviorFeed';
 import { BehaviorTile } from '@/components/behaviors/BehaviorTile';
+import { ChoreChecklist } from '@/components/chores/ChoreChecklist';
+import { RewardCard } from '@/components/chores/RewardCard';
 import { ImageUploadField } from '@/components/ui/ImageUploadField';
 import type { UploadedImage } from '@/hooks/use-image-upload';
 
@@ -48,6 +51,50 @@ const SAMPLE_ENTRIES: BehaviorLogEntry[] = [
   },
 ];
 
+const SAMPLE_CHORES: Chore[] = [
+  {
+    id: 1,
+    family_member: 'regina',
+    name: 'Lavarse los dientes',
+    points: 1,
+    image_url: null,
+    today: null,
+  },
+  {
+    id: 2,
+    family_member: 'regina',
+    name: 'Guardar juguetes',
+    points: 2,
+    image_url: null,
+    today: { log_id: 1, status: 'done' },
+  },
+  {
+    id: 3,
+    family_member: 'regina',
+    name: 'Tender la cama',
+    points: 1,
+    image_url: null,
+    today: { log_id: 2, status: 'approved' },
+  },
+  {
+    id: 4,
+    family_member: 'regina',
+    name: 'Recoger platos',
+    points: 1,
+    image_url: null,
+    today: { log_id: 3, status: 'rejected' },
+  },
+];
+
+const SAMPLE_REWARD: Reward = {
+  id: 1,
+  family_member: 'regina',
+  name: 'Ir al cine',
+  cost: 10,
+  image_url: null,
+  achieved_at: null,
+};
+
 export default function Media() {
   const [upload, setUpload] = useState<UploadedImage | null>(null);
 
@@ -83,6 +130,18 @@ export default function Media() {
 
         <Section title="Behavior feed">
           <BehaviorFeed entries={SAMPLE_ENTRIES} showKid />
+        </Section>
+
+        <Section title="Chore checklist">
+          <ChoreChecklist
+            chores={SAMPLE_CHORES}
+            onCheck={() => undefined}
+            onUncheck={() => undefined}
+          />
+        </Section>
+
+        <Section title="Reward progress">
+          <RewardCard reward={SAMPLE_REWARD} balance={6} />
         </Section>
       </ScrollView>
     </>

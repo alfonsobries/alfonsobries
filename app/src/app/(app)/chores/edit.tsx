@@ -2,7 +2,7 @@ import { Redirect, router, Stack, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Alert, ScrollView } from 'react-native';
 
-import { createBehavior, updateBehavior } from '@/api/behaviors';
+import { createChore, updateChore } from '@/api/chores';
 import { getPerson, isKid } from '@/api/family';
 import { useApiRouter } from '@/api/router';
 import {
@@ -16,9 +16,9 @@ import { Stepper } from '@/components/ui/Stepper';
 
 const MAX_POINTS = 9;
 
-// The behavior form. Typing a name and leaving the field kicks off the AI
-// illustration on its own; saving attaches whatever image ended up chosen.
-export default function EditBehaviorScreen() {
+// The chore form. Same flow as behaviors: typing a name and leaving the
+// field kicks off the AI illustration; saving attaches the chosen image.
+export default function EditChoreScreen() {
   const params = useLocalSearchParams<{
     member?: string;
     id?: string;
@@ -28,7 +28,7 @@ export default function EditBehaviorScreen() {
   }>();
   const route = useApiRouter();
 
-  const behaviorId = params.id ? Number(params.id) : undefined;
+  const choreId = params.id ? Number(params.id) : undefined;
   const person = params.member ? getPerson(params.member) : undefined;
   const kid = person && isKid(person.key) ? person.key : undefined;
 
@@ -61,10 +61,10 @@ export default function EditBehaviorScreen() {
         ...(illustration ? { image_path: illustration.path } : {}),
       };
 
-      if (behaviorId) {
-        await updateBehavior(route, behaviorId, payload);
+      if (choreId) {
+        await updateChore(route, choreId, payload);
       } else {
-        await createBehavior(route, kid, payload);
+        await createChore(route, kid, payload);
       }
 
       router.back();
@@ -76,9 +76,7 @@ export default function EditBehaviorScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{ title: behaviorId ? 'Edit behavior' : `New behavior for ${person.name}` }}
-      />
+      <Stack.Screen options={{ title: choreId ? 'Edit chore' : `New chore for ${person.name}` }} />
       <ScrollView
         className="flex-1 bg-background"
         contentInsetAdjustmentBehavior="automatic"
@@ -89,20 +87,20 @@ export default function EditBehaviorScreen() {
       >
         <Input
           label="Name"
-          placeholder="e.g. Shouting"
+          placeholder="e.g. Lavarse los dientes"
           value={name}
           onChangeText={setName}
           onBlur={() => illustrationRef.current?.generateIfEmpty()}
-          autoFocus={!behaviorId}
+          autoFocus={!choreId}
           maxLength={60}
         />
 
         <Stepper
-          label="Mood points"
+          label="Points"
           value={points}
           onChange={setPoints}
           max={MAX_POINTS}
-          helperText="How much this weighs on your mood when it happens."
+          helperText="What it earns toward the reward — and lifts your mood on approval."
         />
 
         <IllustrationField

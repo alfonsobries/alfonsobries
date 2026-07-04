@@ -24,6 +24,22 @@ export default function AppLayout() {
           options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
         />
         <Stack.Screen
+          name="chores/manage"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
+        <Stack.Screen
+          name="chores/edit"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
+        <Stack.Screen
+          name="rewards/manage"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
+        <Stack.Screen
+          name="rewards/edit"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
+        <Stack.Screen
           name="mood"
           options={{
             presentation: 'formSheet',
@@ -34,6 +50,15 @@ export default function AppLayout() {
         />
         <Stack.Screen
           name="behavior-log"
+          options={{
+            presentation: 'formSheet',
+            sheetAllowedDetents: [0.85],
+            sheetGrabberVisible: true,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="chores-review"
           options={{
             presentation: 'formSheet',
             sheetAllowedDetents: [0.85],
