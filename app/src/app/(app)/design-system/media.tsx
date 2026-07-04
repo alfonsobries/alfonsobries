@@ -91,6 +91,9 @@ const SAMPLE_REWARD: Reward = {
   family_member: 'regina',
   name: 'Ir al cine',
   cost: 10,
+  available_on: null,
+  requires_content_parents: true,
+  parents_are_content: false,
   image_url: null,
   achieved_at: null,
 };

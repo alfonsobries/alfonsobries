@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Gift } from 'phosphor-react-native';
+import { CheckCircle, CircleDashed, Gift } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
 import type { Reward } from '@/api/chores';
@@ -12,13 +12,18 @@ type RewardCardProperties = {
   onRedeem?: (reward: Reward) => void;
 };
 
-// The reward a kid is saving for: illustration, a friendly progress bar, and
-// the redeem action once the points are there (a parent confirms on device).
+// A reward the kid is saving for: illustration, progress bar, and each
+// condition as a kid-readable row with a check or a pending mark. The claim
+// button appears only when everything is met (a parent confirms on device).
 export function RewardCard({ reward, balance, onRedeem }: RewardCardProperties) {
   const accent = useThemeColor('primary-emphasis');
 
   const progress = Math.min(1, balance / Math.max(1, reward.cost));
-  const reached = balance >= reward.cost;
+
+  const pointsMet = balance >= reward.cost;
+  const dateMet = reward.available_on === null || new Date(reward.available_on) <= new Date();
+  const parentsMet = !reward.requires_content_parents || reward.parents_are_content;
+  const allMet = pointsMet && dateMet && parentsMet;
 
   return (
     <View className="gap-3 rounded-3xl bg-surface p-4">
@@ -51,11 +56,45 @@ export function RewardCard({ reward, balance, onRedeem }: RewardCardProperties) 
         />
       </View>
 
-      {reached && onRedeem ? (
+      <View className="gap-1.5">
+        <ConditionRow met={pointsMet} label={`⭐ ${reward.cost} points`} />
+        {reward.available_on !== null ? (
+          <ConditionRow met={dateMet} label={`📅 ${formatDay(reward.available_on)}`} />
+        ) : null}
+        {reward.requires_content_parents ? (
+          <ConditionRow met={parentsMet} label="😊 Mom and dad feeling good" />
+        ) : null}
+      </View>
+
+      {allMet && onRedeem ? (
         <Button size="sm" onPress={() => onRedeem(reward)}>
           Claim the reward! 🎉
         </Button>
       ) : null}
     </View>
   );
+}
+
+function ConditionRow({ met, label }: { met: boolean; label: string }) {
+  const success = useThemeColor('success');
+  const muted = useThemeColor('muted');
+
+  return (
+    <View className="flex-row items-center gap-2">
+      {met ? (
+        <CheckCircle size={20} color={success} weight="fill" />
+      ) : (
+        <CircleDashed size={20} color={muted} />
+      )}
+      <Text className={`text-sm ${met ? 'text-foreground' : 'text-muted'}`}>{label}</Text>
+    </View>
+  );
+}
+
+function formatDay(iso: string): string {
+  return new Date(`${iso}T12:00:00`).toLocaleDateString(undefined, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'short',
+  });
 }

@@ -36,6 +36,10 @@ export type Reward = {
   family_member: KidMember;
   name: string;
   cost: number;
+  available_on: string | null;
+  requires_content_parents: boolean;
+  /** Whether both parents currently sit above the neutral face. */
+  parents_are_content: boolean;
   image_url: string | null;
   achieved_at: string | null;
 };
@@ -54,6 +58,8 @@ export type ChorePayload = {
 export type RewardPayload = {
   name: string;
   cost: number;
+  available_on?: string | null;
+  requires_content_parents?: boolean;
   image_path?: string | null;
 };
 

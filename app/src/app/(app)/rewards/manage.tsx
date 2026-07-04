@@ -110,6 +110,8 @@ export default function ManageRewardsScreen() {
                         id: String(reward.id),
                         cost: String(reward.cost),
                         name: reward.name,
+                        requires_content_parents: reward.requires_content_parents ? '1' : '0',
+                        ...(reward.available_on ? { available_on: reward.available_on } : {}),
                         ...(reward.image_url ? { image: reward.image_url } : {}),
                       },
                     })

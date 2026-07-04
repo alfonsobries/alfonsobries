@@ -88,15 +88,28 @@ export async function deleteBehavior(route: ApiRoute, behavior: number): Promise
   await apiClient.delete(route('api.behaviors.destroy', { behavior }));
 }
 
+export type BehaviorLogPage = {
+  entries: BehaviorLogEntry[];
+  nextPage: number | null;
+};
+
 export async function fetchBehaviorLogs(
   route: ApiRoute,
-  member?: KidMember,
-): Promise<BehaviorLogEntry[]> {
-  const { data } = await apiClient.get<{ data: BehaviorLogEntry[] }>(
-    route('api.behavior-logs.index', member ? { member } : undefined),
+  options: { member?: KidMember; page?: number } = {},
+): Promise<BehaviorLogPage> {
+  const params: Record<string, string | number> = {};
+  if (options.member) {
+    params.member = options.member;
+  }
+  if (options.page) {
+    params.page = options.page;
+  }
+
+  const { data } = await apiClient.get<{ data: BehaviorLogEntry[]; next_page: number | null }>(
+    route('api.behavior-logs.index', params),
   );
 
-  return data.data;
+  return { entries: data.data, nextPage: data.next_page };
 }
 
 export async function logBehavior(

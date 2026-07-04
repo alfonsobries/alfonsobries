@@ -39,6 +39,15 @@ export default function AppLayout() {
           name="rewards/edit"
           options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
         />
+        <Stack.Screen name="chores-today" options={{ presentation: 'modal', headerShown: true }} />
+        <Stack.Screen
+          name="behaviors-board"
+          options={{ presentation: 'modal', headerShown: true }}
+        />
+        <Stack.Screen
+          name="behavior-feed"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
         <Stack.Screen
           name="mood"
           options={{
