@@ -5,3 +5,5 @@ website/
 api/vendor/
 **/dist/
 **/build/
+.agents/
+.claude/skills/

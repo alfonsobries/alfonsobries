@@ -17,6 +17,8 @@
   "globs": ["**/*.md"],
   "ignores": [
     "**/node_modules/**",
+    ".agents/**",
+    ".claude/skills/**",
     "api/vendor/**",
     "app/**",
     "website/**",
