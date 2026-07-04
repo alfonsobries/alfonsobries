@@ -20,14 +20,16 @@ return new class extends Migration
 
         $chores = [
             'regina' => [
+                ['Compartir', 'regina-compartir'],
+                ['Comer bien', 'regina-comer-bien'],
+                ['Ser amable', 'regina-ser-amable'],
                 ['Lavarse los dientes', 'regina-lavarse-los-dientes'],
-                ['Guardar juguetes', 'regina-guardar-juguetes'],
-                ['Vestirse sola', 'regina-vestirse-sola'],
             ],
             'andres' => [
+                ['Comer bien', 'andres-comer-bien'],
+                ['Ser ordenado', 'andres-ser-ordenado'],
                 ['Lavarse los dientes', 'andres-lavarse-los-dientes'],
-                ['Guardar juguetes', 'andres-guardar-juguetes'],
-                ['Ponerse la pijama', 'andres-ponerse-la-pijama'],
+                ['Jugar en armonía', 'andres-jugar-en-armonia'],
             ],
         ];
 
@@ -43,8 +45,8 @@ return new class extends Migration
         }
 
         $rewards = [
-            ['regina', 'Ir al cine', 15, 'regina-ir-al-cine'],
-            ['andres', 'Un dinosaurio nuevo', 15, 'andres-dinosaurio-nuevo'],
+            ['regina', 'Un postre', 15, 'regina-un-postre'],
+            ['andres', 'Un postre', 15, 'andres-un-postre'],
         ];
 
         foreach ($rewards as [$member, $name, $cost, $slug]) {
