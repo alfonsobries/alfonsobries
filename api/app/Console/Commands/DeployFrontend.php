@@ -30,9 +30,17 @@ class DeployFrontend extends Command
     public function handle()
     {
         if (Cache::has(config('site.expireCacheKey')) || $this->option('force')) {
+            $url = config('services.vercel.deployment_url');
+
+            if (empty($url)) {
+                $this->warn('No deployment URL configured; skipping.');
+
+                return 0;
+            }
+
             $this->info('Deploying frontend...');
 
-            Http::post(config('services.vercel.deployment_url'));
+            Http::post($url);
 
             Cache::forget(config('site.expireCacheKey'));
 
