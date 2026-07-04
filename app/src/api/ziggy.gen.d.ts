@@ -18,6 +18,51 @@ declare module 'ziggy-js' {
     ],
     "api.push-tokens.store": [],
     "api.notifications.test": [],
+    "api.kids.behaviors.index": [
+        {
+            "name": "member",
+            "required": true
+        }
+    ],
+    "api.behaviors.store": [],
+    "api.behaviors.update": [
+        {
+            "name": "behavior",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.behaviors.destroy": [
+        {
+            "name": "behavior",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.behaviors.logs.store": [
+        {
+            "name": "behavior",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.behavior-logs.index": [],
+    "api.behavior-logs.destroy": [
+        {
+            "name": "behaviorLog",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.behavior-illustrations.store": [],
+    "api.behavior-illustrations.show": [
+        {
+            "name": "behaviorIllustration",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.temp-files.presign": [],
     "api.articles.index": [],
     "api.articles.show": [
         {
