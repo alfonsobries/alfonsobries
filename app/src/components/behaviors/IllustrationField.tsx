@@ -1,11 +1,17 @@
 import { Image } from 'expo-image';
 import { ArrowsClockwise, ImageSquare, Sparkle } from 'phosphor-react-native';
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 
-import { generateIllustration } from '@/api/behaviors';
+import {
+  fetchIllustration,
+  isSettled,
+  requestIllustration,
+  type BehaviorIllustration,
+} from '@/api/behaviors';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
+import { useIllustrationChannel } from '@/hooks/use-illustration-channel';
 import { useImageUpload } from '@/hooks/use-image-upload';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -31,6 +37,11 @@ type IllustrationFieldProperties = {
   onBusyChange?: (busy: boolean) => void;
 };
 
+// While a generation is pending, the illustration's Reverb channel delivers
+// the result; this slow poll only covers a dropped socket.
+const FALLBACK_POLL_MS = 10_000;
+const GENERATION_TIMEOUT_MS = 3 * 60 * 1000;
+
 // The behavior illustration field. It generates an AI image from the behavior
 // name (with a busy state while the API works), can regenerate, or accepts a
 // photo of your own uploaded straight to S3.
@@ -39,17 +50,62 @@ export const IllustrationField = forwardRef<IllustrationFieldHandle, Illustratio
     const route = useApiRouter();
     const accent = useThemeColor('primary-emphasis');
     const { isUploading, pickAndUpload } = useImageUpload();
-    const [isGenerating, setIsGenerating] = useState(false);
+    const [pendingId, setPendingId] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    const busy = isGenerating || isUploading;
+    const busy = pendingId !== null || isUploading;
     const previewUri = value?.previewUri ?? currentUrl ?? null;
     const canGenerate = name.trim().length > 0 && !busy;
 
-    function setBusy(generating: boolean): void {
-      setIsGenerating(generating);
-      onBusyChange?.(generating);
+    const onChangeRef = useRef(onChange);
+    onChangeRef.current = onChange;
+    const onBusyChangeRef = useRef(onBusyChange);
+    onBusyChangeRef.current = onBusyChange;
+
+    useEffect(() => {
+      onBusyChangeRef.current?.(busy);
+    }, [busy]);
+
+    function settle(illustration: BehaviorIllustration): void {
+      if (!isSettled(illustration)) {
+        return;
+      }
+
+      setPendingId(null);
+
+      if (illustration.status === 'completed' && illustration.path) {
+        onChangeRef.current({ path: illustration.path, previewUri: illustration.url });
+      } else {
+        setError(illustration.error ?? 'The illustration could not be generated.');
+      }
     }
+
+    // Primary signal: the illustration settles on its private channel.
+    useIllustrationChannel(pendingId, settle);
+
+    // Fallback: slow polling plus a hard stop, in case the socket drops.
+    useEffect(() => {
+      if (pendingId === null) {
+        return;
+      }
+
+      const startedAt = Date.now();
+      const interval = setInterval(() => {
+        if (Date.now() - startedAt > GENERATION_TIMEOUT_MS) {
+          setPendingId(null);
+          setError('The illustration is taking too long. Try again.');
+          return;
+        }
+
+        fetchIllustration(route, pendingId)
+          .then(settle)
+          .catch(() => {
+            // Transient poll errors are fine; the next tick retries.
+          });
+      }, FALLBACK_POLL_MS);
+
+      return () => clearInterval(interval);
+    }, [pendingId, route]);
 
     async function handleGenerate(): Promise<void> {
       if (!canGenerate) {
@@ -57,18 +113,17 @@ export const IllustrationField = forwardRef<IllustrationFieldHandle, Illustratio
       }
 
       setError(null);
-      setBusy(true);
       try {
-        const illustration = await generateIllustration(route, name.trim());
-        if (illustration.path) {
-          onChange({ path: illustration.path, previewUri: illustration.url });
+        const illustration = await requestIllustration(route, name.trim());
+
+        // On a sync queue the API already finished the work in the request.
+        if (isSettled(illustration)) {
+          settle(illustration);
+        } else {
+          setPendingId(illustration.id);
         }
-      } catch (caught) {
-        setError(
-          caught instanceof Error ? caught.message : 'The illustration could not be generated.',
-        );
-      } finally {
-        setBusy(false);
+      } catch {
+        setError('The illustration could not be generated.');
       }
     }
 

@@ -116,15 +116,12 @@ export async function deleteBehaviorLog(route: ApiRoute, behaviorLog: number): P
   await apiClient.delete(route('api.behavior-logs.destroy', { behaviorLog }));
 }
 
-const POLL_INTERVAL_MS = 2500;
-const POLL_TIMEOUT_MS = 3 * 60 * 1000;
-
 /**
- * Ask the API to generate an illustration for a behavior name and poll until
- * it settles. Resolves with the completed illustration; throws when the
- * generation fails or takes too long.
+ * Ask the API to start generating an illustration for a behavior name. The
+ * result arrives on the illustration's Reverb channel (with polling via
+ * `fetchIllustration` as the fallback).
  */
-export async function generateIllustration(
+export async function requestIllustration(
   route: ApiRoute,
   name: string,
 ): Promise<BehaviorIllustration> {
@@ -133,25 +130,20 @@ export async function generateIllustration(
     { name },
   );
 
-  let illustration = data.data;
-  const startedAt = Date.now();
+  return data.data;
+}
 
-  while (illustration.status === 'pending' || illustration.status === 'generating') {
-    if (Date.now() - startedAt > POLL_TIMEOUT_MS) {
-      throw new Error('The illustration is taking too long. Try again.');
-    }
+export async function fetchIllustration(
+  route: ApiRoute,
+  behaviorIllustration: number,
+): Promise<BehaviorIllustration> {
+  const { data } = await apiClient.get<{ data: BehaviorIllustration }>(
+    route('api.behavior-illustrations.show', { behaviorIllustration }),
+  );
 
-    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+  return data.data;
+}
 
-    const { data: poll } = await apiClient.get<{ data: BehaviorIllustration }>(
-      route('api.behavior-illustrations.show', { behaviorIllustration: illustration.id }),
-    );
-    illustration = poll.data;
-  }
-
-  if (illustration.status === 'failed') {
-    throw new Error(illustration.error ?? 'The illustration could not be generated.');
-  }
-
-  return illustration;
+export function isSettled(illustration: BehaviorIllustration): boolean {
+  return illustration.status === 'completed' || illustration.status === 'failed';
 }
