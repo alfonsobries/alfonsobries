@@ -68,6 +68,28 @@ it('ignores the emoji when the mood was not affected', function () {
         ->assertJson(['data' => ['mood_emoji' => null]]);
 });
 
+it('paginates the feed', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $behavior = Behavior::factory()->create(['family_member' => 'regina']);
+    BehaviorLog::factory()->count(25)->create([
+        'behavior_id' => $behavior->id,
+        'family_member' => 'regina',
+        'user_id' => $alfonso->id,
+    ]);
+
+    $first = $this->actingAs($alfonso)
+        ->getJson(route('api.behavior-logs.index'))
+        ->assertOk()
+        ->assertJsonCount(20, 'data');
+    expect($first->json('next_page'))->toBe(2);
+
+    $second = $this->actingAs($alfonso)
+        ->getJson(route('api.behavior-logs.index', ['page' => 2]))
+        ->assertOk()
+        ->assertJsonCount(5, 'data');
+    expect($second->json('next_page'))->toBeNull();
+});
+
 it('lists the feed newest first', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
     $shouting = Behavior::factory()->create(['family_member' => 'regina', 'name' => 'Shouting']);

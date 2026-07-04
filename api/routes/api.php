@@ -5,6 +5,8 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\BehaviorController;
 use App\Http\Controllers\BehaviorIllustrationController;
 use App\Http\Controllers\BehaviorLogController;
+use App\Http\Controllers\ChoreController;
+use App\Http\Controllers\ChoreLogController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\DraftArticleController;
 use App\Http\Controllers\FamilyMoodController;
@@ -12,6 +14,7 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PushTokenController;
 use App\Http\Controllers\ResumeControler;
+use App\Http\Controllers\RewardController;
 use App\Http\Controllers\SlugHistoryController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TempFileController;
@@ -47,6 +50,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/behavior-logs', [BehaviorLogController::class, 'index'])->name('behavior-logs.index');
     Route::delete('/behavior-logs/{behaviorLog}', [BehaviorLogController::class, 'destroy'])->name('behavior-logs.destroy');
+
+    Route::get('/kids/{member}/chores', [ChoreController::class, 'index'])->name('kids.chores.index');
+    Route::post('/chores', [ChoreController::class, 'store'])->name('chores.store');
+    Route::patch('/chores/{chore}', [ChoreController::class, 'update'])->name('chores.update');
+    Route::delete('/chores/{chore}', [ChoreController::class, 'destroy'])->name('chores.destroy');
+    Route::post('/chores/{chore}/logs', [ChoreLogController::class, 'store'])->name('chores.logs.store');
+
+    Route::get('/chore-logs', [ChoreLogController::class, 'index'])->name('chore-logs.index');
+    Route::delete('/chore-logs/{choreLog}', [ChoreLogController::class, 'destroy'])->name('chore-logs.destroy');
+    Route::post('/chore-logs/{choreLog}/review', [ChoreLogController::class, 'review'])->name('chore-logs.review');
+
+    Route::get('/kids/{member}/rewards', [RewardController::class, 'index'])->name('kids.rewards.index');
+    Route::post('/rewards', [RewardController::class, 'store'])->name('rewards.store');
+    Route::patch('/rewards/{reward}', [RewardController::class, 'update'])->name('rewards.update');
+    Route::delete('/rewards/{reward}', [RewardController::class, 'destroy'])->name('rewards.destroy');
+    Route::post('/rewards/{reward}/redeem', [RewardController::class, 'redeem'])->name('rewards.redeem');
 
     Route::post('/behavior-illustrations', [BehaviorIllustrationController::class, 'store'])->name('behavior-illustrations.store');
     Route::get('/behavior-illustrations/{behaviorIllustration}', [BehaviorIllustrationController::class, 'show'])->name('behavior-illustrations.show');

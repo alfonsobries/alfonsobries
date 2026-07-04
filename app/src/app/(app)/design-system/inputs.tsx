@@ -6,6 +6,7 @@ import { ScrollView, Text, View } from 'react-native';
 import { Checkbox } from '@/components/ui/Checkbox';
 import { Input } from '@/components/ui/Input';
 import { RadioGroup } from '@/components/ui/RadioGroup';
+import { Stepper } from '@/components/ui/Stepper';
 import { Switch } from '@/components/ui/Switch';
 
 const REMINDER_FREQUENCIES = [
@@ -69,6 +70,10 @@ export default function Inputs() {
           <Input label="Notes" placeholder="Anything to remember?" multiline />
         </Section>
 
+        <Section title="Stepper">
+          <StepperDemo />
+        </Section>
+
         <Section title="Switch">
           <View className="flex-row items-center justify-between rounded-2xl bg-surface px-4 py-3">
             <Text className="text-base text-foreground">Notifications</Text>
@@ -92,5 +97,19 @@ export default function Inputs() {
         </Section>
       </ScrollView>
     </>
+  );
+}
+
+function StepperDemo() {
+  const [value, setValue] = useState(1);
+
+  return (
+    <Stepper
+      label="Points"
+      value={value}
+      onChange={setValue}
+      max={9}
+      helperText="Clamped between 1 and 9."
+    />
   );
 }

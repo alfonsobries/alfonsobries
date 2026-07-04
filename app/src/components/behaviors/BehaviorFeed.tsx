@@ -81,37 +81,31 @@ function FeedRow({
         divider ? 'border-t border-border' : ''
       }`}
     >
-      {/* The illustration is the story; the parent who logged it floats on
-          its corner, with a sad face when it hit their mood. */}
-      <View className="relative">
-        <View className="size-16 items-center justify-center overflow-hidden rounded-xl bg-surface-selected">
-          {entry.behavior.image_url ? (
-            <Image
-              source={{ uri: entry.behavior.image_url }}
-              style={{ width: '100%', height: '100%' }}
-              contentFit="cover"
-            />
-          ) : (
-            <HandPalm size={26} color={accent} weight="fill" />
-          )}
-        </View>
-        {logger ? (
-          <View className="absolute -bottom-1.5 -right-1.5 flex-row items-center">
-            <View className="rounded-full border-2 border-surface">
-              <AvatarCircle person={logger.key} size={24} />
-            </View>
-            {entry.affected_mood ? <Text className="-ml-1.5 text-sm">😢</Text> : null}
-          </View>
-        ) : null}
+      <View className="size-16 items-center justify-center overflow-hidden rounded-xl bg-surface-selected">
+        {entry.behavior.image_url ? (
+          <Image
+            source={{ uri: entry.behavior.image_url }}
+            style={{ width: '100%', height: '100%' }}
+            contentFit="cover"
+          />
+        ) : (
+          <HandPalm size={26} color={accent} weight="fill" />
+        )}
       </View>
 
-      <View className="flex-1 gap-0.5">
+      <View className="flex-1 gap-1">
         <Text className="text-base font-medium text-foreground" numberOfLines={1}>
           {title}
         </Text>
-        <Text className="text-sm text-muted" numberOfLines={1}>
-          {timeAgo(entry.created_at)}
-        </Text>
+        {/* Who logged it leads the detail line, with a sad face when it hit
+            their mood — "this made dad sad" at a glance. */}
+        <View className="flex-row items-center gap-1.5">
+          {logger ? <AvatarCircle person={logger.key} size={20} /> : null}
+          {entry.affected_mood ? <Text className="text-sm">🙁</Text> : null}
+          <Text className="text-sm text-muted" numberOfLines={1}>
+            {timeAgo(entry.created_at)}
+          </Text>
+        </View>
       </View>
     </Pressable>
   );

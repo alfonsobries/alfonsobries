@@ -1,4 +1,5 @@
 import { Redirect, Stack, useLocalSearchParams } from 'expo-router';
+import { useCallback } from 'react';
 import { ScrollView } from 'react-native';
 
 import { getPerson, isKid } from '@/api/family';
@@ -8,19 +9,22 @@ import { ProfileView } from '@/components/family/ProfileView';
 export default function ProfileScreen() {
   const { member } = useLocalSearchParams<{ member?: string }>();
   const person = getPerson(member);
+  const kid = person && isKid(person.key) ? person.key : undefined;
+
+  // A stable renderer: a fresh closure per render remounts the native header
+  // item, which swallowed taps on the menu.
+  const headerRight = useCallback(() => (kid ? <KidHeaderMenu member={kid} /> : null), [kid]);
 
   if (!person) {
     return <Redirect href="/" />;
   }
-
-  const kid = isKid(person.key) ? person.key : undefined;
 
   return (
     <>
       <Stack.Screen
         options={{
           title: person.name,
-          headerRight: kid ? () => <KidHeaderMenu member={kid} /> : undefined,
+          headerRight: kid ? headerRight : undefined,
         }}
       />
       <ScrollView

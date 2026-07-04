@@ -12,8 +12,8 @@ use Illuminate\Validation\Rule;
 class BehaviorLogController extends Controller
 {
     /**
-     * The behavior feed, newest first — everything the family logged, or one
-     * kid's history when `member` is given.
+     * The behavior feed, newest first and paginated — everything the family
+     * logged, or one kid's history when `member` is given.
      */
     public function index(Request $request): JsonResponse
     {
@@ -23,17 +23,20 @@ class BehaviorLogController extends Controller
 
         $validated = $request->validate([
             'member' => ['sometimes', Rule::in(User::KID_MEMBERS)],
+            'page' => ['sometimes', 'integer', 'min:1'],
         ]);
 
         $logs = BehaviorLog::with(['behavior', 'user'])
             ->when($validated['member'] ?? null, fn ($query, string $member) => $query->where('family_member', $member))
             ->latest('id')
-            ->limit(50)
-            ->get()
-            ->map(fn (BehaviorLog $log): array => $this->present($log))
-            ->values();
+            ->paginate(20);
 
-        return response()->json(['data' => $logs]);
+        return response()->json([
+            'data' => $logs->getCollection()
+                ->map(fn (BehaviorLog $log): array => $this->present($log))
+                ->values(),
+            'next_page' => $logs->hasMorePages() ? $logs->currentPage() + 1 : null,
+        ]);
     }
 
     /**
