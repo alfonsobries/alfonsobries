@@ -29,6 +29,8 @@ class Reward extends Model implements HasMedia
         'family_member',
         'name',
         'cost',
+        'available_on',
+        'requires_content_parents',
         'achieved_at',
     ];
 
@@ -37,6 +39,8 @@ class Reward extends Model implements HasMedia
      */
     protected $casts = [
         'cost' => 'integer',
+        'available_on' => 'date',
+        'requires_content_parents' => 'boolean',
         'achieved_at' => 'datetime',
     ];
 

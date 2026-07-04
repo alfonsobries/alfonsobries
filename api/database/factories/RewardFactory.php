@@ -19,6 +19,9 @@ class RewardFactory extends Factory
             'family_member' => $this->faker->randomElement(User::KID_MEMBERS),
             'name' => $this->faker->words(2, true),
             'cost' => 10,
+            'available_on' => null,
+            // Tests opt into the mood gate explicitly.
+            'requires_content_parents' => false,
             'achieved_at' => null,
         ];
     }

@@ -80,7 +80,9 @@ class ChoreLogController extends Controller
     /**
      * The evening review: a parent approves or rejects the kid's check.
      * Approving earns the kid the points and lifts the reviewing parent's
-     * mood by the same amount.
+     * mood by the same amount. Reviews can be re-run: changing the verdict
+     * gives the previous reviewer's mood points back before applying the new
+     * effect.
      */
     public function review(Request $request, ChoreLog $choreLog): JsonResponse
     {
@@ -88,20 +90,33 @@ class ChoreLogController extends Controller
             return $response;
         }
 
-        if ($choreLog->isReviewed()) {
-            return response()->json(['message' => 'This check was already reviewed.'], 422);
-        }
-
         $validated = $request->validate([
             'approved' => ['required', 'boolean'],
         ]);
 
         $user = $request->user();
+        $status = $validated['approved'] ? ChoreLog::STATUS_APPROVED : ChoreLog::STATUS_REJECTED;
+
+        if ($status === $choreLog->status) {
+            return response()->json(['data' => $this->present($choreLog->load('chore'))]);
+        }
+
+        if ($choreLog->status === ChoreLog::STATUS_APPROVED) {
+            $previousReviewer = $choreLog->reviewer;
+
+            if ($previousReviewer !== null && $previousReviewer->hasMood()) {
+                $previousReviewer->mood = max(User::MOOD_MIN, $previousReviewer->mood - $choreLog->points);
+                $previousReviewer->save();
+            }
+        }
 
         $choreLog->update([
-            'status' => $validated['approved'] ? ChoreLog::STATUS_APPROVED : ChoreLog::STATUS_REJECTED,
+            'status' => $status,
             'reviewed_by' => $user->id,
         ]);
+
+        // The previous reviewer may be this same parent; re-read their mood.
+        $user->refresh();
 
         if ($validated['approved'] && $user->hasMood()) {
             $user->mood = min(User::MOOD_MAX, $user->mood + $choreLog->points);

@@ -8,6 +8,8 @@ use App\Models\Reward as Model;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\MergeValue;
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\ID;
@@ -71,6 +73,12 @@ final class Reward extends NovaResource
                 ->max(999)
                 ->sortable()
                 ->rules('required', 'integer', 'between:1,999'),
+
+            Date::make('Available on', 'available_on')
+                ->nullable()
+                ->sortable(),
+
+            Boolean::make('Needs content parents', 'requires_content_parents'),
 
             Image::make('Illustration', 'illustration')
                 ->rules('image')

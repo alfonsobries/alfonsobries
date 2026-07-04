@@ -13,6 +13,8 @@ return new class extends Migration
             $table->string('family_member')->index();
             $table->string('name');
             $table->unsignedSmallInteger('cost');
+            $table->date('available_on')->nullable();
+            $table->boolean('requires_content_parents')->default(true);
             $table->timestamp('achieved_at')->nullable();
             $table->timestamps();
             $table->softDeletes();

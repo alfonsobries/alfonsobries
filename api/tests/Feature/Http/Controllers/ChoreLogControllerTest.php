@@ -89,13 +89,44 @@ it('rejects a check without touching the mood', function () {
     expect($alfonso->fresh()->mood)->toBe(5);
 });
 
-it('will not review twice', function () {
-    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
-    $log = ChoreLog::factory()->approved()->create();
+it('re-reviews from approved to rejected and reverts the mood', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso', 'mood' => 5]);
+    $log = ChoreLog::factory()->create(['points' => 2]);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.chore-logs.review', ['choreLog' => $log]), ['approved' => true])
+        ->assertOk();
+    expect($alfonso->fresh()->mood)->toBe(7);
 
     $this->actingAs($alfonso)
         ->postJson(route('api.chore-logs.review', ['choreLog' => $log]), ['approved' => false])
-        ->assertUnprocessable();
+        ->assertOk()
+        ->assertJsonPath('data.status', ChoreLog::STATUS_REJECTED);
+
+    expect($alfonso->fresh()->mood)->toBe(5);
+});
+
+it('re-reviews from rejected to approved and grants the mood', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso', 'mood' => 5]);
+    $log = ChoreLog::factory()->rejected()->create(['points' => 2]);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.chore-logs.review', ['choreLog' => $log]), ['approved' => true])
+        ->assertOk()
+        ->assertJsonPath('data.status', ChoreLog::STATUS_APPROVED);
+
+    expect($alfonso->fresh()->mood)->toBe(7);
+});
+
+it('re-reviewing with the same verdict changes nothing', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso', 'mood' => 5]);
+    $log = ChoreLog::factory()->approved()->create(['points' => 2]);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.chore-logs.review', ['choreLog' => $log]), ['approved' => true])
+        ->assertOk();
+
+    expect($alfonso->fresh()->mood)->toBe(5);
 });
 
 it('lists today checks filtered by kid', function () {

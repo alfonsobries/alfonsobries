@@ -61,6 +61,68 @@ it('will not redeem without enough points', function () {
     expect($reward->fresh()->isAchieved())->toBeFalse();
 });
 
+it('will not redeem before its date', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $reward = Reward::factory()->create([
+        'family_member' => 'regina',
+        'cost' => 1,
+        'available_on' => now()->addDays(3)->toDateString(),
+    ]);
+    ChoreLog::factory()->approved()->create(['family_member' => 'regina', 'points' => 5]);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.rewards.redeem', ['reward' => $reward]))
+        ->assertUnprocessable();
+});
+
+it('will not redeem while a parent is below content', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso', 'mood' => 7]);
+    User::factory()->create(['family_member' => 'saida', 'mood' => 4]);
+    $reward = Reward::factory()->create([
+        'family_member' => 'regina',
+        'cost' => 1,
+        'requires_content_parents' => true,
+    ]);
+    ChoreLog::factory()->approved()->create(['family_member' => 'regina', 'points' => 5]);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.rewards.redeem', ['reward' => $reward]))
+        ->assertUnprocessable();
+});
+
+it('redeems when both parents are content', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso', 'mood' => 7]);
+    User::factory()->create(['family_member' => 'saida', 'mood' => 6]);
+    $reward = Reward::factory()->create([
+        'family_member' => 'regina',
+        'cost' => 1,
+        'requires_content_parents' => true,
+    ]);
+    ChoreLog::factory()->approved()->create(['family_member' => 'regina', 'points' => 5]);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.rewards.redeem', ['reward' => $reward]))
+        ->assertOk();
+
+    expect($reward->fresh()->isAchieved())->toBeTrue();
+});
+
+it('stores the optional date and mood gate', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.rewards.store'), [
+            'family_member' => 'regina',
+            'name' => 'Ir al cine',
+            'cost' => 15,
+            'available_on' => now()->addWeek()->toDateString(),
+            'requires_content_parents' => true,
+        ])
+        ->assertCreated()
+        ->assertJsonPath('data.available_on', now()->addWeek()->toDateString())
+        ->assertJsonPath('data.requires_content_parents', true);
+});
+
 it('will not redeem twice', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
     $reward = Reward::factory()->achieved()->create(['family_member' => 'regina']);

@@ -133,6 +133,17 @@ class User extends Authenticatable
     }
 
     /**
+     * Whether both parents currently sit above the neutral face — the mood
+     * gate some rewards ask for.
+     */
+    public static function parentsAreContent(): bool
+    {
+        return self::whereIn('family_member', self::MOOD_MEMBERS)
+            ->get()
+            ->every(fn (self $parent): bool => $parent->mood > self::MOOD_NEUTRAL);
+    }
+
+    /**
      * @return HasMany<DeviceToken, $this>
      */
     public function deviceTokens(): HasMany

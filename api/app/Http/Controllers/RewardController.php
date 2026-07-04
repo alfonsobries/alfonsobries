@@ -53,6 +53,8 @@ class RewardController extends Controller
             'family_member' => ['required', Rule::in(User::KID_MEMBERS)],
             'name' => ['required', 'string', 'max:60'],
             'cost' => ['required', 'integer', 'between:1,999'],
+            'available_on' => ['nullable', 'date'],
+            'requires_content_parents' => ['sometimes', 'boolean'],
             'image_path' => ['nullable', 'string', 'starts_with:temp/'],
         ]);
 
@@ -72,6 +74,8 @@ class RewardController extends Controller
         $validated = $request->validate([
             'name' => ['sometimes', 'required', 'string', 'max:60'],
             'cost' => ['sometimes', 'required', 'integer', 'between:1,999'],
+            'available_on' => ['sometimes', 'nullable', 'date'],
+            'requires_content_parents' => ['sometimes', 'boolean'],
             'image_path' => ['nullable', 'string', 'starts_with:temp/'],
         ]);
 
@@ -109,6 +113,14 @@ class RewardController extends Controller
 
         if ($this->points->balanceFor($reward->family_member) < $reward->cost) {
             return response()->json(['message' => 'Not enough points yet.'], 422);
+        }
+
+        if ($reward->available_on !== null && $reward->available_on->isFuture()) {
+            return response()->json(['message' => 'This reward is not available yet.'], 422);
+        }
+
+        if ($reward->requires_content_parents && ! User::parentsAreContent()) {
+            return response()->json(['message' => 'Mom and dad need to feel good first.'], 422);
         }
 
         $reward->update(['achieved_at' => now()]);
@@ -149,6 +161,9 @@ class RewardController extends Controller
             'family_member' => $reward->family_member,
             'name' => $reward->name,
             'cost' => $reward->cost,
+            'available_on' => $reward->available_on?->toDateString(),
+            'requires_content_parents' => $reward->requires_content_parents,
+            'parents_are_content' => User::parentsAreContent(),
             'image_url' => $reward->imageUrl(),
             'achieved_at' => $reward->achieved_at?->toIso8601String(),
         ];
