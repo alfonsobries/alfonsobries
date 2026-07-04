@@ -1,5 +1,4 @@
 import { router, useFocusEffect } from 'expo-router';
-import { GearSix } from 'phosphor-react-native';
 import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 
@@ -15,7 +14,6 @@ import { useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
 import { BehaviorFeed } from '@/components/behaviors/BehaviorFeed';
 import { BehaviorTile } from '@/components/behaviors/BehaviorTile';
-import { Button } from '@/components/ui/Button';
 
 type KidBehaviorsSectionProperties = {
   member: KidMember;
@@ -87,17 +85,9 @@ export function KidBehaviorsSection({ member }: KidBehaviorsSectionProperties) {
         </View>
       ) : loaded ? (
         <Text className="text-center text-sm text-muted">
-          No behaviors yet — add the first one below.
+          No behaviors yet — add the first one from the menu above.
         </Text>
       ) : null}
-
-      <Button
-        variant="outline"
-        icon={GearSix}
-        onPress={() => router.push(`/behaviors/manage?member=${member}`)}
-      >
-        Manage behaviors
-      </Button>
 
       <View className="gap-3">
         <Text className="text-xs font-semibold uppercase tracking-wider text-muted">Recent</Text>

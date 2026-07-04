@@ -63,13 +63,17 @@ class Behavior extends Model implements HasMedia
     }
 
     /**
-     * The URL of the illustration, preferring the square tile conversion.
+     * The URL of the illustration, preferring the square tile conversion but
+     * falling back to the original while the conversion is still queued.
      */
     public function imageUrl(): ?string
     {
-        $url = $this->getFirstMediaUrl('illustration', 'tile')
-            ?: $this->getFirstMediaUrl('illustration');
+        $media = $this->getFirstMedia('illustration');
 
-        return $url !== '' ? $url : null;
+        if ($media === null) {
+            return null;
+        }
+
+        return $media->hasGeneratedConversion('tile') ? $media->getUrl('tile') : $media->getUrl();
     }
 }
