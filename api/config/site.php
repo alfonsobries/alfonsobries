@@ -23,6 +23,11 @@ return [
         'model' => env('AI_ILLUSTRATIONS_MODEL', 'gpt-image-2'),
         'quality' => env('AI_ILLUSTRATIONS_QUALITY', 'low'),
     ],
+    // Defaults for chat assistants; an Assistant record can override both.
+    'chat' => [
+        'provider' => env('AI_CHAT_PROVIDER', 'openai'),
+        'model' => env('AI_CHAT_MODEL', 'gpt-5.1'),
+    ],
     'node_binary' => env('NODE_BINARY', '/usr/local/bin/node'),
     'npm_binary' => env('NPM_BINARY', '/usr/local/bin/npm'),
 ];
