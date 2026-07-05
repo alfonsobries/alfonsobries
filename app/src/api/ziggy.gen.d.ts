@@ -125,6 +125,37 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "api.assistants.index": [],
+    "api.conversations.index": [],
+    "api.conversations.store": [],
+    "api.conversations.show": [
+        {
+            "name": "conversation",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.conversations.destroy": [
+        {
+            "name": "conversation",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.conversations.messages.store": [
+        {
+            "name": "conversation",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.chat-messages.show": [
+        {
+            "name": "chatMessage",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "api.behavior-illustrations.store": [],
     "api.behavior-illustrations.show": [
         {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Conversation;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -21,4 +22,11 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 // family member may subscribe (the device already gates with Face ID).
 Broadcast::channel('behavior-illustration.{id}', function ($user, $id) {
     return $user->isFamilyMember();
+});
+
+// Assistant replies stream here. Conversations are personal, so only the
+// owner may subscribe.
+Broadcast::channel('conversation.{id}', function ($user, $id) {
+    return $user->isFamilyMember()
+        && Conversation::whereKey($id)->where('user_id', $user->id)->exists();
 });

@@ -2,12 +2,15 @@
 
 use App\Http\Controllers\AppleAuthController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\BehaviorController;
 use App\Http\Controllers\BehaviorIllustrationController;
 use App\Http\Controllers\BehaviorLogController;
+use App\Http\Controllers\ChatMessageController;
 use App\Http\Controllers\ChoreController;
 use App\Http\Controllers\ChoreLogController;
 use App\Http\Controllers\ContactFormController;
+use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DraftArticleController;
 use App\Http\Controllers\FamilyMoodController;
 use App\Http\Controllers\LogoutController;
@@ -66,6 +69,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/rewards/{reward}', [RewardController::class, 'update'])->name('rewards.update');
     Route::delete('/rewards/{reward}', [RewardController::class, 'destroy'])->name('rewards.destroy');
     Route::post('/rewards/{reward}/redeem', [RewardController::class, 'redeem'])->name('rewards.redeem');
+
+    Route::get('/assistants', [AssistantController::class, 'index'])->name('assistants.index');
+
+    Route::get('/conversations', [ConversationController::class, 'index'])->name('conversations.index');
+    Route::post('/conversations', [ConversationController::class, 'store'])->name('conversations.store');
+    Route::get('/conversations/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
+    Route::delete('/conversations/{conversation}', [ConversationController::class, 'destroy'])->name('conversations.destroy');
+    Route::post('/conversations/{conversation}/messages', [ChatMessageController::class, 'store'])->name('conversations.messages.store');
+
+    Route::get('/chat-messages/{chatMessage}', [ChatMessageController::class, 'show'])->name('chat-messages.show');
 
     Route::post('/behavior-illustrations', [BehaviorIllustrationController::class, 'store'])->name('behavior-illustrations.store');
     Route::get('/behavior-illustrations/{behaviorIllustration}', [BehaviorIllustrationController::class, 'show'])->name('behavior-illustrations.show');

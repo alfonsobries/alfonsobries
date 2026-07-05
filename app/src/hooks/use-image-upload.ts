@@ -23,17 +23,25 @@ function contentTypeFor(extension: string): string {
   return 'image/jpeg';
 }
 
+type ImageUploadOptions = {
+  /** Crop to a fixed aspect before uploading. Defaults to a square crop. */
+  allowsEditing?: boolean;
+  aspect?: [number, number];
+};
+
 /**
  * Standard direct-to-S3 image upload: pick from the photo library, then PUT
  * the file to a presigned URL from the API. Resolves to null when the person
  * cancels the picker; throws when the upload itself fails.
  */
-export function useImageUpload(): {
+export function useImageUpload(options: ImageUploadOptions = {}): {
   isUploading: boolean;
   pickAndUpload: () => Promise<UploadedImage | null>;
 } {
   const route = useApiRouter();
   const [isUploading, setIsUploading] = useState(false);
+  const { allowsEditing = true, aspect } = options;
+  const [aspectX, aspectY] = aspect ?? [1, 1];
 
   const pickAndUpload = useCallback(async (): Promise<UploadedImage | null> => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -43,8 +51,8 @@ export function useImageUpload(): {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing,
+      aspect: allowsEditing ? [aspectX, aspectY] : undefined,
       // Re-encoding (quality < 1) also converts HEIC photos to JPEG.
       quality: 0.8,
     });
@@ -81,7 +89,7 @@ export function useImageUpload(): {
     } finally {
       setIsUploading(false);
     }
-  }, [route]);
+  }, [route, allowsEditing, aspectX, aspectY]);
 
   return { isUploading, pickAndUpload };
 }
