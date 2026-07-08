@@ -20,7 +20,7 @@ runs:
     - uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
-        cache: pnpm
+        cache: ${{ runner.environment == 'github-hosted' && 'pnpm' || '' }}
         cache-dependency-path: ${{ inputs.working-directory }}/pnpm-lock.yaml
 
     - shell: bash
