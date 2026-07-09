@@ -199,3 +199,125 @@ it('is not available to other family members', function () {
 it('requires authentication', function () {
     $this->getJson(route('api.virtue.days.index'))->assertUnauthorized();
 });
+
+it('earns a point per kept day toward the mascot stage', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    foreach (range(1, 8) as $offset) {
+        VirtueDay::factory()->create([
+            'date' => now()->subDays($offset)->toDateString(),
+            'resolution' => VirtueDay::RESOLUTION_KEPT,
+        ]);
+    }
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.points', 8)
+        ->assertJsonPath('stats.stage', 5)
+        ->assertJsonPath('stats.next_stage_at', 10)
+        ->assertJsonPath('stats.stage_count', 30);
+});
+
+it('costs ten points to miss but never drops below a crossed checkpoint', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    // Twelve kept days cross the 7-point checkpoint; the miss lands on the floor.
+    foreach (range(2, 13) as $offset) {
+        VirtueDay::factory()->create([
+            'date' => now()->subDays($offset)->toDateString(),
+            'resolution' => VirtueDay::RESOLUTION_KEPT,
+        ]);
+    }
+
+    VirtueDay::factory()->create([
+        'date' => now()->subDay()->toDateString(),
+        'resolution' => VirtueDay::RESOLUTION_MISSED,
+    ]);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.points', 7)
+        ->assertJsonPath('stats.stage', 5);
+});
+
+it('never drops the mascot points below zero', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    VirtueDay::factory()->create([
+        'date' => now()->subDays(2)->toDateString(),
+        'resolution' => VirtueDay::RESOLUTION_KEPT,
+    ]);
+    VirtueDay::factory()->create([
+        'date' => now()->subDay()->toDateString(),
+        'resolution' => VirtueDay::RESOLUTION_MISSED,
+    ]);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.points', 0)
+        ->assertJsonPath('stats.stage', 1);
+});
+
+it('serves a mascot stage image', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $path = resource_path('illustrations/wolf/wolf-01.png');
+    $existed = file_exists($path);
+
+    if (! $existed) {
+        @mkdir(dirname($path), 0755, true);
+        file_put_contents($path, 'png-bytes');
+    }
+
+    try {
+        $this->actingAs($alfonso)
+            ->get(route('api.virtue.mascot', ['set' => 'wolf', 'stage' => 1]))
+            ->assertOk();
+    } finally {
+        if (! $existed) {
+            unlink($path);
+        }
+    }
+});
+
+it('returns 404 for an unknown mascot stage', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.mascot', ['set' => 'wolf', 'stage' => 31]))
+        ->assertNotFound();
+});
+
+it('hides the mascot from other family members', function () {
+    $saida = User::factory()->create(['family_member' => 'saida']);
+
+    $this->actingAs($saida)
+        ->getJson(route('api.virtue.mascot', ['set' => 'wolf', 'stage' => 1]))
+        ->assertForbidden();
+});
+
+it('maps two mascot stages to one tree stage', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    VirtueDay::factory()->create([
+        'date' => now()->subDay()->toDateString(),
+        'resolution' => VirtueDay::RESOLUTION_KEPT,
+    ]);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.stage', 2)
+        ->assertJsonPath('stats.tree_stage', 1)
+        ->assertJsonPath('stats.tree_stage_count', 15);
+});
+
+it('returns 404 for an unknown mascot set', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.mascot', ['set' => 'cat', 'stage' => 1]))
+        ->assertNotFound();
+});
