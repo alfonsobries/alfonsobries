@@ -31,7 +31,10 @@ screens look like two apps.
   header already clears it. Only bottom-edge chrome (composers, sheets) reserves
   an inset of its own.
 - Form sheets have no header, so their body goes in `Sheet` — the grabber
-  clearance, side padding and home-indicator gap live there once.
+  clearance, side padding and home-indicator gap live there once. A sheet that
+  scrolls passes `scrollable` rather than nesting a `ScrollView`: iOS resizes a
+  sheet's first descendant scroll view to the whole sheet, and a nested one then
+  paints over everything above it.
 
 ## Structure
 

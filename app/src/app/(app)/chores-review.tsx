@@ -3,7 +3,7 @@ import { Redirect, router, useFocusEffect, useLocalSearchParams } from 'expo-rou
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Check, LockKey, Star, X } from 'phosphor-react-native';
 import { useCallback, useState, type ReactNode } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
 
 import { useAuth } from '@/api/auth';
 import { checkChore, fetchChores, reviewChoreLog, type Chore } from '@/api/chores';
@@ -142,10 +142,15 @@ export default function ChoresReviewScreen(): ReactNode {
   }
 
   return (
-    <Sheet title={`${person.name}'s day`} subtitle="Check what really happened today">
+    <Sheet
+      title={`${person.name}'s day`}
+      subtitle="Check what really happened today"
+      scrollable
+      className="gap-4"
+    >
       {unlocked ? (
-        <View className="flex-1 gap-4">
-          <ScrollView contentContainerClassName="gap-3">
+        <>
+          <View className="gap-3">
             {chores.map((chore) => (
               <ReviewRow
                 key={chore.id}
@@ -160,14 +165,14 @@ export default function ChoresReviewScreen(): ReactNode {
             {chores.length === 0 && loaded ? (
               <Text className="py-6 text-center text-sm text-muted">No chores yet.</Text>
             ) : null}
-          </ScrollView>
+          </View>
 
           {chores.length > 0 ? (
             <Button fullWidth loading={saving} onPress={() => void handleSave()}>
               Save the day
             </Button>
           ) : null}
-        </View>
+        </>
       ) : (
         <Button fullWidth icon={LockKey} onPress={() => void handleUnlock()}>
           Review with Face ID
