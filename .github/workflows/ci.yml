@@ -13,10 +13,16 @@ concurrency:
 permissions:
   contents: read
 
+# Runner selection (forks always hosted; otherwise repo var CI_RUNNER, default ubuntu-latest).
+# Apply to every job that must run when GitHub-hosted minutes are exhausted - including
+# the path-filter gate. If `changes` stays on ubuntu-latest and hosted billing is blocked,
+# api/website/app/docs never start despite an online self-hosted runner.
+# Flip: gh variable set CI_RUNNER --repo alfonsobries/alfonsobries --body self-hosted|ubuntu-latest
+
 jobs:
   changes:
     name: Detect changes
-    runs-on: ubuntu-latest
+    runs-on: ${{ (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) && 'ubuntu-latest' || (vars.CI_RUNNER || 'ubuntu-latest') }}
     if: github.event_name == 'push' || github.event.pull_request.draft == false
     timeout-minutes: 5
     outputs:
