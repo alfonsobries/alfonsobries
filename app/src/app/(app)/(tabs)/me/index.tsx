@@ -15,7 +15,7 @@ export default function MyProfileScreen() {
 
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="gap-6 px-4 pb-16 pt-4"
+        contentContainerClassName="gap-6 px-4 pb-16 pt-2"
         contentInsetAdjustmentBehavior="automatic"
       >
         {person ? <ProfileView person={person} /> : null}
