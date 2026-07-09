@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { CaretLeft, Images } from 'phosphor-react-native';
+import { CaretLeft, Images, NotePencil } from 'phosphor-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
@@ -179,6 +179,20 @@ export default function ChatThreadScreen() {
             {assistant?.name ?? 'Chat'}
           </Text>
         </View>
+        {conversationId !== null ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Start a new chat"
+            onPress={() => {
+              setConversationId(null);
+              setMessages([]);
+            }}
+            hitSlop={8}
+            className="h-10 w-10 items-center justify-center rounded-full active:bg-surface-selected"
+          >
+            <NotePencil size={22} color={foregroundColor} />
+          </Pressable>
+        ) : null}
         {assistant?.kind === 'illustrator' ? (
           <Pressable
             accessibilityRole="button"
@@ -189,9 +203,9 @@ export default function ChatThreadScreen() {
           >
             <Images size={22} color={foregroundColor} />
           </Pressable>
-        ) : (
+        ) : conversationId === null ? (
           <View className="w-10" />
-        )}
+        ) : null}
       </View>
 
       <FlatList

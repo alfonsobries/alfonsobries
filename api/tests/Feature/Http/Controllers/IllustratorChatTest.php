@@ -5,8 +5,10 @@ use App\Events\ChatMessageUpdated;
 use App\Models\Assistant;
 use App\Models\ChatMessage;
 use App\Models\User;
+use App\Notifications\IllustrationReadyNotification;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 
 function illustratorAssistant(): Assistant
@@ -110,6 +112,49 @@ it('draws without characters when no members are picked', function () {
         return str_contains($prompt, 'ONLY as a reference for line style and palette')
             && ! str_contains($prompt, 'Main character:');
     });
+});
+
+it('notifies the requester when the illustration is ready', function () {
+    Storage::fake('s3');
+    Storage::fake('public');
+    fakeImageGeneration();
+    Event::fake([ChatMessageUpdated::class]);
+    Notification::fake();
+
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $assistant = illustratorAssistant();
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.conversations.store'), [
+            'assistant_id' => $assistant->id,
+            'content' => 'Regina con un globo',
+            'members' => ['regina'],
+        ])
+        ->assertCreated();
+
+    Notification::assertSentTo(
+        $alfonso,
+        IllustrationReadyNotification::class,
+        fn (IllustrationReadyNotification $notification): bool => $notification->toExpo($alfonso)->toArray()['body'] === 'Regina con un globo',
+    );
+});
+
+it('does not notify for regular chat replies', function () {
+    ChatAgent::fake(['Hola']);
+    Event::fake([ChatMessageUpdated::class]);
+    Notification::fake();
+
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $assistant = Assistant::factory()->create(['members' => ['alfonso']]);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.conversations.store'), [
+            'assistant_id' => $assistant->id,
+            'content' => 'Hola',
+        ])
+        ->assertCreated();
+
+    Notification::assertNothingSent();
 });
 
 it('rejects unknown members', function () {

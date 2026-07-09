@@ -4,6 +4,7 @@ namespace App\AI;
 
 use App\Models\Setting;
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * The AI models selectable from the app settings, split into two kinds:
@@ -68,7 +69,17 @@ class ModelCatalog
             return $entry;
         }
 
-        return self::find($kind, (string) config(self::config($kind, 'default'))) ?? self::all($kind)[0];
+        $fallback = self::find($kind, (string) config(self::config($kind, 'default'))) ?? self::all($kind)[0] ?? null;
+
+        if ($fallback === null) {
+            // Long-running workers keep the config they booted with; an empty
+            // catalog means one outlived a deploy that introduced it.
+            throw new RuntimeException(
+                "The {$kind} model catalog is empty — restart the queue workers so they load the current config.",
+            );
+        }
+
+        return $fallback;
     }
 
     public static function activate(string $kind, string $id): void

@@ -66,7 +66,9 @@ return [
             'driver' => 'redis',
             'connection' => 'default',
             'queue' => env('REDIS_QUEUE', 'default'),
-            'retry_after' => 90,
+            // Must exceed the worker timeout (config/horizon.php) or a slow
+            // illustration job gets retried while still running.
+            'retry_after' => 360,
             'block_for' => null,
             'after_commit' => false,
         ],
