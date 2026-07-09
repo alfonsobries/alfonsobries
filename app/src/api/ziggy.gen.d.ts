@@ -125,6 +125,14 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "api.virtue.days.index": [],
+    "api.virtue.days.resolution": [
+        {
+            "name": "date",
+            "required": true
+        }
+    ],
+    "api.virtue.prayers.store": [],
     "api.assistants.index": [],
     "api.conversations.index": [],
     "api.conversations.store": [],
