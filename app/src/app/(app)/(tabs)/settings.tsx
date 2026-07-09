@@ -7,11 +7,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/api/auth';
 import { apiClient } from '@/api/client';
 import { useApiRouter } from '@/api/router';
+import { AiModelPicker } from '@/components/settings/AiModelPicker';
 import { SettingsRow } from '@/components/settings/SettingsRow';
 import { SettingsSection } from '@/components/settings/SettingsSection';
 
 export default function SettingsScreen() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const route = useApiRouter();
   const [signingOut, setSigningOut] = useState(false);
   const [notifying, setNotifying] = useState(false);
@@ -54,6 +55,8 @@ export default function SettingsScreen() {
               onPress={handleTestNotification}
             />
           </SettingsSection>
+
+          {user?.family_member === 'alfonso' ? <AiModelPicker /> : null}
 
           <SettingsSection title="Developer">
             <SettingsRow
