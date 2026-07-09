@@ -207,7 +207,9 @@ return [
             'maxJobs' => 0,
             'memory' => 128,
             'tries' => 1,
-            'timeout' => 60,
+            // Must cover the slowest job: illustrator replies wait on image
+            // generation (GenerateChatReply::$timeout = 320).
+            'timeout' => 330,
             'nice' => 0,
         ],
     ],

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Events\ChatMessageUpdated;
 use App\Models\ChatMessage;
+use App\Notifications\IllustrationReadyNotification;
 use App\Services\ChatResponder;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -29,7 +30,41 @@ class GenerateChatReply implements ShouldQueue
     {
         $responder->respond($this->message);
 
-        ChatMessageUpdated::dispatch($this->message->fresh());
+        $message = $this->message->fresh();
+
+        ChatMessageUpdated::dispatch($message);
+
+        $this->notifyIllustrationReady($message);
+    }
+
+    /**
+     * Illustrations take a minute or more — long enough to leave the chat —
+     * so their completion pings the person who asked. Best-effort: a push
+     * failure never fails an already generated reply.
+     */
+    private function notifyIllustrationReady(ChatMessage $message): void
+    {
+        if (! $message->isCompleted()) {
+            return;
+        }
+
+        $conversation = $message->conversation()->with(['assistant', 'user'])->first();
+
+        if ($conversation === null || ! $conversation->assistant->isIllustrator()) {
+            return;
+        }
+
+        try {
+            $prompt = $conversation->messages()
+                ->where('role', ChatMessage::ROLE_USER)
+                ->where('id', '<', $message->id)
+                ->latest('id')
+                ->value('content');
+
+            $conversation->user->notify(new IllustrationReadyNotification($conversation, $prompt));
+        } catch (Throwable $exception) {
+            report($exception);
+        }
     }
 
     public function failed(?Throwable $exception): void
