@@ -16,6 +16,7 @@ use App\Http\Controllers\DraftArticleController;
 use App\Http\Controllers\FamilyMoodController;
 use App\Http\Controllers\FavoriteIllustrationController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\OtaUpdateController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PushTokenController;
 use App\Http\Controllers\ResumeControler;
@@ -31,6 +32,9 @@ use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/status', StatusController::class)->name('status');
+
+// Signed webhook (HMAC, no session) — hit by the publish script after `eas update`.
+Route::post('/ota/published', OtaUpdateController::class)->name('ota.published');
 
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('/apple', AppleAuthController::class)->name('apple');
