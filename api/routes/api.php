@@ -23,6 +23,7 @@ use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TempFileController;
 use App\Http\Controllers\TestNotificationController;
 use App\Http\Controllers\TypoFormController;
+use App\Http\Controllers\VirtueDayController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -69,6 +70,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/rewards/{reward}', [RewardController::class, 'update'])->name('rewards.update');
     Route::delete('/rewards/{reward}', [RewardController::class, 'destroy'])->name('rewards.destroy');
     Route::post('/rewards/{reward}/redeem', [RewardController::class, 'redeem'])->name('rewards.redeem');
+
+    Route::get('/virtue/days', [VirtueDayController::class, 'index'])->name('virtue.days.index');
+    Route::put('/virtue/days/{date}/resolution', [VirtueDayController::class, 'updateResolution'])->name('virtue.days.resolution');
+    Route::post('/virtue/prayers', [VirtueDayController::class, 'completePrayers'])->name('virtue.prayers.store');
 
     Route::get('/assistants', [AssistantController::class, 'index'])->name('assistants.index');
 
