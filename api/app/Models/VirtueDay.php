@@ -21,6 +21,42 @@ class VirtueDay extends Model
     public const RESOLUTION_MISSED = 'missed';
 
     /**
+     * What a missed day costs in mascot points; asymmetric on purpose (a kept
+     * day earns one) but never a restart from zero.
+     */
+    public const MISS_PENALTY = 10;
+
+    /**
+     * Points where the mascot's progress consolidates: once crossed, misses
+     * can never drag the points below them again.
+     *
+     * @var list<int>
+     */
+    public const CHECKPOINTS = [7, 30, 90, 180, 365];
+
+    /**
+     * Minimum points for each of the mascot's stages, index 0 = stage 1.
+     * Short early stages give quick wins when the risk is highest; later
+     * stages stretch out as consolidation takes over.
+     *
+     * @var list<int>
+     */
+    public const STAGE_THRESHOLDS = [
+        0, 1, 3, 5, 7,
+        10, 14, 18, 22, 26, 30,
+        40, 50, 60, 75, 90,
+        110, 130, 155, 180,
+        210, 240, 270, 300, 330, 365,
+        450, 550, 730, 1095,
+    ];
+
+    /**
+     * The compact companion series (the tree): one stage per two mascot
+     * stages, always visible on the dashboard.
+     */
+    public const TREE_STAGES = 15;
+
+    /**
      * @var list<string>
      */
     protected $fillable = [

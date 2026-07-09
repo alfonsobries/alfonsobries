@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/api/auth';
 import { getPerson } from '@/api/family';
 import { ProfileView } from '@/components/family/ProfileView';
-import { ToolsSection } from '@/components/tools/ToolsSection';
 
 export default function MyProfileScreen() {
   const { user } = useAuth();
@@ -19,7 +18,6 @@ export default function MyProfileScreen() {
         >
           <Text className="px-1 text-4xl font-bold text-foreground">Profile</Text>
           {person ? <ProfileView person={person} /> : null}
-          {user?.family_member === 'alfonso' ? <ToolsSection /> : null}
         </ScrollView>
       </SafeAreaView>
     </View>

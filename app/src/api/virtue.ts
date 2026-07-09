@@ -16,6 +16,14 @@ export type VirtueStats = {
   days_tracked: number;
   kept_count: number;
   missed_count: number;
+  /** Mascot progression: kept days earn a point, misses cost ten (floored at checkpoints). */
+  points: number;
+  stage: number;
+  stage_count: number;
+  next_stage_at: number;
+  /** The compact companion set shown on the dashboard (one stage per two mascot stages). */
+  tree_stage: number;
+  tree_stage_count: number;
 };
 
 export type VirtueSummary = {

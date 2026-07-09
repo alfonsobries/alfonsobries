@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useAuth } from '@/api/auth';
+import { authImageHeaders } from '@/api/client';
 import { useApiRouter } from '@/api/router';
 import {
   fetchVirtueSummary,
@@ -15,6 +16,7 @@ import {
 } from '@/api/virtue';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { Illustration } from '@/components/ui/Illustration';
 import { MonthCalendar, type CalendarDayMark } from '@/components/ui/MonthCalendar';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -40,6 +42,7 @@ export default function VirtueScreen() {
   const [stats, setStats] = useState<VirtueStats | null>(null);
   const [month, setMonth] = useState(() => new Date());
   const [saving, setSaving] = useState(false);
+  const [mascotFailed, setMascotFailed] = useState(false);
 
   const [dates, setDates] = useState(currentDates);
   const { today, yesterday, todayLabel } = dates;
@@ -158,10 +161,38 @@ export default function VirtueScreen() {
         contentContainerClassName="gap-4 p-4 pb-16"
       >
         <Card className="items-center gap-1 py-7">
-          <Flame size={30} color={tint} weight="fill" />
+          {stats && !mascotFailed ? (
+            <View className="mb-2 size-44 overflow-hidden rounded-3xl">
+              <Illustration
+                source={{
+                  uri: route('api.virtue.mascot', { set: 'wolf', stage: stats.stage }),
+                  headers: authImageHeaders(),
+                }}
+                transition={200}
+                onError={() => setMascotFailed(true)}
+              />
+            </View>
+          ) : (
+            <Flame size={30} color={tint} weight="fill" />
+          )}
           <Text className="mt-1 text-6xl font-bold text-foreground">{stats?.streak ?? '·'}</Text>
           <Text className="text-base font-medium text-foreground">day streak</Text>
           <Text className="text-sm text-muted">{streakSubline}</Text>
+          {stats ? (
+            <View className="mt-3 w-full gap-1.5 px-2">
+              <View className="h-1.5 w-full overflow-hidden rounded-full bg-surface-selected">
+                <View
+                  className="h-full rounded-full bg-primary-emphasis"
+                  style={{
+                    width: `${Math.min(100, Math.round((stats.points / Math.max(1, stats.next_stage_at)) * 100))}%`,
+                  }}
+                />
+              </View>
+              <Text className="text-center text-xs text-muted">
+                Stage {stats.stage} of {stats.stage_count}
+              </Text>
+            </View>
+          ) : null}
         </Card>
 
         <Card className="gap-4">
