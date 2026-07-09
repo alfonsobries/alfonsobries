@@ -5,8 +5,8 @@ use App\Jobs\GenerateBehaviorIllustration;
 use App\Models\BehaviorIllustration;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 it('generates an illustration and stores it in temp storage', function () {
     Storage::fake('s3')->buildTemporaryUrlsUsing(fn (string $path): string => "https://s3.test/{$path}");
