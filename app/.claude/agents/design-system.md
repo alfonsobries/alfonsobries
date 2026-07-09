@@ -24,9 +24,10 @@ A screen's frame — header, title, back button, top safe area — belongs to th
 navigator, not to the screen body. Hand-rolling any of it is what makes two
 screens look like two apps.
 
-- Set the title with `Stack.Screen.Title` (`large` on a tab root) and the actions
-  with `headerRight`. Never draw a header row, a back control, or a page title
-  inside the screen.
+- Set the title with `Stack.Screen.Title` and the actions with `headerRight`.
+  Never draw a header row, a back control, or a page title inside the screen.
+  Titles stay compact: `large` reserves an empty navigation bar above itself,
+  which reads as dead space on a screen with nothing to navigate back to.
 - A screen under a native header needs no `SafeAreaView` or `insets.top`; the
   header already clears it. Only bottom-edge chrome (composers, sheets) reserves
   an inset of its own.

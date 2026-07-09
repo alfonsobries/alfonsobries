@@ -38,11 +38,11 @@ export default function SettingsScreen() {
 
   return (
     <>
-      <Stack.Screen.Title large>Settings</Stack.Screen.Title>
+      <Stack.Screen.Title>Settings</Stack.Screen.Title>
 
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="gap-7 px-4 pb-16 pt-2"
+        contentContainerClassName="gap-7 px-4 pb-16 pt-4"
         contentInsetAdjustmentBehavior="automatic"
       >
         <SettingsSection title="Notifications">

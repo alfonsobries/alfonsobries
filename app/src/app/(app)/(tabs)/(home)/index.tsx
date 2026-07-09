@@ -18,11 +18,11 @@ export default function HomeScreen() {
 
   return (
     <>
-      <Stack.Screen.Title large>{greeting}</Stack.Screen.Title>
+      <Stack.Screen.Title>{greeting}</Stack.Screen.Title>
 
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="px-4 pb-6"
+        contentContainerClassName="px-4 pb-6 pt-4"
         contentInsetAdjustmentBehavior="automatic"
       >
         <Text className="text-base text-muted">Here&apos;s the family</Text>
