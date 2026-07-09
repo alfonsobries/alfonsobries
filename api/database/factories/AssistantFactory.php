@@ -20,6 +20,7 @@ class AssistantFactory extends Factory
 
         return [
             'slug' => Str::slug($name),
+            'kind' => Assistant::KIND_CHAT,
             'name' => Str::title($name),
             'emoji' => '🤖',
             'description' => $this->faker->sentence(),

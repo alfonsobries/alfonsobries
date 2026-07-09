@@ -20,6 +20,14 @@ class Conversation extends Model
         'user_id',
         'assistant_id',
         'title',
+        'members',
+    ];
+
+    /**
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'members' => 'array',
     ];
 
     /**
@@ -59,6 +67,7 @@ class Conversation extends Model
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'members' => $this->members,
             'assistant' => $this->assistant->toApiPayload(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];

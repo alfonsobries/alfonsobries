@@ -12,6 +12,7 @@ use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\MultiSelect;
 use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Slug;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
@@ -58,6 +59,16 @@ final class Assistant extends NovaResource
 
             Text::make('Emoji')
                 ->rules('nullable', 'string', 'max:8'),
+
+            Select::make('Kind')
+                ->options([
+                    Model::KIND_CHAT => 'Chat',
+                    Model::KIND_ILLUSTRATOR => 'Illustrator',
+                ])
+                ->default(Model::KIND_CHAT)
+                ->displayUsingLabels()
+                ->rules('required', 'in:chat,illustrator')
+                ->help('Illustrator assistants reply with a generated image instead of text.'),
 
             Text::make('Name')
                 ->sortable()
