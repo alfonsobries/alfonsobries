@@ -1,5 +1,5 @@
 import { router, Stack } from 'expo-router';
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { useAuth } from '@/api/auth';
@@ -20,7 +20,11 @@ export default function HomeScreen() {
     <>
       <Stack.Screen.Title large>{greeting}</Stack.Screen.Title>
 
-      <View className="flex-1 bg-background px-4">
+      <ScrollView
+        className="flex-1 bg-background"
+        contentContainerClassName="px-4 pb-6"
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <Text className="text-base text-muted">Here&apos;s the family</Text>
 
         <Animated.View entering={FadeIn.duration(500)} className="mt-5 flex-row flex-wrap">
@@ -45,7 +49,7 @@ export default function HomeScreen() {
             onPress={() => router.push('/illustrations/favorites')}
           />
         </Animated.View>
-      </View>
+      </ScrollView>
     </>
   );
 }
