@@ -30,7 +30,54 @@ export default function HomeScreen() {
           </View>
         ))}
       </Animated.View>
+
+      <Animated.View entering={FadeIn.duration(500)} className="mt-1.5 flex-row gap-3 px-1.5">
+        <ToolCard
+          emoji="🎨"
+          label="Illustrator"
+          subtitle="Draw the family"
+          onPress={() => router.push('/chat/thread?assistantSlug=illustrator')}
+        />
+        <ToolCard
+          emoji="🖼️"
+          label="Gallery"
+          subtitle="Saved drawings"
+          onPress={() => router.push('/illustrations/favorites')}
+        />
+      </Animated.View>
     </View>
+  );
+}
+
+function ToolCard({
+  emoji,
+  label,
+  subtitle,
+  onPress,
+}: {
+  emoji: string;
+  label: string;
+  subtitle: string;
+  onPress: () => void;
+}) {
+  return (
+    <Card
+      accessibilityLabel={label}
+      onPress={onPress}
+      className="flex-1 flex-row items-center gap-3 p-3"
+    >
+      <View className="h-11 w-11 items-center justify-center rounded-2xl bg-surface-selected">
+        <Text className="text-xl">{emoji}</Text>
+      </View>
+      <View className="flex-1">
+        <Text className="text-base font-semibold text-foreground" numberOfLines={1}>
+          {label}
+        </Text>
+        <Text className="text-xs text-muted" numberOfLines={1}>
+          {subtitle}
+        </Text>
+      </View>
+    </Card>
   );
 }
 

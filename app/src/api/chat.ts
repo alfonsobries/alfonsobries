@@ -4,10 +4,14 @@ import { useApiRouter } from './router';
 type ApiRoute = ReturnType<typeof useApiRouter>;
 
 // A chat "mini app": a system prompt plus presentation hints, assigned
-// per family member on the API (managed from Nova).
+// per family member on the API (managed from Nova). Illustrator assistants
+// reply with a generated image instead of text.
+export type AssistantKind = 'chat' | 'illustrator';
+
 export type Assistant = {
   id: number;
   slug: string;
+  kind: AssistantKind;
   name: string;
   emoji: string | null;
   description: string | null;
@@ -35,6 +39,8 @@ export type ChatMessage = {
 export type Conversation = {
   id: number;
   title: string | null;
+  /** Who stars in the drawings; only set on illustrator conversations. */
+  members: string[] | null;
   assistant: Assistant;
   updated_at: string;
   last_message?: string | null;
@@ -72,10 +78,11 @@ export async function startConversation(
   assistantId: number,
   content: string | null,
   imagePaths: string[] = [],
+  members: string[] = [],
 ): Promise<ConversationDetail> {
   const { data } = await apiClient.post<{ data: ConversationDetail }>(
     route('api.conversations.store'),
-    { assistant_id: assistantId, content, image_paths: imagePaths },
+    { assistant_id: assistantId, content, image_paths: imagePaths, members },
   );
 
   return data.data;
