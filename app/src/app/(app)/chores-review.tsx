@@ -11,7 +11,6 @@ import { checkChore, fetchChores, reviewChoreLog, type Chore } from '@/api/chore
 import { getPerson, isKid } from '@/api/family';
 import { MOOD_MAX, MOOD_MIN, useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
-import { MoodShift } from '@/components/moods/MoodShift';
 import { Button } from '@/components/ui/Button';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -35,10 +34,6 @@ export default function ChoresReviewScreen(): ReactNode {
   const [verdicts, setVerdicts] = useState<Record<number, boolean>>({});
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [result, setResult] = useState<{
-    earned: number;
-    mood: { before: number; after: number } | null;
-  } | null>(null);
 
   const load = useCallback(async () => {
     if (!kid) {
@@ -117,16 +112,28 @@ export default function ChoresReviewScreen(): ReactNode {
         .filter((chore) => verdicts[chore.id])
         .reduce((total, chore) => total + chore.points, 0);
 
-      setSaving(false);
-      setResult({
-        earned,
-        mood:
-          myMood != null && moodDelta !== 0
+      // Close this sheet entirely; the small result window takes its place.
+      router.replace({
+        pathname: '/save-result',
+        params: {
+          emoji: '⭐',
+          title: 'Day saved',
+          message:
+            earned > 0
+              ? `${person?.name} earned ${earned} point${earned === 1 ? '' : 's'} today.`
+              : `Nothing approved for ${person?.name} today.`,
+          ...(myMood != null && moodDelta !== 0
             ? {
-                before: myMood,
-                after: Math.min(MOOD_MAX, Math.max(MOOD_MIN, myMood + moodDelta)),
+                member: user?.family_member ?? '',
+                before: String(myMood),
+                after: String(Math.min(MOOD_MAX, Math.max(MOOD_MIN, myMood + moodDelta))),
+                note:
+                  moodDelta > 0
+                    ? 'Reviewing lifted your mood'
+                    : 'Fixing the day moved your mood back',
               }
-            : null,
+            : {}),
+        },
       });
     } catch {
       setSaving(false);
@@ -143,34 +150,7 @@ export default function ChoresReviewScreen(): ReactNode {
       <Text className="mt-1 text-center text-lg text-muted">Check what really happened today</Text>
 
       <View className="mt-6 flex-1">
-        {result !== null ? (
-          <View className="items-center gap-6">
-            <View className="items-center gap-1">
-              <Text className="text-5xl">⭐</Text>
-              <Text className="mt-2 text-2xl font-semibold text-foreground">Day saved</Text>
-              <Text className="text-center text-base text-muted">
-                {result.earned > 0
-                  ? `${person.name} earned ${result.earned} point${result.earned === 1 ? '' : 's'} today.`
-                  : `Nothing approved for ${person.name} today.`}
-              </Text>
-            </View>
-
-            {result.mood ? (
-              <View className="w-full gap-2 rounded-3xl bg-surface p-5">
-                <MoodShift before={result.mood.before} after={result.mood.after} />
-                <Text className="text-center text-sm text-muted">
-                  {result.mood.after >= result.mood.before
-                    ? 'Reviewing lifted your mood'
-                    : 'Fixing the day moved your mood back'}
-                </Text>
-              </View>
-            ) : null}
-
-            <Button fullWidth onPress={() => router.back()}>
-              Done
-            </Button>
-          </View>
-        ) : unlocked ? (
+        {unlocked ? (
           <View className="flex-1 gap-4">
             <ScrollView contentContainerClassName="gap-3">
               {chores.map((chore) => (

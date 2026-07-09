@@ -97,6 +97,15 @@ export default function AppLayout() {
             headerShown: false,
           }}
         />
+        <Stack.Screen
+          name="save-result"
+          options={{
+            presentation: 'formSheet',
+            sheetAllowedDetents: [0.55],
+            sheetGrabberVisible: true,
+            headerShown: false,
+          }}
+        />
       </Stack>
     </MoodsProvider>
   );
