@@ -11,11 +11,11 @@ export default function MyProfileScreen() {
 
   return (
     <>
-      <Stack.Screen.Title large>Profile</Stack.Screen.Title>
+      <Stack.Screen.Title>Profile</Stack.Screen.Title>
 
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="gap-6 px-4 pb-16 pt-2"
+        contentContainerClassName="gap-6 px-4 pb-16 pt-4"
         contentInsetAdjustmentBehavior="automatic"
       >
         {person ? <ProfileView person={person} /> : null}

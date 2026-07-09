@@ -60,11 +60,11 @@ export default function ChatScreen() {
 
   return (
     <>
-      <Stack.Screen.Title large>Chat</Stack.Screen.Title>
+      <Stack.Screen.Title>Chat</Stack.Screen.Title>
 
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerClassName="pb-6"
+        contentContainerClassName="pb-6 pt-4"
         contentInsetAdjustmentBehavior="automatic"
       >
         <View className="px-4">
