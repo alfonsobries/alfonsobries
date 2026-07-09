@@ -4,7 +4,6 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { HandPalm, LockKey } from 'phosphor-react-native';
 import { useState, type ReactNode } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/api/auth';
 import { logBehavior, type Behavior } from '@/api/behaviors';
@@ -12,6 +11,7 @@ import { getPerson } from '@/api/family';
 import { MOOD_MIN, useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
+import { Sheet } from '@/components/ui/Sheet';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 type LogBehaviorSheetProperties = {
@@ -22,7 +22,6 @@ type LogBehaviorSheetProperties = {
 // with Face ID, says whether it hit their mood, and the log is saved — the
 // feed then shows their avatar (and a sad face when it did).
 export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): ReactNode {
-  const insets = useSafeAreaInsets();
   const route = useApiRouter();
   const { user } = useAuth();
   const { members, refresh: refreshMoods } = useMoods();
@@ -84,10 +83,7 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
   }
 
   return (
-    <View
-      className="flex-1 items-center bg-background px-6 pt-8"
-      style={{ paddingBottom: insets.bottom + 16 }}
-    >
+    <Sheet className="items-center">
       <View className="size-40 items-center justify-center overflow-hidden rounded-3xl bg-surface">
         {behavior.image_url ? (
           <Illustration source={{ uri: behavior.image_url }} />
@@ -134,7 +130,7 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
           </Button>
         )}
       </View>
-    </View>
+    </Sheet>
   );
 }
 

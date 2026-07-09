@@ -1,16 +1,15 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { FamilyMember } from '@/api/auth';
 import { MoodShift } from '@/components/moods/MoodShift';
 import { Button } from '@/components/ui/Button';
+import { Sheet } from '@/components/ui/Sheet';
 
 // The small confirmation window shown AFTER a logging sheet fully closes:
 // what was saved, and — when it moved a parent's mood — the shift rendered
 // with their illustrated avatar (before → after).
 export default function SaveResultScreen() {
-  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{
     emoji?: string;
     title?: string;
@@ -27,10 +26,7 @@ export default function SaveResultScreen() {
   const showShift = member !== null && before !== null && after !== null;
 
   return (
-    <View
-      className="flex-1 items-center justify-between bg-background px-6 pt-10"
-      style={{ paddingBottom: insets.bottom + 16 }}
-    >
+    <Sheet className="items-center justify-between">
       <View className="w-full items-center gap-5">
         <View className="items-center gap-1">
           <Text className="text-5xl">{params.emoji ?? '✅'}</Text>
@@ -55,6 +51,6 @@ export default function SaveResultScreen() {
       <Button fullWidth onPress={() => router.back()}>
         Done
       </Button>
-    </View>
+    </Sheet>
   );
 }

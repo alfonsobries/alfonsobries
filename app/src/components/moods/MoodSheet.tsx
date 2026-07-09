@@ -3,12 +3,12 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { LockKey, Smiley, SmileySad } from 'phosphor-react-native';
 import { useState, type ReactNode } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { type FamilyMember } from '@/api/auth';
 import { MOOD_MAX, MOOD_MIN, MOOD_NEUTRAL, moodLabel, useMoods, type MoodLevel } from '@/api/moods';
 import { MoodAvatar } from '@/components/moods/MoodAvatar';
 import { Button } from '@/components/ui/Button';
+import { Sheet } from '@/components/ui/Sheet';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 function clamp(value: number): MoodLevel {
@@ -20,7 +20,6 @@ type MoodSheetProperties = {
 };
 
 export function MoodSheet({ member }: MoodSheetProperties): ReactNode {
-  const insets = useSafeAreaInsets();
   const { members, updateMood } = useMoods();
   const tint = useThemeColor('foreground');
 
@@ -58,10 +57,7 @@ export function MoodSheet({ member }: MoodSheetProperties): ReactNode {
   }
 
   return (
-    <View
-      className="flex-1 items-center bg-background px-6 pt-8"
-      style={{ paddingBottom: insets.bottom + 16 }}
-    >
+    <Sheet className="items-center">
       <MoodAvatar member={member} mood={shownMood} width={168} height={220} />
 
       <Text className="mt-4 text-3xl font-semibold text-foreground">{displayName}</Text>
@@ -98,7 +94,7 @@ export function MoodSheet({ member }: MoodSheetProperties): ReactNode {
           </Button>
         )}
       </View>
-    </View>
+    </Sheet>
   );
 }
 
