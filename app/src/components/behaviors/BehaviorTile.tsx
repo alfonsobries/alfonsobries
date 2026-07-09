@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Illustration } from '@/components/ui/Illustration';
 import { HandPalm } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
@@ -23,12 +23,7 @@ export function BehaviorTile({ behavior, onPress }: BehaviorTileProperties) {
         style={{ aspectRatio: 1 }}
       >
         {behavior.image_url ? (
-          <Image
-            source={{ uri: behavior.image_url }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-            transition={150}
-          />
+          <Illustration source={{ uri: behavior.image_url }} transition={150} />
         ) : (
           <HandPalm size={40} color={accent} weight="fill" />
         )}
