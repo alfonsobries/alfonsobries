@@ -4,7 +4,6 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { Check, LockKey, Star, X } from 'phosphor-react-native';
 import { useCallback, useState, type ReactNode } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/api/auth';
 import { checkChore, fetchChores, reviewChoreLog, type Chore } from '@/api/chores';
@@ -12,6 +11,7 @@ import { getPerson, isKid } from '@/api/family';
 import { MOOD_MAX, MOOD_MIN, useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
+import { Sheet } from '@/components/ui/Sheet';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 // The evening review, as a form sheet: every chore of the day, pre-checked
@@ -21,7 +21,6 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 // be re-run later to fix a verdict.
 export default function ChoresReviewScreen(): ReactNode {
   const { member } = useLocalSearchParams<{ member?: string }>();
-  const insets = useSafeAreaInsets();
   const route = useApiRouter();
   const { user } = useAuth();
   const { members: moodMembers, refresh: refreshMoods } = useMoods();
@@ -143,45 +142,38 @@ export default function ChoresReviewScreen(): ReactNode {
   }
 
   return (
-    <View className="flex-1 bg-background px-6 pt-8" style={{ paddingBottom: insets.bottom + 16 }}>
-      <Text className="text-center text-3xl font-semibold text-foreground">
-        {person.name}&apos;s day
-      </Text>
-      <Text className="mt-1 text-center text-lg text-muted">Check what really happened today</Text>
+    <Sheet title={`${person.name}'s day`} subtitle="Check what really happened today">
+      {unlocked ? (
+        <View className="flex-1 gap-4">
+          <ScrollView contentContainerClassName="gap-3">
+            {chores.map((chore) => (
+              <ReviewRow
+                key={chore.id}
+                chore={chore}
+                approved={verdicts[chore.id] ?? false}
+                onToggle={() =>
+                  setVerdicts((current) => ({ ...current, [chore.id]: !current[chore.id] }))
+                }
+              />
+            ))}
 
-      <View className="mt-6 flex-1">
-        {unlocked ? (
-          <View className="flex-1 gap-4">
-            <ScrollView contentContainerClassName="gap-3">
-              {chores.map((chore) => (
-                <ReviewRow
-                  key={chore.id}
-                  chore={chore}
-                  approved={verdicts[chore.id] ?? false}
-                  onToggle={() =>
-                    setVerdicts((current) => ({ ...current, [chore.id]: !current[chore.id] }))
-                  }
-                />
-              ))}
-
-              {chores.length === 0 && loaded ? (
-                <Text className="py-6 text-center text-sm text-muted">No chores yet.</Text>
-              ) : null}
-            </ScrollView>
-
-            {chores.length > 0 ? (
-              <Button fullWidth loading={saving} onPress={() => void handleSave()}>
-                Save the day
-              </Button>
+            {chores.length === 0 && loaded ? (
+              <Text className="py-6 text-center text-sm text-muted">No chores yet.</Text>
             ) : null}
-          </View>
-        ) : (
-          <Button fullWidth icon={LockKey} onPress={() => void handleUnlock()}>
-            Review with Face ID
-          </Button>
-        )}
-      </View>
-    </View>
+          </ScrollView>
+
+          {chores.length > 0 ? (
+            <Button fullWidth loading={saving} onPress={() => void handleSave()}>
+              Save the day
+            </Button>
+          ) : null}
+        </View>
+      ) : (
+        <Button fullWidth icon={LockKey} onPress={() => void handleUnlock()}>
+          Review with Face ID
+        </Button>
+      )}
+    </Sheet>
   );
 }
 

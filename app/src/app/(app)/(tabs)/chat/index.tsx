@@ -1,8 +1,7 @@
-import { router, useFocusEffect } from 'expo-router';
+import { router, Stack, useFocusEffect } from 'expo-router';
 import { CaretRight } from 'phosphor-react-native';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   type Assistant,
@@ -17,7 +16,6 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 
 export default function ChatScreen() {
   const route = useApiRouter();
-  const insets = useSafeAreaInsets();
   const [assistants, setAssistants] = useState<Assistant[] | null>(null);
   const [conversations, setConversations] = useState<Conversation[] | null>(null);
 
@@ -61,68 +59,71 @@ export default function ChatScreen() {
   };
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{ paddingTop: insets.top + 4, paddingBottom: 24 }}
-      contentInsetAdjustmentBehavior="automatic"
-    >
-      <View className="px-4">
-        <Text className="text-3xl font-semibold leading-tight text-foreground">Chat</Text>
-        <Text className="mt-1 text-base text-muted">Pick an assistant to start</Text>
-      </View>
+    <>
+      <Stack.Screen.Title large>Chat</Stack.Screen.Title>
 
       <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className="mt-5"
-        contentContainerClassName="gap-3 px-4"
+        className="flex-1 bg-background"
+        contentContainerClassName="pb-6"
+        contentInsetAdjustmentBehavior="automatic"
       >
-        {assistants === null
-          ? [0, 1].map((key) => (
-              <View key={key} className="h-32 w-40 animate-pulse rounded-3xl bg-surface" />
-            ))
-          : assistants.map((assistant) => (
-              <AssistantTile
-                key={assistant.id}
-                assistant={assistant}
-                onPress={() => router.push(`/chat/thread?assistant=${assistant.id}`)}
-              />
-            ))}
+        <View className="px-4">
+          <Text className="text-base text-muted">Pick an assistant to start</Text>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="mt-5"
+          contentContainerClassName="gap-3 px-4"
+        >
+          {assistants === null
+            ? [0, 1].map((key) => (
+                <View key={key} className="h-32 w-40 animate-pulse rounded-3xl bg-surface" />
+              ))
+            : assistants.map((assistant) => (
+                <AssistantTile
+                  key={assistant.id}
+                  assistant={assistant}
+                  onPress={() => router.push(`/chat/thread?assistant=${assistant.id}`)}
+                />
+              ))}
+        </ScrollView>
+
+        <View className="mt-8 px-4">
+          <Text className="mb-3 text-lg font-semibold text-foreground">Recent</Text>
+
+          {conversations === null ? (
+            <View className="overflow-hidden rounded-3xl bg-surface">
+              {[0, 1, 2].map((key) => (
+                <View
+                  key={key}
+                  className={`h-16 animate-pulse ${key > 0 ? 'border-t border-border' : ''}`}
+                />
+              ))}
+            </View>
+          ) : conversations.length === 0 ? (
+            <View className="items-center rounded-3xl bg-surface px-6 py-10">
+              <Text className="text-center text-base text-muted">
+                No conversations yet. Pick an assistant above to start one.
+              </Text>
+            </View>
+          ) : (
+            <View className="overflow-hidden rounded-3xl bg-surface">
+              {conversations.map((conversation, index) => (
+                <ConversationRow
+                  key={conversation.id}
+                  conversation={conversation}
+                  first={index === 0}
+                  onPress={() => router.push(`/chat/thread?conversation=${conversation.id}`)}
+                  onLongPress={() => handleDelete(conversation)}
+                />
+              ))}
+            </View>
+          )}
+        </View>
       </ScrollView>
-
-      <View className="mt-8 px-4">
-        <Text className="mb-3 text-lg font-semibold text-foreground">Recent</Text>
-
-        {conversations === null ? (
-          <View className="overflow-hidden rounded-3xl bg-surface">
-            {[0, 1, 2].map((key) => (
-              <View
-                key={key}
-                className={`h-16 animate-pulse ${key > 0 ? 'border-t border-border' : ''}`}
-              />
-            ))}
-          </View>
-        ) : conversations.length === 0 ? (
-          <View className="items-center rounded-3xl bg-surface px-6 py-10">
-            <Text className="text-center text-base text-muted">
-              No conversations yet. Pick an assistant above to start one.
-            </Text>
-          </View>
-        ) : (
-          <View className="overflow-hidden rounded-3xl bg-surface">
-            {conversations.map((conversation, index) => (
-              <ConversationRow
-                key={conversation.id}
-                conversation={conversation}
-                first={index === 0}
-                onPress={() => router.push(`/chat/thread?conversation=${conversation.id}`)}
-                onLongPress={() => handleDelete(conversation)}
-              />
-            ))}
-          </View>
-        )}
-      </View>
-    </ScrollView>
+    </>
   );
 }
 

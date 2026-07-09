@@ -1,5 +1,6 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { CaretLeft, Images, NotePencil } from 'phosphor-react-native';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { useHeaderHeight } from 'expo-router/react-navigation';
+import { Images, NotePencil } from 'phosphor-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
@@ -39,7 +40,8 @@ export default function ChatThreadScreen() {
   }>();
   const route = useApiRouter();
   const insets = useSafeAreaInsets();
-  const foregroundColor = useThemeColor('foreground');
+  const headerHeight = useHeaderHeight();
+  const tint = useThemeColor('primary-emphasis');
 
   const initialConversationId = params.conversation ? Number(params.conversation) : null;
   const newAssistantId = params.assistant ? Number(params.assistant) : null;
@@ -159,54 +161,41 @@ export default function ChatThreadScreen() {
     <KeyboardAvoidingView
       className="flex-1 bg-background"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      // This view starts below the native header, which the keyboard frame still counts.
+      keyboardVerticalOffset={headerHeight}
     >
-      <View
-        className="flex-row items-center gap-2 border-b border-border px-2 pb-2"
-        style={{ paddingTop: insets.top + 4 }}
-      >
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          onPress={() => router.back()}
-          hitSlop={8}
-          className="h-10 w-10 items-center justify-center rounded-full active:bg-surface-selected"
-        >
-          <CaretLeft size={22} color={foregroundColor} />
-        </Pressable>
-        <View className="flex-1 flex-row items-center gap-2">
-          <Text className="text-xl">{assistant?.emoji ?? '💬'}</Text>
-          <Text className="text-lg font-semibold text-foreground" numberOfLines={1}>
-            {assistant?.name ?? 'Chat'}
-          </Text>
-        </View>
-        {conversationId !== null ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Start a new chat"
-            onPress={() => {
-              setConversationId(null);
-              setMessages([]);
-            }}
-            hitSlop={8}
-            className="h-10 w-10 items-center justify-center rounded-full active:bg-surface-selected"
-          >
-            <NotePencil size={22} color={foregroundColor} />
-          </Pressable>
-        ) : null}
-        {assistant?.kind === 'illustrator' ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Open the gallery"
-            onPress={() => router.push('/illustrations/favorites')}
-            hitSlop={8}
-            className="h-10 w-10 items-center justify-center rounded-full active:bg-surface-selected"
-          >
-            <Images size={22} color={foregroundColor} />
-          </Pressable>
-        ) : conversationId === null ? (
-          <View className="w-10" />
-        ) : null}
-      </View>
+      <Stack.Screen
+        options={{
+          title: assistant ? `${assistant.emoji ?? '💬'} ${assistant.name}` : 'Chat',
+          headerRight: () => (
+            <View className="flex-row items-center gap-5">
+              {conversationId !== null ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Start a new chat"
+                  hitSlop={12}
+                  onPress={() => {
+                    setConversationId(null);
+                    setMessages([]);
+                  }}
+                >
+                  <NotePencil size={24} color={tint} weight="regular" />
+                </Pressable>
+              ) : null}
+              {assistant?.kind === 'illustrator' ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Open the gallery"
+                  hitSlop={12}
+                  onPress={() => router.push('/illustrations/favorites')}
+                >
+                  <Images size={24} color={tint} weight="regular" />
+                </Pressable>
+              ) : null}
+            </View>
+          ),
+        }}
+      />
 
       <FlatList
         className="flex-1"

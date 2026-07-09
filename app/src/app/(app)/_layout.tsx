@@ -13,8 +13,10 @@ export default function AppLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="design-system" />
-        {/* The thread draws its own header so the keyboard avoidance needs no offset. */}
-        <Stack.Screen name="chat/thread" />
+        <Stack.Screen
+          name="chat/thread"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
         <Stack.Screen
           name="illustrations/favorites"
           options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
