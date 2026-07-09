@@ -164,6 +164,17 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "api.ai-models.index": [],
+    "api.ai-models.update": [],
+    "api.illustration-favorites.index": [],
+    "api.illustration-favorites.store": [],
+    "api.illustration-favorites.destroy": [
+        {
+            "name": "favoriteIllustration",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "api.behavior-illustrations.store": [],
     "api.behavior-illustrations.show": [
         {

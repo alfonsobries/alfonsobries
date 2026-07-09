@@ -13,7 +13,11 @@ class GenerateChatReply implements ShouldQueue
 {
     use Queueable;
 
-    public int $timeout = 180;
+    /**
+     * Illustrator replies wait on image generation, which can take several
+     * minutes with reference images; text replies finish far sooner.
+     */
+    public int $timeout = 320;
 
     public int $tries = 1;
 

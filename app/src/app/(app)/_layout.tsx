@@ -16,6 +16,10 @@ export default function AppLayout() {
         {/* The thread draws its own header so the keyboard avoidance needs no offset. */}
         <Stack.Screen name="chat/thread" />
         <Stack.Screen
+          name="illustrations/favorites"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
+        <Stack.Screen
           name="profile"
           options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
         />

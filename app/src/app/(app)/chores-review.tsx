@@ -6,10 +6,12 @@ import { useCallback, useState, type ReactNode } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAuth } from '@/api/auth';
 import { checkChore, fetchChores, reviewChoreLog, type Chore } from '@/api/chores';
 import { getPerson, isKid } from '@/api/family';
-import { useMoods } from '@/api/moods';
+import { MOOD_MAX, MOOD_MIN, useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
+import { MoodShift } from '@/components/moods/MoodShift';
 import { Button } from '@/components/ui/Button';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -22,7 +24,8 @@ export default function ChoresReviewScreen(): ReactNode {
   const { member } = useLocalSearchParams<{ member?: string }>();
   const insets = useSafeAreaInsets();
   const route = useApiRouter();
-  const { refresh: refreshMoods } = useMoods();
+  const { user } = useAuth();
+  const { members: moodMembers, refresh: refreshMoods } = useMoods();
 
   const person = member ? getPerson(member) : undefined;
   const kid = person && isKid(person.key) ? person.key : undefined;
@@ -32,6 +35,10 @@ export default function ChoresReviewScreen(): ReactNode {
   const [verdicts, setVerdicts] = useState<Record<number, boolean>>({});
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [result, setResult] = useState<{
+    earned: number;
+    mood: { before: number; after: number } | null;
+  } | null>(null);
 
   const load = useCallback(async () => {
     if (!kid) {
@@ -79,6 +86,10 @@ export default function ChoresReviewScreen(): ReactNode {
   async function handleSave(): Promise<void> {
     setSaving(true);
 
+    // Approvals lift the reviewing parent's mood by the chore's points,
+    // revoked ones give them back; mirrored here for the result screen.
+    let moodDelta = 0;
+
     try {
       for (const chore of chores) {
         const approved = verdicts[chore.id] ?? false;
@@ -95,10 +106,28 @@ export default function ChoresReviewScreen(): ReactNode {
         const logId = chore.today?.log_id ?? (await checkChore(route, chore.id)).id;
 
         await reviewChoreLog(route, logId, approved);
+        moodDelta += approved ? chore.points : status === 'approved' ? -chore.points : 0;
       }
 
+      const myMood = moodMembers.find((entry) => entry.family_member === user?.family_member)?.mood;
+
       await refreshMoods();
-      router.back();
+
+      const earned = chores
+        .filter((chore) => verdicts[chore.id])
+        .reduce((total, chore) => total + chore.points, 0);
+
+      setSaving(false);
+      setResult({
+        earned,
+        mood:
+          myMood != null && moodDelta !== 0
+            ? {
+                before: myMood,
+                after: Math.min(MOOD_MAX, Math.max(MOOD_MIN, myMood + moodDelta)),
+              }
+            : null,
+      });
     } catch {
       setSaving(false);
       Alert.alert('Could not save', 'Please try again in a moment.');
@@ -114,7 +143,34 @@ export default function ChoresReviewScreen(): ReactNode {
       <Text className="mt-1 text-center text-lg text-muted">Check what really happened today</Text>
 
       <View className="mt-6 flex-1">
-        {unlocked ? (
+        {result !== null ? (
+          <View className="items-center gap-6">
+            <View className="items-center gap-1">
+              <Text className="text-5xl">⭐</Text>
+              <Text className="mt-2 text-2xl font-semibold text-foreground">Day saved</Text>
+              <Text className="text-center text-base text-muted">
+                {result.earned > 0
+                  ? `${person.name} earned ${result.earned} point${result.earned === 1 ? '' : 's'} today.`
+                  : `Nothing approved for ${person.name} today.`}
+              </Text>
+            </View>
+
+            {result.mood ? (
+              <View className="w-full gap-2 rounded-3xl bg-surface p-5">
+                <MoodShift before={result.mood.before} after={result.mood.after} />
+                <Text className="text-center text-sm text-muted">
+                  {result.mood.after >= result.mood.before
+                    ? 'Reviewing lifted your mood'
+                    : 'Fixing the day moved your mood back'}
+                </Text>
+              </View>
+            ) : null}
+
+            <Button fullWidth onPress={() => router.back()}>
+              Done
+            </Button>
+          </View>
+        ) : unlocked ? (
           <View className="flex-1 gap-4">
             <ScrollView contentContainerClassName="gap-3">
               {chores.map((chore) => (

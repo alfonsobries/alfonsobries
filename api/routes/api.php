@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AiModelController;
 use App\Http\Controllers\AppleAuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AssistantController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DraftArticleController;
 use App\Http\Controllers\FamilyMoodController;
+use App\Http\Controllers\FavoriteIllustrationController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PushTokenController;
@@ -84,6 +86,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/conversations/{conversation}/messages', [ChatMessageController::class, 'store'])->name('conversations.messages.store');
 
     Route::get('/chat-messages/{chatMessage}', [ChatMessageController::class, 'show'])->name('chat-messages.show');
+
+    Route::get('/ai-models', [AiModelController::class, 'index'])->name('ai-models.index');
+    Route::put('/ai-models', [AiModelController::class, 'update'])->name('ai-models.update');
+
+    Route::get('/illustration-favorites', [FavoriteIllustrationController::class, 'index'])->name('illustration-favorites.index');
+    Route::post('/illustration-favorites', [FavoriteIllustrationController::class, 'store'])->name('illustration-favorites.store');
+    Route::delete('/illustration-favorites/{favoriteIllustration}', [FavoriteIllustrationController::class, 'destroy'])->name('illustration-favorites.destroy');
 
     Route::post('/behavior-illustrations', [BehaviorIllustrationController::class, 'store'])->name('behavior-illustrations.store');
     Route::get('/behavior-illustrations/{behaviorIllustration}', [BehaviorIllustrationController::class, 'show'])->name('behavior-illustrations.show');

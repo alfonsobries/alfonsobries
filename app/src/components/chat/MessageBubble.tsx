@@ -5,14 +5,21 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import type { ChatMessage } from '@/api/chat';
 
 import { CopyableReply } from './CopyableReply';
+import { IllustrationReply } from './IllustrationReply';
 
 type MessageBubbleProperties = {
   message: ChatMessage;
   /** Render completed assistant replies with the copy-ready treatment. */
   copyableOutput?: boolean;
+  /** The assistant draws instead of writing (pending state wording). */
+  illustrator?: boolean;
 };
 
-export function MessageBubble({ message, copyableOutput = false }: MessageBubbleProperties) {
+export function MessageBubble({
+  message,
+  copyableOutput = false,
+  illustrator = false,
+}: MessageBubbleProperties) {
   if (message.role === 'user') {
     return (
       <Animated.View entering={FadeInDown.duration(200)} className="items-end">
@@ -46,7 +53,9 @@ export function MessageBubble({ message, copyableOutput = false }: MessageBubble
     return (
       <Animated.View entering={FadeInDown.duration(200)} className="items-start">
         <View className="animate-pulse rounded-3xl rounded-bl-lg bg-surface px-4 py-3">
-          <Text className="text-[16px] leading-6 text-muted">Thinking…</Text>
+          <Text className="text-[16px] leading-6 text-muted">
+            {illustrator ? 'Drawing… this can take a minute 🎨' : 'Thinking…'}
+          </Text>
         </View>
       </Animated.View>
     );
@@ -62,6 +71,14 @@ export function MessageBubble({ message, copyableOutput = false }: MessageBubble
           {message.error ? <Text className="mt-1 text-xs text-muted">{message.error}</Text> : null}
         </View>
       </View>
+    );
+  }
+
+  if (message.attachments.length > 0) {
+    return (
+      <Animated.View entering={FadeInDown.duration(200)} className="items-start">
+        <IllustrationReply message={message} />
+      </Animated.View>
     );
   }
 

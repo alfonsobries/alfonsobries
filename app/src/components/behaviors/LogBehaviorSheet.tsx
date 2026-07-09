@@ -6,10 +6,12 @@ import { useState, type ReactNode } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAuth } from '@/api/auth';
 import { logBehavior, type Behavior } from '@/api/behaviors';
 import { getPerson } from '@/api/family';
-import { useMoods } from '@/api/moods';
+import { MOOD_MIN, useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
+import { MoodShift } from '@/components/moods/MoodShift';
 import { Button } from '@/components/ui/Button';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -23,14 +25,17 @@ type LogBehaviorSheetProperties = {
 export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): ReactNode {
   const insets = useSafeAreaInsets();
   const route = useApiRouter();
-  const { refresh: refreshMoods } = useMoods();
+  const { user } = useAuth();
+  const { members, refresh: refreshMoods } = useMoods();
   const accent = useThemeColor('primary-emphasis');
 
   const [unlocked, setUnlocked] = useState(false);
   const [affectedMood, setAffectedMood] = useState<boolean | null>(null);
   const [saving, setSaving] = useState(false);
+  const [result, setResult] = useState<{ before: number; after: number } | 'saved' | null>(null);
 
   const kidName = getPerson(behavior.family_member)?.name ?? behavior.family_member;
+  const myMood = members.find((entry) => entry.family_member === user?.family_member)?.mood;
 
   async function handleUnlock(): Promise<void> {
     const result = await LocalAuthentication.authenticateAsync({
@@ -55,7 +60,14 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
       });
       // Logging may have lowered the parent's mood on the API side.
       await refreshMoods();
-      router.back();
+
+      // Mirror the API's mood math so the result shows without a refetch race.
+      setSaving(false);
+      setResult(
+        affectedMood && myMood != null
+          ? { before: myMood, after: Math.max(MOOD_MIN, myMood - behavior.points) }
+          : 'saved',
+      );
     } catch {
       setSaving(false);
       Alert.alert('Could not save', 'Please try again in a moment.');
@@ -83,7 +95,30 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
       <Text className="mt-1 text-lg text-muted">{kidName} did this</Text>
 
       <View className="mt-8 w-full flex-1">
-        {unlocked ? (
+        {result !== null ? (
+          <View className="items-center gap-6">
+            <View className="items-center gap-1">
+              <Text className="text-5xl">✅</Text>
+              <Text className="mt-2 text-2xl font-semibold text-foreground">Saved</Text>
+              <Text className="text-center text-base text-muted">
+                {result === 'saved'
+                  ? `${behavior.name} is on ${kidName}'s log.`
+                  : `${behavior.name} is on ${kidName}'s log — and it moved your mood.`}
+              </Text>
+            </View>
+
+            {result !== 'saved' ? (
+              <View className="w-full gap-2 rounded-3xl bg-surface p-5">
+                <MoodShift before={result.before} after={result.after} />
+                <Text className="text-center text-sm text-muted">−{behavior.points} mood</Text>
+              </View>
+            ) : null}
+
+            <Button fullWidth onPress={() => router.back()}>
+              Done
+            </Button>
+          </View>
+        ) : unlocked ? (
           <View className="gap-6">
             <Text className="text-center text-base font-medium text-foreground">
               Did it affect your mood?

@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { CaretLeft } from 'phosphor-react-native';
+import { CaretLeft, Images } from 'phosphor-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
@@ -22,25 +22,33 @@ import {
   sendMessage,
   startConversation,
 } from '@/api/chat';
+import type { PersonKey } from '@/api/family';
 import { useApiRouter } from '@/api/router';
 import { Composer } from '@/components/chat/Composer';
+import { MemberPicker } from '@/components/chat/MemberPicker';
 import { MessageBubble } from '@/components/chat/MessageBubble';
 import { useConversationChannel } from '@/hooks/use-conversation-channel';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import type { UploadedImage } from '@/hooks/use-image-upload';
 
 export default function ChatThreadScreen() {
-  const params = useLocalSearchParams<{ conversation?: string; assistant?: string }>();
+  const params = useLocalSearchParams<{
+    conversation?: string;
+    assistant?: string;
+    assistantSlug?: string;
+  }>();
   const route = useApiRouter();
   const insets = useSafeAreaInsets();
   const foregroundColor = useThemeColor('foreground');
 
   const initialConversationId = params.conversation ? Number(params.conversation) : null;
   const newAssistantId = params.assistant ? Number(params.assistant) : null;
+  const newAssistantSlug = params.assistantSlug ?? null;
 
   const [conversationId, setConversationId] = useState<number | null>(initialConversationId);
   const [assistant, setAssistant] = useState<Assistant | null>(null);
   const [messages, setMessages] = useState<ChatMessage[] | null>(initialConversationId ? null : []);
+  const [members, setMembers] = useState<PersonKey[]>([]);
   const [sending, setSending] = useState(false);
 
   const upsertMessage = useCallback((incoming: ChatMessage) => {
@@ -62,9 +70,14 @@ export default function ChatThreadScreen() {
           const detail = await fetchConversation(route, initialConversationId);
           setAssistant(detail.assistant);
           setMessages(detail.messages);
-        } else if (newAssistantId) {
+          setMembers((detail.members ?? []) as PersonKey[]);
+        } else if (newAssistantId || newAssistantSlug) {
           const assistants = await fetchAssistants(route);
-          setAssistant(assistants.find((entry) => entry.id === newAssistantId) ?? null);
+          setAssistant(
+            assistants.find((entry) =>
+              newAssistantId ? entry.id === newAssistantId : entry.slug === newAssistantSlug,
+            ) ?? null,
+          );
         }
       } catch {
         Alert.alert('Could not open the chat', 'Please try again.');
@@ -121,7 +134,13 @@ export default function ChatThreadScreen() {
         upsertMessage(userMessage);
         upsertMessage(reply);
       } else {
-        const detail = await startConversation(route, assistant.id, content || null, imagePaths);
+        const detail = await startConversation(
+          route,
+          assistant.id,
+          content || null,
+          imagePaths,
+          members,
+        );
         setConversationId(detail.id);
         setMessages(detail.messages);
       }
@@ -160,7 +179,19 @@ export default function ChatThreadScreen() {
             {assistant?.name ?? 'Chat'}
           </Text>
         </View>
-        <View className="w-10" />
+        {assistant?.kind === 'illustrator' ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Open the gallery"
+            onPress={() => router.push('/illustrations/favorites')}
+            hitSlop={8}
+            className="h-10 w-10 items-center justify-center rounded-full active:bg-surface-selected"
+          >
+            <Images size={22} color={foregroundColor} />
+          </Pressable>
+        ) : (
+          <View className="w-10" />
+        )}
       </View>
 
       <FlatList
@@ -169,7 +200,11 @@ export default function ChatThreadScreen() {
         inverted
         keyExtractor={(message) => String(message.id)}
         renderItem={({ item }) => (
-          <MessageBubble message={item} copyableOutput={assistant?.copyable_output ?? false} />
+          <MessageBubble
+            message={item}
+            copyableOutput={assistant?.copyable_output ?? false}
+            illustrator={assistant?.kind === 'illustrator'}
+          />
         )}
         contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16 }}
         ItemSeparatorComponent={() => <View className="h-3" />}
@@ -191,7 +226,10 @@ export default function ChatThreadScreen() {
         }
       />
 
-      <View className="px-4 pt-2" style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
+      <View className="gap-3 px-4 pt-2" style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
+        {assistant?.kind === 'illustrator' && conversationId === null ? (
+          <MemberPicker selected={members} onChange={setMembers} />
+        ) : null}
         <Composer sending={sending} onSend={handleSend} />
       </View>
     </KeyboardAvoidingView>
