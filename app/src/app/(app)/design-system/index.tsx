@@ -46,6 +46,11 @@ const CATEGORIES = [
     href: '/design-system/navigation',
   },
   {
+    title: 'Calendar',
+    subtitle: 'Month grid with per-day marks',
+    href: '/design-system/calendar',
+  },
+  {
     title: 'Overlays',
     subtitle: 'Form sheets',
     href: '/design-system/overlays',

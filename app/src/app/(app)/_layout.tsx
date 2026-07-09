@@ -2,9 +2,11 @@ import { Stack } from 'expo-router';
 
 import { MoodsProvider } from '@/api/moods';
 import { usePushRegistration } from '@/hooks/use-push-registration';
+import { useVirtueReminder } from '@/hooks/use-virtue-reminder';
 
 export default function AppLayout() {
   usePushRegistration();
+  useVirtueReminder();
 
   return (
     <MoodsProvider>
@@ -40,6 +42,20 @@ export default function AppLayout() {
         <Stack.Screen
           name="rewards/edit"
           options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
+        <Stack.Screen
+          name="virtue/index"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal', title: 'Virtud' }}
+        />
+        <Stack.Screen name="virtue/prayers" options={{ presentation: 'modal' }} />
+        <Stack.Screen
+          name="virtue/guide"
+          options={{
+            presentation: 'formSheet',
+            sheetAllowedDetents: [0.85],
+            sheetGrabberVisible: true,
+            headerShown: false,
+          }}
         />
         <Stack.Screen name="chores-today" options={{ presentation: 'modal', headerShown: true }} />
         <Stack.Screen
