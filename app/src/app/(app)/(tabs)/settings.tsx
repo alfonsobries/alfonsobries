@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { BellRinging, PaintBrush, SignOut } from 'phosphor-react-native';
+import { BellRinging, PaintBrush, Robot, SignOut } from 'phosphor-react-native';
 import { useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,7 +7,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/api/auth';
 import { apiClient } from '@/api/client';
 import { useApiRouter } from '@/api/router';
-import { AiModelPicker } from '@/components/settings/AiModelPicker';
 import { SettingsRow } from '@/components/settings/SettingsRow';
 import { SettingsSection } from '@/components/settings/SettingsSection';
 
@@ -56,16 +55,22 @@ export default function SettingsScreen() {
             />
           </SettingsSection>
 
-          {user?.family_member === 'alfonso' ? <AiModelPicker /> : null}
-
-          <SettingsSection title="Developer">
-            <SettingsRow
-              icon={PaintBrush}
-              label="Design System"
-              showChevron
-              onPress={() => router.push('/design-system')}
-            />
-          </SettingsSection>
+          {user?.family_member === 'alfonso' ? (
+            <SettingsSection title="Developer">
+              <SettingsRow
+                icon={PaintBrush}
+                label="Design System"
+                showChevron
+                onPress={() => router.push('/design-system')}
+              />
+              <SettingsRow
+                icon={Robot}
+                label="AI Models"
+                showChevron
+                onPress={() => router.push('/ai-models')}
+              />
+            </SettingsSection>
+          ) : null}
 
           <SettingsSection>
             <SettingsRow

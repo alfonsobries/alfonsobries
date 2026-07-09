@@ -48,6 +48,14 @@ export default function AppLayout() {
           options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
         />
         <Stack.Screen
+          name="ai-models"
+          options={{
+            headerShown: true,
+            headerBackButtonDisplayMode: 'minimal',
+            title: 'AI Models',
+          }}
+        />
+        <Stack.Screen
           name="virtue/index"
           options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal', title: 'Virtud' }}
         />
