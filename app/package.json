@@ -52,6 +52,7 @@
     "ziggy-js": "^2.6.3"
   },
   "devDependencies": {
+    "@babel/plugin-transform-react-jsx": "^8.0.1",
     "@resvg/resvg-js": "^2.6.2",
     "@types/react": "~19.2.2",
     "babel-preset-expo": "57.0.1",
