@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Illustration } from '@/components/ui/Illustration';
 import { router } from 'expo-router';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { HandPalm, LockKey } from 'phosphor-react-native';
@@ -90,11 +90,7 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
     >
       <View className="size-40 items-center justify-center overflow-hidden rounded-3xl bg-surface">
         {behavior.image_url ? (
-          <Image
-            source={{ uri: behavior.image_url }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-          />
+          <Illustration source={{ uri: behavior.image_url }} />
         ) : (
           <HandPalm size={48} color={accent} weight="fill" />
         )}

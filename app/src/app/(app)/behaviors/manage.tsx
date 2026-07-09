@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Illustration } from '@/components/ui/Illustration';
 import { Redirect, router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { CaretRight, HandPalm, LockKey, Plus } from 'phosphor-react-native';
@@ -114,11 +114,7 @@ export default function ManageBehaviorsScreen() {
                 >
                   <View className="size-12 items-center justify-center overflow-hidden rounded-xl bg-surface-selected">
                     {behavior.image_url ? (
-                      <Image
-                        source={{ uri: behavior.image_url }}
-                        style={{ width: '100%', height: '100%' }}
-                        contentFit="cover"
-                      />
+                      <Illustration source={{ uri: behavior.image_url }} />
                     ) : (
                       <HandPalm size={22} color={accent} weight="fill" />
                     )}

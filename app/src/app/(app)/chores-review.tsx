@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Illustration } from '@/components/ui/Illustration';
 import { Redirect, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Check, LockKey, Star, X } from 'phosphor-react-native';
@@ -208,11 +208,7 @@ function ReviewRow({
     >
       <View className="size-14 items-center justify-center overflow-hidden rounded-xl bg-surface-selected">
         {chore.image_url ? (
-          <Image
-            source={{ uri: chore.image_url }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-          />
+          <Illustration source={{ uri: chore.image_url }} />
         ) : (
           <Star size={24} color={accent} weight="fill" />
         )}
