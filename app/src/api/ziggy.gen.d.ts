@@ -133,6 +133,16 @@ declare module 'ziggy-js' {
         }
     ],
     "api.virtue.prayers.store": [],
+    "api.virtue.mascot": [
+        {
+            "name": "set",
+            "required": true
+        },
+        {
+            "name": "stage",
+            "required": true
+        }
+    ],
     "api.assistants.index": [],
     "api.conversations.index": [],
     "api.conversations.store": [],
