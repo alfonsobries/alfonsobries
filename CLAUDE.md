@@ -94,6 +94,7 @@ and local dev — see [`commands.md`](commands.md).
 - `FRONT_URL` (`api/.env`) — points at the frontend's public URL
 - `EXPO_PUBLIC_API_URL` (`app/.env`) — the API base URL (including `/api`) the mobile app calls; `start-mobile.sh` sets it to the local API's LAN IP
 - `APPLE_CLIENT_ID` (`api/.env`) — the iOS bundle identifier Apple identity tokens are verified against (defaults to `com.alfonsobries.app`); see `docs/apple-sign-in.md`
+- `EAS_NOTIFY_SECRET` (`app/.env` and `api/.env`) — must match; signs the webhook the publish script fires after `eas update` so the API can push an "update ready" notification
 
 ---
 
