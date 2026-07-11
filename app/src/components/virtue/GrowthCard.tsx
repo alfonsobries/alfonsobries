@@ -1,5 +1,5 @@
-import { useFocusEffect } from 'expo-router';
-import { CaretRight, Flame } from 'phosphor-react-native';
+import { router, useFocusEffect } from 'expo-router';
+import { Flame, ScanSmiley } from 'phosphor-react-native';
 import { useCallback, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
@@ -7,32 +7,56 @@ import { authImageHeaders } from '@/api/client';
 import { useApiRouter } from '@/api/router';
 import { fetchVirtueSummary, type VirtueStats } from '@/api/virtue';
 import { Illustration } from '@/components/ui/Illustration';
-import { openVirtue } from '@/components/virtue/open-virtue';
+import { isVirtueUnlocked, unlockVirtue } from '@/components/virtue/open-virtue';
 import { AREAS } from '@/data/virtue';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
-// The always-visible pulse of the daily practice: the tree that grows with
-// the streak plus one line per area. Tapping asks for Face ID and opens the
-// full section. Renders nothing when the stats aren't available (offline or
-// another user).
+// The always-visible pulse of the daily practice. It starts locked — a plain
+// Face ID button that reveals nothing — and one successful scan turns it into
+// the summary card (tree, streak, one line per area) that opens the section.
 export function GrowthCard() {
   const route = useApiRouter();
-  const muted = useThemeColor('muted');
   const tint = useThemeColor('primary-emphasis');
+  const onPrimary = useThemeColor('primary-foreground');
+  const [unlocked, setUnlocked] = useState(isVirtueUnlocked);
   const [stats, setStats] = useState<VirtueStats | null>(null);
 
   useFocusEffect(
     useCallback(() => {
+      if (!unlocked) {
+        return;
+      }
+
       void (async () => {
         try {
           const summary = await fetchVirtueSummary(route);
           setStats(summary.stats);
         } catch {
-          // Not available for this user or offline — the card stays hidden.
+          // Offline — the card keeps its last summary until the next focus.
         }
       })();
-    }, [route]),
+    }, [route, unlocked]),
   );
+
+  async function handleUnlock(): Promise<void> {
+    if (await unlockVirtue()) {
+      setUnlocked(true);
+    }
+  }
+
+  if (!unlocked) {
+    return (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Unlock Virtud with Face ID"
+        onPress={() => void handleUnlock()}
+        className="h-14 flex-row items-center justify-center gap-2.5 rounded-full bg-primary active:opacity-80"
+      >
+        <ScanSmiley size={22} color={onPrimary} weight="bold" />
+        <Text className="text-base font-semibold text-primary-foreground">Virtud</Text>
+      </Pressable>
+    );
+  }
 
   if (!stats) {
     return null;
@@ -41,8 +65,8 @@ export function GrowthCard() {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel="Growth"
-      onPress={() => void openVirtue()}
+      accessibilityLabel="Virtud"
+      onPress={() => router.push('/virtue')}
       className="gap-4 rounded-3xl bg-surface p-4 active:opacity-80"
     >
       <View className="flex-row items-center gap-4">
@@ -62,8 +86,6 @@ export function GrowthCard() {
           </Text>
           <Text className="text-sm text-muted">Growing steady</Text>
         </View>
-
-        <CaretRight size={16} color={muted} weight="bold" />
       </View>
 
       <View className="flex-row gap-2">
