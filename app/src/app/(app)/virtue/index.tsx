@@ -1,5 +1,16 @@
 import { Redirect, router, Stack, useFocusEffect } from 'expo-router';
-import { Check, Flame, HandsPraying, Question, Target, X } from 'phosphor-react-native';
+import {
+  Barbell,
+  BookOpen,
+  Brain,
+  Check,
+  Flame,
+  ForkKnife,
+  HandsPraying,
+  Question,
+  Target,
+  X,
+} from 'phosphor-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -9,9 +20,12 @@ import { useApiRouter } from '@/api/router';
 import {
   fetchVirtueSummary,
   localDate,
+  setHabit,
   setResolution,
   type Resolution,
+  type VirtueArea,
   type VirtueDay,
+  type VirtueHabit,
   type VirtueStats,
 } from '@/api/virtue';
 import { Button } from '@/components/ui/Button';
@@ -30,19 +44,33 @@ function currentDates() {
   };
 }
 
-// The daily practice at a glance: the resolution streak, today's two habits
-// (the prayers and the resolution), and one calendar that carries both.
+const AREAS: { key: VirtueArea; label: string; Icon: typeof Barbell }[] = [
+  { key: 'body', label: 'Body', Icon: Barbell },
+  { key: 'mind', label: 'Mind', Icon: Brain },
+  { key: 'spirit', label: 'Spirit', Icon: HandsPraying },
+];
+
+const HABITS: { key: VirtueHabit; label: string; subtitle: string; Icon: typeof Barbell }[] = [
+  { key: 'exercise', label: 'Exercise', subtitle: '20 minutes is enough', Icon: Barbell },
+  { key: 'diet', label: 'Follow the diet', subtitle: 'Stay within the plan', Icon: ForkKnife },
+  { key: 'reading', label: 'Read', subtitle: 'A few pages count', Icon: BookOpen },
+];
+
+// The daily practice at a glance: the layered scene (one element per area),
+// the per-area progress, today's habit checklist, and one calendar that
+// carries the resolution and the prayers.
 export default function VirtueScreen() {
   const { user } = useAuth();
   const route = useApiRouter();
   const tint = useThemeColor('primary-emphasis');
   const onPrimary = useThemeColor('primary-foreground');
+  const muted = useThemeColor('muted');
 
   const [days, setDays] = useState<Record<string, VirtueDay>>({});
   const [stats, setStats] = useState<VirtueStats | null>(null);
   const [month, setMonth] = useState(() => new Date());
   const [saving, setSaving] = useState(false);
-  const [mascotFailed, setMascotFailed] = useState(false);
+  const [sceneFailed, setSceneFailed] = useState(false);
 
   const [dates, setDates] = useState(currentDates);
   const { today, yesterday, todayLabel } = dates;
@@ -95,13 +123,29 @@ export default function VirtueScreen() {
     return <Redirect href="/" />;
   }
 
+  function apply(result: { day: VirtueDay; stats: VirtueStats }): void {
+    setDays((current) => ({ ...current, [result.day.date]: result.day }));
+    setStats(result.stats);
+  }
+
   async function mark(date: string, resolution: Resolution | null): Promise<void> {
     setSaving(true);
 
     try {
-      const result = await setResolution(route, date, resolution);
-      setDays((current) => ({ ...current, [result.day.date]: result.day }));
-      setStats(result.stats);
+      apply(await setResolution(route, date, resolution));
+    } catch {
+      Alert.alert('Could not save', 'Please try again in a moment.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function toggleHabit(habit: VirtueHabit): Promise<void> {
+    const completed = !days[today]?.habits[habit];
+    setSaving(true);
+
+    try {
+      apply(await setHabit(route, today, habit, completed));
     } catch {
       Alert.alert('Could not save', 'Please try again in a moment.');
     } finally {
@@ -160,40 +204,52 @@ export default function VirtueScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerClassName="gap-4 p-4 pb-16"
       >
-        <Card className="items-center gap-1 py-7">
-          {stats && !mascotFailed ? (
-            <View className="mb-2 size-44 overflow-hidden rounded-3xl">
-              <Illustration
-                source={{
-                  uri: route('api.virtue.mascot', { set: 'wolf', stage: stats.stage }),
-                  headers: authImageHeaders(),
-                }}
-                transition={200}
-                onError={() => setMascotFailed(true)}
-              />
-            </View>
+        <Card className="items-center gap-1 py-6">
+          {stats && !sceneFailed ? (
+            <Scene stats={stats} onError={() => setSceneFailed(true)} />
           ) : (
             <Flame size={30} color={tint} weight="fill" />
           )}
-          <Text className="mt-1 text-6xl font-bold text-foreground">{stats?.streak ?? '·'}</Text>
+          <Text className="mt-2 text-6xl font-bold text-foreground">{stats?.streak ?? '·'}</Text>
           <Text className="text-base font-medium text-foreground">day streak</Text>
           <Text className="text-sm text-muted">{streakSubline}</Text>
-          {stats ? (
-            <View className="mt-3 w-full gap-1.5 px-2">
-              <View className="h-1.5 w-full overflow-hidden rounded-full bg-surface-selected">
-                <View
-                  className="h-full rounded-full bg-primary-emphasis"
-                  style={{
-                    width: `${Math.min(100, Math.round((stats.points / Math.max(1, stats.next_stage_at)) * 100))}%`,
-                  }}
-                />
-              </View>
-              <Text className="text-center text-xs text-muted">
-                Stage {stats.stage} of {stats.stage_count}
-              </Text>
-            </View>
-          ) : null}
         </Card>
+
+        {stats ? (
+          <Card className="gap-4">
+            {AREAS.map(({ key, label, Icon }) => {
+              const area = stats.areas[key];
+
+              return (
+                <View key={key} className="gap-2">
+                  <View className="flex-row items-center gap-3">
+                    <View className="size-9 items-center justify-center rounded-xl bg-surface-selected">
+                      <Icon size={18} color={tint} weight="fill" />
+                    </View>
+                    <Text className="flex-1 text-base font-semibold text-foreground">{label}</Text>
+                    {area.streak > 0 ? (
+                      <View className="flex-row items-center gap-1">
+                        <Flame size={14} color={tint} weight="fill" />
+                        <Text className="text-sm font-semibold text-foreground">{area.streak}</Text>
+                      </View>
+                    ) : null}
+                    <Text className="text-xs text-muted">
+                      Stage {area.stage} of {area.stage_count}
+                    </Text>
+                  </View>
+                  <View className="h-1.5 w-full overflow-hidden rounded-full bg-surface-selected">
+                    <View
+                      className="h-full rounded-full bg-primary-emphasis"
+                      style={{
+                        width: `${Math.min(100, Math.round((area.points / Math.max(1, area.next_stage_at)) * 100))}%`,
+                      }}
+                    />
+                  </View>
+                </View>
+              );
+            })}
+          </Card>
+        ) : null}
 
         <Card className="gap-4">
           <View className="gap-0.5">
@@ -221,6 +277,34 @@ export default function VirtueScreen() {
               </Button>
             )}
           </View>
+
+          {HABITS.map(({ key, label, subtitle, Icon }) => {
+            const done = todayEntry?.habits[key] ?? false;
+
+            return (
+              <View key={key} className="flex-row items-center gap-3">
+                <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
+                  <Icon size={22} color={tint} weight="fill" />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-base font-semibold text-foreground">{label}</Text>
+                  <Text className="text-sm text-muted">{done ? 'Done today' : subtitle}</Text>
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={label}
+                  accessibilityState={{ selected: done, disabled: saving }}
+                  disabled={saving}
+                  onPress={() => void toggleHabit(key)}
+                  className={`size-9 items-center justify-center rounded-full ${
+                    done ? 'bg-primary' : 'border-2 border-border bg-surface-selected'
+                  } ${saving ? 'opacity-50' : 'active:opacity-80'}`}
+                >
+                  <Check size={18} color={done ? onPrimary : muted} weight="bold" />
+                </Pressable>
+              </View>
+            );
+          })}
 
           <View className="h-px bg-border" />
 
@@ -279,6 +363,55 @@ export default function VirtueScreen() {
     </>
   );
 }
+
+// The hero scene stacks one layer per area over the shared plate: the wolf
+// grows with the body, the tree with the spirit, and the knight stands in
+// for the mind while its art is still a single stage. Every layer ships
+// full-canvas from the API, so stacking needs no repositioning math — the
+// offsets below only compose the temporary art pleasantly.
+function Scene({ stats, onError }: { stats: VirtueStats; onError: () => void }) {
+  const route = useApiRouter();
+  const headers = authImageHeaders();
+  const treeStage = Math.min(stats.tree_stage_count, intdivCeil(stats.areas.spirit.stage, 2));
+
+  const layers = [
+    { uri: route('api.virtue.mascot', { set: 'tree', stage: treeStage }), place: styles.tree },
+    { uri: route('api.virtue.mascot', { set: 'knight', stage: 1 }), place: styles.knight },
+    {
+      uri: route('api.virtue.mascot', { set: 'wolf', stage: stats.areas.body.stage }),
+      place: styles.wolf,
+    },
+  ];
+
+  return (
+    <View className="w-full overflow-hidden rounded-3xl" style={{ aspectRatio: 4 / 3 }}>
+      <Illustration
+        source={{ uri: route('api.virtue.mascot', { set: 'plate', stage: 1 }), headers }}
+        transition={200}
+        onError={onError}
+      />
+      {layers.map((layer) => (
+        <Illustration
+          key={layer.uri}
+          source={{ uri: layer.uri, headers }}
+          contentFit="contain"
+          transition={200}
+          style={[{ position: 'absolute', backgroundColor: 'transparent' }, layer.place]}
+        />
+      ))}
+    </View>
+  );
+}
+
+function intdivCeil(value: number, divisor: number): number {
+  return Math.max(1, Math.ceil(value / divisor));
+}
+
+const styles = {
+  tree: { right: '-4%', bottom: '14%', width: '46%', height: '46%' },
+  knight: { left: '42%', bottom: '12%', width: '24%', height: '24%' },
+  wolf: { left: '-2%', bottom: '-4%', width: '54%', height: '54%' },
+} as const;
 
 function Legend({
   swatch,

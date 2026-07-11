@@ -6,6 +6,7 @@ export declare const Ziggy: Config;
 declare module 'ziggy-js' {
   interface RouteList {
     "api.status": [],
+    "api.ota.published": [],
     "api.auth.apple": [],
     "api.auth.logout": [],
     "api.user": [],
@@ -129,6 +130,16 @@ declare module 'ziggy-js' {
     "api.virtue.days.resolution": [
         {
             "name": "date",
+            "required": true
+        }
+    ],
+    "api.virtue.days.habit": [
+        {
+            "name": "date",
+            "required": true
+        },
+        {
+            "name": "habit",
             "required": true
         }
     ],
