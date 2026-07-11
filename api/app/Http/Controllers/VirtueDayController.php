@@ -3,14 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\VirtueDay;
+use App\Models\VirtueEntry;
+use App\Virtue\VirtueHabit;
+use App\Virtue\VirtueStats;
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 
 class VirtueDayController extends Controller
 {
+    public function __construct(private readonly VirtueStats $stats) {}
+
     /**
      * Every tracked day plus the running stats, so the screen renders from a
      * single call. The dataset stays tiny (one row per day), so no paging.
@@ -21,12 +27,16 @@ class VirtueDayController extends Controller
             return $response;
         }
 
+        $entries = VirtueEntry::orderBy('date')
+            ->get()
+            ->groupBy(fn (VirtueEntry $entry): string => $entry->date->toDateString());
+
         $days = VirtueDay::orderBy('date')
             ->get()
-            ->map(fn (VirtueDay $day): array => $this->present($day))
+            ->map(fn (VirtueDay $day): array => $this->present($day, $entries->get($day->date->toDateString(), collect())))
             ->values();
 
-        return response()->json(['data' => $days, 'stats' => $this->stats()]);
+        return response()->json(['data' => $days, 'stats' => $this->stats->summary()]);
     }
 
     /**
@@ -50,7 +60,7 @@ class VirtueDayController extends Controller
         $day = $this->dayFor($date);
         $day->update(['resolution' => $validated['resolution']]);
 
-        return response()->json(['data' => $this->present($day), 'stats' => $this->stats()]);
+        return $this->dayResponse($day);
     }
 
     /**
@@ -77,13 +87,50 @@ class VirtueDayController extends Controller
             $day->update(['prayers_completed_at' => now()]);
         }
 
-        return response()->json(['data' => $this->present($day), 'stats' => $this->stats()]);
+        return $this->dayResponse($day);
+    }
+
+    /**
+     * Mark or clear one of the entry-tracked habits for a day. Marking is
+     * idempotent (the first completion time wins); clearing deletes the
+     * entry so the day goes back to pending.
+     */
+    public function updateHabit(Request $request, string $date, string $habit): JsonResponse
+    {
+        if ($response = $this->guard($request)) {
+            return $response;
+        }
+
+        if ($response = $this->validateDate($date)) {
+            return $response;
+        }
+
+        if (VirtueHabit::tryFrom($habit) === null) {
+            return response()->json(['message' => 'Unknown habit.'], 422);
+        }
+
+        $validated = $request->validate([
+            'completed' => ['required', 'boolean'],
+        ]);
+
+        $day = $this->dayFor($date);
+
+        $entry = VirtueEntry::whereDate('date', $date)->where('habit', $habit)->first();
+
+        if ($validated['completed'] && $entry === null) {
+            VirtueEntry::create(['date' => $date, 'habit' => $habit, 'completed_at' => now()]);
+        } elseif (! $validated['completed']) {
+            $entry?->delete();
+        }
+
+        return $this->dayResponse($day);
     }
 
     /**
      * A progression-stage image from one of the mascot sets — the wolf (the
-     * full arc) or the tree (the compact dashboard companion). Served through
-     * the API so the sets stay private to the authenticated family.
+     * full arc), the tree (the compact dashboard companion) or the scene
+     * layers (plate, knight). Served through the API so the sets stay
+     * private to the authenticated family.
      */
     public function mascot(Request $request, string $set, int $stage): mixed
     {
@@ -94,6 +141,8 @@ class VirtueDayController extends Controller
         $totals = [
             'wolf' => count(VirtueDay::STAGE_THRESHOLDS),
             'tree' => VirtueDay::TREE_STAGES,
+            'plate' => 1,
+            'knight' => 1,
         ];
 
         $path = resource_path(sprintf('illustrations/%s/%s-%02d.png', $set, $set, $stage));
@@ -146,96 +195,31 @@ class VirtueDayController extends Controller
         return null;
     }
 
+    private function dayResponse(VirtueDay $day): JsonResponse
+    {
+        $entries = VirtueEntry::whereDate('date', $day->date->toDateString())->get();
+
+        return response()->json([
+            'data' => $this->present($day->refresh(), $entries),
+            'stats' => $this->stats->summary(),
+        ]);
+    }
+
     /**
+     * @param  Collection<int, VirtueEntry>  $entries
      * @return array<string, mixed>
      */
-    private function present(VirtueDay $day): array
+    private function present(VirtueDay $day, Collection $entries): array
     {
+        $completed = $entries->map(fn (VirtueEntry $entry): string => $entry->habit->value)->flip();
+
         return [
             'date' => $day->date->toDateString(),
             'prayers_completed' => $day->prayers_completed_at !== null,
             'resolution' => $day->resolution,
-        ];
-    }
-
-    /**
-     * The streak counts calendar days since the last explicit miss (or since
-     * tracking started) — an unmarked day stays pending and doesn't break it.
-     *
-     * @return array<string, int>
-     */
-    private function stats(): array
-    {
-        $first = VirtueDay::min('date');
-        $lastMissed = VirtueDay::where('resolution', VirtueDay::RESOLUTION_MISSED)->max('date');
-
-        $streak = 0;
-
-        if ($first !== null) {
-            $start = $lastMissed === null
-                ? Carbon::parse((string) $first)
-                : Carbon::parse((string) $lastMissed)->addDay();
-
-            $streak = max(0, (int) $start->startOfDay()->diffInDays(now()->startOfDay()) + 1);
-        }
-
-        return [
-            'streak' => $streak,
-            'days_tracked' => $first === null
-                ? 0
-                : (int) Carbon::parse((string) $first)->startOfDay()->diffInDays(now()->startOfDay()) + 1,
-            'kept_count' => VirtueDay::where('resolution', VirtueDay::RESOLUTION_KEPT)->count(),
-            'missed_count' => VirtueDay::where('resolution', VirtueDay::RESOLUTION_MISSED)->count(),
-            ...$this->progress(),
-        ];
-    }
-
-    /**
-     * The mascot progression: each kept day earns a point, a miss costs ten,
-     * and crossing a checkpoint sets a floor the points can never fall below
-     * again — a lapse is a setback, never a restart. The stage is the highest
-     * threshold reached and drives which mascot image the app shows.
-     *
-     * @return array<string, int>
-     */
-    private function progress(): array
-    {
-        $points = 0;
-        $floor = 0;
-
-        $days = VirtueDay::whereNotNull('resolution')
-            ->orderBy('date')
-            ->pluck('resolution');
-
-        foreach ($days as $resolution) {
-            $points = $resolution === VirtueDay::RESOLUTION_KEPT
-                ? $points + 1
-                : max($floor, $points - VirtueDay::MISS_PENALTY);
-
-            foreach (VirtueDay::CHECKPOINTS as $checkpoint) {
-                if ($points >= $checkpoint) {
-                    $floor = max($floor, $checkpoint);
-                }
-            }
-        }
-
-        $stage = 1;
-
-        foreach (VirtueDay::STAGE_THRESHOLDS as $index => $threshold) {
-            if ($points >= $threshold) {
-                $stage = $index + 1;
-            }
-        }
-
-        $nextThreshold = VirtueDay::STAGE_THRESHOLDS[$stage] ?? null;
-
-        return [
-            'points' => $points,
-            'stage' => $stage,
-            'stage_count' => count(VirtueDay::STAGE_THRESHOLDS),
-            'next_stage_at' => $nextThreshold ?? $points,
-            'tree_stage' => intdiv($stage + 1, 2),
-            'tree_stage_count' => VirtueDay::TREE_STAGES,
+            'habits' => collect(VirtueHabit::values())
+                ->mapWithKeys(fn (string $habit): array => [$habit => $completed->has($habit)])
+                ->all(),
         ];
     }
 }

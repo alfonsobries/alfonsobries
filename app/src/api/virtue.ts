@@ -5,10 +5,24 @@ type ApiRoute = ReturnType<typeof useApiRouter>;
 
 export type Resolution = 'kept' | 'missed';
 
+export type VirtueArea = 'body' | 'mind' | 'spirit';
+
+/** The entry-tracked habits; the prayers and the resolution have flows of their own. */
+export type VirtueHabit = 'exercise' | 'diet' | 'reading';
+
 export type VirtueDay = {
   date: string;
   prayers_completed: boolean;
   resolution: Resolution | null;
+  habits: Record<VirtueHabit, boolean>;
+};
+
+export type VirtueAreaStats = {
+  points: number;
+  stage: number;
+  stage_count: number;
+  next_stage_at: number;
+  streak: number;
 };
 
 export type VirtueStats = {
@@ -24,6 +38,7 @@ export type VirtueStats = {
   /** The compact companion set shown on the dashboard (one stage per two mascot stages). */
   tree_stage: number;
   tree_stage_count: number;
+  areas: Record<VirtueArea, VirtueAreaStats>;
 };
 
 export type VirtueSummary = {
@@ -56,6 +71,20 @@ export async function setResolution(
   const { data } = await apiClient.put<{ data: VirtueDay; stats: VirtueStats }>(
     route('api.virtue.days.resolution', { date }),
     { resolution },
+  );
+
+  return { day: data.data, stats: data.stats };
+}
+
+export async function setHabit(
+  route: ApiRoute,
+  date: string,
+  habit: VirtueHabit,
+  completed: boolean,
+): Promise<{ day: VirtueDay; stats: VirtueStats }> {
+  const { data } = await apiClient.put<{ data: VirtueDay; stats: VirtueStats }>(
+    route('api.virtue.days.habit', { date, habit }),
+    { completed },
   );
 
   return { day: data.data, stats: data.stats };

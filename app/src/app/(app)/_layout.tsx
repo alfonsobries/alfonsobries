@@ -63,6 +63,19 @@ export default function AppLayout() {
         />
         <Stack.Screen name="virtue/prayers" options={{ presentation: 'modal' }} />
         <Stack.Screen
+          name="virtue/[area]"
+          options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+        />
+        <Stack.Screen
+          name="virtue/day"
+          options={{
+            presentation: 'formSheet',
+            sheetAllowedDetents: [0.85],
+            sheetGrabberVisible: true,
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name="virtue/guide"
           options={{
             presentation: 'formSheet',

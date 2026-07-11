@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Models\VirtueDay;
+use App\Models\VirtueEntry;
 
 it('lists the tracked days with stats', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
@@ -320,4 +321,210 @@ it('returns 404 for an unknown mascot set', function () {
     $this->actingAs($alfonso)
         ->getJson(route('api.virtue.mascot', ['set' => 'cat', 'stage' => 1]))
         ->assertNotFound();
+});
+
+it('serves the scene layer sets', function (string $set) {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->get(route('api.virtue.mascot', ['set' => $set, 'stage' => 1]))
+        ->assertOk();
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.mascot', ['set' => $set, 'stage' => 2]))
+        ->assertNotFound();
+})->with(['plate', 'knight']);
+
+it('marks a habit for a day', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $date = now()->toDateString();
+
+    $this->actingAs($alfonso)
+        ->putJson(route('api.virtue.days.habit', ['date' => $date, 'habit' => 'exercise']), [
+            'completed' => true,
+        ])
+        ->assertOk()
+        ->assertJsonPath('data.date', $date)
+        ->assertJsonPath('data.habits.exercise', true)
+        ->assertJsonPath('data.habits.diet', false)
+        ->assertJsonPath('stats.areas.body.points', 1)
+        ->assertJsonPath('stats.areas.body.streak', 1);
+
+    expect(VirtueDay::count())->toBe(1)
+        ->and(VirtueEntry::count())->toBe(1);
+});
+
+it('keeps the first completion when a habit repeats', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $completedAt = now()->subHours(3);
+    $entry = VirtueEntry::factory()->create([
+        'date' => now()->toDateString(),
+        'habit' => 'reading',
+        'completed_at' => $completedAt,
+    ]);
+
+    $this->actingAs($alfonso)
+        ->putJson(route('api.virtue.days.habit', ['date' => $entry->date->toDateString(), 'habit' => 'reading']), [
+            'completed' => true,
+        ])
+        ->assertOk()
+        ->assertJsonPath('data.habits.reading', true);
+
+    expect(VirtueEntry::count())->toBe(1)
+        ->and(VirtueEntry::first()->completed_at->timestamp)->toBe($completedAt->timestamp);
+});
+
+it('clears a habit back to pending', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $date = now()->toDateString();
+    VirtueEntry::factory()->create(['date' => $date, 'habit' => 'diet']);
+
+    $this->actingAs($alfonso)
+        ->putJson(route('api.virtue.days.habit', ['date' => $date, 'habit' => 'diet']), [
+            'completed' => false,
+        ])
+        ->assertOk()
+        ->assertJsonPath('data.habits.diet', false)
+        ->assertJsonPath('stats.areas.body.points', 0);
+
+    expect(VirtueEntry::count())->toBe(0);
+});
+
+it('rejects an unknown habit', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->putJson(route('api.virtue.days.habit', ['date' => now()->toDateString(), 'habit' => 'juggling']), [
+            'completed' => true,
+        ])
+        ->assertUnprocessable();
+});
+
+it('rejects a habit mark too far in the future', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->putJson(route('api.virtue.days.habit', ['date' => now()->addDays(3)->toDateString(), 'habit' => 'exercise']), [
+            'completed' => true,
+        ])
+        ->assertUnprocessable();
+});
+
+it('hides the habits from other family members', function () {
+    $saida = User::factory()->create(['family_member' => 'saida']);
+
+    $this->actingAs($saida)
+        ->putJson(route('api.virtue.days.habit', ['date' => now()->toDateString(), 'habit' => 'exercise']), [
+            'completed' => true,
+        ])
+        ->assertForbidden();
+});
+
+it('lists the habit marks with the days', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $date = now()->toDateString();
+
+    VirtueDay::factory()->create(['date' => $date]);
+    VirtueEntry::factory()->create(['date' => $date, 'habit' => 'exercise']);
+    VirtueEntry::factory()->create(['date' => $date, 'habit' => 'reading']);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('data.0.habits.exercise', true)
+        ->assertJsonPath('data.0.habits.reading', true)
+        ->assertJsonPath('data.0.habits.diet', false);
+});
+
+it('scores the body area from the exercise and diet habits', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    foreach (range(1, 3) as $offset) {
+        VirtueEntry::factory()->create([
+            'date' => now()->subDays($offset)->toDateString(),
+            'habit' => 'exercise',
+        ]);
+    }
+
+    VirtueEntry::factory()->create([
+        'date' => now()->subDay()->toDateString(),
+        'habit' => 'diet',
+    ]);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.areas.body.points', 4)
+        ->assertJsonPath('stats.areas.body.stage', 3)
+        ->assertJsonPath('stats.areas.body.streak', 3)
+        ->assertJsonPath('stats.areas.mind.points', 0)
+        ->assertJsonPath('stats.areas.mind.streak', 0);
+});
+
+it('breaks an area streak on a skipped day but keeps the points', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    VirtueEntry::factory()->create([
+        'date' => now()->subDays(3)->toDateString(),
+        'habit' => 'reading',
+    ]);
+    VirtueEntry::factory()->create([
+        'date' => now()->subDay()->toDateString(),
+        'habit' => 'reading',
+    ]);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.areas.mind.points', 2)
+        ->assertJsonPath('stats.areas.mind.streak', 1);
+});
+
+it('scores the spirit area from the resolution and the prayers', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    // Two full days (kept + prayed) and one prayers-only day.
+    foreach ([2, 3] as $offset) {
+        VirtueDay::factory()->create([
+            'date' => now()->subDays($offset)->toDateString(),
+            'prayers_completed_at' => now()->subDays($offset),
+            'resolution' => VirtueDay::RESOLUTION_KEPT,
+        ]);
+    }
+
+    VirtueDay::factory()->create([
+        'date' => now()->subDay()->toDateString(),
+        'prayers_completed_at' => now()->subDay(),
+    ]);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.areas.spirit.points', 5)
+        ->assertJsonPath('stats.areas.spirit.stage', 4)
+        ->assertJsonPath('stats.points', 2);
+});
+
+it('floors the spirit points at a crossed checkpoint', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    // Four kept-and-prayed days cross the 7-point checkpoint; the miss lands on the floor.
+    foreach (range(2, 5) as $offset) {
+        VirtueDay::factory()->create([
+            'date' => now()->subDays($offset)->toDateString(),
+            'prayers_completed_at' => now()->subDays($offset),
+            'resolution' => VirtueDay::RESOLUTION_KEPT,
+        ]);
+    }
+
+    VirtueDay::factory()->create([
+        'date' => now()->subDay()->toDateString(),
+        'resolution' => VirtueDay::RESOLUTION_MISSED,
+    ]);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.areas.spirit.points', 7)
+        ->assertJsonPath('stats.areas.spirit.stage', 5);
 });
