@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Smiley, Sparkle } from 'phosphor-react-native';
+import { Smiley } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
 import { useAuth } from '@/api/auth';
@@ -10,7 +10,6 @@ import { KidChoresSection } from '@/components/chores/KidChoresSection';
 import { AvatarCircle } from '@/components/family/AvatarCircle';
 import { ActionTile } from '@/components/ui/ActionTile';
 import { GrowthCard } from '@/components/virtue/GrowthCard';
-import { openVirtue } from '@/components/virtue/open-virtue';
 
 // The body of a person's profile — compact avatar header, mood, and their
 // sections. Rendered inside a scroll view by both the profile detail screen
@@ -56,11 +55,6 @@ export function ProfileView({ person }: { person: Person }) {
                 onPress={() => router.push(`/mood?member=${person.key}`)}
               />
             </View>
-            {ownVirtue ? (
-              <View className="w-1/2 p-1.5">
-                <ActionTile icon={Sparkle} label="Virtud" onPress={() => void openVirtue()} />
-              </View>
-            ) : null}
           </View>
         </>
       ) : isKid(person.key) ? (
