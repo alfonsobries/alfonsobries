@@ -1,16 +1,5 @@
 import { Redirect, router, Stack, useFocusEffect } from 'expo-router';
-import {
-  Barbell,
-  BookOpen,
-  Brain,
-  Check,
-  Flame,
-  ForkKnife,
-  HandsPraying,
-  Question,
-  Target,
-  X,
-} from 'phosphor-react-native';
+import { CaretRight, Check, Flame, HandsPraying, Question, Sparkle } from 'phosphor-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -23,7 +12,6 @@ import {
   setHabit,
   setResolution,
   type Resolution,
-  type VirtueArea,
   type VirtueDay,
   type VirtueHabit,
   type VirtueStats,
@@ -32,6 +20,10 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Illustration } from '@/components/ui/Illustration';
 import { MonthCalendar, type CalendarDayMark } from '@/components/ui/MonthCalendar';
+import { HabitToggleRow } from '@/components/virtue/HabitToggleRow';
+import { ResolutionPicker } from '@/components/virtue/ResolutionPicker';
+import { lastSevenDays } from '@/components/virtue/WeekStrip';
+import { AREA_HABITS, AREAS, completedToday, DAILY_GOAL_COUNT, ENTRY_HABITS } from '@/data/virtue';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 function currentDates() {
@@ -44,21 +36,10 @@ function currentDates() {
   };
 }
 
-const AREAS: { key: VirtueArea; label: string; Icon: typeof Barbell }[] = [
-  { key: 'body', label: 'Body', Icon: Barbell },
-  { key: 'mind', label: 'Mind', Icon: Brain },
-  { key: 'spirit', label: 'Spirit', Icon: HandsPraying },
-];
-
-const HABITS: { key: VirtueHabit; label: string; subtitle: string; Icon: typeof Barbell }[] = [
-  { key: 'exercise', label: 'Exercise', subtitle: '20 minutes is enough', Icon: Barbell },
-  { key: 'diet', label: 'Follow the diet', subtitle: 'Stay within the plan', Icon: ForkKnife },
-  { key: 'reading', label: 'Read', subtitle: 'A few pages count', Icon: BookOpen },
-];
-
 // The daily practice at a glance: the layered scene (one element per area),
 // the per-area progress, today's habit checklist, and one calendar that
-// carries the resolution and the prayers.
+// carries the whole month. Every day — today or past — edits through the
+// same day sheet.
 export default function VirtueScreen() {
   const { user } = useAuth();
   const route = useApiRouter();
@@ -104,20 +85,42 @@ export default function VirtueScreen() {
             : day.resolution === 'missed'
               ? 'danger'
               : undefined,
-        dot: day.prayers_completed,
+        dots: [
+          day.prayers_completed,
+          day.habits.exercise,
+          day.habits.diet,
+          day.habits.reading,
+        ].filter(Boolean).length,
       };
     }
 
     return result;
   }, [days]);
 
+  const week = useMemo(() => lastSevenDays(), []);
+
+  const weekCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+
+    for (const { key } of AREAS) {
+      counts[key] = week.filter((date) => {
+        const day = days[date];
+        return day !== undefined && AREA_HABITS[key].some((habit) => habit.isDone(day));
+      }).length;
+    }
+
+    return counts;
+  }, [days, week]);
+
   const firstTracked = useMemo(() => {
     const dates = Object.keys(days);
     return dates.length > 0 ? dates.reduce((a, b) => (a < b ? a : b)) : undefined;
   }, [days]);
 
+  const yesterdayEntry = days[yesterday];
   const yesterdayPending =
-    firstTracked !== undefined && yesterday >= firstTracked && !days[yesterday]?.resolution;
+    firstTracked !== undefined && yesterday >= firstTracked && !yesterdayEntry?.resolution;
+  const yesterdayMissed = yesterdayEntry?.resolution === 'missed';
 
   if (user && user.family_member !== 'alfonso') {
     return <Redirect href="/" />;
@@ -153,27 +156,17 @@ export default function VirtueScreen() {
     }
   }
 
-  function handlePressDay(date: string): void {
+  function openDay(date: string): void {
     if (date > today) {
       return;
     }
 
-    const day = days[date];
-    const label = new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-    });
-
-    Alert.alert(label, 'Mark the resolution for this day.', [
-      { text: 'Kept', onPress: () => void mark(date, 'kept') },
-      { text: 'Missed', style: 'destructive', onPress: () => void mark(date, 'missed') },
-      ...(day?.resolution ? [{ text: 'Clear', onPress: () => void mark(date, null) }] : []),
-      { text: 'Cancel', style: 'cancel' as const },
-    ]);
+    router.push({ pathname: '/virtue/day', params: { date } });
   }
 
   const todayEntry = days[today];
+  const doneCount = completedToday(todayEntry);
+  const allDone = doneCount === DAILY_GOAL_COUNT;
   const streakSubline =
     stats === null
       ? ' '
@@ -221,12 +214,23 @@ export default function VirtueScreen() {
               const area = stats.areas[key];
 
               return (
-                <View key={key} className="gap-2">
+                <Pressable
+                  key={key}
+                  accessibilityRole="button"
+                  accessibilityLabel={label}
+                  onPress={() => router.push({ pathname: '/virtue/[area]', params: { area: key } })}
+                  className="gap-2 active:opacity-70"
+                >
                   <View className="flex-row items-center gap-3">
                     <View className="size-9 items-center justify-center rounded-xl bg-surface-selected">
                       <Icon size={18} color={tint} weight="fill" />
                     </View>
-                    <Text className="flex-1 text-base font-semibold text-foreground">{label}</Text>
+                    <View className="flex-1">
+                      <Text className="text-base font-semibold text-foreground">{label}</Text>
+                      <Text className="text-xs text-muted">
+                        {weekCounts[key]} of 7 days this week
+                      </Text>
+                    </View>
                     {area.streak > 0 ? (
                       <View className="flex-row items-center gap-1">
                         <Flame size={14} color={tint} weight="fill" />
@@ -234,8 +238,9 @@ export default function VirtueScreen() {
                       </View>
                     ) : null}
                     <Text className="text-xs text-muted">
-                      Stage {area.stage} of {area.stage_count}
+                      Stage {area.stage}/{area.stage_count}
                     </Text>
+                    <CaretRight size={14} color={muted} weight="bold" />
                   </View>
                   <View className="h-1.5 w-full overflow-hidden rounded-full bg-surface-selected">
                     <View
@@ -245,17 +250,33 @@ export default function VirtueScreen() {
                       }}
                     />
                   </View>
-                </View>
+                </Pressable>
               );
             })}
           </Card>
         ) : null}
 
         <Card className="gap-4">
-          <View className="gap-0.5">
-            <Text className="text-xs font-semibold uppercase tracking-wider text-muted">Today</Text>
-            <Text className="text-lg font-semibold text-foreground">{todayLabel}</Text>
+          <View className="flex-row items-end justify-between">
+            <View className="gap-0.5">
+              <Text className="text-xs font-semibold uppercase tracking-wider text-muted">
+                Today
+              </Text>
+              <Text className="text-lg font-semibold text-foreground">{todayLabel}</Text>
+            </View>
+            <Text className="text-sm font-semibold text-muted">
+              {doneCount} of {DAILY_GOAL_COUNT}
+            </Text>
           </View>
+
+          {allDone ? (
+            <View className="flex-row items-center gap-2 rounded-2xl bg-primary px-4 py-3">
+              <Sparkle size={18} color={onPrimary} weight="fill" />
+              <Text className="flex-1 text-sm font-semibold text-primary-foreground">
+                All done — enjoy the rest of your day.
+              </Text>
+            </View>
+          ) : null}
 
           <View className="flex-row items-center gap-3">
             <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
@@ -278,51 +299,32 @@ export default function VirtueScreen() {
             )}
           </View>
 
-          {HABITS.map(({ key, label, subtitle, Icon }) => {
-            const done = todayEntry?.habits[key] ?? false;
-
-            return (
-              <View key={key} className="flex-row items-center gap-3">
-                <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
-                  <Icon size={22} color={tint} weight="fill" />
-                </View>
-                <View className="flex-1">
-                  <Text className="text-base font-semibold text-foreground">{label}</Text>
-                  <Text className="text-sm text-muted">{done ? 'Done today' : subtitle}</Text>
-                </View>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel={label}
-                  accessibilityState={{ selected: done, disabled: saving }}
-                  disabled={saving}
-                  onPress={() => void toggleHabit(key)}
-                  className={`size-9 items-center justify-center rounded-full ${
-                    done ? 'bg-primary' : 'border-2 border-border bg-surface-selected'
-                  } ${saving ? 'opacity-50' : 'active:opacity-80'}`}
-                >
-                  <Check size={18} color={done ? onPrimary : muted} weight="bold" />
-                </Pressable>
-              </View>
-            );
-          })}
+          {ENTRY_HABITS.map(({ key, label, anchor, Icon }) => (
+            <HabitToggleRow
+              key={key}
+              Icon={Icon}
+              label={label}
+              subtitle={anchor}
+              done={todayEntry?.habits[key] ?? false}
+              disabled={saving}
+              onToggle={() => void toggleHabit(key)}
+            />
+          ))}
 
           <View className="h-px bg-border" />
 
           <View className="gap-3">
-            <View className="flex-row items-center gap-3">
-              <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
-                <Target size={22} color={tint} weight="fill" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base font-semibold text-foreground">Daily resolution</Text>
-                <Text className="text-sm text-muted">
-                  {todayEntry?.resolution === 'kept'
-                    ? 'Kept — well done'
-                    : todayEntry?.resolution === 'missed'
-                      ? 'Missed — tomorrow is a new day'
+            <View className="gap-0.5">
+              <Text className="text-base font-semibold text-foreground">Daily resolution</Text>
+              <Text className="text-sm text-muted">
+                {todayEntry?.resolution === 'kept'
+                  ? 'Kept — well done'
+                  : todayEntry?.resolution === 'missed'
+                    ? 'Missed — tomorrow is a new day'
+                    : yesterdayMissed
+                      ? 'Yesterday slipped; one miss never undoes progress. Today counts.'
                       : 'How did it go today?'}
-                </Text>
-              </View>
+              </Text>
             </View>
             <ResolutionPicker
               value={todayEntry?.resolution ?? null}
@@ -334,14 +336,22 @@ export default function VirtueScreen() {
 
         {yesterdayPending ? (
           <Card className="gap-3">
-            <Text className="text-base font-semibold text-foreground">
-              Yesterday is still unmarked
-            </Text>
+            <View className="gap-0.5">
+              <Text className="text-base font-semibold text-foreground">
+                Yesterday is still unmarked
+              </Text>
+              <Text className="text-sm text-muted">
+                Fill in the whole day, or just settle the resolution here.
+              </Text>
+            </View>
             <ResolutionPicker
               value={null}
               disabled={saving}
               onChange={(next) => void mark(yesterday, next)}
             />
+            <Button variant="secondary" onPress={() => openDay(yesterday)}>
+              Edit the whole day
+            </Button>
           </Card>
         ) : null}
 
@@ -351,13 +361,14 @@ export default function VirtueScreen() {
             onMonthChange={setMonth}
             marks={marks}
             maxDate={today}
-            onPressDay={handlePressDay}
+            onPressDay={openDay}
           />
           <View className="flex-row items-center justify-center gap-5 pt-1">
             <Legend swatch="bg-primary" label="Kept" />
             <Legend swatch="bg-danger/15" label="Missed" />
-            <Legend swatch="bg-primary-emphasis" label="Prayers" small />
+            <Legend swatch="bg-primary-emphasis" label="Habits" small />
           </View>
+          <Text className="text-center text-xs text-muted">Tap any day to fill it in.</Text>
         </Card>
       </ScrollView>
     </>
@@ -372,7 +383,10 @@ export default function VirtueScreen() {
 function Scene({ stats, onError }: { stats: VirtueStats; onError: () => void }) {
   const route = useApiRouter();
   const headers = authImageHeaders();
-  const treeStage = Math.min(stats.tree_stage_count, intdivCeil(stats.areas.spirit.stage, 2));
+  const treeStage = Math.min(
+    stats.tree_stage_count,
+    Math.max(1, Math.ceil(stats.areas.spirit.stage / 2)),
+  );
 
   const layers = [
     { uri: route('api.virtue.mascot', { set: 'tree', stage: treeStage }), place: styles.tree },
@@ -403,10 +417,6 @@ function Scene({ stats, onError }: { stats: VirtueStats; onError: () => void }) 
   );
 }
 
-function intdivCeil(value: number, divisor: number): number {
-  return Math.max(1, Math.ceil(value / divisor));
-}
-
 const styles = {
   tree: { right: '-4%', bottom: '14%', width: '46%', height: '46%' },
   knight: { left: '42%', bottom: '12%', width: '24%', height: '24%' },
@@ -426,58 +436,6 @@ function Legend({
     <View className="flex-row items-center gap-1.5">
       <View className={`${small ? 'size-1.5' : 'size-3'} rounded-full ${swatch}`} />
       <Text className="text-xs text-muted">{label}</Text>
-    </View>
-  );
-}
-
-function ResolutionPicker({
-  value,
-  disabled,
-  onChange,
-}: {
-  value: Resolution | null;
-  disabled: boolean;
-  onChange: (next: Resolution | null) => void;
-}) {
-  const success = useThemeColor('success');
-  const danger = useThemeColor('danger');
-  const muted = useThemeColor('muted');
-
-  return (
-    <View className="flex-row gap-2">
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ selected: value === 'kept', disabled }}
-        disabled={disabled}
-        onPress={() => onChange(value === 'kept' ? null : 'kept')}
-        className={`h-11 flex-1 flex-row items-center justify-center gap-1.5 rounded-full ${
-          value === 'kept' ? 'bg-primary' : 'bg-surface-selected'
-        } ${disabled ? 'opacity-50' : 'active:opacity-80'}`}
-      >
-        <Check size={16} color={value === 'kept' ? success : muted} weight="bold" />
-        <Text
-          className={`text-sm font-semibold ${value === 'kept' ? 'text-primary-foreground' : 'text-foreground'}`}
-        >
-          Kept
-        </Text>
-      </Pressable>
-
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ selected: value === 'missed', disabled }}
-        disabled={disabled}
-        onPress={() => onChange(value === 'missed' ? null : 'missed')}
-        className={`h-11 flex-1 flex-row items-center justify-center gap-1.5 rounded-full ${
-          value === 'missed' ? 'bg-danger/15' : 'bg-surface-selected'
-        } ${disabled ? 'opacity-50' : 'active:opacity-80'}`}
-      >
-        <X size={16} color={value === 'missed' ? danger : muted} weight="bold" />
-        <Text
-          className={`text-sm font-semibold ${value === 'missed' ? 'text-danger' : 'text-foreground'}`}
-        >
-          Missed
-        </Text>
-      </Pressable>
     </View>
   );
 }
