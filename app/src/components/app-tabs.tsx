@@ -31,10 +31,10 @@ export default function AppTabs() {
         />
       </NativeTabs.Trigger>
 
-      <NativeTabs.Trigger name="me">
-        <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+      <NativeTabs.Trigger name="family">
+        <NativeTabs.Trigger.Label>Family</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/profile.png')}
+          src={require('@/assets/images/tabIcons/family.png')}
           renderingMode="template"
         />
       </NativeTabs.Trigger>
