@@ -1,5 +1,13 @@
 import { Redirect, router, Stack, useFocusEffect } from 'expo-router';
-import { CaretRight, Check, Flame, HandsPraying, Question, Sparkle } from 'phosphor-react-native';
+import {
+  CaretRight,
+  Check,
+  Flame,
+  Flask,
+  HandsPraying,
+  Question,
+  Sparkle,
+} from 'phosphor-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -20,11 +28,22 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Illustration } from '@/components/ui/Illustration';
 import { MonthCalendar, type CalendarDayMark } from '@/components/ui/MonthCalendar';
+import { Stepper } from '@/components/ui/Stepper';
 import { HabitToggleRow } from '@/components/virtue/HabitToggleRow';
 import { ResolutionPicker } from '@/components/virtue/ResolutionPicker';
 import { lastSevenDays } from '@/components/virtue/WeekStrip';
-import { AREA_HABITS, AREAS, completedToday, DAILY_GOAL_COUNT, ENTRY_HABITS } from '@/data/virtue';
+import {
+  AREA_HABITS,
+  AREAS,
+  completedToday,
+  DAILY_GOAL_COUNT,
+  ENTRY_HABITS,
+  paisajeStage,
+} from '@/data/virtue';
 import { useThemeColor } from '@/hooks/use-theme-color';
+
+/** Local-only stage overrides for previewing the art like a game — never saved. */
+type PreviewStages = { body: number; mind: number; spirit: number; overall: number };
 
 function currentDates() {
   const now = new Date();
@@ -52,6 +71,7 @@ export default function VirtueScreen() {
   const [month, setMonth] = useState(() => new Date());
   const [saving, setSaving] = useState(false);
   const [sceneFailed, setSceneFailed] = useState(false);
+  const [preview, setPreview] = useState<PreviewStages | null>(null);
 
   const [dates, setDates] = useState(currentDates);
   const { today, yesterday, todayLabel } = dates;
@@ -181,14 +201,35 @@ export default function VirtueScreen() {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Guide"
-              hitSlop={12}
-              onPress={() => router.push('/virtue/guide')}
-            >
-              <Question size={24} color={tint} weight="regular" />
-            </Pressable>
+            <View className="flex-row items-center gap-4">
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Preview stages"
+                hitSlop={12}
+                onPress={() =>
+                  setPreview((current) =>
+                    current !== null || stats === null
+                      ? null
+                      : {
+                          body: stats.areas.body.stage,
+                          mind: stats.areas.mind.stage,
+                          spirit: stats.areas.spirit.stage,
+                          overall: stats.stage,
+                        },
+                  )
+                }
+              >
+                <Flask size={24} color={tint} weight={preview ? 'fill' : 'regular'} />
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Guide"
+                hitSlop={12}
+                onPress={() => router.push('/virtue/guide')}
+              >
+                <Question size={24} color={tint} weight="regular" />
+              </Pressable>
+            </View>
           ),
         }}
       />
@@ -199,7 +240,15 @@ export default function VirtueScreen() {
       >
         <Card className="items-center gap-1 py-6">
           {stats && !sceneFailed ? (
-            <Scene stats={stats} onError={() => setSceneFailed(true)} />
+            <Scene
+              stages={{
+                lobo: preview?.body ?? stats.areas.body.stage,
+                sabio: preview?.mind ?? stats.areas.mind.stage,
+                arbol: preview?.spirit ?? stats.areas.spirit.stage,
+                paisaje: paisajeStage(preview?.overall ?? stats.stage),
+              }}
+              onError={() => setSceneFailed(true)}
+            />
           ) : (
             <Flame size={30} color={tint} weight="fill" />
           )}
@@ -207,6 +256,48 @@ export default function VirtueScreen() {
           <Text className="text-base font-medium text-foreground">day streak</Text>
           <Text className="text-sm text-muted">{streakSubline}</Text>
         </Card>
+
+        {preview && stats ? (
+          <Card className="gap-4">
+            <View className="gap-0.5">
+              <Text className="text-base font-semibold text-foreground">Preview stages</Text>
+              <Text className="text-sm text-muted">
+                Just for looking around — nothing is saved.
+              </Text>
+            </View>
+            <Stepper
+              label="Body (lobo)"
+              value={preview.body}
+              min={1}
+              max={30}
+              onChange={(body) => setPreview({ ...preview, body })}
+            />
+            <Stepper
+              label="Mind (sabio)"
+              value={preview.mind}
+              min={1}
+              max={30}
+              onChange={(mind) => setPreview({ ...preview, mind })}
+            />
+            <Stepper
+              label="Spirit (árbol)"
+              value={preview.spirit}
+              min={1}
+              max={30}
+              onChange={(spirit) => setPreview({ ...preview, spirit })}
+            />
+            <Stepper
+              label="Journey (paisaje + farol)"
+              value={preview.overall}
+              min={1}
+              max={30}
+              onChange={(overall) => setPreview({ ...preview, overall })}
+            />
+            <Button variant="secondary" onPress={() => setPreview(null)}>
+              Back to reality
+            </Button>
+          </Card>
+        ) : null}
 
         {stats ? (
           <Card className="gap-4">
@@ -375,39 +466,43 @@ export default function VirtueScreen() {
   );
 }
 
-// The hero scene stacks one layer per area over the shared plate: the wolf
-// grows with the body, the tree with the spirit, and the knight stands in
-// for the mind while its art is still a single stage. Every layer ships
-// full-canvas from the API, so stacking needs no repositioning math — the
-// offsets below only compose the temporary art pleasantly.
-function Scene({ stats, onError }: { stats: VirtueStats; onError: () => void }) {
+// The hero scene: the paisaje banner (driven by the overall journey stage)
+// with one layer per area on top — lobo for the body, sabio for the mind,
+// arbol for the spirit. Each layer is a full-height triptych strip, so the
+// three slots simply sit side by side anchored to the banner's ground.
+function Scene({
+  stages,
+  onError,
+}: {
+  stages: { lobo: number; sabio: number; arbol: number; paisaje: number };
+  onError: () => void;
+}) {
   const route = useApiRouter();
   const headers = authImageHeaders();
-  const treeStage = Math.min(
-    stats.tree_stage_count,
-    Math.max(1, Math.ceil(stats.areas.spirit.stage / 2)),
-  );
 
   const layers = [
-    { uri: route('api.virtue.mascot', { set: 'tree', stage: treeStage }), place: styles.tree },
-    { uri: route('api.virtue.mascot', { set: 'knight', stage: 1 }), place: styles.knight },
-    {
-      uri: route('api.virtue.mascot', { set: 'wolf', stage: stats.areas.body.stage }),
-      place: styles.wolf,
-    },
-  ];
+    { set: 'lobo', stage: stages.lobo, place: styles.lobo },
+    { set: 'sabio', stage: stages.sabio, place: styles.sabio },
+    { set: 'arbol', stage: stages.arbol, place: styles.arbol },
+  ] as const;
 
   return (
-    <View className="w-full overflow-hidden rounded-3xl" style={{ aspectRatio: 4 / 3 }}>
+    <View className="w-full overflow-hidden rounded-3xl" style={{ aspectRatio: 3 / 2 }}>
       <Illustration
-        source={{ uri: route('api.virtue.mascot', { set: 'plate', stage: 1 }), headers }}
+        source={{
+          uri: route('api.virtue.mascot', { set: 'paisaje', stage: stages.paisaje }),
+          headers,
+        }}
         transition={200}
         onError={onError}
       />
       {layers.map((layer) => (
         <Illustration
-          key={layer.uri}
-          source={{ uri: layer.uri, headers }}
+          key={layer.set}
+          source={{
+            uri: route('api.virtue.mascot', { set: layer.set, stage: layer.stage }),
+            headers,
+          }}
           contentFit="contain"
           transition={200}
           style={[{ position: 'absolute', backgroundColor: 'transparent' }, layer.place]}
@@ -418,9 +513,9 @@ function Scene({ stats, onError }: { stats: VirtueStats; onError: () => void }) 
 }
 
 const styles = {
-  tree: { right: '-4%', bottom: '14%', width: '46%', height: '46%' },
-  knight: { left: '42%', bottom: '12%', width: '24%', height: '24%' },
-  wolf: { left: '-2%', bottom: '-4%', width: '54%', height: '54%' },
+  lobo: { left: '4%', bottom: '-4%', width: '28%', height: '88%' },
+  sabio: { left: '36%', bottom: '-2%', width: '28%', height: '88%' },
+  arbol: { left: '68%', bottom: '-4%', width: '28%', height: '88%' },
 } as const;
 
 function Legend({

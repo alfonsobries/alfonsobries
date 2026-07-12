@@ -48,7 +48,7 @@ export function GrowthCard() {
         <View className="size-16 overflow-hidden rounded-2xl">
           <Illustration
             source={{
-              uri: route('api.virtue.mascot', { set: 'tree', stage: stats.tree_stage }),
+              uri: route('api.virtue.mascot', { set: 'farol', stage: stats.tree_stage }),
               headers: authImageHeaders(),
             }}
             transition={150}

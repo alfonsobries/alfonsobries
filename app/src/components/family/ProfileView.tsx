@@ -10,6 +10,7 @@ import { KidChoresSection } from '@/components/chores/KidChoresSection';
 import { AvatarCircle } from '@/components/family/AvatarCircle';
 import { ActionTile } from '@/components/ui/ActionTile';
 import { GrowthCard } from '@/components/virtue/GrowthCard';
+import { VirtueCover } from '@/components/virtue/VirtueCover';
 
 // The body of a person's profile — compact avatar header, mood, and their
 // sections. Rendered inside a scroll view by both the profile detail screen
@@ -26,6 +27,8 @@ export function ProfileView({ person }: { person: Person }) {
 
   return (
     <>
+      {ownVirtue ? <VirtueCover /> : null}
+
       <View className="flex-row items-center gap-4">
         <AvatarCircle person={person.key} mood={record?.mood} size={isKid(person.key) ? 72 : 88} />
         <View className="flex-1 gap-0.5">

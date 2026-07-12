@@ -47,13 +47,7 @@ export default function VirtueAreaScreen() {
   }
 
   const area = stats?.areas[definition.key];
-  const stage = area
-    ? definition.set === 'tree'
-      ? Math.max(1, Math.ceil(area.stage / 2))
-      : definition.set === 'knight'
-        ? 1
-        : area.stage
-    : 1;
+  const stage = area?.stage ?? 1;
 
   return (
     <>
