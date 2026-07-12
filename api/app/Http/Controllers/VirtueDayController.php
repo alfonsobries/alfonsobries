@@ -127,10 +127,12 @@ class VirtueDayController extends Controller
     }
 
     /**
-     * A progression-stage image from one of the mascot sets — the wolf (the
-     * full arc), the tree (the compact dashboard companion) or the scene
-     * layers (plate, knight). Served through the API so the sets stay
-     * private to the authenticated family.
+     * A progression-stage image from one of the mascot sets. The journey art
+     * ("Abismo y Ascenso"): lobo (body), sabio (mind) and arbol (spirit) as
+     * scene layers, farol as the compact combined companion, and paisaje as
+     * the wide banner backgrounds. The legacy sets (wolf, tree, plate,
+     * knight) stay servable. Everything goes through the API so the art
+     * stays private to the authenticated family.
      */
     public function mascot(Request $request, string $set, int $stage): mixed
     {
@@ -139,6 +141,11 @@ class VirtueDayController extends Controller
         }
 
         $totals = [
+            'lobo' => count(VirtueDay::STAGE_THRESHOLDS),
+            'sabio' => count(VirtueDay::STAGE_THRESHOLDS),
+            'arbol' => count(VirtueDay::STAGE_THRESHOLDS),
+            'farol' => VirtueDay::TREE_STAGES,
+            'paisaje' => VirtueDay::PAISAJE_STAGES,
             'wolf' => count(VirtueDay::STAGE_THRESHOLDS),
             'tree' => VirtueDay::TREE_STAGES,
             'plate' => 1,

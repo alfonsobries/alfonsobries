@@ -14,15 +14,22 @@ export type AreaDefinition = {
   key: VirtueArea;
   label: string;
   Icon: Icon;
-  /** The mascot set that renders this area's progress. */
-  set: 'wolf' | 'knight' | 'tree';
+  /** The journey-art set that renders this area's progress (30 stages each). */
+  set: 'lobo' | 'sabio' | 'arbol';
 };
 
 export const AREAS: AreaDefinition[] = [
-  { key: 'body', label: 'Body', Icon: Barbell, set: 'wolf' },
-  { key: 'mind', label: 'Mind', Icon: Brain, set: 'knight' },
-  { key: 'spirit', label: 'Spirit', Icon: HandsPraying, set: 'tree' },
+  { key: 'body', label: 'Body', Icon: Barbell, set: 'lobo' },
+  { key: 'mind', label: 'Mind', Icon: Brain, set: 'sabio' },
+  { key: 'spirit', label: 'Spirit', Icon: HandsPraying, set: 'arbol' },
 ];
+
+/** The panoramic banner backgrounds: one per journey phase of the overall stage (1-30). */
+export const PAISAJE_STAGES = 5;
+
+export function paisajeStage(overallStage: number): number {
+  return Math.min(PAISAJE_STAGES, Math.max(1, Math.ceil(overallStage / 6)));
+}
 
 export type EntryHabitDefinition = {
   key: VirtueHabit;

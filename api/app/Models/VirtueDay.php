@@ -51,10 +51,15 @@ class VirtueDay extends Model
     ];
 
     /**
-     * The compact companion series (the tree): one stage per two mascot
-     * stages, always visible on the dashboard.
+     * The compact companion series (the farol, previously the tree): one
+     * stage per two mascot stages, always visible on the dashboard.
      */
     public const TREE_STAGES = 15;
+
+    /**
+     * The panoramic banner backgrounds: one per journey phase.
+     */
+    public const PAISAJE_STAGES = 5;
 
     /**
      * @var list<string>
