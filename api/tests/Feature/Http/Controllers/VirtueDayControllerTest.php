@@ -335,6 +335,28 @@ it('serves the scene layer sets', function (string $set) {
         ->assertNotFound();
 })->with(['plate', 'knight']);
 
+it('serves the journey art sets and rejects stages beyond each arc', function (string $set, int $total) {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->get(route('api.virtue.mascot', ['set' => $set, 'stage' => 1]))
+        ->assertOk();
+
+    $this->actingAs($alfonso)
+        ->get(route('api.virtue.mascot', ['set' => $set, 'stage' => $total]))
+        ->assertOk();
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.mascot', ['set' => $set, 'stage' => $total + 1]))
+        ->assertNotFound();
+})->with([
+    ['lobo', 30],
+    ['sabio', 30],
+    ['arbol', 30],
+    ['farol', 15],
+    ['paisaje', 5],
+]);
+
 it('marks a habit for a day', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
     $date = now()->toDateString();
