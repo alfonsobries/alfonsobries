@@ -23,6 +23,41 @@ reward kicks off `BehaviorIllustrator`, which composes style + character +
 reference sheet for the kid it belongs to and stores the result for the
 media library.
 
+## The children's emotion catalog
+
+Regina and Andrés each have the same non-progressive catalog of 24 emotions.
+The definitions and expression directions live in
+`api/resources/illustrations/mood-catalog.php`. Each portrait starts from two
+canonical references: the child's style sheet and their existing app avatar.
+It never starts from the previous emotion, which keeps the face, proportions,
+outfit and framing stable across the whole set.
+
+Generate the complete 48-image catalog from `api/`:
+
+```bash
+php artisan illustrate:moods
+```
+
+Final transparent PNGs are written to
+`app/assets/{regina,andres}/emotions/<emotion>.png`. Existing portraits are
+skipped, so an interrupted run resumes naturally. Useful focused runs:
+
+```bash
+# One child
+php artisan illustrate:moods regina
+
+# One or more expressions
+php artisan illustrate:moods andres --emotion=happy --emotion=worried
+
+# Regenerate an existing expression
+php artisan illustrate:moods regina --emotion=happy --force
+```
+
+The image model paints a solid magenta chroma background. The command removes
+it with `IllustrationProcessor`, producing a transparent square optimized for
+the app's emotion-picker tiles. A lightweight vision review checks identity,
+framing, expression and background before accepting each portrait.
+
 ## The `illustrate` command
 
 One-off art from the terminal, using the same guides (needs `OPENAI_API_KEY`
