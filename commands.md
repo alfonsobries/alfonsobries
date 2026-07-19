@@ -46,6 +46,7 @@ PHP (composer):
 - `composer lint` — Pint in check-only mode (`./vendor/bin/pint --test`)
 - `php artisan …` — the usual Laravel CLI
 - `php artisan illustrate "…" [--member=] [--out=]` — generate art with the family style guides ([docs/illustrations.md](docs/illustrations.md))
+- `php artisan illustrate:moods [regina|andres|all] [--emotion=] [--force]` — generate the children's 24-emotion portrait catalogs
 
 JS build tooling (pnpm — Vite/Nova components, Puppeteer for the resume PDF):
 
