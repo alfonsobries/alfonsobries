@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { CheckCircle } from 'phosphor-react-native';
 import { useState } from 'react';
@@ -29,6 +30,10 @@ export function KidEmotionPicker({ member, name }: KidEmotionPickerProperties) {
     }
 
     setSaving(emotion);
+
+    if (process.env.EXPO_OS === 'ios') {
+      void Haptics.selectionAsync();
+    }
 
     try {
       await updateEmotion(member, emotion);
