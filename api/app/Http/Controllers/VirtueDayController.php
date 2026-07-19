@@ -127,12 +127,11 @@ class VirtueDayController extends Controller
     }
 
     /**
-     * A progression-stage image from one of the mascot sets. The journey art
-     * ("Abismo y Ascenso"): lobo (body), sabio (mind) and arbol (spirit) as
-     * scene layers, farol as the compact combined companion, and paisaje as
-     * the wide banner backgrounds. The legacy sets (wolf, tree, plate,
-     * knight) stay servable. Everything goes through the API so the art
-     * stays private to the authenticated family.
+     * A progression-stage image from the virtue journey art. Layers stack as
+     * cielo (mind) + tierra (body) + arbol (spirit). Game stages map onto the
+     * smaller art arc via VirtueDay::journeyArtStage(). Legacy one-offs
+     * (plate, knight) stay servable. Everything goes through the API so the
+     * art stays private to the authenticated family.
      */
     public function mascot(Request $request, string $set, int $stage): mixed
     {
@@ -140,21 +139,32 @@ class VirtueDayController extends Controller
             return $response;
         }
 
-        $totals = [
-            'lobo' => count(VirtueDay::STAGE_THRESHOLDS),
-            'sabio' => count(VirtueDay::STAGE_THRESHOLDS),
-            'arbol' => count(VirtueDay::STAGE_THRESHOLDS),
-            'farol' => VirtueDay::TREE_STAGES,
-            'paisaje' => VirtueDay::PAISAJE_STAGES,
-            'wolf' => count(VirtueDay::STAGE_THRESHOLDS),
-            'tree' => VirtueDay::TREE_STAGES,
+        $journeySets = ['tierra', 'cielo', 'arbol'];
+        $legacyTotals = [
             'plate' => 1,
             'knight' => 1,
         ];
 
-        $path = resource_path(sprintf('illustrations/%s/%s-%02d.png', $set, $set, $stage));
+        if (in_array($set, $journeySets, true)) {
+            $max = count(VirtueDay::STAGE_THRESHOLDS);
 
-        if (! isset($totals[$set]) || $stage < 1 || $stage > $totals[$set] || ! file_exists($path)) {
+            if ($stage < 1 || $stage > $max) {
+                return response()->json(['message' => 'Unknown stage.'], 404);
+            }
+
+            $artStage = VirtueDay::journeyArtStage($stage);
+            $path = resource_path(sprintf('illustrations/%s/%s-%02d.png', $set, $set, $artStage));
+        } elseif (isset($legacyTotals[$set])) {
+            if ($stage < 1 || $stage > $legacyTotals[$set]) {
+                return response()->json(['message' => 'Unknown stage.'], 404);
+            }
+
+            $path = resource_path(sprintf('illustrations/%s/%s-%02d.png', $set, $set, $stage));
+        } else {
+            return response()->json(['message' => 'Unknown stage.'], 404);
+        }
+
+        if (! file_exists($path)) {
             return response()->json(['message' => 'Unknown stage.'], 404);
         }
 

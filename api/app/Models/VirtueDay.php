@@ -51,15 +51,23 @@ class VirtueDay extends Model
     ];
 
     /**
-     * The compact companion series (the farol, previously the tree): one
-     * stage per two mascot stages, always visible on the dashboard.
+     * Distinct journey-art frames per layer (tierra / cielo / arbol). Game
+     * stages (STAGE_THRESHOLDS) map onto these via journeyArtStage().
      */
-    public const TREE_STAGES = 15;
+    public const JOURNEY_ART_STAGES = 3;
 
     /**
-     * The panoramic banner backgrounds: one per journey phase.
+     * Map a 1-based game stage onto a journey-art frame (1..JOURNEY_ART_STAGES).
      */
-    public const PAISAJE_STAGES = 5;
+    public static function journeyArtStage(int $stage): int
+    {
+        $total = count(self::STAGE_THRESHOLDS);
+
+        return (int) min(
+            self::JOURNEY_ART_STAGES,
+            max(1, (int) ceil($stage * self::JOURNEY_ART_STAGES / max(1, $total))),
+        );
+    }
 
     /**
      * @var list<string>

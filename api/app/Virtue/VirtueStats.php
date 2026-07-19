@@ -89,8 +89,8 @@ class VirtueStats
             'stage' => $stage,
             'stage_count' => count(VirtueDay::STAGE_THRESHOLDS),
             'next_stage_at' => VirtueDay::STAGE_THRESHOLDS[$stage] ?? $points,
-            'tree_stage' => intdiv($stage + 1, 2),
-            'tree_stage_count' => VirtueDay::TREE_STAGES,
+            'tree_stage' => VirtueDay::journeyArtStage($stage),
+            'tree_stage_count' => VirtueDay::JOURNEY_ART_STAGES,
         ];
     }
 

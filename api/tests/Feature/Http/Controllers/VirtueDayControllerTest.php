@@ -264,30 +264,17 @@ it('never drops the mascot points below zero', function () {
 
 it('serves a mascot stage image', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
-    $path = resource_path('illustrations/wolf/wolf-01.png');
-    $existed = file_exists($path);
 
-    if (! $existed) {
-        @mkdir(dirname($path), 0755, true);
-        file_put_contents($path, 'png-bytes');
-    }
-
-    try {
-        $this->actingAs($alfonso)
-            ->get(route('api.virtue.mascot', ['set' => 'wolf', 'stage' => 1]))
-            ->assertOk();
-    } finally {
-        if (! $existed) {
-            unlink($path);
-        }
-    }
+    $this->actingAs($alfonso)
+        ->get(route('api.virtue.mascot', ['set' => 'tierra', 'stage' => 1]))
+        ->assertOk();
 });
 
 it('returns 404 for an unknown mascot stage', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
     $this->actingAs($alfonso)
-        ->getJson(route('api.virtue.mascot', ['set' => 'wolf', 'stage' => 31]))
+        ->getJson(route('api.virtue.mascot', ['set' => 'tierra', 'stage' => 31]))
         ->assertNotFound();
 });
 
@@ -295,11 +282,11 @@ it('hides the mascot from other family members', function () {
     $saida = User::factory()->create(['family_member' => 'saida']);
 
     $this->actingAs($saida)
-        ->getJson(route('api.virtue.mascot', ['set' => 'wolf', 'stage' => 1]))
+        ->getJson(route('api.virtue.mascot', ['set' => 'tierra', 'stage' => 1]))
         ->assertForbidden();
 });
 
-it('maps two mascot stages to one tree stage', function () {
+it('maps game stages onto journey-art frames in stats', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
     VirtueDay::factory()->create([
@@ -312,7 +299,7 @@ it('maps two mascot stages to one tree stage', function () {
         ->assertOk()
         ->assertJsonPath('stats.stage', 2)
         ->assertJsonPath('stats.tree_stage', 1)
-        ->assertJsonPath('stats.tree_stage_count', 15);
+        ->assertJsonPath('stats.tree_stage_count', 3);
 });
 
 it('returns 404 for an unknown mascot set', function () {
@@ -335,7 +322,7 @@ it('serves the scene layer sets', function (string $set) {
         ->assertNotFound();
 })->with(['plate', 'knight']);
 
-it('serves the journey art sets and rejects stages beyond each arc', function (string $set, int $total) {
+it('serves the journey art sets and rejects stages beyond each arc', function (string $set) {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
     $this->actingAs($alfonso)
@@ -343,19 +330,22 @@ it('serves the journey art sets and rejects stages beyond each arc', function (s
         ->assertOk();
 
     $this->actingAs($alfonso)
-        ->get(route('api.virtue.mascot', ['set' => $set, 'stage' => $total]))
+        ->get(route('api.virtue.mascot', ['set' => $set, 'stage' => 30]))
         ->assertOk();
 
     $this->actingAs($alfonso)
-        ->getJson(route('api.virtue.mascot', ['set' => $set, 'stage' => $total + 1]))
+        ->getJson(route('api.virtue.mascot', ['set' => $set, 'stage' => 31]))
         ->assertNotFound();
-})->with([
-    ['lobo', 30],
-    ['sabio', 30],
-    ['arbol', 30],
-    ['farol', 15],
-    ['paisaje', 5],
-]);
+})->with(['tierra', 'cielo', 'arbol']);
+
+it('maps game stages onto the three journey-art frames', function () {
+    expect(\App\Models\VirtueDay::journeyArtStage(1))->toBe(1)
+        ->and(\App\Models\VirtueDay::journeyArtStage(10))->toBe(1)
+        ->and(\App\Models\VirtueDay::journeyArtStage(11))->toBe(2)
+        ->and(\App\Models\VirtueDay::journeyArtStage(20))->toBe(2)
+        ->and(\App\Models\VirtueDay::journeyArtStage(21))->toBe(3)
+        ->and(\App\Models\VirtueDay::journeyArtStage(30))->toBe(3);
+});
 
 it('marks a habit for a day', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
