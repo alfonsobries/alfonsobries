@@ -55,6 +55,37 @@ class IllustrationProcessor
     }
 
     /**
+     * Downsize an illustration to fit within a pixel box without enlarging or
+     * changing its aspect ratio. The alpha channel stays intact.
+     */
+    public function resizeToFit(string $bytes, int $maxWidth, int $maxHeight): string
+    {
+        $image = $this->decode($bytes);
+
+        if ($image === null || $maxWidth < 1 || $maxHeight < 1) {
+            return $bytes;
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+        $scale = min(1, $maxWidth / $width, $maxHeight / $height);
+
+        if ($scale === 1) {
+            return $bytes;
+        }
+
+        $targetWidth = max(1, (int) round($width * $scale));
+        $targetHeight = max(1, (int) round($height * $scale));
+        $canvas = imagecreatetruecolor($targetWidth, $targetHeight);
+        imagealphablending($canvas, false);
+        imagesavealpha($canvas, true);
+        imagefilledrectangle($canvas, 0, 0, $targetWidth, $targetHeight, imagecolorallocatealpha($canvas, 0, 0, 0, 127));
+        imagecopyresampled($canvas, $image, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        return $this->encode($canvas, $bytes);
+    }
+
+    /**
      * Flatten a (possibly transparent) image onto a solid background color and
      * return opaque PNG bytes, e.g. to bake a paper color into a print export.
      * A non-transparent input is unaffected.

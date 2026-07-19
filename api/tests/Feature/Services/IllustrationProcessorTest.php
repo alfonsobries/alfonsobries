@@ -59,6 +59,17 @@ it('pads to a square with transparency instead of cropping', function () {
         ->and(alphaAt($bytes, 0, 1))->toBe(0);   // original artwork intact
 });
 
+it('downsizes an illustration while preserving its alpha channel', function () {
+    $processor = new IllustrationProcessor;
+    $transparent = $processor->chromaKeyToTransparent(pngFromPixels(array_fill(0, 8, array_fill(0, 12, [255, 0, 255]))));
+    $bytes = $processor->resizeToFit($transparent, 6, 6);
+    $image = imagecreatefromstring($bytes);
+
+    expect(imagesx($image))->toBe(6)
+        ->and(imagesy($image))->toBe(4)
+        ->and(alphaAt($bytes, 0, 0))->toBe(127);
+});
+
 it('flattens a transparent image onto a solid color for printing', function () {
     $magenta = [255, 0, 255];
     $black = [17, 17, 17];

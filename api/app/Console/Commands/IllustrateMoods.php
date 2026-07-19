@@ -75,6 +75,7 @@ class IllustrateMoods extends Command
                 $target = "{$directory}/{$key}.png";
 
                 if (File::exists($target) && ! $this->option('force')) {
+                    File::put($target, $processor->resizeToFit(File::get($target), 512, 512));
                     $this->line("[{$identity['name']}] {$emotion['label']}: already exists, skipping.");
 
                     continue;
@@ -117,6 +118,7 @@ class IllustrateMoods extends Command
                 }
 
                 $final = $processor->padToAspect($processor->chromaKeyToTransparent($raw), 1, 1);
+                $final = $processor->resizeToFit($final, 512, 512);
                 File::put($target, $final);
 
                 $this->info("Saved {$target}. {$verdict['reason']}");
