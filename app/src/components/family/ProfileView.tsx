@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 
 import { useAuth } from '@/api/auth';
 import { isKid, type Person } from '@/api/family';
+import { emotionLabel, useKidEmotions } from '@/api/kid-emotions';
 import { moodEmoji, moodLabel, useMoods } from '@/api/moods';
 import { KidBehaviorsSection } from '@/components/behaviors/KidBehaviorsSection';
 import { KidChoresSection } from '@/components/chores/KidChoresSection';
@@ -18,9 +19,12 @@ import { VirtueCover } from '@/components/virtue/VirtueCover';
 export function ProfileView({ person }: { person: Person }) {
   const { user } = useAuth();
   const { members } = useMoods();
+  const { members: kidEmotions } = useKidEmotions();
+  const kid = isKid(person.key) ? person.key : null;
   const record = person.hasMood
     ? members.find((entry) => entry.family_member === person.key)
     : undefined;
+  const emotionRecord = kid ? kidEmotions.find((entry) => entry.family_member === kid) : undefined;
 
   // The virtue practice belongs to one person and only shows on their own tab.
   const ownVirtue = person.key === 'alfonso' && user?.family_member === 'alfonso';
@@ -30,7 +34,12 @@ export function ProfileView({ person }: { person: Person }) {
       {ownVirtue ? <VirtueCover /> : null}
 
       <View className="flex-row items-center gap-4">
-        <AvatarCircle person={person.key} mood={record?.mood} size={isKid(person.key) ? 72 : 88} />
+        <AvatarCircle
+          person={person.key}
+          mood={record?.mood}
+          emotion={emotionRecord?.emotion}
+          size={isKid(person.key) ? 72 : 88}
+        />
         <View className="flex-1 gap-0.5">
           <View className="flex-row items-center gap-2">
             <Text className="text-2xl font-semibold text-foreground">{person.name}</Text>
@@ -41,6 +50,11 @@ export function ProfileView({ person }: { person: Person }) {
           {person.hasMood && record ? (
             <Text className="text-base text-muted">
               Feels {moodLabel(record.mood).toLowerCase()}
+            </Text>
+          ) : null}
+          {kid && emotionRecord?.emotion ? (
+            <Text className="text-base text-muted">
+              Se siente {emotionLabel(kid, emotionRecord.emotion).toLowerCase()}
             </Text>
           ) : null}
         </View>
@@ -60,10 +74,19 @@ export function ProfileView({ person }: { person: Person }) {
             </View>
           </View>
         </>
-      ) : isKid(person.key) ? (
+      ) : kid ? (
         <>
-          <KidChoresSection member={person.key} />
-          <KidBehaviorsSection member={person.key} />
+          <View className="flex-row flex-wrap">
+            <View className="w-1/2 p-1.5">
+              <ActionTile
+                icon={Smiley}
+                label="¿Cómo te sientes?"
+                onPress={() => router.push({ pathname: '/emotion', params: { member: kid } })}
+              />
+            </View>
+          </View>
+          <KidChoresSection member={kid} />
+          <KidBehaviorsSection member={kid} />
         </>
       ) : (
         <Text className="text-center text-sm text-muted">Nothing here yet.</Text>

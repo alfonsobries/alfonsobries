@@ -3,14 +3,18 @@ import { ScrollView, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { PEOPLE, type Person } from '@/api/family';
+import { useKidEmotions, type KidEmotion } from '@/api/kid-emotions';
 import { moodEmoji, useMoods } from '@/api/moods';
 import { PersonAvatar } from '@/components/family/PersonAvatar';
 import { Card } from '@/components/ui/Card';
 
 export default function FamilyScreen() {
   const { members } = useMoods();
+  const { members: kidEmotions } = useKidEmotions();
 
   const moodFor = (key: Person['key']) => members.find((m) => m.family_member === key)?.mood;
+  const emotionFor = (key: Person['key']) =>
+    kidEmotions.find((entry) => entry.family_member === key)?.emotion;
 
   return (
     <>
@@ -26,7 +30,11 @@ export default function FamilyScreen() {
         <Animated.View entering={FadeIn.duration(500)} className="mt-5 flex-row flex-wrap">
           {PEOPLE.map((person) => (
             <View key={person.key} className="w-1/2 p-1.5">
-              <PersonCard person={person} mood={person.hasMood ? moodFor(person.key) : undefined} />
+              <PersonCard
+                person={person}
+                mood={person.hasMood ? moodFor(person.key) : undefined}
+                emotion={emotionFor(person.key)}
+              />
             </View>
           ))}
         </Animated.View>
@@ -82,14 +90,22 @@ function ToolCard({
   );
 }
 
-function PersonCard({ person, mood }: { person: Person; mood?: number }) {
+function PersonCard({
+  person,
+  mood,
+  emotion,
+}: {
+  person: Person;
+  mood?: number;
+  emotion?: KidEmotion | null;
+}) {
   return (
     <Card
       accessibilityLabel={person.name}
       onPress={() => router.push(`/profile?member=${person.key}`)}
       className="items-center gap-2"
     >
-      <PersonAvatar person={person.key} mood={mood} width={110} height={144} />
+      <PersonAvatar person={person.key} mood={mood} emotion={emotion} width={110} height={144} />
       <View className="flex-row items-center gap-1.5">
         <Text className="text-lg font-semibold text-foreground">{person.name}</Text>
         {mood != null ? <Text className="text-lg">{moodEmoji(mood)}</Text> : null}

@@ -17,6 +17,13 @@ declare module 'ziggy-js' {
             "required": true
         }
     ],
+    "api.kid-emotions.index": [],
+    "api.kid-emotions.update": [
+        {
+            "name": "member",
+            "required": true
+        }
+    ],
     "api.push-tokens.store": [],
     "api.notifications.test": [],
     "api.kids.behaviors.index": [
