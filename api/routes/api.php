@@ -15,6 +15,7 @@ use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DraftArticleController;
 use App\Http\Controllers\FamilyMoodController;
 use App\Http\Controllers\FavoriteIllustrationController;
+use App\Http\Controllers\KidEmotionController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\OtaUpdateController;
 use App\Http\Controllers\ProjectController;
@@ -48,6 +49,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/moods', [FamilyMoodController::class, 'index'])->name('moods.index');
     Route::patch('/moods/{member}', [FamilyMoodController::class, 'update'])->name('moods.update');
+    Route::get('/kid-emotions', [KidEmotionController::class, 'index'])->name('kid-emotions.index');
+    Route::patch('/kid-emotions/{member}', [KidEmotionController::class, 'update'])->name('kid-emotions.update');
 
     Route::post('/push-tokens', [PushTokenController::class, 'store'])->name('push-tokens.store');
     Route::post('/notifications/test', TestNotificationController::class)->name('notifications.test');
