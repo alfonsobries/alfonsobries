@@ -12,3 +12,13 @@ api/vendor/
 AGENTS.md
 CLAUDE.md
 .agents/aikit/
+
+# third-party agent files (Boost-managed under api/)
+api/.ai/
+api/.agents/
+api/.claude/
+api/.codex/
+api/.cursor/
+api/.grok/
+api/CLAUDE.md
+api/AGENTS.md
