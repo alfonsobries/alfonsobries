@@ -1,32 +1,35 @@
 # Virtue journey art (tierra / cielo / árbol)
 
-Replaces the old lobo / sabio / árbol / paisaje / farol stack.
-
-## Layers
+Three layered PNGs compose the virtue scene in the app. Game stages are 1–30;
+each set has one file per stage (`tierra-01.png` … `tierra-30.png`, same for
+`cielo` and `arbol`). The compact dashboard icon is `arbol` alone.
 
 | Set | Area | Role |
 | --- | --- | --- |
 | `tierra` | Body | Ground mound |
 | `cielo` | Mind | Full-bleed sky |
-| `arbol` | Spirit | Tree sticker (also the compact UI icon) |
+| `arbol` | Spirit | Tree sticker |
 
-Game stages (1–30) map onto **3 art frames** via `VirtueDay::journeyArtStage()`:
+Style: epic flat grain — flat shapes, stipple inside fills, hard cuttable
+edges. Light follows virtue from abyss through path to summit. Palette and
+locks live in `virtue-landscape-style.png`.
 
-- 1–10 → art 01 (abyss / dead night)
-- 11–20 → art 02 (path / dawn)
-- 21–30 → art 03 (summit / daylight)
+## Alignment
 
-## Alignment strategy (AI is imperfect)
+Generate each layer isolated on magenta chroma (no die-cut border; tree without
+its own soil). Then normalize so every PNG shares world anchors:
 
-Do **not** trust the model to place subjects in a shared scene.
+```bash
+python3 api/scripts/normalize-virtue-landscape.py \
+  --src api/resources/illustrations/_series/raw \
+  --out api/resources/illustrations \
+  --stages 30
+```
 
-1. Generate each layer **isolated** on magenta chroma (no die-cut white borders).
-2. Run `api/scripts/normalize-virtue-landscape.py` so every PNG shares world anchors:
-   - tree root bottoms → fixed `TREE_ROOT_Y`
-   - earth mound top overlaps that line (roots plant into the hill)
-   - sky is opaque full-bleed with horizon color extended downward
-3. App stacks with `absoluteFill` + `contentFit="cover"` — no per-layer CSS offsets.
+- Tree root bottoms sit on a fixed `TREE_ROOT_Y`
+- Earth mound top overlaps that line so roots plant into the hill
+- Sky is opaque full-bleed with the horizon color extended downward
 
-Raw sources for the current three frames live under
-`_experiments/scramble/layers/` (earth-*/tree-*/sky-*). Re-normalize after
-regenerating any of them.
+The app stacks with `absoluteFill` + `contentFit="cover"` — no per-layer layout
+offsets. Stage prompts: `virtue-landscape-series.php`. Generate raw layers with
+`api/scripts/generate-virtue-landscape-series.sh`.

@@ -24,8 +24,8 @@ export const AREAS: AreaDefinition[] = [
   { key: 'spirit', label: 'Spirit', Icon: HandsPraying, set: 'arbol' },
 ];
 
-/** Distinct art frames per layer; game stages map onto these on the API. */
-export const JOURNEY_ART_STAGES = 3;
+/** Art frames per layer — 1:1 with game stages. */
+export const JOURNEY_ART_STAGES = 30;
 
 export type EntryHabitDefinition = {
   key: VirtueHabit;

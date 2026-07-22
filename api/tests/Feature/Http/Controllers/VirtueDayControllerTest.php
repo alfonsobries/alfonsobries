@@ -286,7 +286,7 @@ it('hides the mascot from other family members', function () {
         ->assertForbidden();
 });
 
-it('maps game stages onto journey-art frames in stats', function () {
+it('exposes tree stages 1:1 with the game stage arc', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
     VirtueDay::factory()->create([
@@ -298,8 +298,8 @@ it('maps game stages onto journey-art frames in stats', function () {
         ->getJson(route('api.virtue.days.index'))
         ->assertOk()
         ->assertJsonPath('stats.stage', 2)
-        ->assertJsonPath('stats.tree_stage', 1)
-        ->assertJsonPath('stats.tree_stage_count', 3);
+        ->assertJsonPath('stats.tree_stage', 2)
+        ->assertJsonPath('stats.tree_stage_count', 30);
 });
 
 it('returns 404 for an unknown mascot set', function () {
@@ -337,15 +337,6 @@ it('serves the journey art sets and rejects stages beyond each arc', function (s
         ->getJson(route('api.virtue.mascot', ['set' => $set, 'stage' => 31]))
         ->assertNotFound();
 })->with(['tierra', 'cielo', 'arbol']);
-
-it('maps game stages onto the three journey-art frames', function () {
-    expect(\App\Models\VirtueDay::journeyArtStage(1))->toBe(1)
-        ->and(\App\Models\VirtueDay::journeyArtStage(10))->toBe(1)
-        ->and(\App\Models\VirtueDay::journeyArtStage(11))->toBe(2)
-        ->and(\App\Models\VirtueDay::journeyArtStage(20))->toBe(2)
-        ->and(\App\Models\VirtueDay::journeyArtStage(21))->toBe(3)
-        ->and(\App\Models\VirtueDay::journeyArtStage(30))->toBe(3);
-});
 
 it('marks a habit for a day', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);

@@ -128,10 +128,9 @@ class VirtueDayController extends Controller
 
     /**
      * A progression-stage image from the virtue journey art. Layers stack as
-     * cielo (mind) + tierra (body) + arbol (spirit). Game stages map onto the
-     * smaller art arc via VirtueDay::journeyArtStage(). Legacy one-offs
-     * (plate, knight) stay servable. Everything goes through the API so the
-     * art stays private to the authenticated family.
+     * cielo (mind) + tierra (body) + arbol (spirit) — one PNG per game stage
+     * (1–30) per set. Also serves plate and knight. Everything goes through
+     * the API so the art stays private to the authenticated family.
      */
     public function mascot(Request $request, string $set, int $stage): mixed
     {
@@ -139,30 +138,19 @@ class VirtueDayController extends Controller
             return $response;
         }
 
-        $journeySets = ['tierra', 'cielo', 'arbol'];
-        $legacyTotals = [
+        $totals = [
+            'tierra' => count(VirtueDay::STAGE_THRESHOLDS),
+            'cielo' => count(VirtueDay::STAGE_THRESHOLDS),
+            'arbol' => count(VirtueDay::STAGE_THRESHOLDS),
             'plate' => 1,
             'knight' => 1,
         ];
 
-        if (in_array($set, $journeySets, true)) {
-            $max = count(VirtueDay::STAGE_THRESHOLDS);
-
-            if ($stage < 1 || $stage > $max) {
-                return response()->json(['message' => 'Unknown stage.'], 404);
-            }
-
-            $artStage = VirtueDay::journeyArtStage($stage);
-            $path = resource_path(sprintf('illustrations/%s/%s-%02d.png', $set, $set, $artStage));
-        } elseif (isset($legacyTotals[$set])) {
-            if ($stage < 1 || $stage > $legacyTotals[$set]) {
-                return response()->json(['message' => 'Unknown stage.'], 404);
-            }
-
-            $path = resource_path(sprintf('illustrations/%s/%s-%02d.png', $set, $set, $stage));
-        } else {
+        if (! isset($totals[$set]) || $stage < 1 || $stage > $totals[$set]) {
             return response()->json(['message' => 'Unknown stage.'], 404);
         }
+
+        $path = resource_path(sprintf('illustrations/%s/%s-%02d.png', $set, $set, $stage));
 
         if (! file_exists($path)) {
             return response()->json(['message' => 'Unknown stage.'], 404);

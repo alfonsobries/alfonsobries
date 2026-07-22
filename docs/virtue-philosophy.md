@@ -45,13 +45,12 @@ simpler — generality is never a reason to complicate today's version. The
 contract boundary is the only thing kept clean at all times, because it is
 what keeps the future open.
 
-## Presentation is an experiment
+## Presentation sits on top of the engine
 
 The engine is stable: points, checkpoints, floors. How progress is _shown_ —
-a mascot that evolves, a scene that builds, RPG-style stats, streak counters —
-is a rotating experiment layered on top. Visual themes (skins) are
-interchangeable: the same progression can render as a wolf, a medieval town,
-a samurai's journey. Art never leaks into the engine.
+a scene that builds, area meters, streak counters — sits on top and can change
+without touching the rules. Visual themes are interchangeable; art never leaks
+into the engine.
 
 ## Progress is kind
 

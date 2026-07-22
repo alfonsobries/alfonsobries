@@ -35,7 +35,7 @@ export type VirtueStats = {
   stage: number;
   stage_count: number;
   next_stage_at: number;
-  /** The compact companion set shown on the dashboard (one stage per two mascot stages). */
+  /** Compact UI icon: the arbol layer at the overall progress stage. */
   tree_stage: number;
   tree_stage_count: number;
   areas: Record<VirtueArea, VirtueAreaStats>;

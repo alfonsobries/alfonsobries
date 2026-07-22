@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Normalize virtue journey layers onto shared world anchors.
 
-AI placement is imperfect. We never trust the model's framing for compositing.
 Each layer is generated isolated on magenta; this script chroma-keys and
 re-places content onto a fixed canvas so every combo stacks cleanly:
 
@@ -9,10 +8,14 @@ re-places content onto a fixed canvas so every combo stacks cleanly:
   earth — mound centered; top overlaps the tree-root line so roots plant in
   tree  — no personal soil; horizontally centered; root bottoms on TREE_ROOT_Y
 
+Raw files: earth-NN.png, sky-NN.png, tree-NN.png under --src.
+Outputs:   tierra/tierra-NN.png, cielo/cielo-NN.png, arbol/arbol-NN.png
+
 Usage:
   python3 api/scripts/normalize-virtue-landscape.py \\
-    --src api/resources/illustrations/_experiments/scramble/layers \\
-    --out api/resources/illustrations
+    --src api/resources/illustrations/_series/raw \\
+    --out api/resources/illustrations \\
+    --stages 30
 """
 
 from __future__ import annotations
@@ -28,8 +31,6 @@ TREE_ROOT_Y = int(H * 0.60)
 TREE_HEIGHT_FRAC = 0.50
 EARTH_WIDTH_FRAC = 0.88
 EARTH_SINK_FRAC = 0.18  # roots land this far down the mound
-
-STATES = [("A-low", 1), ("B-3of5", 2), ("C-final", 3)]
 
 
 def is_chroma(r: int, g: int, b: int) -> bool:
@@ -61,7 +62,7 @@ def load_cut(path: Path) -> Image.Image:
 def content_bbox(im: Image.Image) -> tuple[int, int, int, int]:
     box = im.split()[-1].getbbox()
     if box is None:
-        raise SystemExit(f"empty layer after chroma: missing content")
+        raise SystemExit(f"empty layer after chroma: {im}")
     return box
 
 
@@ -130,18 +131,29 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--src", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--stages", type=int, default=30)
+    parser.add_argument(
+        "--only",
+        type=int,
+        nargs="*",
+        help="Normalize only these stage numbers (default: all present)",
+    )
     args = parser.parse_args()
 
     for name in ("tierra", "cielo", "arbol"):
-        dest = args.out / name
-        dest.mkdir(parents=True, exist_ok=True)
-        for old in dest.glob("*.png"):
-            old.unlink()
+        (args.out / name).mkdir(parents=True, exist_ok=True)
 
-    for label, n in STATES:
-        place_earth(args.src / f"earth-{label}.png", args.out / "tierra" / f"tierra-{n:02d}.png")
-        place_sky(args.src / f"sky-{label}.png", args.out / "cielo" / f"cielo-{n:02d}.png")
-        place_tree(args.src / f"tree-{label}.png", args.out / "arbol" / f"arbol-{n:02d}.png")
+    stages = args.only if args.only else list(range(1, args.stages + 1))
+    for n in stages:
+        earth = args.src / f"earth-{n:02d}.png"
+        sky = args.src / f"sky-{n:02d}.png"
+        tree = args.src / f"tree-{n:02d}.png"
+        if not earth.is_file() or not sky.is_file() or not tree.is_file():
+            print(f"skip {n:02d}: missing raw layer(s)")
+            continue
+        place_earth(earth, args.out / "tierra" / f"tierra-{n:02d}.png")
+        place_sky(sky, args.out / "cielo" / f"cielo-{n:02d}.png")
+        place_tree(tree, args.out / "arbol" / f"arbol-{n:02d}.png")
 
 
 if __name__ == "__main__":
