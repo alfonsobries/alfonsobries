@@ -7,3 +7,6 @@ node_modules/
 
 # claude
 CLAUDE.local.md
+
+# aikit
+AGENTS.override.md

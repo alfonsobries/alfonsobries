@@ -1,3 +1,5 @@
+@.agents/aikit/core.md
+@.agents/aikit/js.md
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
@@ -98,7 +100,4 @@ and local dev — see [`commands.md`](commands.md).
 
 ---
 
-@.claude/agents/core.md
-@.claude/agents/js.md
-@.claude/agents/react.md
 @.claude/agents/design-system.md
