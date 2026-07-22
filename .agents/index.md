@@ -6,6 +6,10 @@ React Native mobile app).
 
 ## When to read what
 
+- Backend conventions live in `api/CLAUDE.md` and `api/AGENTS.md`, maintained by Laravel
+  Boost. Claude Code and Cursor load them automatically when working under `api/`; if
+  your harness hasn't loaded `api/AGENTS.md` (e.g. a root Codex session), read it before
+  touching `api/`.
 - Before touching architecture, data flow, or auth, read `.agents/architecture.md`.
 - Before changing any `.env` value, read `.agents/env.md` - several values must stay in
   sync across projects by hand.
