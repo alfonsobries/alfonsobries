@@ -1,4 +1,4 @@
-<!-- aikit:begin - managed block, do not edit. Project-specific instructions go below the end marker. -->
+<!-- aikit:begin - managed baseline, do not edit -->
 
 # Baseline
 
@@ -84,6 +84,113 @@ Write docs, READMEs, and rule files as the **final state**, for a reader with no
 
 ---
 
+# PHP
+
+Code-writing rules for PHP files. Apply when writing or editing PHP code. In Laravel apps these rules layer on top of whatever `laravel/boost` provides.
+
+## Types
+
+- Declare `strict_types=1` at the top of every PHP file.
+- Add explicit return type declarations to every method.
+- Add type hints to every parameter.
+- Use union and intersection types when they fit. Avoid `mixed` unless genuinely unbounded.
+- Use `readonly` properties when the value doesn't change after construction.
+
+## Syntax
+
+- Use PHP 8 constructor property promotion. Don't leave empty `__construct()` methods.
+- Use curly braces for every control structure, even single-line bodies.
+- Use `match` instead of `switch` when assigning a value or returning early.
+- Use first-class callable syntax (`Foo::bar(...)`) over closures wrapping a single call.
+- Use named arguments when a call has multiple booleans or optional params and clarity beats brevity.
+
+## Enums
+
+- Use enum classes for fixed sets of values; don't use string constants on a class.
+- TitleCase for enum case keys: `FavoritePerson`, `Monthly`.
+
+## Comments and PHPDoc
+
+- Prefer PHPDoc blocks over inline comments. Inline comments only for non-obvious WHY.
+- Use array shape definitions in PHPDoc for structured arrays:
+
+```php
+/** @return array{name: string, age: int} */
+```
+
+## PHP 8.4+ array helpers
+
+Prefer the built-in helpers over manual loops:
+
+- `array_find` over `foreach` + early return
+- `array_find_key` over manual key lookup
+- `array_any` / `array_all` over `foreach` + boolean accumulator
+
+## Composer scripts
+
+Prefer the repo's `composer.json` scripts (`composer format`, `composer analyse`, `composer test`) over invoking the underlying tool directly. If a script is missing, add it.
+
+## Avoid
+
+- Mutating function arguments - take immutable inputs, return new values.
+- Static state (singletons, statics for caching). Prefer dependency injection.
+
+---
+
+# Laravel
+
+Conventions for Laravel apps, on top of whatever `laravel/boost` provides.
+
+## Errors and observability
+
+- Report significant failures with `report($e)` (or `\Sentry\captureMessage()` for non-exceptional events) - never `Log::error` as the only signal. A log line nobody tails is where incidents die.
+- When a failure affects a user, tell them (notification or localized response), not silence.
+
+## Performance
+
+- Eager-load relations; treat any N+1 as a bug. When a view or DTO touches a relation, verify the query loads it.
+
+## Authorization
+
+- Controllers authorize with `$this->authorize(...)` (the `AuthorizesRequests` trait), never inline `Gate::` calls.
+- Permission logic lives in policies/gates. When the UI needs it, expose a `can` map on the DTO (one boolean per ability, filled from the gate) - the frontend renders the backend's decision, never recomputes it.
+- Hidden means not sent: when a permission hides data, omit the value from the payload instead of trusting the UI to hide it.
+
+## Dates
+
+- Serialize dates as ISO 8601 with offset (`$model->created_at?->toIso8601String()`); store UTC. Never pre-format for display (`->format('Y-m-d')`, `->toDateString()`) - the frontend formats through its shared helpers.
+
+## Migrations
+
+- While the project has no production database, keep migrations clean: edit the original create migration and reset, instead of stacking alter-table migrations.
+
+## i18n
+
+- User-facing strings are translation keys in lang files, never literals in code - including `ValidationException`, `abort()` messages, and notification copy. All locales change in the same PR.
+- Admin-only surfaces (Nova and similar) stay plain English, no translation.
+
+## Frontend types
+
+- Expose API shapes through DTOs (`spatie/laravel-data`) annotated with `#[TypeScript]`, and regenerate the frontend types after changing them.
+
+## Seeders and factories
+
+- Realistic data in the product's locale (real cities, plausible names and prices), not lorem ipsum.
+
+---
+
+# Pest
+
+Testing rules for repos using Pest. Apply when writing or editing tests.
+
+- Write tests as Pest `it()` blocks: `it('rejects expired tokens', function (): void { ... });`. No PHPUnit test classes, no `test()`.
+- Convert class-based stubs (e.g. from `php artisan make:test`) to `it()` before filling them in.
+- Every bug fix ships with a regression test that fails without the fix.
+- While working, run only the affected tests (`--filter=...`); run the full suite once before push, or when asked.
+- Test names and code in English.
+
+---
+
 # JavaScript / TypeScript
 
 Code-writing rules for JS/TS files. Apply when writing or editing JS/TS code.
@@ -116,6 +223,117 @@ Code-writing rules for JS/TS files. Apply when writing or editing JS/TS code.
 
 - Mutating arguments or inputs - take them immutable, return new values.
 
+---
+
+# React
+
+React/TSX conventions. Tiers run from **Essential** (non-negotiable) to **Use with caution** (judgment calls).
+
+## Essential
+
+- One exported component per file; small private sub-components can share it.
+- Component files are PascalCase, matching the export (`VotesFilter.tsx`); other files - hooks, utils - are kebab-case (`use-validators.ts`).
+- Components use named exports - except where a framework requires a default (Inertia / Next.js pages).
+- Name the props type after the component with a `Properties` suffix (`ButtonProperties`), not an inline anonymous shape.
+- When a component wraps a host element, extend that element's props so callers can pass native attributes through: `type ButtonProperties = React.ComponentPropsWithoutRef<'button'> & { … }` (use `Omit<…>` to replace one).
+- Callback props are named `onX` (`onChange`, `onConfirm`); a component's own internal handlers are named `handleX` (`handleSelectPage`).
+- Rendering is pure: compute the JSX from props and state without side effects or mutating them. Side effects belong in event handlers or effects.
+
+## Strongly recommended
+
+- Render list items as named subcomponents (`UsersTable` → `UsersTableRow`), not inline markup inside a `.map()`. Passing the item down or wiring a handler per row is the signal to extract.
+- Group code by feature/domain (`domains/vote/{components,hooks,utils}`), not by technical type spread across the app.
+- Cross-domain code lives in one dedicated shared area (`shared/`, `app/`), not inside a feature folder. Shared primitives keep plain names (`Button`, `Modal`) - their location, not a prefix, marks them as shared.
+- Co-locate tests with the code they cover as `*.test.tsx`.
+- One source of truth per piece of state - don't copy props into state.
+- Name from general to specific so siblings group together (`SearchInput`, `SearchButton` - not `InputSearch`).
+
+## Recommended
+
+- Order a component file: imports, types, then the component - inside it, hooks → derived values → handlers → `return`.
+- For shared context, pair an `XProvider` with a `useXContext` hook that throws when used outside the provider, instead of exporting the raw context.
+
+## Use with caution
+
+- Prefer typing the props parameter over `React.FC` - it mainly adds an implicit `children` you usually don't want.
+- Reach for context only for genuinely cross-cutting state - passing a couple of props is not prop-drilling.
+
+---
+
+# Expo / React Native
+
+Conventions for Expo and React Native apps.
+
+- Never hardcode API URLs or endpoints - resolve them through the project's route helpers / generated routes.
+- App-side API types come from the backend's generated types; regenerate and commit them when the API changes, never hand-edit.
+- All user-facing copy goes through i18n; every locale changes in the same PR. Never `t('key', { defaultValue: '...' })` - a missing key must fail loudly.
+- Permissions render backend decisions (flags on the payload); never recompute permission logic client-side.
+- Report significant failures to Sentry, not only the console.
+
 <!-- aikit:end -->
+
+<!-- aikit:project:begin - synced from .agents/*.md - edit those files and run aikit update -->
+
+# Project
+
+Personal website and blog (alfonsobries.com), plus a private family app. Top-level
+projects: `website/` (Next.js frontend), `api/` (Laravel API backend), `app/` (Expo /
+React Native mobile app).
+
+## When to read what
+
+- Before touching architecture, data flow, or auth, read `.agents/architecture.md`.
+- Before changing any `.env` value, read `.agents/env.md` - several values must stay in
+  sync across projects by hand.
+- Before building or styling UI, read `.agents/guides/design-system.md`.
+- Full command reference (quality gates, builds, local dev): `commands.md` at the repo
+  root.
+
+---
+
+# Commands
+
+Daily commands per project. Full reference: `commands.md` at the repo root.
+
+## website/ (Next.js)
+
+- `pnpm dev` / `pnpm build`
+- `pnpm typecheck` / `pnpm lint` / `pnpm format`
+
+## api/ (Laravel)
+
+- `composer test` - Pest; single test: `./vendor/bin/pest --filter=TestName`
+- `composer analyse` - PHPStan/Larastan
+- `composer fix` - Pint (write); `composer lint` for check-only
+
+## app/ (Expo)
+
+- `pnpm start` - Expo dev server
+- `pnpm typecheck` / `pnpm lint` / `pnpm format`
+- `pnpm routes:generate` - regenerate the typed Ziggy route map after adding/renaming an `api.*` route
+- `pnpm svg:optimize` - compress SVGs in `app/assets/`
+
+## Repo root
+
+- `pnpm lint:docs` / `pnpm format:docs` - Markdown lint/format
+- `./start-api.sh [ip]` and `./start-mobile.sh [ip]` - local API + app against it
+
+---
+
+# Conventions
+
+- **Any native-layer change in `app/` MUST bump `runtimeVersion` in `app/app.json` in the
+  same change, then rebuild + submit.** OTA updates only reach builds on the same
+  runtime; shipping JS a binary can't run crashes the app. Native change =
+  adding/removing/upgrading a native module, editing `plugins`/`ios`/`android` in
+  `app.json`, changing the Expo SDK, or native entitlements/permissions. JS/asset-only
+  changes ship over OTA - no bump.
+- The mobile app consumes API routes by their Laravel route name through
+  `useApiRouter()` / `route(...)` - never hardcode URLs. After adding or renaming an
+  `api.*` route, run `pnpm routes:generate` in `app/` and commit the regenerated map.
+- User-facing copy on the website is bilingual (EN/ES via `next-i18next`); both locale
+  files change in the same PR.
+
+<!-- aikit:project:end -->
 
 <!-- Project-specific instructions go below. -->
