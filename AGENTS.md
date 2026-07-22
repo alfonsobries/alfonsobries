@@ -1,10 +1,10 @@
 <!-- aikit:begin - managed baseline, do not edit -->
 
-# Baseline
+## Baseline
 
 Shared rules for every repo. Apply to any stack.
 
-## Commits
+### Commits
 
 - Format: [Conventional Commits](https://www.conventionalcommits.org) - `feat:`, `fix:`, `chore:`, `style:`, `refactor:`, `test:`, `docs:`
 - Subject line only, ideally under 50 characters
@@ -13,7 +13,7 @@ Shared rules for every repo. Apply to any stack.
 - **Never** add a description or body - subject only
 - Commit incrementally when a logical chunk lands - don't batch everything at the end
 
-## Pull Requests
+### Pull Requests
 
 - Always draft (`gh pr create --draft`)
 - Base branch: the repo's default
@@ -23,7 +23,7 @@ Shared rules for every repo. Apply to any stack.
 - When new commits change what the PR does, update the title and description to match
 - Add a brief **How to test** note when the steps are easy to state; if they aren't clear, ask instead of guessing
 
-## Pre-push checks
+### Pre-push checks
 
 Standard order before pushing:
 
@@ -33,7 +33,7 @@ Exact commands are repo-defined (see the repo's `CLAUDE.md` / `AGENTS.md` / `com
 
 For long tasks, run only affected checks during the work and defer the full suite to the end. For short tasks, skip intermediate runs.
 
-## Security
+### Security
 
 - Never commit `.env`, credentials, tokens, or any secret - check diffs for hardcoded values, not just filenames
 - Never read or commit protected files: `.env*`, `auth.json`, `AuthKey_*.p8`, `*.pem`, `*.key`, service-account `*.json` credentials
@@ -41,7 +41,7 @@ For long tasks, run only affected checks during the work and defer the full suit
 - No destructive operations (`force-push`, branch deletion, history rewrite, `git reset --hard`, `rm -rf`) without explicit confirmation from the dev
 - For external tools (CI, pastebins, gists): consider whether uploaded content could be sensitive - it may be cached or indexed even if later deleted
 
-## Code style
+### Code style
 
 - Follow existing patterns before introducing new ones; reuse existing components/helpers before writing new ones
 - Comments and identifiers in **English**
@@ -55,14 +55,14 @@ For long tasks, run only affected checks during the work and defer the full suit
 - Don't reference callers or temporal context: no `// used by X`, `// for the Y flow`, `// added in sprint Z`
 - Never hand-edit generated files (types, route helpers, lockfiles) - rerun the generator instead
 
-## Writing
+### Writing
 
 Applies to everything written - code, comments, commits, PRs, docs, UI copy.
 
 - Use a plain hyphen `-`, never em or en dashes (`—`, `–`). They read as AI-generated.
 - Prefer straight quotes (`"` `'`) over curly ones, and regular spaces over non-breaking spaces.
 
-## Docs & rules
+### Docs & rules
 
 Write docs, READMEs, and rule files as the **final state**, for a reader with no prior context. Keep them brief - don't over-explain.
 
@@ -70,13 +70,13 @@ Write docs, READMEs, and rule files as the **final state**, for a reader with no
 - Don't situate a file among its siblings ("pairs with `x.md`", "like `y.md`"). Files move; each doc stands alone
 - Reference another file only when the reader must **act on it**, and by what it contains
 
-## Reply style
+### Reply style
 
 - Concise. Skip the obvious
 - End-of-turn summary: one or two sentences - what changed, what's next
 - No long essays, no unnecessary disclaimers, no "sure, happy to help…"
 
-## Overrides
+### Overrides
 
 - Personal override (gitignored): `CLAUDE.local.md` for Claude Code; `AGENTS.override.md` for Codex (replaces `AGENTS.md` for that machine - start it by copying `AGENTS.md`). Cursor personal rules live in its User Rules setting, not in a file
 - Per-repo override: add rules below the imports in `CLAUDE.md` and below the managed block in `AGENTS.md`
@@ -84,11 +84,11 @@ Write docs, READMEs, and rule files as the **final state**, for a reader with no
 
 ---
 
-# PHP
+## PHP
 
 Code-writing rules for PHP files. Apply when writing or editing PHP code. In Laravel apps these rules layer on top of whatever `laravel/boost` provides.
 
-## Types
+### Types
 
 - Declare `strict_types=1` at the top of every PHP file.
 - Add explicit return type declarations to every method.
@@ -96,7 +96,7 @@ Code-writing rules for PHP files. Apply when writing or editing PHP code. In Lar
 - Use union and intersection types when they fit. Avoid `mixed` unless genuinely unbounded.
 - Use `readonly` properties when the value doesn't change after construction.
 
-## Syntax
+### Syntax
 
 - Use PHP 8 constructor property promotion. Don't leave empty `__construct()` methods.
 - Use curly braces for every control structure, even single-line bodies.
@@ -104,12 +104,12 @@ Code-writing rules for PHP files. Apply when writing or editing PHP code. In Lar
 - Use first-class callable syntax (`Foo::bar(...)`) over closures wrapping a single call.
 - Use named arguments when a call has multiple booleans or optional params and clarity beats brevity.
 
-## Enums
+### Enums
 
 - Use enum classes for fixed sets of values; don't use string constants on a class.
 - TitleCase for enum case keys: `FavoritePerson`, `Monthly`.
 
-## Comments and PHPDoc
+### Comments and PHPDoc
 
 - Prefer PHPDoc blocks over inline comments. Inline comments only for non-obvious WHY.
 - Use array shape definitions in PHPDoc for structured arrays:
@@ -118,7 +118,7 @@ Code-writing rules for PHP files. Apply when writing or editing PHP code. In Lar
 /** @return array{name: string, age: int} */
 ```
 
-## PHP 8.4+ array helpers
+### PHP 8.4+ array helpers
 
 Prefer the built-in helpers over manual loops:
 
@@ -126,60 +126,60 @@ Prefer the built-in helpers over manual loops:
 - `array_find_key` over manual key lookup
 - `array_any` / `array_all` over `foreach` + boolean accumulator
 
-## Composer scripts
+### Composer scripts
 
 Prefer the repo's `composer.json` scripts (`composer format`, `composer analyse`, `composer test`) over invoking the underlying tool directly. If a script is missing, add it.
 
-## Avoid
+### Avoid
 
 - Mutating function arguments - take immutable inputs, return new values.
 - Static state (singletons, statics for caching). Prefer dependency injection.
 
 ---
 
-# Laravel
+## Laravel
 
 Conventions for Laravel apps, on top of whatever `laravel/boost` provides.
 
-## Errors and observability
+### Errors and observability
 
 - Report significant failures with `report($e)` (or `\Sentry\captureMessage()` for non-exceptional events) - never `Log::error` as the only signal. A log line nobody tails is where incidents die.
 - When a failure affects a user, tell them (notification or localized response), not silence.
 
-## Performance
+### Performance
 
 - Eager-load relations; treat any N+1 as a bug. When a view or DTO touches a relation, verify the query loads it.
 
-## Authorization
+### Authorization
 
 - Controllers authorize with `$this->authorize(...)` (the `AuthorizesRequests` trait), never inline `Gate::` calls.
 - Permission logic lives in policies/gates. When the UI needs it, expose a `can` map on the DTO (one boolean per ability, filled from the gate) - the frontend renders the backend's decision, never recomputes it.
 - Hidden means not sent: when a permission hides data, omit the value from the payload instead of trusting the UI to hide it.
 
-## Dates
+### Dates
 
 - Serialize dates as ISO 8601 with offset (`$model->created_at?->toIso8601String()`); store UTC. Never pre-format for display (`->format('Y-m-d')`, `->toDateString()`) - the frontend formats through its shared helpers.
 
-## Migrations
+### Migrations
 
 - While the project has no production database, keep migrations clean: edit the original create migration and reset, instead of stacking alter-table migrations.
 
-## i18n
+### i18n
 
 - User-facing strings are translation keys in lang files, never literals in code - including `ValidationException`, `abort()` messages, and notification copy. All locales change in the same PR.
 - Admin-only surfaces (Nova and similar) stay plain English, no translation.
 
-## Frontend types
+### Frontend types
 
 - Expose API shapes through DTOs (`spatie/laravel-data`) annotated with `#[TypeScript]`, and regenerate the frontend types after changing them.
 
-## Seeders and factories
+### Seeders and factories
 
 - Realistic data in the product's locale (real cities, plausible names and prices), not lorem ipsum.
 
 ---
 
-# Pest
+## Pest
 
 Testing rules for repos using Pest. Apply when writing or editing tests.
 
@@ -191,45 +191,45 @@ Testing rules for repos using Pest. Apply when writing or editing tests.
 
 ---
 
-# JavaScript / TypeScript
+## JavaScript / TypeScript
 
 Code-writing rules for JS/TS files. Apply when writing or editing JS/TS code.
 
-## Types
+### Types
 
 - TypeScript in strict mode. Don't disable strict checks per file.
 - Avoid `any` - use `unknown` and narrow, or a precise type.
 - Add explicit return types to exported functions.
 
-## Syntax
+### Syntax
 
 - Named exports over default exports (except where a framework requires default, e.g. an Inertia page).
 - Use curly braces for every control structure, even single-line bodies.
 
-## Formatting values
+### Formatting values
 
 - Format dates and amounts through the project's shared formatter helpers, never inline `toLocaleDateString()` / `toLocaleString()`.
 - Parse API dates as ISO 8601 (`new Date(iso)`); the backend never pre-formats.
 
-## Package manager
+### Package manager
 
 - Prefer **pnpm** over `npm` or `yarn`. Use the shorthand without `run`: `pnpm test`, not `pnpm run test`.
 
-## Scripts
+### Scripts
 
 - Prefer the repo's `package.json` scripts over invoking the underlying tool directly.
 
-## Avoid
+### Avoid
 
 - Mutating arguments or inputs - take them immutable, return new values.
 
 ---
 
-# React
+## React
 
 React/TSX conventions. Tiers run from **Essential** (non-negotiable) to **Use with caution** (judgment calls).
 
-## Essential
+### Essential
 
 - One exported component per file; small private sub-components can share it.
 - Component files are PascalCase, matching the export (`VotesFilter.tsx`); other files - hooks, utils - are kebab-case (`use-validators.ts`).
@@ -239,7 +239,7 @@ React/TSX conventions. Tiers run from **Essential** (non-negotiable) to **Use wi
 - Callback props are named `onX` (`onChange`, `onConfirm`); a component's own internal handlers are named `handleX` (`handleSelectPage`).
 - Rendering is pure: compute the JSX from props and state without side effects or mutating them. Side effects belong in event handlers or effects.
 
-## Strongly recommended
+### Strongly recommended
 
 - Render list items as named subcomponents (`UsersTable` → `UsersTableRow`), not inline markup inside a `.map()`. Passing the item down or wiring a handler per row is the signal to extract.
 - Group code by feature/domain (`domains/vote/{components,hooks,utils}`), not by technical type spread across the app.
@@ -248,19 +248,19 @@ React/TSX conventions. Tiers run from **Essential** (non-negotiable) to **Use wi
 - One source of truth per piece of state - don't copy props into state.
 - Name from general to specific so siblings group together (`SearchInput`, `SearchButton` - not `InputSearch`).
 
-## Recommended
+### Recommended
 
 - Order a component file: imports, types, then the component - inside it, hooks → derived values → handlers → `return`.
 - For shared context, pair an `XProvider` with a `useXContext` hook that throws when used outside the provider, instead of exporting the raw context.
 
-## Use with caution
+### Use with caution
 
 - Prefer typing the props parameter over `React.FC` - it mainly adds an implicit `children` you usually don't want.
 - Reach for context only for genuinely cross-cutting state - passing a couple of props is not prop-drilling.
 
 ---
 
-# Expo / React Native
+## Expo / React Native
 
 Conventions for Expo and React Native apps.
 
@@ -274,13 +274,13 @@ Conventions for Expo and React Native apps.
 
 <!-- aikit:project:begin - synced from .agents/*.md - edit those files and run aikit update -->
 
-# Project
+## Project
 
 Personal website and blog (alfonsobries.com), plus a private family app. Top-level
 projects: `website/` (Next.js frontend), `api/` (Laravel API backend), `app/` (Expo /
 React Native mobile app).
 
-## When to read what
+### When to read what
 
 - Backend conventions live in `api/CLAUDE.md` and `api/AGENTS.md`, maintained by Laravel
   Boost. Claude Code and Cursor load them automatically when working under `api/`; if
@@ -295,36 +295,36 @@ React Native mobile app).
 
 ---
 
-# Commands
+## Commands
 
 Daily commands per project. Full reference: `commands.md` at the repo root.
 
-## website/ (Next.js)
+### website/ (Next.js)
 
 - `pnpm dev` / `pnpm build`
 - `pnpm typecheck` / `pnpm lint` / `pnpm format`
 
-## api/ (Laravel)
+### api/ (Laravel)
 
 - `composer test` - Pest; single test: `./vendor/bin/pest --filter=TestName`
 - `composer analyse` - PHPStan/Larastan
 - `composer fix` - Pint (write); `composer lint` for check-only
 
-## app/ (Expo)
+### app/ (Expo)
 
 - `pnpm start` - Expo dev server
 - `pnpm typecheck` / `pnpm lint` / `pnpm format`
 - `pnpm routes:generate` - regenerate the typed Ziggy route map after adding/renaming an `api.*` route
 - `pnpm svg:optimize` - compress SVGs in `app/assets/`
 
-## Repo root
+### Repo root
 
 - `pnpm lint:docs` / `pnpm format:docs` - Markdown lint/format
 - `./start-api.sh [ip]` and `./start-mobile.sh [ip]` - local API + app against it
 
 ---
 
-# Conventions
+## Conventions
 
 - **Any native-layer change in `app/` MUST bump `runtimeVersion` in `app/app.json` in the
   same change, then rebuild + submit.** OTA updates only reach builds on the same

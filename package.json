@@ -11,6 +11,6 @@
   "devDependencies": {
     "markdownlint-cli2": "^0.18.1",
     "prettier": "^3.9.4",
-    "@alfonsobries/aikit": "^0.2.0"
+    "@alfonsobries/aikit": "^0.3.0"
   }
 }

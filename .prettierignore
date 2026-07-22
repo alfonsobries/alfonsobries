@@ -7,3 +7,8 @@ api/vendor/
 **/build/
 .agents/
 .claude/skills/
+
+# aikit
+AGENTS.md
+CLAUDE.md
+.agents/aikit/
