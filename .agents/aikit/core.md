@@ -1,4 +1,4 @@
-<!-- aikit v0.1.0 - managed file, do not edit -->
+<!-- aikit v0.2.0 - managed file, do not edit -->
 <!-- Local override: CLAUDE.local.md (Claude Code) / AGENTS.override.md (Codex). Per-repo override: below the imports in CLAUDE.md / below the managed block in AGENTS.md. Permanent override: PR to https://github.com/alfonsobries/aikit -->
 
 # Baseline

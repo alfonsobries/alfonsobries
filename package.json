@@ -5,10 +5,12 @@
     "format:docs": "prettier --write \"**/*.md\"",
     "format:docs:check": "prettier --check \"**/*.md\"",
     "lint:docs": "markdownlint-cli2",
-    "lint:docs:fix": "markdownlint-cli2 --fix"
+    "lint:docs:fix": "markdownlint-cli2 --fix",
+    "postinstall": "aikit update"
   },
   "devDependencies": {
     "markdownlint-cli2": "^0.18.1",
-    "prettier": "^3.9.4"
+    "prettier": "^3.9.4",
+    "@alfonsobries/aikit": "^0.2.0"
   }
 }

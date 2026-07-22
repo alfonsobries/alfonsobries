@@ -1,4 +1,4 @@
-<!-- aikit v0.1.0 - managed file, do not edit -->
+<!-- aikit v0.2.0 - managed file, do not edit -->
 
 # Expo / React Native
 
