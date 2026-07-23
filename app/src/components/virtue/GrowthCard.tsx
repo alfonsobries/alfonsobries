@@ -51,6 +51,7 @@ export function GrowthCard() {
               uri: route('api.virtue.mascot', {
                 set: 'arbol-icon',
                 stage: stats.areas.spirit.stage,
+                v: stats.art_version,
               }),
               headers: authImageHeaders(),
             }}

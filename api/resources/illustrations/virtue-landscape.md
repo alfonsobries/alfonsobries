@@ -54,5 +54,11 @@ python3 api/scripts/normalize-virtue-landscape.py \
 The app stacks with `absoluteFill` + `contentFit="cover"` — no per-layer layout
 offsets.
 
-Responses carry an immutable `Cache-Control`, so force-quit the app after
-replacing art or the old stage keeps rendering.
+## Shipping replaced art
+
+Responses are cached for a year and immutable, so a stage that already sits in a
+device's cache never gets refetched for the same URL. `App\Virtue\JourneyArt`
+hashes the file names and sizes into an `art_version` that rides along in the
+stats payload, and the app appends it to every art URL — replacing a PNG changes
+the hash, which changes the URL, which fetches the new art. Nothing to bump by
+hand.
