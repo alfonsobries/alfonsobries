@@ -2,6 +2,11 @@
 # Generate raw virtue-landscape layers (earth/sky/tree × 01–30).
 # Writes to api/resources/illustrations/_series/raw/ (gitignored).
 # Then run normalize-virtue-landscape.py to install into tierra/cielo/arbol.
+#
+# Each layer chains off its own previous stage, so the three can run as
+# parallel jobs: LAYERS=earth ./generate-virtue-landscape-series.sh
+#
+# Env: ONLY=1,2,3  STAGES=30  LAYERS="earth sky tree"  QUALITY=medium  FORCE=1
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -82,9 +87,9 @@ stages_list() {
 }
 
 for n in $(stages_list); do
-  gen_one earth "$n" earth
-  gen_one sky "$n" sky
-  gen_one tree "$n" tree
+  for layer in ${LAYERS:-earth sky tree}; do
+    gen_one "$layer" "$n" "$layer"
+  done
 done
 
 echo "Raw layers ready under $RAW"

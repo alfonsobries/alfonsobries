@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 """Normalize virtue journey layers onto shared world anchors.
 
-Each layer is generated isolated on magenta; this script chroma-keys and
-re-places content onto a fixed canvas so every combo stacks cleanly:
+Each layer is generated in isolation over magenta; this script chroma-keys it
+and re-places the content on a fixed canvas so that any stage combination
+stacks into one believable landscape:
 
   sky   — opaque full-bleed (horizon color extended downward)
-  earth — mound centered; top overlaps the tree-root line so roots plant in
-  tree  — no personal soil; horizontally centered; root bottoms on TREE_ROOT_Y
+  earth — mound summit pinned to CREST_Y, bled past both sides and down to the
+          bottom edge, so the ground never reads as a floating slab
+  tree  — scaled along the growth curve and planted a little under CREST_Y
+
+A tight-cropped `arbol-icon` set comes out of the same tree art for compact UI.
 
 Raw files: earth-NN.png, sky-NN.png, tree-NN.png under --src.
-Outputs:   tierra/tierra-NN.png, cielo/cielo-NN.png, arbol/arbol-NN.png
+Outputs:   tierra/, cielo/, arbol/, arbol-icon/ under --out.
 
 Usage:
   python3 api/scripts/normalize-virtue-landscape.py \\
@@ -22,15 +26,25 @@ from __future__ import annotations
 
 import argparse
 import colorsys
+import shutil
+import subprocess
 from pathlib import Path
 
 from PIL import Image
 
 W, H = 1536, 1024
-TREE_ROOT_Y = int(H * 0.60)
-TREE_HEIGHT_FRAC = 0.50
-EARTH_WIDTH_FRAC = 0.88
-EARTH_SINK_FRAC = 0.18  # roots land this far down the mound
+STAGE_COUNT = 30
+
+CREST_Y = int(H * 0.62)
+EARTH_WIDTH_FRAC = 1.14
+CREST_BAND_FRAC = 0.14
+
+TREE_MIN_FRAC = 0.13
+TREE_MAX_FRAC = 0.56
+TREE_SINK = int(H * 0.022)
+
+ICON_SIZE = 512
+ICON_PADDING = 0.06
 
 
 def is_chroma(r: int, g: int, b: int) -> bool:
@@ -51,51 +65,91 @@ def load_cut(path: Path) -> Image.Image:
     if im.size != (W, H):
         im = im.resize((W, H), Image.Resampling.LANCZOS)
     px = im.load()
-    for y in range(H):
-        for x in range(W):
+    for y in range(im.height):
+        for x in range(im.width):
             r, g, b, _a = px[x, y]
             if is_chroma(r, g, b):
                 px[x, y] = (0, 0, 0, 0)
     return im
 
 
-def content_bbox(im: Image.Image) -> tuple[int, int, int, int]:
+def cut_subject(path: Path) -> Image.Image:
+    im = load_cut(path)
     box = im.split()[-1].getbbox()
     if box is None:
-        raise SystemExit(f"empty layer after chroma: {im}")
-    return box
+        raise SystemExit(f"empty layer after chroma key: {path}")
+    return im.crop(box)
 
 
-def place_tree(src: Path, out: Path) -> None:
-    im = load_cut(src)
-    l, t, r, b = content_bbox(im)
-    crop = im.crop((l, t, r, b))
-    cw, ch = crop.size
-    scale = (H * TREE_HEIGHT_FRAC) / ch
-    nw, nh = max(1, int(cw * scale)), max(1, int(ch * scale))
-    crop = crop.resize((nw, nh), Image.Resampling.LANCZOS)
-    canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    canvas.paste(crop, ((W - nw) // 2, TREE_ROOT_Y - nh), crop)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(out)
-    print(f"tree  {out.name}: roots@{TREE_ROOT_Y} {nw}x{nh}")
+def tree_height(stage: int) -> int:
+    t = (stage - 1) / (STAGE_COUNT - 1)
+    return max(1, int(H * (TREE_MIN_FRAC + (TREE_MAX_FRAC - TREE_MIN_FRAC) * t)))
+
+
+def crest_row(im: Image.Image) -> int:
+    """Topmost opaque row within the central band — the summit of the mound."""
+    alpha = im.split()[-1].load()
+    band = int(im.width * CREST_BAND_FRAC)
+    left, right = (im.width - band) // 2, (im.width + band) // 2
+    for y in range(im.height):
+        for x in range(left, right):
+            if alpha[x, y] > 128:
+                return y
+    return 0
+
+
+def extend_to_bottom(canvas: Image.Image) -> None:
+    """Repeat each column's lowest opaque pixel down to the canvas edge."""
+    px = canvas.load()
+    for x in range(canvas.width):
+        bottom = next(
+            (y for y in range(canvas.height - 1, -1, -1) if px[x, y][3] > 128), None
+        )
+        if bottom is None:
+            continue
+        fill = px[x, bottom]
+        for y in range(bottom + 1, canvas.height):
+            px[x, y] = fill
 
 
 def place_earth(src: Path, out: Path) -> None:
-    im = load_cut(src)
-    l, t, r, b = content_bbox(im)
-    crop = im.crop((l, t, r, b))
-    cw, ch = crop.size
-    scale = (W * EARTH_WIDTH_FRAC) / cw
-    nw, nh = max(1, int(cw * scale)), max(1, int(ch * scale))
-    crop = crop.resize((nw, nh), Image.Resampling.LANCZOS)
-    y = TREE_ROOT_Y - int(nh * EARTH_SINK_FRAC)
-    y = max(int(H * 0.35), min(y, H - nh))
+    crop = cut_subject(src)
+    scale = (W * EARTH_WIDTH_FRAC) / crop.width
+    crop = crop.resize(
+        (max(1, int(crop.width * scale)), max(1, int(crop.height * scale))),
+        Image.Resampling.LANCZOS,
+    )
     canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    canvas.paste(crop, ((W - nw) // 2, y), crop)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    canvas.save(out)
-    print(f"earth {out.name}: top={y} overlap_below_root={y + nh - TREE_ROOT_Y}")
+    canvas.paste(crop, ((W - crop.width) // 2, CREST_Y - crest_row(crop)), crop)
+    extend_to_bottom(canvas)
+    save(canvas, out)
+    print(f"earth {out.name}: crest@{CREST_Y} {crop.width}x{crop.height}")
+
+
+def place_tree(src: Path, out: Path, icon_out: Path, stage: int) -> None:
+    crop = cut_subject(src)
+    scale = tree_height(stage) / crop.height
+    crop = crop.resize(
+        (max(1, int(crop.width * scale)), max(1, int(crop.height * scale))),
+        Image.Resampling.LANCZOS,
+    )
+    canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    canvas.paste(crop, ((W - crop.width) // 2, CREST_Y + TREE_SINK - crop.height), crop)
+    save(canvas, out)
+    save(icon(cut_subject(src)), icon_out)
+    print(f"tree  {out.name}: base@{CREST_Y + TREE_SINK} {crop.width}x{crop.height}")
+
+
+def icon(crop: Image.Image) -> Image.Image:
+    inner = int(ICON_SIZE * (1 - ICON_PADDING * 2))
+    scale = inner / max(crop.width, crop.height)
+    crop = crop.resize(
+        (max(1, int(crop.width * scale)), max(1, int(crop.height * scale))),
+        Image.Resampling.LANCZOS,
+    )
+    canvas = Image.new("RGBA", (ICON_SIZE, ICON_SIZE), (0, 0, 0, 0))
+    canvas.paste(crop, ((ICON_SIZE - crop.width) // 2, ICON_SIZE - crop.height), crop)
+    return canvas
 
 
 def place_sky(src: Path, out: Path) -> None:
@@ -109,11 +163,14 @@ def place_sky(src: Path, out: Path) -> None:
     if not samples:
         samples = [(20, 40, 80)]
     rs, gs, bs = zip(*samples)
-    hr = sorted(rs)[len(rs) // 2]
-    hg = sorted(gs)[len(gs) // 2]
-    hb = sorted(bs)[len(bs) // 2]
+    horizon = (
+        sorted(rs)[len(rs) // 2],
+        sorted(gs)[len(gs) // 2],
+        sorted(bs)[len(bs) // 2],
+        255,
+    )
     for y in range(cut_y + 1):
-        last = (hr, hg, hb, 255)
+        last = horizon
         for x in range(W):
             if px[x, y][3] > 200:
                 last = px[x, y]
@@ -121,39 +178,60 @@ def place_sky(src: Path, out: Path) -> None:
                 px[x, y] = last
     for y in range(cut_y + 1, H):
         for x in range(W):
-            px[x, y] = (hr, hg, hb, 255)
-    out.parent.mkdir(parents=True, exist_ok=True)
-    im.convert("RGB").save(out)
+            px[x, y] = horizon
+    save(im.convert("RGB"), out)
     print(f"sky   {out.name}: horizon_row={cut_y}")
+
+
+def save(im: Image.Image, out: Path) -> None:
+    out.parent.mkdir(parents=True, exist_ok=True)
+    im.save(out)
+    compress(out)
+
+
+def compress(out: Path) -> None:
+    """Shrink the PNG in place; the art ships in the repo, so bytes matter."""
+    if shutil.which("pngquant"):
+        subprocess.run(
+            ["pngquant", "--force", "--skip-if-larger", "--quality=70-95",
+             "--speed", "1", "--strip", "--output", str(out), str(out)],
+            check=False, capture_output=True,
+        )
+    if shutil.which("oxipng"):
+        subprocess.run(
+            ["oxipng", "-o", "4", "-q", "--strip", "safe", str(out)],
+            check=False, capture_output=True,
+        )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--src", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
-    parser.add_argument("--stages", type=int, default=30)
+    parser.add_argument("--stages", type=int, default=STAGE_COUNT)
     parser.add_argument(
         "--only",
         type=int,
         nargs="*",
-        help="Normalize only these stage numbers (default: all present)",
+        help="Normalize only these stage numbers (default: all)",
     )
     args = parser.parse_args()
 
-    for name in ("tierra", "cielo", "arbol"):
-        (args.out / name).mkdir(parents=True, exist_ok=True)
-
-    stages = args.only if args.only else list(range(1, args.stages + 1))
-    for n in stages:
+    for n in args.only or range(1, args.stages + 1):
         earth = args.src / f"earth-{n:02d}.png"
         sky = args.src / f"sky-{n:02d}.png"
         tree = args.src / f"tree-{n:02d}.png"
-        if not earth.is_file() or not sky.is_file() or not tree.is_file():
+        if not (earth.is_file() and sky.is_file() and tree.is_file()):
             print(f"skip {n:02d}: missing raw layer(s)")
             continue
         place_earth(earth, args.out / "tierra" / f"tierra-{n:02d}.png")
         place_sky(sky, args.out / "cielo" / f"cielo-{n:02d}.png")
-        place_tree(tree, args.out / "arbol" / f"arbol-{n:02d}.png")
+        place_tree(
+            tree,
+            args.out / "arbol" / f"arbol-{n:02d}.png",
+            args.out / "arbol-icon" / f"arbol-icon-{n:02d}.png",
+            n,
+        )
 
 
 if __name__ == "__main__":
