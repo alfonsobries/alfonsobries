@@ -4,11 +4,11 @@ Three layered PNGs compose the virtue scene in the app. Game stages are 1–30;
 each set has one file per stage (`tierra-01.png` … `tierra-30.png`, same for
 `cielo`, `arbol` and `arbol-icon`).
 
-| Set | Area | Role |
-| --- | --- | --- |
-| `tierra` | Body | Ground mound, bled past every edge |
-| `cielo` | Mind | Full-bleed sky |
-| `arbol` | Spirit | Tree, planted on the mound at world scale |
+| Set          | Area   | Role                                       |
+| ------------ | ------ | ------------------------------------------ |
+| `tierra`     | Body   | Ground mound, bled past every edge         |
+| `cielo`      | Mind   | Full-bleed sky                             |
+| `arbol`      | Spirit | Tree, planted on the mound at world scale  |
 | `arbol-icon` | Spirit | The same tree tight-cropped for compact UI |
 
 Style: epic flat grain — flat shapes, stipple inside fills, hard cuttable

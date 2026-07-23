@@ -31,13 +31,7 @@ import { HabitToggleRow } from '@/components/virtue/HabitToggleRow';
 import { ResolutionPicker } from '@/components/virtue/ResolutionPicker';
 import { VirtueScene } from '@/components/virtue/VirtueScene';
 import { lastSevenDays } from '@/components/virtue/WeekStrip';
-import {
-  AREA_HABITS,
-  AREAS,
-  completedToday,
-  DAILY_GOAL_COUNT,
-  ENTRY_HABITS,
-} from '@/data/virtue';
+import { AREA_HABITS, AREAS, completedToday, DAILY_GOAL_COUNT, ENTRY_HABITS } from '@/data/virtue';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 /** Local-only stage overrides for previewing the art like a game — never saved. */
