@@ -11,3 +11,6 @@ CLAUDE.local.md
 # Local illustration scratch (never commit)
 api/resources/illustrations/_experiments/
 api/resources/illustrations/_series/
+
+# aikit
+AGENTS.override.md
