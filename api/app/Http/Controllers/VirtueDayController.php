@@ -129,8 +129,9 @@ class VirtueDayController extends Controller
     /**
      * A progression-stage image from the virtue journey art. Layers stack as
      * cielo (mind) + tierra (body) + arbol (spirit) — one PNG per game stage
-     * (1–30) per set. Also serves plate and knight. Everything goes through
-     * the API so the art stays private to the authenticated family.
+     * (1–30) per set, plus arbol-icon (the tree tight-cropped for compact UI).
+     * Also serves plate and knight. Everything goes through the API so the art
+     * stays private to the authenticated family.
      */
     public function mascot(Request $request, string $set, int $stage): mixed
     {
@@ -138,10 +139,13 @@ class VirtueDayController extends Controller
             return $response;
         }
 
+        $stages = count(VirtueDay::STAGE_THRESHOLDS);
+
         $totals = [
-            'tierra' => count(VirtueDay::STAGE_THRESHOLDS),
-            'cielo' => count(VirtueDay::STAGE_THRESHOLDS),
-            'arbol' => count(VirtueDay::STAGE_THRESHOLDS),
+            'tierra' => $stages,
+            'cielo' => $stages,
+            'arbol' => $stages,
+            'arbol-icon' => $stages,
             'plate' => 1,
             'knight' => 1,
         ];

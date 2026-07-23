@@ -310,7 +310,7 @@ it('returns 404 for an unknown mascot set', function () {
         ->assertNotFound();
 });
 
-it('serves the scene layer sets', function (string $set) {
+it('serves the single-frame sets', function (string $set) {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
     $this->actingAs($alfonso)
@@ -336,7 +336,7 @@ it('serves the journey art sets and rejects stages beyond each arc', function (s
     $this->actingAs($alfonso)
         ->getJson(route('api.virtue.mascot', ['set' => $set, 'stage' => 31]))
         ->assertNotFound();
-})->with(['tierra', 'cielo', 'arbol']);
+})->with(['tierra', 'cielo', 'arbol', 'arbol-icon']);
 
 it('marks a habit for a day', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);

@@ -49,7 +49,7 @@ export function GrowthCard() {
           <Illustration
             source={{
               uri: route('api.virtue.mascot', {
-                set: 'arbol',
+                set: 'arbol-icon',
                 stage: stats.areas.spirit.stage,
               }),
               headers: authImageHeaders(),
