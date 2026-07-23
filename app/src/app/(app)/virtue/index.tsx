@@ -265,21 +265,21 @@ export default function VirtueScreen() {
               label="Body (tierra)"
               value={preview.body}
               min={1}
-              max={30}
+              max={stats.tree_stage_count}
               onChange={(body) => setPreview({ ...preview, body })}
             />
             <Stepper
               label="Mind (cielo)"
               value={preview.mind}
               min={1}
-              max={30}
+              max={stats.tree_stage_count}
               onChange={(mind) => setPreview({ ...preview, mind })}
             />
             <Stepper
               label="Spirit (árbol)"
               value={preview.spirit}
               min={1}
-              max={30}
+              max={stats.tree_stage_count}
               onChange={(spirit) => setPreview({ ...preview, spirit })}
             />
             <Button

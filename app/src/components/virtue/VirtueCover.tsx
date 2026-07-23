@@ -36,5 +36,6 @@ export function VirtueCover() {
     return null;
   }
 
-  return <VirtueScene stages={stages} aspectRatio={3} />;
+  // Anything wider crops the canopy off the summit stages.
+  return <VirtueScene stages={stages} aspectRatio={16 / 9} />;
 }
