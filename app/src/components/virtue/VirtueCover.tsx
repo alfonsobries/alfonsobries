@@ -1,27 +1,30 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { View } from 'react-native';
 
-import { authImageHeaders } from '@/api/client';
 import { useApiRouter } from '@/api/router';
 import { fetchVirtueSummary } from '@/api/virtue';
-import { Illustration } from '@/components/ui/Illustration';
-import { paisajeStage } from '@/data/virtue';
+import { VirtueScene } from '@/components/virtue/VirtueScene';
 
-// The profile cover: the journey landscape as a wide banner, like a social
-// profile header. It advances with the overall stage, so the world quietly
-// changes as the practice does. Renders nothing when the stats aren't
-// available (offline or another user).
+// Profile cover: the journey scene as a wide banner. Advances with each
+// area's stage so the world quietly changes as the practice does.
 export function VirtueCover() {
   const route = useApiRouter();
-  const [stage, setStage] = useState<number | null>(null);
+  const [stages, setStages] = useState<{
+    tierra: number;
+    cielo: number;
+    arbol: number;
+  } | null>(null);
 
   useFocusEffect(
     useCallback(() => {
       void (async () => {
         try {
           const summary = await fetchVirtueSummary(route);
-          setStage(summary.stats.stage);
+          setStages({
+            tierra: summary.stats.areas.body.stage,
+            cielo: summary.stats.areas.mind.stage,
+            arbol: summary.stats.areas.spirit.stage,
+          });
         } catch {
           // Not available for this user or offline — the cover stays hidden.
         }
@@ -29,19 +32,10 @@ export function VirtueCover() {
     }, [route]),
   );
 
-  if (stage === null) {
+  if (stages === null) {
     return null;
   }
 
-  return (
-    <View className="w-full overflow-hidden rounded-3xl" style={{ aspectRatio: 3 }}>
-      <Illustration
-        source={{
-          uri: route('api.virtue.mascot', { set: 'paisaje', stage: paisajeStage(stage) }),
-          headers: authImageHeaders(),
-        }}
-        transition={200}
-      />
-    </View>
-  );
+  // Anything wider crops the canopy off the summit stages.
+  return <VirtueScene stages={stages} aspectRatio={16 / 9} />;
 }

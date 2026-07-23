@@ -45,13 +45,18 @@ export function GrowthCard() {
       className="gap-4 rounded-3xl bg-surface p-4 active:opacity-80"
     >
       <View className="flex-row items-center gap-4">
-        <View className="size-16 overflow-hidden rounded-2xl">
+        <View className="size-16 overflow-hidden rounded-2xl bg-white">
           <Illustration
             source={{
-              uri: route('api.virtue.mascot', { set: 'farol', stage: stats.tree_stage }),
+              uri: route('api.virtue.mascot', {
+                set: 'arbol-icon',
+                stage: stats.areas.spirit.stage,
+              }),
               headers: authImageHeaders(),
             }}
+            contentFit="contain"
             transition={150}
+            style={{ backgroundColor: 'transparent' }}
           />
         </View>
 

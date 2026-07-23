@@ -59,9 +59,9 @@ class VirtueStats
     }
 
     /**
-     * The dashboard mascot progression, unchanged: each kept day earns a
-     * point, a miss costs ten, and crossing a checkpoint sets a floor the
-     * points can never fall below again.
+     * Overall progress: each kept day earns a point, a miss costs ten, and
+     * crossing a checkpoint sets a floor the points can never fall below
+     * again. tree_stage mirrors stage (compact arbol icon).
      *
      * @return array<string, int>
      */
@@ -89,8 +89,8 @@ class VirtueStats
             'stage' => $stage,
             'stage_count' => count(VirtueDay::STAGE_THRESHOLDS),
             'next_stage_at' => VirtueDay::STAGE_THRESHOLDS[$stage] ?? $points,
-            'tree_stage' => intdiv($stage + 1, 2),
-            'tree_stage_count' => VirtueDay::TREE_STAGES,
+            'tree_stage' => $stage,
+            'tree_stage_count' => count(VirtueDay::STAGE_THRESHOLDS),
         ];
     }
 

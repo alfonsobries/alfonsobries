@@ -8,5 +8,8 @@ node_modules/
 # claude
 CLAUDE.local.md
 
+# Local illustration scratch (never commit)
+api/resources/illustrations/_series/
+
 # aikit
 AGENTS.override.md
