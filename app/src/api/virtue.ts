@@ -26,6 +26,8 @@ export type VirtueAreaStats = {
 };
 
 export type VirtueStats = {
+  /** Journey art build; rides along every art URL so a replaced stage beats the year-long cache. */
+  art_version: string;
   streak: number;
   days_tracked: number;
   kept_count: number;

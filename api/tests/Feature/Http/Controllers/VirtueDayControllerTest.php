@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Models\VirtueDay;
 use App\Models\VirtueEntry;
+use App\Virtue\JourneyArt;
 
 it('lists the tracked days with stats', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
@@ -300,6 +301,26 @@ it('exposes tree stages 1:1 with the game stage arc', function () {
         ->assertJsonPath('stats.stage', 2)
         ->assertJsonPath('stats.tree_stage', 2)
         ->assertJsonPath('stats.tree_stage_count', 30);
+});
+
+it('stamps the art version on the stats so cached art can be busted', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $version = $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->json('stats.art_version');
+
+    expect($version)->toBeString()->not->toBeEmpty()
+        ->and($version)->toBe(JourneyArt::version());
+});
+
+it('serves art regardless of the version travelling in the query', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->get(route('api.virtue.mascot', ['set' => 'arbol', 'stage' => 1, 'v' => 'stale']))
+        ->assertOk();
 });
 
 it('returns 404 for an unknown mascot set', function () {

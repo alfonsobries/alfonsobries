@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\VirtueDay;
 use App\Models\VirtueEntry;
+use App\Virtue\JourneyArt;
 use App\Virtue\VirtueHabit;
 use App\Virtue\VirtueStats;
 use Carbon\Exceptions\InvalidFormatException;
@@ -139,13 +140,8 @@ class VirtueDayController extends Controller
             return $response;
         }
 
-        $stages = count(VirtueDay::STAGE_THRESHOLDS);
-
         $totals = [
-            'tierra' => $stages,
-            'cielo' => $stages,
-            'arbol' => $stages,
-            'arbol-icon' => $stages,
+            ...array_fill_keys(JourneyArt::SETS, JourneyArt::stageCount()),
             'plate' => 1,
             'knight' => 1,
         ];

@@ -15,15 +15,17 @@ export type VirtueSceneStages = {
 
 /**
  * Hero journey scene: three full-bleed layers composited in world space.
- * Alignment is baked into the PNGs (shared root/peak anchors) — do not
- * offset layers in layout, or combos drift.
+ * Alignment is baked into the PNGs (shared crest anchor) — do not offset
+ * layers in layout, or combos drift.
  */
 export function VirtueScene({
   stages,
+  version,
   onError,
   aspectRatio = 3 / 2,
 }: {
   stages: VirtueSceneStages;
+  version: string;
   onError?: () => void;
   aspectRatio?: number;
 }) {
@@ -31,7 +33,7 @@ export function VirtueScene({
   const headers = authImageHeaders();
 
   const layer = (set: keyof VirtueSceneStages, stage: number) => ({
-    uri: route('api.virtue.mascot', { set, stage }),
+    uri: route('api.virtue.mascot', { set, stage, v: version }),
     headers,
   });
 

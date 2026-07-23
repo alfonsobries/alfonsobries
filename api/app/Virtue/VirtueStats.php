@@ -23,6 +23,7 @@ class VirtueStats
         $streak = $this->resolutionStreak($first);
 
         return [
+            'art_version' => JourneyArt::version(),
             'streak' => $streak,
             'days_tracked' => $first === null
                 ? 0

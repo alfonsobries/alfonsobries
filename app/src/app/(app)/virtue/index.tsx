@@ -62,7 +62,8 @@ export default function VirtueScreen() {
   const [stats, setStats] = useState<VirtueStats | null>(null);
   const [month, setMonth] = useState(() => new Date());
   const [saving, setSaving] = useState(false);
-  const [sceneFailed, setSceneFailed] = useState(false);
+  const [failedScene, setFailedScene] = useState<string | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
   const [preview, setPreview] = useState<PreviewStages | null>(null);
 
   const [dates, setDates] = useState(currentDates);
@@ -73,8 +74,9 @@ export default function VirtueScreen() {
       const summary = await fetchVirtueSummary(route);
       setDays(Object.fromEntries(summary.days.map((day) => [day.date, day])));
       setStats(summary.stats);
+      setLoadFailed(false);
     } catch {
-      // The retry is one focus away.
+      setLoadFailed(true);
     }
   }, [route]);
 
@@ -129,6 +131,26 @@ export default function VirtueScreen() {
     return dates.length > 0 ? dates.reduce((a, b) => (a < b ? a : b)) : undefined;
   }, [days]);
 
+  const scene = useMemo(
+    () =>
+      stats === null
+        ? null
+        : {
+            stages: {
+              tierra: preview?.body ?? stats.areas.body.stage,
+              cielo: preview?.mind ?? stats.areas.mind.stage,
+              arbol: preview?.spirit ?? stats.areas.spirit.stage,
+            },
+            version: stats.art_version,
+          },
+    [preview, stats],
+  );
+
+  // Remember which combination failed rather than that one did: stepping to
+  // another stage asks for different files and deserves a fresh attempt.
+  const sceneKey = scene && `${Object.values(scene.stages).join('-')}-${scene.version}`;
+  const sceneFailed = sceneKey !== null && sceneKey === failedScene;
+
   const yesterdayEntry = days[yesterday];
   const yesterdayPending =
     firstTracked !== undefined && yesterday >= firstTracked && !yesterdayEntry?.resolution;
@@ -181,7 +203,9 @@ export default function VirtueScreen() {
   const allDone = doneCount === DAILY_GOAL_COUNT;
   const streakSubline =
     stats === null
-      ? ' '
+      ? loadFailed
+        ? 'Could not load your practice'
+        : ' '
       : stats.days_tracked === 0
         ? 'Mark your first day to begin'
         : stats.missed_count === 0
@@ -230,14 +254,11 @@ export default function VirtueScreen() {
         contentContainerClassName="gap-4 p-4 pb-16"
       >
         <Card className="items-center gap-1 py-6">
-          {stats && !sceneFailed ? (
+          {scene && !sceneFailed ? (
             <VirtueScene
-              stages={{
-                tierra: preview?.body ?? stats.areas.body.stage,
-                cielo: preview?.mind ?? stats.areas.mind.stage,
-                arbol: preview?.spirit ?? stats.areas.spirit.stage,
-              }}
-              onError={() => setSceneFailed(true)}
+              stages={scene.stages}
+              version={scene.version}
+              onError={() => setFailedScene(sceneKey)}
             />
           ) : (
             <Flame size={30} color={tint} weight="fill" />
@@ -245,6 +266,11 @@ export default function VirtueScreen() {
           <Text className="mt-2 text-6xl font-bold text-foreground">{stats?.streak ?? '·'}</Text>
           <Text className="text-base font-medium text-foreground">day streak</Text>
           <Text className="text-sm text-muted">{streakSubline}</Text>
+          {stats === null && loadFailed ? (
+            <Button variant="secondary" className="mt-4" onPress={() => void load()}>
+              Try again
+            </Button>
+          ) : null}
         </Card>
 
         {preview && stats ? (

@@ -9,10 +9,9 @@ import { VirtueScene } from '@/components/virtue/VirtueScene';
 // area's stage so the world quietly changes as the practice does.
 export function VirtueCover() {
   const route = useApiRouter();
-  const [stages, setStages] = useState<{
-    tierra: number;
-    cielo: number;
-    arbol: number;
+  const [scene, setScene] = useState<{
+    stages: { tierra: number; cielo: number; arbol: number };
+    version: string;
   } | null>(null);
 
   useFocusEffect(
@@ -20,10 +19,13 @@ export function VirtueCover() {
       void (async () => {
         try {
           const summary = await fetchVirtueSummary(route);
-          setStages({
-            tierra: summary.stats.areas.body.stage,
-            cielo: summary.stats.areas.mind.stage,
-            arbol: summary.stats.areas.spirit.stage,
+          setScene({
+            stages: {
+              tierra: summary.stats.areas.body.stage,
+              cielo: summary.stats.areas.mind.stage,
+              arbol: summary.stats.areas.spirit.stage,
+            },
+            version: summary.stats.art_version,
           });
         } catch {
           // Not available for this user or offline — the cover stays hidden.
@@ -32,10 +34,10 @@ export function VirtueCover() {
     }, [route]),
   );
 
-  if (stages === null) {
+  if (scene === null) {
     return null;
   }
 
   // Anything wider crops the canopy off the summit stages.
-  return <VirtueScene stages={stages} aspectRatio={16 / 9} />;
+  return <VirtueScene stages={scene.stages} version={scene.version} aspectRatio={16 / 9} />;
 }
