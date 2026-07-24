@@ -64,6 +64,7 @@ export default function AppLayout() {
             options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal', title: 'Virtud' }}
           />
           <Stack.Screen name="virtue/prayers" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="virtue/rosary" options={{ presentation: 'modal' }} />
           <Stack.Screen
             name="virtue/[area]"
             options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
