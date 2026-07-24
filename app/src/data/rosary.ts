@@ -3,7 +3,7 @@
 // texts are the standard Spanish (Mexico) versions. Gospel passages are full
 // pericopes rendered faithfully to Scripture.
 
-import { type PrayerBlock } from '@/data/auxilium';
+import type { PrayerBlock } from '@/data/auxilium';
 
 export type MysterySetKey = 'gozosos' | 'luminosos' | 'dolorosos' | 'gloriosos';
 

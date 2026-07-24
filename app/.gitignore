@@ -45,3 +45,6 @@ example
 
 # local dev-client builds
 /build
+
+# Generated watch resources (rebuilt by eas-build-pre-install)
+targets/watch/Resources/
