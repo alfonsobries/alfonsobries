@@ -6,6 +6,10 @@ import { useAuth } from '@/api/auth';
 
 const REMINDER_ID = 'virtue-noon';
 
+// watchOS forwards this notification to the paired watch, where the watch app
+// reads the category to open the prayers on the wrist.
+const PRAYERS_CATEGORY = 'auxilium-prayers';
+
 /**
  * A local daily reminder at noon for the virtue practice, plus the routing
  * when its notification is tapped. Only Alfonso's device schedules it; the
@@ -46,6 +50,7 @@ export function useVirtueReminder(): void {
           content: {
             title: 'Auxilium',
             body: 'Las oraciones del día te esperan.',
+            categoryIdentifier: PRAYERS_CATEGORY,
             data: { url: '/virtue/prayers' },
           },
           trigger: {
