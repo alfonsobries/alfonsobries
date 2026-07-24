@@ -4,6 +4,10 @@ The app is a set of family utilities used away from wi-fi — on a plane, in the
 car, at a park. A feature whose value doesn't come from the network should work
 without one.
 
+**Every new feature gets sorted into one of the three categories below before
+it's built.** Utilities and everyday tools default to the first two; only reach
+for the third when the network is genuinely what the feature is for.
+
 ## What that means per feature
 
 - **Works offline** — anything whose content is bundled or already fetched:
@@ -13,12 +17,14 @@ without one.
   marking a resolution, finishing the prayers, checking a chore, logging a
   behavior, setting a mood.
 - **Needs the network, and says so** — anything the API has to compute or
-  arbitrate: AI replies, image generation, redeeming a reward against a points
-  balance, the evening chore review. These show a plain "you're offline"
-  message; they never queue a half-applied result.
+  arbitrate: AI replies, image generation, invoicing a client, redeeming a
+  reward against a points balance, the evening chore review. These show a plain
+  "you're offline" message; they never queue a half-applied result.
 
-Don't force the third category into the second. A queued mutation that can't be
-replayed faithfully is worse than an honest refusal.
+Don't force the third category into the second — a queued mutation that can't be
+replayed faithfully is worse than an honest refusal. And don't let the third
+category swallow a feature that merely touches the API: needing to *sync* is not
+the same as needing to be *online*.
 
 ## The pieces
 
