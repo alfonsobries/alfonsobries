@@ -301,7 +301,9 @@ export default function VirtueScreen() {
   async function toggleHabit(habit: VirtueHabit): Promise<void> {
     const completed = !days[today]?.habits[habit];
     setSaving(true);
-    applyLocally(today, { habits: { ...(days[today]?.habits ?? EMPTY_HABITS), [habit]: completed } });
+    applyLocally(today, {
+      habits: { ...(days[today]?.habits ?? EMPTY_HABITS), [habit]: completed },
+    });
 
     try {
       apply(await setHabit(route, today, habit, completed));

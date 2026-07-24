@@ -10,12 +10,14 @@ for the third when the network is genuinely what the feature is for.
 
 ## What that means per feature
 
-- **Works offline** — anything whose content is bundled or already fetched:
-  prayers, the virtue calendar, chore checklists, behavior boards, past chat
-  threads, every list that was read once.
+- **Works offline** — anything whose content is bundled or already fetched: the
+  rosary and the daily prayers, the virtue calendar and journey, chore
+  checklists, behavior boards, past chat threads, every list read once.
 - **Records offline, syncs later** — a write the device can decide on its own:
-  marking a resolution, finishing the prayers, checking a chore, logging a
-  behavior, setting a mood.
+  praying the rosary, marking a habit or a resolution, checking a chore, logging
+  a behavior, setting a mood. Apple Health belongs here too — the workout
+  minutes are already on the device, so they're recorded locally and reported on
+  sync.
 - **Needs the network, and says so** — anything the API has to compute or
   arbitrate: AI replies, image generation, invoicing a client, redeeming a
   reward against a points balance, the evening chore review. These show a plain
@@ -23,8 +25,8 @@ for the third when the network is genuinely what the feature is for.
 
 Don't force the third category into the second — a queued mutation that can't be
 replayed faithfully is worse than an honest refusal. And don't let the third
-category swallow a feature that merely touches the API: needing to *sync* is not
-the same as needing to be *online*.
+category swallow a feature that merely touches the API: needing to _sync_ is not
+the same as needing to be _online_.
 
 ## The pieces
 
@@ -79,9 +81,15 @@ try {
 }
 ```
 
-Where a value is derived server-side (a streak, a total), mirror the derivation
-locally so an offline change updates it straight away — and let the API's copy
-win the moment it answers.
+## Don't mirror a scoring engine
+
+Mirror a derived value locally only when the derivation is trivial and lives in
+one place. Virtue's points, stages and floors are a calibrated engine covered by
+tests on the API (`docs/virtue-philosophy.md`); a second copy here would be a
+copy that drifts, and a wrong stage on screen is worse than a stale one. So an
+offline mark flips the day's checkmarks instantly — that's what the tap is for —
+while the score beside it stays at its last synced value until the API
+recomputes it. Nothing is lost in between; the pill says what's still queued.
 
 ## Session
 
