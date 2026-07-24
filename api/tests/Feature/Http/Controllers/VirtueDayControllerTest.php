@@ -628,6 +628,51 @@ it('lists the habit marks with the days', function () {
         ->assertJsonPath('data.0.habits.diet', false);
 });
 
+it('gives a second point for a full exercise hour', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->putJson(
+            route('api.virtue.days.habit', ['date' => now()->toDateString(), 'habit' => 'exercise']),
+            ['completed' => true, 'minutes' => 65],
+        )
+        ->assertOk()
+        ->assertJsonPath('data.exercise_minutes', 65)
+        ->assertJsonPath('stats.areas.body.points', 2);
+});
+
+it('keeps the highest reported exercise minutes', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $date = now()->toDateString();
+
+    $this->actingAs($alfonso)
+        ->putJson(route('api.virtue.days.habit', ['date' => $date, 'habit' => 'exercise']), [
+            'completed' => true,
+            'minutes' => 45,
+        ])
+        ->assertOk();
+
+    $this->actingAs($alfonso)
+        ->putJson(route('api.virtue.days.habit', ['date' => $date, 'habit' => 'exercise']), [
+            'completed' => true,
+            'minutes' => 30,
+        ])
+        ->assertOk()
+        ->assertJsonPath('data.exercise_minutes', 45);
+});
+
+it('marks the sun habit into the body area', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->putJson(route('api.virtue.days.habit', ['date' => now()->toDateString(), 'habit' => 'sun']), [
+            'completed' => true,
+        ])
+        ->assertOk()
+        ->assertJsonPath('data.habits.sun', true)
+        ->assertJsonPath('stats.areas.body.points', 1);
+});
+
 it('scores the body area from the exercise and diet habits', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 

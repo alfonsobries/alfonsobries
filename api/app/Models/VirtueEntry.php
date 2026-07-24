@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * One completed habit on one day. A row means done — clearing the mark
- * deletes the row, so a day with no entry is simply pending.
+ * deletes the row, so a day with no entry is simply pending. Measured habits
+ * (exercise from Apple Health) also carry the day's minutes, which can raise
+ * the points the entry emits.
  */
 class VirtueEntry extends Model
 {
@@ -22,8 +24,18 @@ class VirtueEntry extends Model
     protected $fillable = [
         'date',
         'habit',
+        'minutes',
         'completed_at',
     ];
+
+    /**
+     * The points this entry emits into its area: a completed day is one, and
+     * a full hour of measured exercise earns a second.
+     */
+    public function points(): int
+    {
+        return $this->habit === VirtueHabit::Exercise && ($this->minutes ?? 0) >= 60 ? 2 : 1;
+    }
 
     /**
      * @var array<string, string>
@@ -31,6 +43,7 @@ class VirtueEntry extends Model
     protected $casts = [
         'date' => 'date',
         'habit' => VirtueHabit::class,
+        'minutes' => 'integer',
         'completed_at' => 'datetime',
     ];
 }
