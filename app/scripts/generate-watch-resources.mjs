@@ -9,9 +9,8 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const out = join(root, 'targets', 'watch', 'Resources');
 
-const { getRosarySteps, MYSTERY_SETS, mysterySetForWeekday } = await import(
-  '../src/data/rosary.ts'
-);
+const { getRosarySteps, MYSTERY_SETS, mysterySetForWeekday } =
+  await import('../src/data/rosary.ts');
 
 /** One representative weekday per set, to expand its guided steps. */
 const SAMPLE_WEEKDAYS = { gozosos: 1, dolorosos: 2, luminosos: 4, gloriosos: 0 };
