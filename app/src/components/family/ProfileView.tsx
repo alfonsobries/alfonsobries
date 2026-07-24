@@ -15,8 +15,15 @@ import { VirtueCover } from '@/components/virtue/VirtueCover';
 
 // The body of a person's profile — compact avatar header, mood, and their
 // sections. Rendered inside a scroll view by both the profile detail screen
-// and the "Profile" tab.
-export function ProfileView({ person }: { person: Person }) {
+// and the "Profile" tab. `hideIdentity` drops the avatar/name row for
+// screens that already carry the identity in their chrome (own Home).
+export function ProfileView({
+  person,
+  hideIdentity = false,
+}: {
+  person: Person;
+  hideIdentity?: boolean;
+}) {
   const { user } = useAuth();
   const { members } = useMoods();
   const { members: kidEmotions } = useKidEmotions();
@@ -33,32 +40,34 @@ export function ProfileView({ person }: { person: Person }) {
     <>
       {ownVirtue ? <VirtueCover /> : null}
 
-      <View className="flex-row items-center gap-4">
-        <AvatarCircle
-          person={person.key}
-          mood={record?.mood}
-          emotion={emotionRecord?.emotion}
-          size={isKid(person.key) ? 72 : 88}
-        />
-        <View className="flex-1 gap-0.5">
-          <View className="flex-row items-center gap-2">
-            <Text className="text-2xl font-semibold text-foreground">{person.name}</Text>
+      {hideIdentity ? null : (
+        <View className="flex-row items-center gap-4">
+          <AvatarCircle
+            person={person.key}
+            mood={record?.mood}
+            emotion={emotionRecord?.emotion}
+            size={isKid(person.key) ? 72 : 88}
+          />
+          <View className="flex-1 gap-0.5">
+            <View className="flex-row items-center gap-2">
+              <Text className="text-2xl font-semibold text-foreground">{person.name}</Text>
+              {person.hasMood && record ? (
+                <Text className="text-2xl">{moodEmoji(record.mood)}</Text>
+              ) : null}
+            </View>
             {person.hasMood && record ? (
-              <Text className="text-2xl">{moodEmoji(record.mood)}</Text>
+              <Text className="text-base text-muted">
+                Feels {moodLabel(record.mood).toLowerCase()}
+              </Text>
+            ) : null}
+            {kid && emotionRecord?.emotion ? (
+              <Text className="text-base text-muted">
+                Se siente {emotionLabel(kid, emotionRecord.emotion).toLowerCase()}
+              </Text>
             ) : null}
           </View>
-          {person.hasMood && record ? (
-            <Text className="text-base text-muted">
-              Feels {moodLabel(record.mood).toLowerCase()}
-            </Text>
-          ) : null}
-          {kid && emotionRecord?.emotion ? (
-            <Text className="text-base text-muted">
-              Se siente {emotionLabel(kid, emotionRecord.emotion).toLowerCase()}
-            </Text>
-          ) : null}
         </View>
-      </View>
+      )}
 
       {person.hasMood ? (
         <>
