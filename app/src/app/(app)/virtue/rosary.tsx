@@ -6,6 +6,8 @@ import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useApiRouter } from '@/api/router';
+import { completeRosary, localDate } from '@/api/virtue';
 import { PrayerBlockView } from '@/components/prayers/PrayerBlockView';
 import { DecadeBeads } from '@/components/rosary/DecadeBeads';
 import { MysteryIntro } from '@/components/rosary/MysteryIntro';
@@ -17,11 +19,13 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 // tap anywhere, so it can be prayed without reading the buttons — the decade
 // chain at the top carries the sense of place.
 export default function RosaryScreen() {
+  const route = useApiRouter();
   const insets = useSafeAreaInsets();
   const muted = useThemeColor('muted');
 
   const scrollRef = useRef<ScrollView>(null);
   const [stepIndex, setStepIndex] = useState(0);
+  const [finishing, setFinishing] = useState(false);
 
   const { set, steps } = useMemo(() => {
     const now = new Date();
@@ -38,9 +42,22 @@ export default function RosaryScreen() {
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }
 
+  async function finish(): Promise<void> {
+    setFinishing(true);
+
+    try {
+      await completeRosary(route, localDate());
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.back();
+    } catch {
+      setFinishing(false);
+      Alert.alert('No se pudo guardar', 'Inténtalo de nuevo en un momento.');
+    }
+  }
+
   function advance(): void {
     if (isLast) {
-      router.back();
+      void finish();
       return;
     }
 
@@ -148,7 +165,7 @@ export default function RosaryScreen() {
             Atrás
           </Button>
         ) : null}
-        <Button size="lg" onPress={advance} className="flex-1">
+        <Button size="lg" loading={finishing} onPress={advance} className="flex-1">
           {isLast ? 'Terminar' : step.mystery ? 'Comenzar la decena' : 'Siguiente'}
         </Button>
       </View>

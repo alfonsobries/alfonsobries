@@ -102,6 +102,7 @@ export default function VirtueScreen() {
               ? 'danger'
               : undefined,
         dots: [
+          day.rosary_completed,
           day.prayers_completed,
           day.habits.exercise,
           day.habits.diet,
@@ -417,12 +418,20 @@ export default function VirtueScreen() {
             <View className="flex-1">
               <Text className="text-base font-semibold text-foreground">Santo Rosario</Text>
               <Text className="text-sm text-muted">
-                {MYSTERY_SETS[mysterySetForWeekday(new Date().getDay())].name}
+                {stats && stats.rosary.total > 0
+                  ? `${MYSTERY_SETS[mysterySetForWeekday(new Date().getDay())].name} · ${stats.rosary.total} rezados${stats.rosary.streak > 1 ? ` · racha ${stats.rosary.streak}` : ''}`
+                  : MYSTERY_SETS[mysterySetForWeekday(new Date().getDay())].name}
               </Text>
             </View>
-            <Button size="sm" variant="secondary" onPress={() => router.push('/virtue/rosary')}>
-              Rezar
-            </Button>
+            {todayEntry?.rosary_completed ? (
+              <View className="size-9 items-center justify-center rounded-full bg-primary">
+                <Check size={18} color={onPrimary} weight="bold" />
+              </View>
+            ) : (
+              <Button size="sm" onPress={() => router.push('/virtue/rosary')}>
+                Rezar
+              </Button>
+            )}
           </View>
 
           {ENTRY_HABITS.map(({ key, label, anchor, Icon }) => (

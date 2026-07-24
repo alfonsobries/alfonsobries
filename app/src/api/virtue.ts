@@ -13,8 +13,15 @@ export type VirtueHabit = 'exercise' | 'diet' | 'reading';
 export type VirtueDay = {
   date: string;
   prayers_completed: boolean;
+  rosary_completed: boolean;
   resolution: Resolution | null;
   habits: Record<VirtueHabit, boolean>;
+};
+
+export type RosaryStats = {
+  total: number;
+  month: number;
+  streak: number;
 };
 
 export type VirtueAreaStats = {
@@ -32,7 +39,7 @@ export type VirtueStats = {
   days_tracked: number;
   kept_count: number;
   missed_count: number;
-  /** Mascot progression: kept days earn a point, misses cost ten (floored at checkpoints). */
+  /** Headline progression — mirrors the spirit area score. */
   points: number;
   stage: number;
   stage_count: number;
@@ -40,6 +47,7 @@ export type VirtueStats = {
   /** Compact UI icon: the arbol layer at the overall progress stage. */
   tree_stage: number;
   tree_stage_count: number;
+  rosary: RosaryStats;
   areas: Record<VirtueArea, VirtueAreaStats>;
 };
 
@@ -87,6 +95,18 @@ export async function setHabit(
   const { data } = await apiClient.put<{ data: VirtueDay; stats: VirtueStats }>(
     route('api.virtue.days.habit', { date, habit }),
     { completed },
+  );
+
+  return { day: data.data, stats: data.stats };
+}
+
+export async function completeRosary(
+  route: ApiRoute,
+  date: string,
+): Promise<{ day: VirtueDay; stats: VirtueStats }> {
+  const { data } = await apiClient.post<{ data: VirtueDay; stats: VirtueStats }>(
+    route('api.virtue.rosary.store'),
+    { date },
   );
 
   return { day: data.data, stats: data.stats };
