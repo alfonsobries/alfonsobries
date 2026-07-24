@@ -2,10 +2,17 @@ import SwiftUI
 
 @main
 struct RosarioApp: App {
+    init() {
+        PhoneLink.shared.activate()
+    }
+
     var body: some Scene {
         WindowGroup {
             NavigationStack {
                 HomeView()
+            }
+            .task {
+                await RosaryAPI.flushPending()
             }
         }
     }

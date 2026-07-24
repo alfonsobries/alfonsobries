@@ -31,6 +31,11 @@ type AuthProviderProperties = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+/** The stored API token, for consumers outside the HTTP client (watch sync). */
+export async function getAuthToken(): Promise<string | null> {
+  return SecureStore.getItemAsync(TOKEN_KEY).catch(() => null);
+}
+
 function setAuthHeader(token: string | null): void {
   if (token) {
     apiClient.defaults.headers.common.Authorization = `Bearer ${token}`;

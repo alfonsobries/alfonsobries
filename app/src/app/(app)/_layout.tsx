@@ -4,10 +4,12 @@ import { KidEmotionsProvider } from '@/api/kid-emotions';
 import { MoodsProvider } from '@/api/moods';
 import { usePushRegistration } from '@/hooks/use-push-registration';
 import { useVirtueReminder } from '@/hooks/use-virtue-reminder';
+import { useWatchSync } from '@/hooks/use-watch-sync';
 
 export default function AppLayout() {
   usePushRegistration();
   useVirtueReminder();
+  useWatchSync();
 
   return (
     <MoodsProvider>
