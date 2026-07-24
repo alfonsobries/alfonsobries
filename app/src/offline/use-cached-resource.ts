@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { isOfflineError } from './connectivity';
 import { readCacheEntry, writeCache } from './store';
@@ -10,7 +10,7 @@ export type CachedResource<T> = {
   status: CachedResourceStatus;
   /** True while the data on screen came from the cache and not from the API. */
   isStale: boolean;
-  /** Epoch milliseconds of the cached copy, or `null` when nothing is cached. */
+  /** Epoch milliseconds of the copy on screen, or `null` when there is none. */
   updatedAt: number | null;
   refresh: () => Promise<void>;
   /** Applies a local change and persists it, for optimistic updates. */
@@ -18,14 +18,23 @@ export type CachedResource<T> = {
 };
 
 type Options = {
-  /** Skips fetching entirely — e.g. while the session is still resolving. */
+  /** Skips fetching entirely — e.g. while a route param is still undefined. */
   enabled?: boolean;
+};
+
+type Local<T> = {
+  key: string;
+  value: T;
+  updatedAt: number;
 };
 
 /**
  * Reads an API payload cache-first: whatever was last seen renders immediately,
  * then a refresh reconciles it. Offline, the cached copy simply stays on screen
- * instead of the screen collapsing into an error state.
+ * instead of the screen collapsing into an empty or error state.
+ *
+ * Fetching is the caller's call — screens trigger `refresh` from `useFocusEffect`,
+ * which is also what decides when the data is worth re-reading.
  */
 export function useCachedResource<T>(
   key: string,
@@ -34,96 +43,72 @@ export function useCachedResource<T>(
 ): CachedResource<T> {
   const { enabled = true } = options;
 
-  const [data, setData] = useState<T | null>(null);
-  const [status, setStatus] = useState<CachedResourceStatus>('loading');
-  const [isStale, setIsStale] = useState(false);
-  const [updatedAt, setUpdatedAt] = useState<number | null>(null);
+  // Read synchronously so a cold start offline paints real data on the very
+  // first render rather than after an effect.
+  const cached = useMemo(() => readCacheEntry<T>(key), [key]);
 
-  const fetcherRef = useRef(fetcher);
-  fetcherRef.current = fetcher;
+  const [local, setLocal] = useState<Local<T> | null>(null);
+  const [failedKey, setFailedKey] = useState<string | null>(null);
 
-  const activeKey = useRef(key);
+  const requestedKey = useRef(key);
 
-  // The cached copy is read synchronously on the first render for this key, so
-  // a cold start offline paints real data instead of an empty screen.
-  useEffect(() => {
-    activeKey.current = key;
+  const current = local?.key === key ? local : null;
+  const data = current ? current.value : (cached?.value ?? null);
+  const updatedAt = current ? current.updatedAt : (cached?.updatedAt ?? null);
 
-    const entry = readCacheEntry<T>(key);
-
-    if (entry) {
-      setData(entry.value);
-      setUpdatedAt(entry.updatedAt);
-      setStatus('ready');
-      setIsStale(true);
-    } else {
-      setData(null);
-      setUpdatedAt(null);
-      setStatus('loading');
-      setIsStale(false);
-    }
-  }, [key]);
+  const status: CachedResourceStatus =
+    data !== null ? 'ready' : failedKey === key ? 'error' : 'loading';
 
   const refresh = useCallback(async () => {
     if (!enabled) {
       return;
     }
 
-    const requestKey = key;
+    requestedKey.current = key;
 
     try {
-      const value = await fetcherRef.current();
+      const value = await fetcher();
 
-      if (activeKey.current !== requestKey) {
+      if (requestedKey.current !== key) {
         return;
       }
 
       writeCache(key, value);
-      setData(value);
-      setUpdatedAt(Date.now());
-      setStatus('ready');
-      setIsStale(false);
+      setLocal({ key, value, updatedAt: Date.now() });
+      setFailedKey(null);
     } catch (error) {
-      if (activeKey.current !== requestKey) {
+      if (requestedKey.current !== key) {
         return;
       }
 
-      // Offline with a cached copy is a normal state, not a failure: keep what
-      // is on screen and just mark it stale.
-      if (isOfflineError(error) && readCacheEntry<T>(requestKey)) {
-        setIsStale(true);
-        setStatus('ready');
+      // Offline with something cached is a normal state, not a failure: leave
+      // what is on screen and let it read as stale.
+      if (isOfflineError(error) && readCacheEntry<T>(key)) {
         return;
       }
 
-      setStatus((current) => (current === 'ready' ? 'ready' : 'error'));
-      setIsStale(true);
+      setFailedKey(key);
     }
-  }, [enabled, key]);
-
-  useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-
-    void refresh();
-  }, [enabled, refresh]);
+  }, [enabled, key, fetcher]);
 
   const update = useCallback(
     (updater: (current: T | null) => T | null) => {
-      setData((current) => {
-        const next = updater(current);
+      setLocal((previous) => {
+        const base = previous?.key === key ? previous.value : (readCacheEntry<T>(key)?.value ?? null);
+        const next = updater(base);
 
-        if (next !== null) {
-          writeCache(key, next);
+        if (next === null) {
+          return previous;
         }
 
-        return next;
+        writeCache(key, next);
+
+        return { key, value: next, updatedAt: Date.now() };
       });
-      setStatus('ready');
+      setFailedKey(null);
     },
     [key],
   );
 
-  return { data, status, isStale, updatedAt, refresh, update };
+  return { data, status, isStale: current === null, updatedAt, refresh, update };
 }

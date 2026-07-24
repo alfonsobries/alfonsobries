@@ -116,12 +116,12 @@ export const cacheKeys = {
   virtueSummary: 'virtue-summary',
   moods: 'moods',
   family: 'family',
-  chores: (member: string) => `chores-${member}`,
-  rewards: (member: string) => `rewards-${member}`,
+  /** A kid's profile block: their open rewards, balance and chore progress. */
+  routine: (member?: string) => `routine-${member ?? 'none'}`,
+  chores: (member?: string) => `chores-${member ?? 'none'}`,
   choreLogs: (member?: string) => `chore-logs-${member ?? 'all'}`,
-  behaviors: (member: string) => `behaviors-${member}`,
-  behaviorFeed: (member: string) => `behavior-feed-${member}`,
-  behaviorSummary: (member: string) => `behavior-summary-${member}`,
+  behaviors: (member?: string) => `behaviors-${member ?? 'none'}`,
+  behaviorFeed: (member?: string) => `behavior-feed-${member ?? 'none'}`,
   assistants: 'chat-assistants',
   conversation: (assistant: string) => `chat-conversation-${assistant}`,
 } as const;

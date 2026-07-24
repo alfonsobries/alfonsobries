@@ -1,11 +1,13 @@
 import { Redirect, router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import { fetchBehaviors, type Behavior } from '@/api/behaviors';
 import { getPerson, isKid } from '@/api/family';
 import { useApiRouter } from '@/api/router';
 import { BehaviorTile } from '@/components/behaviors/BehaviorTile';
+import { cacheKeys } from '@/offline/store';
+import { useCachedResource } from '@/offline/use-cached-resource';
 
 // The behavior board, opened from the kid's profile: every behavior as a big
 // illustrated tile. Tapping one starts the Face ID-confirmed log flow.
@@ -13,29 +15,26 @@ export default function BehaviorsBoardScreen() {
   const { member } = useLocalSearchParams<{ member?: string }>();
   const route = useApiRouter();
 
-  const [behaviors, setBehaviors] = useState<Behavior[]>([]);
-  const [loaded, setLoaded] = useState(false);
-
   const person = member ? getPerson(member) : undefined;
   const kid = person && isKid(person.key) ? person.key : undefined;
 
-  const load = useCallback(async () => {
-    if (!kid) {
-      return;
-    }
+  const fetcher = useCallback(
+    () => (kid ? fetchBehaviors(route, kid) : Promise.resolve([])),
+    [route, kid],
+  );
 
-    try {
-      setBehaviors(await fetchBehaviors(route, kid));
-      setLoaded(true);
-    } catch {
-      // The next focus retries.
-    }
-  }, [route, kid]);
+  const list = useCachedResource<Behavior[]>(cacheKeys.behaviors(kid), fetcher, {
+    enabled: kid !== undefined,
+  });
+  const { refresh } = list;
+
+  const behaviors = list.data ?? [];
+  const loaded = list.status !== 'loading';
 
   useFocusEffect(
     useCallback(() => {
-      void load();
-    }, [load]),
+      void refresh();
+    }, [refresh]),
   );
 
   if (!person || !kid) {

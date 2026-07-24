@@ -95,6 +95,22 @@ export function clearQueue(): void {
 }
 
 /**
+ * Drops a pending mutation that has been undone before it ever reached the API.
+ * Returns whether one was actually waiting.
+ */
+export function cancelQueued(dedupeKey: string): boolean {
+  const remaining = queue.filter((item) => item.dedupeKey !== dedupeKey);
+
+  if (remaining.length === queue.length) {
+    return false;
+  }
+
+  persist(remaining);
+
+  return true;
+}
+
+/**
  * Replays pending mutations oldest-first. Stops at the first one that fails for
  * lack of connectivity so ordering is preserved; a mutation the API rejects
  * outright is dropped, since replaying it would fail forever.
