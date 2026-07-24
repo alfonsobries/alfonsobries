@@ -1,18 +1,22 @@
-import { isAxiosError, type AxiosError } from 'axios';
+import NetInfo from '@react-native-community/netinfo';
+import { AxiosError, isAxiosError } from 'axios';
 import { useSyncExternalStore } from 'react';
 import { AppState } from 'react-native';
 
 import { apiClient } from '@/api/client';
 import { API_ORIGIN } from '@/constants/env';
 
-// Connectivity is inferred from how requests actually resolve rather than from
-// the radio state: a device can be on wi-fi (a plane's, a captive portal) and
-// still not reach the API, and the only signal that matters is whether the API
-// answers. Nothing here is a native module, so it ships over OTA.
+// Whether requests actually resolve is the source of truth here, not the radio
+// state: a device can hold a perfectly good wi-fi link (a plane's, a captive
+// portal) and still not reach the API. The radio is only used as a fast signal
+// — it can drop us to offline instantly, but it can never declare us online.
 
 const PROBE_URL = `${API_ORIGIN}/api/status`;
 const PROBE_TIMEOUT = 5000;
 const PROBE_BACKOFF = [3000, 6000, 12000, 30000];
+
+/** Marks the reachability probe, the one request allowed out while offline. */
+const PROBE_HEADER = 'X-Connectivity-Probe';
 
 let online = true;
 let probeTimer: ReturnType<typeof setTimeout> | null = null;
@@ -87,7 +91,10 @@ async function probe(): Promise<boolean> {
   probing = true;
 
   try {
-    await apiClient.get(PROBE_URL, { timeout: PROBE_TIMEOUT });
+    await apiClient.get(PROBE_URL, {
+      timeout: PROBE_TIMEOUT,
+      headers: { [PROBE_HEADER]: '1' },
+    });
     setOnline(true);
     return true;
   } catch (error) {
@@ -150,6 +157,17 @@ export function installConnectivityTracking(): void {
 
   installed = true;
 
+  // While the API is known to be unreachable, fail requests at once instead of
+  // letting every screen sit on the 15s timeout before it can fall back to its
+  // cache. Only the probe is allowed through, since it is what recovers.
+  apiClient.interceptors.request.use((config) => {
+    if (online || config.headers[PROBE_HEADER] === '1') {
+      return config;
+    }
+
+    throw new AxiosError('No connection to the API.', 'ERR_NETWORK', config);
+  });
+
   apiClient.interceptors.response.use(
     (response) => {
       setOnline(true);
@@ -170,6 +188,19 @@ export function installConnectivityTracking(): void {
   // have changed (airplane mode off, back in range), so re-check right away.
   AppState.addEventListener('change', (state) => {
     if (state === 'active' && !online) {
+      void probe();
+    }
+  });
+
+  NetInfo.addEventListener((state) => {
+    if (state.isConnected === false) {
+      // No link at all — no need to wait for a request to time out.
+      setOnline(false);
+      return;
+    }
+
+    // A link came back, which is a reason to re-check, not to assume.
+    if (!online) {
       void probe();
     }
   });
