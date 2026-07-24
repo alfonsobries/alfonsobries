@@ -732,8 +732,16 @@ export function getRosarySteps(weekday: number): {
       sectionKey: 'inicio',
       title: 'Invocación inicial',
       blocks: [
-        { kind: 'versicle', call: 'Señor, ábreme los labios.', response: 'Y mi boca proclamará tu alabanza.' },
-        { kind: 'versicle', call: 'Dios mío, ven en mi auxilio.', response: 'Señor, date prisa en socorrerme.' },
+        {
+          kind: 'versicle',
+          call: 'Señor, ábreme los labios.',
+          response: 'Y mi boca proclamará tu alabanza.',
+        },
+        {
+          kind: 'versicle',
+          call: 'Dios mío, ven en mi auxilio.',
+          response: 'Señor, date prisa en socorrerme.',
+        },
         { kind: 'paragraph', text: GLORIA },
       ],
     },
@@ -756,7 +764,10 @@ export function getRosarySteps(weekday: number): {
       title: 'Tres Ave Marías',
       subtitle: 'Por la fe, la esperanza y la caridad',
       blocks: [
-        { kind: 'note', text: 'Reza tres Ave Marías, pidiendo el aumento de la fe, la esperanza y la caridad.' },
+        {
+          kind: 'note',
+          text: 'Reza tres Ave Marías, pidiendo el aumento de la fe, la esperanza y la caridad.',
+        },
         ...paragraphs(AVE_MARIA),
         { kind: 'paragraph', text: GLORIA },
       ],
