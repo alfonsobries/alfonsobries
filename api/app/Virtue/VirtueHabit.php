@@ -15,12 +15,14 @@ enum VirtueHabit: string
 
     case Diet = 'diet';
 
+    case Sun = 'sun';
+
     case Reading = 'reading';
 
     public function area(): VirtueArea
     {
         return match ($this) {
-            self::Exercise, self::Diet => VirtueArea::Body,
+            self::Exercise, self::Diet, self::Sun => VirtueArea::Body,
             self::Reading => VirtueArea::Mind,
         };
     }

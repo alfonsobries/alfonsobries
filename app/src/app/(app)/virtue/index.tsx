@@ -34,6 +34,7 @@ import { VirtueScene } from '@/components/virtue/VirtueScene';
 import { lastSevenDays } from '@/components/virtue/WeekStrip';
 import { MYSTERY_SETS, mysterySetForWeekday } from '@/data/rosary';
 import { AREA_HABITS, AREAS, completedToday, DAILY_GOAL_COUNT, ENTRY_HABITS } from '@/data/virtue';
+import { useHealthExercise } from '@/hooks/use-health-exercise';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 /** Local-only stage overrides for previewing the art like a game — never saved. */
@@ -71,23 +72,53 @@ export default function VirtueScreen() {
   const [dates, setDates] = useState(currentDates);
   const { today, yesterday, todayLabel } = dates;
 
+  const readExerciseMinutes = useHealthExercise();
+
   const load = useCallback(async () => {
     try {
       const summary = await fetchVirtueSummary(route);
       setDays(Object.fromEntries(summary.days.map((day) => [day.date, day])));
       setStats(summary.stats);
       setLoadFailed(false);
+
+      return summary;
     } catch {
       setLoadFailed(true);
+
+      return null;
     }
   }, [route]);
+
+  const syncHealth = useCallback(async () => {
+    const summary = await load();
+
+    if (summary === null) {
+      return;
+    }
+
+    // Health is the source of truth once it reports 20 minutes or more; the
+    // stored minutes only ever grow, so this settles quickly.
+    const date = localDate();
+    const minutes = await readExerciseMinutes();
+    const day = summary.days.find((entry) => entry.date === date);
+
+    if (minutes !== null && minutes >= 20 && minutes > (day?.exercise_minutes ?? 0)) {
+      try {
+        const result = await setHabit(route, date, 'exercise', true, minutes);
+        setDays((current) => ({ ...current, [result.day.date]: result.day }));
+        setStats(result.stats);
+      } catch {
+        // The manual toggle still works; the next focus retries.
+      }
+    }
+  }, [load, readExerciseMinutes, route]);
 
   useFocusEffect(
     useCallback(() => {
       // The screen can sit mounted across midnight, so "today" refreshes on focus.
       setDates(currentDates());
-      void load();
-    }, [load]),
+      void syncHealth();
+    }, [syncHealth]),
   );
 
   const marks = useMemo(() => {
@@ -106,6 +137,7 @@ export default function VirtueScreen() {
           day.prayers_completed,
           day.habits.exercise,
           day.habits.diet,
+          day.habits.sun,
           day.habits.reading,
         ].filter(Boolean).length,
       };
@@ -439,7 +471,11 @@ export default function VirtueScreen() {
               key={key}
               Icon={Icon}
               label={label}
-              subtitle={anchor}
+              subtitle={
+                key === 'exercise' && todayEntry?.exercise_minutes
+                  ? `${todayEntry.exercise_minutes} min from Health${todayEntry.exercise_minutes >= 60 ? ' · double point' : ''}`
+                  : anchor
+              }
               done={todayEntry?.habits[key] ?? false}
               disabled={saving}
               onToggle={() => void toggleHabit(key)}

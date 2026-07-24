@@ -52,12 +52,13 @@ class VirtueDay extends Model
      * realistic solid practice (not a flawless one) finishes in about 90
      * days — the habit-science window for forming a virtue or breaking a
      * vice. Solid weeks: spirit 6 full days (+5) and one partial (+4) → 34;
-     * body both habits 6 days and one single (13); mind reading 6 of 7 (6).
+     * body exercise 6 of 7 with one full hour (7), diet 6, sun 5 → 18;
+     * mind reading 6 of 7 (6).
      *
      * @var array<string, int>
      */
     public const AREA_TOTALS = [
-        'body' => 167,
+        'body' => 231,
         'mind' => 77,
         'spirit' => 435,
     ];

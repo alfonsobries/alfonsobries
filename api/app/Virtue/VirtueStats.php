@@ -89,8 +89,9 @@ class VirtueStats
     }
 
     /**
-     * An area scored purely from habit entries: one point per completed day
-     * per habit, no penalties — an unmarked day simply earns nothing.
+     * An area scored purely from habit entries — each one emits its points
+     * (a full exercise hour emits two), no penalties: an unmarked day simply
+     * earns nothing.
      *
      * @return array<string, int>
      */
@@ -98,14 +99,20 @@ class VirtueStats
     {
         $habits = array_map(fn (VirtueHabit $habit): string => $habit->value, VirtueHabit::forArea($area));
 
-        $dates = VirtueEntry::whereIn('habit', $habits)
+        $entries = VirtueEntry::whereIn('habit', $habits)
             ->orderBy('date')
-            ->pluck('date')
-            ->map(fn ($date): string => Carbon::parse((string) $date)->toDateString());
+            ->get(['date', 'habit', 'minutes']);
+
+        $points = $entries->sum(fn (VirtueEntry $entry): int => $entry->points());
+
+        $dates = $entries
+            ->map(fn (VirtueEntry $entry): string => $entry->date->toDateString())
+            ->unique()
+            ->values();
 
         return [
-            ...$this->stageData($area, count($dates)),
-            'streak' => $this->activityStreak($dates->unique()->values()->all()),
+            ...$this->stageData($area, $points),
+            'streak' => $this->activityStreak($dates->all()),
         ];
     }
 

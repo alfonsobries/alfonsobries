@@ -5,6 +5,7 @@ import {
   Cross,
   ForkKnife,
   HandsPraying,
+  Sun,
   Target,
   type Icon,
 } from 'phosphor-react-native';
@@ -37,8 +38,14 @@ export type EntryHabitDefinition = {
 };
 
 export const ENTRY_HABITS: EntryHabitDefinition[] = [
-  { key: 'exercise', label: 'Exercise', anchor: '20 minutes is enough', Icon: Barbell },
+  {
+    key: 'exercise',
+    label: 'Exercise',
+    anchor: '20 minutes count; an hour doubles',
+    Icon: Barbell,
+  },
   { key: 'diet', label: 'Follow the diet', anchor: 'One meal at a time', Icon: ForkKnife },
+  { key: 'sun', label: 'Sunlight', anchor: '20 minutes outside', Icon: Sun },
   { key: 'reading', label: 'Read', anchor: 'A few pages count', Icon: BookOpen },
 ];
 
@@ -55,8 +62,9 @@ export const AREA_HABITS: Record<VirtueArea, AreaHabitDefinition[]> = {
   body: [
     { ...ENTRY_HABITS[0], isDone: (day) => day.habits.exercise },
     { ...ENTRY_HABITS[1], isDone: (day) => day.habits.diet },
+    { ...ENTRY_HABITS[2], isDone: (day) => day.habits.sun },
   ],
-  mind: [{ ...ENTRY_HABITS[2], isDone: (day) => day.habits.reading }],
+  mind: [{ ...ENTRY_HABITS[3], isDone: (day) => day.habits.reading }],
   spirit: [
     {
       key: 'rosary',
@@ -83,7 +91,7 @@ export const AREA_HABITS: Record<VirtueArea, AreaHabitDefinition[]> = {
 };
 
 /** Everything markable in a day — the denominator of the daily checklist. */
-export const DAILY_GOAL_COUNT = 6;
+export const DAILY_GOAL_COUNT = 7;
 
 export function completedToday(day: VirtueDay | undefined): number {
   if (!day) {
@@ -95,6 +103,7 @@ export function completedToday(day: VirtueDay | undefined): number {
     day.prayers_completed,
     day.habits.exercise,
     day.habits.diet,
+    day.habits.sun,
     day.habits.reading,
     day.resolution === 'kept',
   ].filter(Boolean).length;

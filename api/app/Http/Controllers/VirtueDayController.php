@@ -112,7 +112,8 @@ class VirtueDayController extends Controller
 
     /**
      * Mark or clear one of the entry-tracked habits for a day. Marking is
-     * idempotent (the first completion time wins); clearing deletes the
+     * idempotent (the first completion time wins) but measured minutes can
+     * keep growing as the health sync reports more; clearing deletes the
      * entry so the day goes back to pending.
      */
     public function updateHabit(Request $request, string $date, string $habit): JsonResponse
@@ -131,6 +132,7 @@ class VirtueDayController extends Controller
 
         $validated = $request->validate([
             'completed' => ['required', 'boolean'],
+            'minutes' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:1440'],
         ]);
 
         $day = $this->dayFor($date);
@@ -138,7 +140,14 @@ class VirtueDayController extends Controller
         $entry = VirtueEntry::whereDate('date', $date)->where('habit', $habit)->first();
 
         if ($validated['completed'] && $entry === null) {
-            VirtueEntry::create(['date' => $date, 'habit' => $habit, 'completed_at' => now()]);
+            VirtueEntry::create([
+                'date' => $date,
+                'habit' => $habit,
+                'minutes' => $validated['minutes'] ?? null,
+                'completed_at' => now(),
+            ]);
+        } elseif ($validated['completed'] && array_key_exists('minutes', $validated)) {
+            $entry->update(['minutes' => max($validated['minutes'] ?? 0, $entry->minutes ?? 0)]);
         } elseif (! $validated['completed']) {
             $entry?->delete();
         }
@@ -245,6 +254,9 @@ class VirtueDayController extends Controller
             'habits' => collect(VirtueHabit::values())
                 ->mapWithKeys(fn (string $habit): array => [$habit => $completed->has($habit)])
                 ->all(),
+            'exercise_minutes' => $entries
+                ->first(fn (VirtueEntry $entry): bool => $entry->habit === VirtueHabit::Exercise)
+                ?->minutes,
         ];
     }
 }
