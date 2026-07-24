@@ -69,12 +69,12 @@ export async function completePrayers(
 }
 
 /** Replays a resolution recorded while offline; the latest mark for a day wins. */
-export const queueResolution = defineOfflineMutation<{ date: string; resolution: Resolution | null }>(
-  'virtue.resolution',
-  async ({ date, resolution }, route) => {
-    await setResolution(route, date, resolution);
-  },
-);
+export const queueResolution = defineOfflineMutation<{
+  date: string;
+  resolution: Resolution | null;
+}>('virtue.resolution', async ({ date, resolution }, route) => {
+  await setResolution(route, date, resolution);
+});
 
 export const queuePrayers = defineOfflineMutation<{ date: string }>(
   'virtue.prayers',

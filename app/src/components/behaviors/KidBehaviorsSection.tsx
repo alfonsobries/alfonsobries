@@ -32,10 +32,7 @@ export function KidBehaviorsSection({ member }: KidBehaviorsSectionProperties) {
   const route = useApiRouter();
   const { refresh: refreshMoods } = useMoods();
 
-  const fetcher = useCallback(
-    () => fetchBehaviorLogs(route, { member }),
-    [route, member],
-  );
+  const fetcher = useCallback(() => fetchBehaviorLogs(route, { member }), [route, member]);
 
   const feed = useCachedResource<BehaviorLogPage>(cacheKeys.behaviorFeed(member), fetcher);
   const { refresh } = feed;

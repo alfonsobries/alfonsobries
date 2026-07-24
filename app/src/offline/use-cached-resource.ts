@@ -94,7 +94,8 @@ export function useCachedResource<T>(
   const update = useCallback(
     (updater: (current: T | null) => T | null) => {
       setLocal((previous) => {
-        const base = previous?.key === key ? previous.value : (readCacheEntry<T>(key)?.value ?? null);
+        const base =
+          previous?.key === key ? previous.value : (readCacheEntry<T>(key)?.value ?? null);
         const next = updater(base);
 
         if (next === null) {
