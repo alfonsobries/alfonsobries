@@ -40,6 +40,8 @@ export type RosaryStep = {
   title: string;
   subtitle?: string;
   blocks: PrayerBlock[];
+  /** Clip id for the autoplayer — repeated prayers share one clip. */
+  audio: string;
   /** Present on the step that introduces a mystery. */
   mystery?: Mystery;
   /** Present on decade steps so the bead strip can render progress. */
@@ -663,6 +665,7 @@ function decadeSteps(mystery: Mystery, position: number): RosaryStep[] {
       sectionKey,
       title: mystery.title,
       subtitle: mystery.ordinal,
+      audio: `${mystery.key}-intro`,
       mystery,
       blocks: [],
     },
@@ -671,6 +674,7 @@ function decadeSteps(mystery: Mystery, position: number): RosaryStep[] {
       sectionKey,
       title: 'Padre Nuestro',
       subtitle: mystery.ordinal,
+      audio: 'padre-nuestro',
       bead: { index: 0, count: 10 },
       blocks: paragraphs(PADRE_NUESTRO),
     },
@@ -682,6 +686,7 @@ function decadeSteps(mystery: Mystery, position: number): RosaryStep[] {
       sectionKey,
       title: 'Ave María',
       subtitle: `${AVE_ORDINALS[ave - 1]} de diez`,
+      audio: 'ave-maria',
       bead: { index: ave, count: 10 },
       blocks: paragraphs(AVE_MARIA),
     });
@@ -692,6 +697,7 @@ function decadeSteps(mystery: Mystery, position: number): RosaryStep[] {
     sectionKey,
     title: 'Gloria y jaculatorias',
     subtitle: mystery.ordinal,
+    audio: 'gloria-jaculatorias',
     blocks: [
       { kind: 'paragraph', text: GLORIA },
       { kind: 'paragraph', text: JACULATORIA_MARIA },
@@ -713,6 +719,7 @@ export function getRosarySteps(weekday: number): {
     {
       key: 'senal-de-la-cruz',
       sectionKey: 'inicio',
+      audio: 'senal-de-la-cruz',
       title: 'Por la señal de la Santa Cruz',
       blocks: [
         {
@@ -724,12 +731,14 @@ export function getRosarySteps(weekday: number): {
     {
       key: 'acto-de-contricion',
       sectionKey: 'inicio',
+      audio: 'acto-de-contricion',
       title: 'Acto de contrición',
       blocks: paragraphs(ACTO_CONTRICION),
     },
     {
       key: 'invocacion',
       sectionKey: 'inicio',
+      audio: 'invocacion',
       title: 'Invocación inicial',
       blocks: [
         {
@@ -748,6 +757,7 @@ export function getRosarySteps(weekday: number): {
     {
       key: 'credo',
       sectionKey: 'inicio',
+      audio: 'credo',
       title: 'Credo',
       subtitle: 'Símbolo de los Apóstoles',
       blocks: paragraphs(CREDO),
@@ -755,12 +765,14 @@ export function getRosarySteps(weekday: number): {
     {
       key: 'padre-nuestro-inicial',
       sectionKey: 'inicio',
+      audio: 'padre-nuestro',
       title: 'Padre Nuestro',
       blocks: paragraphs(PADRE_NUESTRO),
     },
     {
       key: 'tres-ave-marias',
       sectionKey: 'inicio',
+      audio: 'tres-ave-marias',
       title: 'Tres Ave Marías',
       subtitle: 'Por la fe, la esperanza y la caridad',
       blocks: [
@@ -776,6 +788,7 @@ export function getRosarySteps(weekday: number): {
     {
       key: 'letanias',
       sectionKey: 'letanias',
+      audio: 'letanias',
       title: 'Letanías lauretanas',
       subtitle: 'A la Santísima Virgen María',
       blocks: [
@@ -790,18 +803,21 @@ export function getRosarySteps(weekday: number): {
     {
       key: 'bajo-tu-amparo',
       sectionKey: 'final',
+      audio: 'bajo-tu-amparo',
       title: 'Bajo tu amparo',
       blocks: paragraphs(BAJO_TU_AMPARO),
     },
     {
       key: 'salve',
       sectionKey: 'final',
+      audio: 'salve',
       title: 'La Salve',
       blocks: paragraphs(SALVE),
     },
     {
       key: 'oracion-final',
       sectionKey: 'final',
+      audio: 'oracion-final',
       title: 'Oración final',
       blocks: [
         ...paragraphs(ORACION_FINAL),

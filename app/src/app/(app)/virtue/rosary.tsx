@@ -1,6 +1,6 @@
 import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import { X } from 'phosphor-react-native';
+import { Pause, Play, SkipBack, SkipForward, X } from 'phosphor-react-native';
 import { useMemo, useRef, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -11,17 +11,21 @@ import { completeRosary, localDate } from '@/api/virtue';
 import { PrayerBlockView } from '@/components/prayers/PrayerBlockView';
 import { DecadeBeads } from '@/components/rosary/DecadeBeads';
 import { MysteryIntro } from '@/components/rosary/MysteryIntro';
+import { useRosaryAutoplay } from '@/components/rosary/use-rosary-autoplay';
 import { Button } from '@/components/ui/Button';
 import { getRosarySteps, ROSARY_SECTIONS } from '@/data/rosary';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
 // The guided Holy Rosary, one prayer per screen. Bead steps advance with a
 // tap anywhere, so it can be prayed without reading the buttons — the decade
-// chain at the top carries the sense of place.
+// chain at the top carries the sense of place. Autoplay turns the same
+// sequence into a continuous audio queue for the car or a walk.
 export default function RosaryScreen() {
   const route = useApiRouter();
   const insets = useSafeAreaInsets();
   const muted = useThemeColor('muted');
+  const tint = useThemeColor('primary-emphasis');
+  const onPrimary = useThemeColor('primary-foreground');
 
   const scrollRef = useRef<ScrollView>(null);
   const [stepIndex, setStepIndex] = useState(0);
@@ -42,8 +46,16 @@ export default function RosaryScreen() {
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }
 
+  const autoplay = useRosaryAutoplay({
+    set,
+    steps,
+    onStepChange: goTo,
+    onEnded: () => void finish(),
+  });
+
   async function finish(): Promise<void> {
     setFinishing(true);
+    void autoplay.stop();
 
     try {
       await completeRosary(route, localDate());
@@ -55,25 +67,52 @@ export default function RosaryScreen() {
     }
   }
 
+  function goBackOne(): void {
+    if (autoplay.active) {
+      void autoplay.skipTo(stepIndex - 1);
+      return;
+    }
+
+    goTo(stepIndex - 1);
+  }
+
   function advance(): void {
-    if (isLast) {
+    if (isLast && !autoplay.active) {
       void finish();
       return;
     }
 
     void Haptics.selectionAsync();
+
+    if (autoplay.active) {
+      if (isLast) {
+        void finish();
+      } else {
+        void autoplay.skipTo(stepIndex + 1);
+      }
+
+      return;
+    }
+
     goTo(stepIndex + 1);
   }
 
   function handleClose(): void {
-    if (stepIndex === 0) {
+    if (stepIndex === 0 && !autoplay.active) {
       router.back();
       return;
     }
 
     Alert.alert('¿Dejar el rosario?', 'El avance de esta sesión se perderá.', [
       { text: 'Seguir rezando', style: 'cancel' },
-      { text: 'Salir', style: 'destructive', onPress: () => router.back() },
+      {
+        text: 'Salir',
+        style: 'destructive',
+        onPress: () => {
+          void autoplay.stop();
+          router.back();
+        },
+      },
     ]);
   }
 
@@ -90,12 +129,34 @@ export default function RosaryScreen() {
           <X size={18} weight="bold" color={muted} />
         </Pressable>
 
-        <View className="flex-1 items-center pr-9">
+        <View className="flex-1 items-center">
           <Text className="text-xs font-semibold uppercase tracking-wider text-muted">
             Santo Rosario
           </Text>
           <Text className="text-base font-semibold text-foreground">{set.name}</Text>
         </View>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={autoplay.active ? 'Detener audio' : 'Rezar con audio'}
+          hitSlop={12}
+          onPress={() => {
+            if (autoplay.active) {
+              void autoplay.stop();
+            } else {
+              void autoplay.start(stepIndex);
+            }
+          }}
+          className={`size-9 items-center justify-center rounded-full active:opacity-70 ${
+            autoplay.active ? 'bg-primary' : 'bg-surface-selected'
+          }`}
+        >
+          {autoplay.active ? (
+            <X size={16} weight="bold" color={onPrimary} />
+          ) : (
+            <Play size={16} weight="fill" color={tint} />
+          )}
+        </Pressable>
       </View>
 
       <View className="gap-2 px-5 py-3">
@@ -132,7 +193,11 @@ export default function RosaryScreen() {
                 <PrayerBlockView key={index} block={block} />
               ))}
 
-              <Text className="text-center text-xs text-muted">Toca la pantalla para avanzar</Text>
+              {autoplay.active ? null : (
+                <Text className="text-center text-xs text-muted">
+                  Toca la pantalla para avanzar
+                </Text>
+              )}
             </View>
           </Animated.View>
         </Pressable>
@@ -156,19 +221,80 @@ export default function RosaryScreen() {
               ))}
             </View>
           )}
+
+          {stepIndex === 0 ? (
+            <Pressable
+              accessibilityRole="button"
+              disabled={finishing}
+              onPress={() => void finish()}
+              className="items-center pt-6 active:opacity-70"
+            >
+              <Text className="text-sm text-muted underline">
+                ¿Ya lo rezaste por tu cuenta? Marcarlo como rezado
+              </Text>
+            </Pressable>
+          ) : null}
         </ScrollView>
       )}
 
-      <View className="flex-row gap-3 px-5 pt-3">
-        {stepIndex > 0 ? (
-          <Button variant="secondary" size="lg" onPress={() => goTo(stepIndex - 1)}>
-            Atrás
+      {autoplay.active ? (
+        <View className="flex-row items-center gap-3 px-5 pt-3">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Oración anterior"
+            disabled={stepIndex === 0}
+            onPress={goBackOne}
+            className="size-12 items-center justify-center rounded-full bg-surface-selected active:opacity-70"
+          >
+            <SkipBack size={20} weight="fill" color={stepIndex === 0 ? muted : tint} />
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={autoplay.playing ? 'Pausa' : 'Reanudar'}
+            onPress={() => void autoplay.togglePlayback()}
+            className="h-14 flex-1 flex-row items-center justify-center gap-2 rounded-full bg-primary active:opacity-80"
+          >
+            {autoplay.playing ? (
+              <Pause size={22} weight="fill" color={onPrimary} />
+            ) : (
+              <Play size={22} weight="fill" color={onPrimary} />
+            )}
+            <Text className="text-base font-semibold text-primary-foreground">
+              {autoplay.playing ? 'Pausa' : 'Reanudar'}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Siguiente oración"
+            onPress={advance}
+            className="size-12 items-center justify-center rounded-full bg-surface-selected active:opacity-70"
+          >
+            <SkipForward size={20} weight="fill" color={tint} />
+          </Pressable>
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Velocidad de reproducción"
+            onPress={() => void autoplay.cycleRate()}
+            className="h-12 min-w-14 items-center justify-center rounded-full bg-surface-selected px-3 active:opacity-70"
+          >
+            <Text className="text-sm font-semibold text-foreground">{autoplay.rate}x</Text>
+          </Pressable>
+        </View>
+      ) : (
+        <View className="flex-row gap-3 px-5 pt-3">
+          {stepIndex > 0 ? (
+            <Button variant="secondary" size="lg" onPress={goBackOne}>
+              Atrás
+            </Button>
+          ) : null}
+          <Button size="lg" loading={finishing} onPress={advance} className="flex-1">
+            {isLast ? 'Terminar' : step.mystery ? 'Comenzar la decena' : 'Siguiente'}
           </Button>
-        ) : null}
-        <Button size="lg" loading={finishing} onPress={advance} className="flex-1">
-          {isLast ? 'Terminar' : step.mystery ? 'Comenzar la decena' : 'Siguiente'}
-        </Button>
-      </View>
+        </View>
+      )}
     </View>
   );
 }
