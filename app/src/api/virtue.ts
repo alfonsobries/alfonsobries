@@ -103,10 +103,11 @@ export async function setHabit(
 export async function completeRosary(
   route: ApiRoute,
   date: string,
+  completed = true,
 ): Promise<{ day: VirtueDay; stats: VirtueStats }> {
   const { data } = await apiClient.post<{ data: VirtueDay; stats: VirtueStats }>(
     route('api.virtue.rosary.store'),
-    { date },
+    { date, completed },
   );
 
   return { day: data.data, stats: data.stats };
@@ -115,10 +116,11 @@ export async function completeRosary(
 export async function completePrayers(
   route: ApiRoute,
   date: string,
+  completed = true,
 ): Promise<{ day: VirtueDay; stats: VirtueStats }> {
   const { data } = await apiClient.post<{ data: VirtueDay; stats: VirtueStats }>(
     route('api.virtue.prayers.store'),
-    { date },
+    { date, completed },
   );
 
   return { day: data.data, stats: data.stats };

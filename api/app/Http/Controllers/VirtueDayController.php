@@ -65,37 +65,26 @@ class VirtueDayController extends Controller
     }
 
     /**
-     * Record that the daily prayers were completed. Idempotent — repeating
-     * the sequence keeps the first completion time.
+     * Record that the daily prayers were completed — or clear a mistaken
+     * mark. Completing is idempotent: repeating the sequence keeps the first
+     * completion time.
      */
     public function completePrayers(Request $request): JsonResponse
     {
-        if ($response = $this->guard($request)) {
-            return $response;
-        }
-
-        $validated = $request->validate([
-            'date' => ['required', 'date_format:Y-m-d'],
-        ]);
-
-        if ($response = $this->validateDate($validated['date'])) {
-            return $response;
-        }
-
-        $day = $this->dayFor($validated['date']);
-
-        if ($day->prayers_completed_at === null) {
-            $day->update(['prayers_completed_at' => now()]);
-        }
-
-        return $this->dayResponse($day);
+        return $this->completeModule($request, 'prayers_completed_at');
     }
 
     /**
-     * Record that the rosary was prayed. Idempotent — repeating the rosary
-     * keeps the first completion time.
+     * Record that the rosary was prayed — or clear a mistaken mark.
+     * Completing is idempotent: repeating the rosary keeps the first
+     * completion time.
      */
     public function completeRosary(Request $request): JsonResponse
+    {
+        return $this->completeModule($request, 'rosary_completed_at');
+    }
+
+    private function completeModule(Request $request, string $column): JsonResponse
     {
         if ($response = $this->guard($request)) {
             return $response;
@@ -103,6 +92,7 @@ class VirtueDayController extends Controller
 
         $validated = $request->validate([
             'date' => ['required', 'date_format:Y-m-d'],
+            'completed' => ['sometimes', 'boolean'],
         ]);
 
         if ($response = $this->validateDate($validated['date'])) {
@@ -111,8 +101,10 @@ class VirtueDayController extends Controller
 
         $day = $this->dayFor($validated['date']);
 
-        if ($day->rosary_completed_at === null) {
-            $day->update(['rosary_completed_at' => now()]);
+        if (($validated['completed'] ?? true) === false) {
+            $day->update([$column => null]);
+        } elseif ($day->{$column} === null) {
+            $day->update([$column => now()]);
         }
 
         return $this->dayResponse($day);

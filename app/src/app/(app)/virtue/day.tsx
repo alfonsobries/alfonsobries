@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { Check, Cross, HandsPraying } from 'phosphor-react-native';
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Alert, Pressable, Text, View } from 'react-native';
 
 import { useApiRouter } from '@/api/router';
 import {
@@ -106,6 +106,13 @@ export default function VirtueDayScreen() {
     void save(() => completeRosary(route, date));
   }
 
+  function unmark(label: string, action: () => Promise<{ day: VirtueDay }>): void {
+    Alert.alert(`¿Desmarcar ${label}?`, 'Se quitará la marca de este día.', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Desmarcar', style: 'destructive', onPress: () => void save(action) },
+    ]);
+  }
+
   return (
     <Sheet title={title} subtitle={isToday ? 'Today' : 'Fill in what happened'} scrollable>
       <View className="gap-4 pt-2">
@@ -124,12 +131,15 @@ export default function VirtueDayScreen() {
             </Text>
           </View>
           {day.rosary_completed ? (
-            <View
-              className="size-9 items-center justify-center rounded-full bg-primary"
-              accessibilityLabel="Rosary completed"
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Unmark rosary"
+              disabled={saving}
+              onPress={() => unmark('el rosario', () => completeRosary(route, date, false))}
+              className="size-9 items-center justify-center rounded-full bg-primary active:opacity-70"
             >
               <Check size={18} color={onPrimary} weight="bold" />
-            </View>
+            </Pressable>
           ) : (
             <Button size="sm" disabled={saving} onPress={markRosary}>
               {isToday ? 'Pray' : 'Prayed'}
@@ -152,12 +162,15 @@ export default function VirtueDayScreen() {
             </Text>
           </View>
           {day.prayers_completed ? (
-            <View
-              className="size-9 items-center justify-center rounded-full bg-primary"
-              accessibilityLabel="Prayers completed"
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Unmark prayers"
+              disabled={saving}
+              onPress={() => unmark('los rezos', () => completePrayers(route, date, false))}
+              className="size-9 items-center justify-center rounded-full bg-primary active:opacity-70"
             >
               <Check size={18} color={onPrimary} weight="bold" />
-            </View>
+            </Pressable>
           ) : (
             <Button size="sm" disabled={saving} onPress={markPrayers}>
               {isToday ? 'Pray' : 'Prayed'}
