@@ -1,16 +1,17 @@
-import { Image } from 'expo-image';
+import { Illustration } from '@/components/ui/Illustration';
 import { router } from 'expo-router';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { HandPalm, LockKey } from 'phosphor-react-native';
 import { useState, type ReactNode } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useAuth } from '@/api/auth';
 import { logBehavior, queueLogBehavior, type Behavior } from '@/api/behaviors';
 import { getPerson } from '@/api/family';
-import { useMoods } from '@/api/moods';
+import { MOOD_MIN, useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
+import { Sheet } from '@/components/ui/Sheet';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { isOfflineError } from '@/offline/connectivity';
 
@@ -22,9 +23,9 @@ type LogBehaviorSheetProperties = {
 // with Face ID, says whether it hit their mood, and the log is saved — the
 // feed then shows their avatar (and a sad face when it did).
 export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): ReactNode {
-  const insets = useSafeAreaInsets();
   const route = useApiRouter();
-  const { refresh: refreshMoods } = useMoods();
+  const { user } = useAuth();
+  const { members, refresh: refreshMoods } = useMoods();
   const accent = useThemeColor('primary-emphasis');
 
   const [unlocked, setUnlocked] = useState(false);
@@ -32,6 +33,7 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
   const [saving, setSaving] = useState(false);
 
   const kidName = getPerson(behavior.family_member)?.name ?? behavior.family_member;
+  const myMood = members.find((entry) => entry.family_member === user?.family_member)?.mood;
 
   async function handleUnlock(): Promise<void> {
     const result = await LocalAuthentication.authenticateAsync({
@@ -49,6 +51,28 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
       return;
     }
 
+    // Close this sheet entirely; the small result window takes its place.
+    // Mood math mirrors the API so the shift shows without a refetch race — and
+    // so the same window can close an offline log, where there is no API to ask.
+    function showResult(): void {
+      const moved = affectedMood && myMood != null;
+
+      router.replace({
+        pathname: '/save-result',
+        params: {
+          message: `${behavior.name} is on ${kidName}'s log.`,
+          ...(moved
+            ? {
+                member: user?.family_member ?? '',
+                before: String(myMood),
+                after: String(Math.max(MOOD_MIN, myMood - behavior.points)),
+                note: `−${behavior.points} mood`,
+              }
+            : {}),
+        },
+      });
+    }
+
     setSaving(true);
     try {
       await logBehavior(route, behavior.id, {
@@ -56,11 +80,11 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
       });
       // Logging may have lowered the parent's mood on the API side.
       await refreshMoods();
-      router.back();
+      showResult();
     } catch (error) {
       if (isOfflineError(error)) {
         queueLogBehavior({ behavior: behavior.id, affected_mood: affectedMood });
-        router.back();
+        showResult();
         return;
       }
 
@@ -70,17 +94,10 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
   }
 
   return (
-    <View
-      className="flex-1 items-center bg-background px-6 pt-8"
-      style={{ paddingBottom: insets.bottom + 16 }}
-    >
+    <Sheet className="items-center">
       <View className="size-40 items-center justify-center overflow-hidden rounded-3xl bg-surface">
         {behavior.image_url ? (
-          <Image
-            source={{ uri: behavior.image_url }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-          />
+          <Illustration source={{ uri: behavior.image_url }} />
         ) : (
           <HandPalm size={48} color={accent} weight="fill" />
         )}
@@ -124,7 +141,7 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
           </Button>
         )}
       </View>
-    </View>
+    </Sheet>
   );
 }
 

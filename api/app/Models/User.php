@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Family\KidEmotion;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -50,6 +51,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'mood' => 'integer',
+        'emotion' => KidEmotion::class,
     ];
 
     /**
@@ -130,6 +132,11 @@ class User extends Authenticatable
     public function hasMood(): bool
     {
         return in_array($this->family_member, self::MOOD_MEMBERS, true);
+    }
+
+    public function hasEmotion(): bool
+    {
+        return in_array($this->family_member, self::KID_MEMBERS, true);
     }
 
     /**

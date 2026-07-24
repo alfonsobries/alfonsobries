@@ -1,0 +1,110 @@
+import {
+  Barbell,
+  BookOpen,
+  Brain,
+  Cross,
+  ForkKnife,
+  HandsPraying,
+  Sun,
+  Target,
+  type Icon,
+} from 'phosphor-react-native';
+
+import { type VirtueArea, type VirtueDay, type VirtueHabit } from '@/api/virtue';
+
+export type AreaDefinition = {
+  key: VirtueArea;
+  label: string;
+  Icon: Icon;
+  /** Journey-art layer for this area (stacked in the hero scene). */
+  set: 'tierra' | 'cielo' | 'arbol';
+};
+
+export const AREAS: AreaDefinition[] = [
+  { key: 'body', label: 'Body', Icon: Barbell, set: 'tierra' },
+  { key: 'mind', label: 'Mind', Icon: Brain, set: 'cielo' },
+  { key: 'spirit', label: 'Spirit', Icon: HandsPraying, set: 'arbol' },
+];
+
+/** Art frames per layer — 1:1 with game stages. */
+export const JOURNEY_ART_STAGES = 30;
+
+export type EntryHabitDefinition = {
+  key: VirtueHabit;
+  label: string;
+  /** An anchor cue — tying the habit to a moment makes it far likelier to happen. */
+  anchor: string;
+  Icon: Icon;
+};
+
+export const ENTRY_HABITS: EntryHabitDefinition[] = [
+  {
+    key: 'exercise',
+    label: 'Exercise',
+    anchor: '20 minutes count; an hour doubles',
+    Icon: Barbell,
+  },
+  { key: 'diet', label: 'Follow the diet', anchor: 'One meal at a time', Icon: ForkKnife },
+  { key: 'sun', label: 'Sunlight', anchor: '20 minutes outside', Icon: Sun },
+  { key: 'reading', label: 'Read', anchor: 'A few pages count', Icon: BookOpen },
+];
+
+export type AreaHabitDefinition = {
+  key: string;
+  label: string;
+  anchor: string;
+  Icon: Icon;
+  isDone: (day: VirtueDay) => boolean;
+};
+
+/** Every habit that feeds an area, uniform for display — including the two spirit modules with storage of their own. */
+export const AREA_HABITS: Record<VirtueArea, AreaHabitDefinition[]> = {
+  body: [
+    { ...ENTRY_HABITS[0], isDone: (day) => day.habits.exercise },
+    { ...ENTRY_HABITS[1], isDone: (day) => day.habits.diet },
+    { ...ENTRY_HABITS[2], isDone: (day) => day.habits.sun },
+  ],
+  mind: [{ ...ENTRY_HABITS[3], isDone: (day) => day.habits.reading }],
+  spirit: [
+    {
+      key: 'rosary',
+      label: 'Santo Rosario',
+      anchor: 'The main weapon',
+      Icon: Cross,
+      isDone: (day) => day.rosary_completed,
+    },
+    {
+      key: 'prayers',
+      label: 'Daily prayers',
+      anchor: 'The daily sequence',
+      Icon: HandsPraying,
+      isDone: (day) => day.prayers_completed,
+    },
+    {
+      key: 'resolution',
+      label: 'Daily resolution',
+      anchor: 'One clear intention',
+      Icon: Target,
+      isDone: (day) => day.resolution === 'kept',
+    },
+  ],
+};
+
+/** Everything markable in a day — the denominator of the daily checklist. */
+export const DAILY_GOAL_COUNT = 7;
+
+export function completedToday(day: VirtueDay | undefined): number {
+  if (!day) {
+    return 0;
+  }
+
+  return [
+    day.rosary_completed,
+    day.prayers_completed,
+    day.habits.exercise,
+    day.habits.diet,
+    day.habits.sun,
+    day.habits.reading,
+    day.resolution === 'kept',
+  ].filter(Boolean).length;
+}

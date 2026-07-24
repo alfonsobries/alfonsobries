@@ -5,11 +5,11 @@ import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useApiRouter } from '@/api/router';
-import { cacheVirtueDay, completePrayers, localDate, queuePrayers } from '@/api/virtue';
+import { completePrayers, localDate } from '@/api/virtue';
+import { PrayerBlockView } from '@/components/prayers/PrayerBlockView';
 import { Button } from '@/components/ui/Button';
-import { getPrayerSteps, type PrayerBlock } from '@/data/auxilium';
+import { getPrayerSteps } from '@/data/auxilium';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { isOfflineError } from '@/offline/connectivity';
 
 // The day's prayer sequence, one step at a time. Deliberately quiet: large
 // type, one prayer per screen, and nothing else competing for attention.
@@ -46,22 +46,10 @@ export default function PrayersScreen() {
   async function handleFinish(): Promise<void> {
     setFinishing(true);
 
-    const date = localDate();
-    // The prayers themselves are bundled with the app, so finishing them must
-    // never depend on a network: record it locally first, then tell the API.
-    cacheVirtueDay(date, { prayers_completed: true });
-
     try {
-      await completePrayers(route, date);
+      await completePrayers(route, localDate());
       router.back();
-    } catch (error) {
-      if (isOfflineError(error)) {
-        queuePrayers({ date }, { dedupeKey: `virtue.prayers:${date}` });
-        router.back();
-        return;
-      }
-
-      cacheVirtueDay(date, { prayers_completed: false });
+    } catch {
       setFinishing(false);
       Alert.alert('Could not save', 'Please try again in a moment.');
     }
@@ -110,7 +98,7 @@ export default function PrayersScreen() {
         </View>
 
         {step.blocks.map((block, index) => (
-          <BlockView key={index} block={block} />
+          <PrayerBlockView key={index} block={block} />
         ))}
       </ScrollView>
 
@@ -137,55 +125,4 @@ export default function PrayersScreen() {
       </View>
     </View>
   );
-}
-
-function BlockView({ block }: { block: PrayerBlock }) {
-  switch (block.kind) {
-    case 'paragraph': {
-      return <Text className="text-lg leading-8 text-foreground">{block.text}</Text>;
-    }
-
-    case 'lines': {
-      return (
-        <View className="gap-0.5">
-          {block.lines.map((line, index) => (
-            <Text key={index} className="text-lg leading-8 text-foreground">
-              {line}
-            </Text>
-          ))}
-        </View>
-      );
-    }
-
-    case 'versicle': {
-      return (
-        <View className="gap-2">
-          <Text className="text-lg leading-8 text-foreground">
-            <Text className="font-bold text-primary-emphasis">V. </Text>
-            {block.call}
-          </Text>
-          <Text className="text-lg leading-8 text-foreground">
-            <Text className="font-bold text-primary-emphasis">R. </Text>
-            {block.response}
-          </Text>
-        </View>
-      );
-    }
-
-    case 'litany': {
-      return (
-        <View className="gap-2.5">
-          {block.items.map((item, index) => (
-            <Text key={index} className="text-lg leading-7 text-foreground">
-              {item.call}, <Text className="italic text-muted">{item.response}</Text>
-            </Text>
-          ))}
-        </View>
-      );
-    }
-
-    case 'note': {
-      return <Text className="text-lg italic leading-8 text-muted">{block.text}</Text>;
-    }
-  }
 }

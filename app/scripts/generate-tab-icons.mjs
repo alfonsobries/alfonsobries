@@ -24,7 +24,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const ICONS = {
   home: 'House',
   chat: 'ChatCircleDots',
-  profile: 'User',
+  family: 'UsersThree',
   settings: 'GearSix',
 };
 

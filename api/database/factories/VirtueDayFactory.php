@@ -20,6 +20,7 @@ class VirtueDayFactory extends Factory
         return [
             'date' => fake()->unique()->dateTimeBetween('-1 year', 'now')->format('Y-m-d'),
             'prayers_completed_at' => null,
+            'rosary_completed_at' => null,
             'resolution' => null,
         ];
     }

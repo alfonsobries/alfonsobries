@@ -1,9 +1,9 @@
 <?php
 
-use Laravel\Ai\Image;
+use Illuminate\Support\Facades\Http;
 
 it('generates an illustration for a member into the given path', function () {
-    Image::fake();
+    fakeImageGeneration();
     $target = sys_get_temp_dir().'/illustrate-test-'.uniqid().'.png';
 
     $this->artisan('illustrate', [
@@ -15,14 +15,14 @@ it('generates an illustration for a member into the given path', function () {
     expect(file_exists($target))->toBeTrue();
     unlink($target);
 
-    Image::assertGenerated(
-        fn ($generation): bool => str_contains($generation->prompt, 'Main character: Regina')
-            && str_contains($generation->prompt, 'gritando en la sala'),
+    Http::assertSent(
+        fn ($request): bool => str_contains(sentImagePrompt($request), 'Main character: Regina')
+            && str_contains(sentImagePrompt($request), 'gritando en la sala'),
     );
 });
 
 it('generates object-only art when no member is given', function () {
-    Image::fake();
+    fakeImageGeneration();
     $target = sys_get_temp_dir().'/illustrate-test-'.uniqid().'.png';
 
     $this->artisan('illustrate', [
@@ -33,19 +33,19 @@ it('generates object-only art when no member is given', function () {
     expect(file_exists($target))->toBeTrue();
     unlink($target);
 
-    Image::assertGenerated(
-        fn ($generation): bool => str_contains($generation->prompt, 'NO people')
-            && ! str_contains($generation->prompt, 'Main character:'),
+    Http::assertSent(
+        fn ($request): bool => str_contains(sentImagePrompt($request), 'NO people')
+            && ! str_contains(sentImagePrompt($request), 'Main character:'),
     );
 });
 
 it('rejects an unknown member', function () {
-    Image::fake();
+    fakeImageGeneration();
 
     $this->artisan('illustrate', [
         'description' => 'algo',
         '--member' => 'nadie',
     ])->assertExitCode(1);
 
-    Image::assertNothingGenerated();
+    Http::assertNothingSent();
 });

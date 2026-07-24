@@ -23,7 +23,7 @@ function sampleMarks(): Record<string, CalendarDayMark> {
     const date = localDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() - offset));
     marks[date] = {
       tone: offset === 5 ? 'danger' : offset % 3 === 0 ? undefined : 'primary',
-      dot: offset % 2 === 0,
+      dots: offset % 2 === 0 ? (offset % 3) + 1 : 0,
     };
   }
 
@@ -52,8 +52,8 @@ export default function Calendar() {
             />
           </Card>
           <Text className="text-sm text-muted">
-            Day tones (primary, danger) fill the circle; the dot is an independent secondary marker.
-            Days after `maxDate` are dimmed and inert.
+            Day tones (primary, danger) fill the circle; the dots are an independent secondary
+            count. Days after `maxDate` are dimmed and inert.
           </Text>
         </Section>
       </ScrollView>

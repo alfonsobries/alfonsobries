@@ -1,5 +1,6 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { CaretLeft } from 'phosphor-react-native';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { useHeaderHeight } from 'expo-router/react-navigation';
+import { Images, NotePencil } from 'phosphor-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Alert,
@@ -22,8 +23,10 @@ import {
   sendMessage,
   startConversation,
 } from '@/api/chat';
+import type { PersonKey } from '@/api/family';
 import { useApiRouter } from '@/api/router';
 import { Composer } from '@/components/chat/Composer';
+import { MemberPicker } from '@/components/chat/MemberPicker';
 import { MessageBubble } from '@/components/chat/MessageBubble';
 import { useConversationChannel } from '@/hooks/use-conversation-channel';
 import { useThemeColor } from '@/hooks/use-theme-color';
@@ -37,17 +40,24 @@ type CachedThread = {
 };
 
 export default function ChatThreadScreen() {
-  const params = useLocalSearchParams<{ conversation?: string; assistant?: string }>();
+  const params = useLocalSearchParams<{
+    conversation?: string;
+    assistant?: string;
+    assistantSlug?: string;
+  }>();
   const route = useApiRouter();
   const insets = useSafeAreaInsets();
-  const foregroundColor = useThemeColor('foreground');
+  const headerHeight = useHeaderHeight();
+  const tint = useThemeColor('primary-emphasis');
 
   const initialConversationId = params.conversation ? Number(params.conversation) : null;
   const newAssistantId = params.assistant ? Number(params.assistant) : null;
+  const newAssistantSlug = params.assistantSlug ?? null;
 
   const [conversationId, setConversationId] = useState<number | null>(initialConversationId);
   const [assistant, setAssistant] = useState<Assistant | null>(null);
   const [messages, setMessages] = useState<ChatMessage[] | null>(initialConversationId ? null : []);
+  const [members, setMembers] = useState<PersonKey[]>([]);
   const [sending, setSending] = useState(false);
 
   const upsertMessage = useCallback((incoming: ChatMessage) => {
@@ -73,9 +83,14 @@ export default function ChatThreadScreen() {
           });
           setAssistant(detail.assistant);
           setMessages(detail.messages);
-        } else if (newAssistantId) {
+          setMembers((detail.members ?? []) as PersonKey[]);
+        } else if (newAssistantId || newAssistantSlug) {
           const assistants = await fetchAssistants(route);
-          setAssistant(assistants.find((entry) => entry.id === newAssistantId) ?? null);
+          setAssistant(
+            assistants.find((entry) =>
+              newAssistantId ? entry.id === newAssistantId : entry.slug === newAssistantSlug,
+            ) ?? null,
+          );
         }
       } catch (error) {
         // A thread already read once stays readable offline; only writing to it
@@ -149,7 +164,13 @@ export default function ChatThreadScreen() {
         upsertMessage(userMessage);
         upsertMessage(reply);
       } else {
-        const detail = await startConversation(route, assistant.id, content || null, imagePaths);
+        const detail = await startConversation(
+          route,
+          assistant.id,
+          content || null,
+          imagePaths,
+          members,
+        );
         setConversationId(detail.id);
         setMessages(detail.messages);
       }
@@ -175,28 +196,41 @@ export default function ChatThreadScreen() {
     <KeyboardAvoidingView
       className="flex-1 bg-background"
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      // This view starts below the native header, which the keyboard frame still counts.
+      keyboardVerticalOffset={headerHeight}
     >
-      <View
-        className="flex-row items-center gap-2 border-b border-border px-2 pb-2"
-        style={{ paddingTop: insets.top + 4 }}
-      >
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Back"
-          onPress={() => router.back()}
-          hitSlop={8}
-          className="h-10 w-10 items-center justify-center rounded-full active:bg-surface-selected"
-        >
-          <CaretLeft size={22} color={foregroundColor} />
-        </Pressable>
-        <View className="flex-1 flex-row items-center gap-2">
-          <Text className="text-xl">{assistant?.emoji ?? '💬'}</Text>
-          <Text className="text-lg font-semibold text-foreground" numberOfLines={1}>
-            {assistant?.name ?? 'Chat'}
-          </Text>
-        </View>
-        <View className="w-10" />
-      </View>
+      <Stack.Screen
+        options={{
+          title: assistant ? `${assistant.emoji ?? '💬'} ${assistant.name}` : 'Chat',
+          headerRight: () => (
+            <View className="flex-row items-center gap-5">
+              {conversationId !== null ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Start a new chat"
+                  hitSlop={12}
+                  onPress={() => {
+                    setConversationId(null);
+                    setMessages([]);
+                  }}
+                >
+                  <NotePencil size={24} color={tint} weight="regular" />
+                </Pressable>
+              ) : null}
+              {assistant?.kind === 'illustrator' ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Open the gallery"
+                  hitSlop={12}
+                  onPress={() => router.push('/illustrations/favorites')}
+                >
+                  <Images size={24} color={tint} weight="regular" />
+                </Pressable>
+              ) : null}
+            </View>
+          ),
+        }}
+      />
 
       <FlatList
         className="flex-1"
@@ -204,7 +238,11 @@ export default function ChatThreadScreen() {
         inverted
         keyExtractor={(message) => String(message.id)}
         renderItem={({ item }) => (
-          <MessageBubble message={item} copyableOutput={assistant?.copyable_output ?? false} />
+          <MessageBubble
+            message={item}
+            copyableOutput={assistant?.copyable_output ?? false}
+            illustrator={assistant?.kind === 'illustrator'}
+          />
         )}
         contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 16 }}
         ItemSeparatorComponent={() => <View className="h-3" />}
@@ -226,7 +264,10 @@ export default function ChatThreadScreen() {
         }
       />
 
-      <View className="px-4 pt-2" style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
+      <View className="gap-3 px-4 pt-2" style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
+        {assistant?.kind === 'illustrator' && conversationId === null ? (
+          <MemberPicker selected={members} onChange={setMembers} />
+        ) : null}
         <Composer sending={sending} onSend={handleSend} />
       </View>
     </KeyboardAvoidingView>

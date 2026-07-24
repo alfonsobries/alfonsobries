@@ -1,5 +1,14 @@
 import { Redirect, router, Stack, useFocusEffect } from 'expo-router';
-import { Check, Flame, HandsPraying, Question, Target, X } from 'phosphor-react-native';
+import {
+  CaretRight,
+  Check,
+  Cross,
+  Flame,
+  Flask,
+  HandsPraying,
+  Question,
+  Sparkle,
+} from 'phosphor-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -8,19 +17,28 @@ import { useApiRouter } from '@/api/router';
 import {
   fetchVirtueSummary,
   localDate,
-  queueResolution,
+  setHabit,
   setResolution,
-  withVirtueDay,
   type Resolution,
-  type VirtueSummary,
+  type VirtueDay,
+  type VirtueHabit,
+  type VirtueStats,
 } from '@/api/virtue';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { MonthCalendar, type CalendarDayMark } from '@/components/ui/MonthCalendar';
+import { Stepper } from '@/components/ui/Stepper';
+import { HabitToggleRow } from '@/components/virtue/HabitToggleRow';
+import { ResolutionPicker } from '@/components/virtue/ResolutionPicker';
+import { VirtueScene } from '@/components/virtue/VirtueScene';
+import { lastSevenDays } from '@/components/virtue/WeekStrip';
+import { MYSTERY_SETS, mysterySetForWeekday } from '@/data/rosary';
+import { AREA_HABITS, AREAS, completedToday, DAILY_GOAL_COUNT, ENTRY_HABITS } from '@/data/virtue';
+import { useHealthExercise } from '@/hooks/use-health-exercise';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { isOfflineError } from '@/offline/connectivity';
-import { cacheKeys } from '@/offline/store';
-import { useCachedResource } from '@/offline/use-cached-resource';
+
+/** Local-only stage overrides for previewing the art like a game — never saved. */
+type PreviewStages = { body: number; mind: number; spirit: number };
 
 function currentDates() {
   const now = new Date();
@@ -32,36 +50,75 @@ function currentDates() {
   };
 }
 
-// The daily practice at a glance: the resolution streak, today's two habits
-// (the prayers and the resolution), and one calendar that carries both.
+// The daily practice at a glance: the layered scene (one element per area),
+// the per-area progress, today's habit checklist, and one calendar that
+// carries the whole month. Every day — today or past — edits through the
+// same day sheet.
 export default function VirtueScreen() {
   const { user } = useAuth();
   const route = useApiRouter();
   const tint = useThemeColor('primary-emphasis');
   const onPrimary = useThemeColor('primary-foreground');
+  const muted = useThemeColor('muted');
 
+  const [days, setDays] = useState<Record<string, VirtueDay>>({});
+  const [stats, setStats] = useState<VirtueStats | null>(null);
   const [month, setMonth] = useState(() => new Date());
   const [saving, setSaving] = useState(false);
+  const [failedScene, setFailedScene] = useState<string | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [preview, setPreview] = useState<PreviewStages | null>(null);
 
   const [dates, setDates] = useState(currentDates);
   const { today, yesterday, todayLabel } = dates;
 
-  const fetcher = useCallback(() => fetchVirtueSummary(route), [route]);
-  const summary = useCachedResource<VirtueSummary>(cacheKeys.virtueSummary, fetcher);
-  const { refresh, update } = summary;
+  const readExerciseMinutes = useHealthExercise();
 
-  const days = useMemo(
-    () => Object.fromEntries((summary.data?.days ?? []).map((day) => [day.date, day])),
-    [summary.data],
-  );
-  const stats = summary.data?.stats ?? null;
+  const load = useCallback(async () => {
+    try {
+      const summary = await fetchVirtueSummary(route);
+      setDays(Object.fromEntries(summary.days.map((day) => [day.date, day])));
+      setStats(summary.stats);
+      setLoadFailed(false);
+
+      return summary;
+    } catch {
+      setLoadFailed(true);
+
+      return null;
+    }
+  }, [route]);
+
+  const syncHealth = useCallback(async () => {
+    const summary = await load();
+
+    if (summary === null) {
+      return;
+    }
+
+    // Health is the source of truth once it reports 20 minutes or more; the
+    // stored minutes only ever grow, so this settles quickly.
+    const date = localDate();
+    const minutes = await readExerciseMinutes();
+    const day = summary.days.find((entry) => entry.date === date);
+
+    if (minutes !== null && minutes >= 20 && minutes > (day?.exercise_minutes ?? 0)) {
+      try {
+        const result = await setHabit(route, date, 'exercise', true, { minutes });
+        setDays((current) => ({ ...current, [result.day.date]: result.day }));
+        setStats(result.stats);
+      } catch {
+        // The manual toggle still works; the next focus retries.
+      }
+    }
+  }, [load, readExerciseMinutes, route]);
 
   useFocusEffect(
     useCallback(() => {
       // The screen can sit mounted across midnight, so "today" refreshes on focus.
       setDates(currentDates());
-      void refresh();
-    }, [refresh]),
+      void syncHealth();
+    }, [syncHealth]),
   );
 
   const marks = useMemo(() => {
@@ -75,73 +132,115 @@ export default function VirtueScreen() {
             : day.resolution === 'missed'
               ? 'danger'
               : undefined,
-        dot: day.prayers_completed,
+        dots: [
+          day.rosary_completed,
+          day.prayers_completed,
+          day.habits.exercise,
+          day.habits.diet,
+          day.habits.sun,
+          day.habits.reading,
+        ].filter(Boolean).length,
       };
     }
 
     return result;
   }, [days]);
 
+  const week = useMemo(() => lastSevenDays(), []);
+
+  const weekCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+
+    for (const { key } of AREAS) {
+      counts[key] = week.filter((date) => {
+        const day = days[date];
+        return day !== undefined && AREA_HABITS[key].some((habit) => habit.isDone(day));
+      }).length;
+    }
+
+    return counts;
+  }, [days, week]);
+
   const firstTracked = useMemo(() => {
-    const tracked = Object.keys(days);
-    return tracked.length > 0 ? tracked.reduce((a, b) => (a < b ? a : b)) : undefined;
+    const dates = Object.keys(days);
+    return dates.length > 0 ? dates.reduce((a, b) => (a < b ? a : b)) : undefined;
   }, [days]);
 
+  const scene = useMemo(
+    () =>
+      stats === null
+        ? null
+        : {
+            stages: {
+              tierra: preview?.body ?? stats.areas.body.stage,
+              cielo: preview?.mind ?? stats.areas.mind.stage,
+              arbol: preview?.spirit ?? stats.areas.spirit.stage,
+            },
+            version: stats.art_version,
+          },
+    [preview, stats],
+  );
+
+  // Remember which combination failed rather than that one did: stepping to
+  // another stage asks for different files and deserves a fresh attempt.
+  const sceneKey = scene && `${Object.values(scene.stages).join('-')}-${scene.version}`;
+  const sceneFailed = sceneKey !== null && sceneKey === failedScene;
+
+  const yesterdayEntry = days[yesterday];
   const yesterdayPending =
-    firstTracked !== undefined && yesterday >= firstTracked && !days[yesterday]?.resolution;
+    firstTracked !== undefined && yesterday >= firstTracked && !yesterdayEntry?.resolution;
+  const yesterdayMissed = yesterdayEntry?.resolution === 'missed';
 
   if (user && user.family_member !== 'alfonso') {
     return <Redirect href="/" />;
   }
 
+  function apply(result: { day: VirtueDay; stats: VirtueStats }): void {
+    setDays((current) => ({ ...current, [result.day.date]: result.day }));
+    setStats(result.stats);
+  }
+
   async function mark(date: string, resolution: Resolution | null): Promise<void> {
     setSaving(true);
-    update((current) => withVirtueDay(current, date, { resolution }));
 
     try {
-      const result = await setResolution(route, date, resolution);
-      update((current) => ({
-        ...withVirtueDay(current, result.day.date, result.day),
-        stats: result.stats,
-      }));
-    } catch (error) {
-      if (isOfflineError(error)) {
-        // The optimistic mark stands and replays on reconnect; re-marking the
-        // same day offline replaces the pending one rather than stacking.
-        queueResolution({ date, resolution }, { dedupeKey: `virtue.resolution:${date}` });
-      } else {
-        await refresh();
-        Alert.alert('Could not save', 'Please try again in a moment.');
-      }
+      apply(await setResolution(route, date, resolution));
+    } catch {
+      Alert.alert('Could not save', 'Please try again in a moment.');
     } finally {
       setSaving(false);
     }
   }
 
-  function handlePressDay(date: string): void {
+  async function toggleHabit(habit: VirtueHabit): Promise<void> {
+    const completed = !days[today]?.habits[habit];
+    setSaving(true);
+
+    try {
+      apply(await setHabit(route, today, habit, completed));
+    } catch {
+      Alert.alert('Could not save', 'Please try again in a moment.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function openDay(date: string): void {
     if (date > today) {
       return;
     }
 
-    const day = days[date];
-    const label = new Date(`${date}T12:00:00`).toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-    });
-
-    Alert.alert(label, 'Mark the resolution for this day.', [
-      { text: 'Kept', onPress: () => void mark(date, 'kept') },
-      { text: 'Missed', style: 'destructive', onPress: () => void mark(date, 'missed') },
-      ...(day?.resolution ? [{ text: 'Clear', onPress: () => void mark(date, null) }] : []),
-      { text: 'Cancel', style: 'cancel' as const },
-    ]);
+    router.push({ pathname: '/virtue/day', params: { date } });
   }
 
   const todayEntry = days[today];
+  const doneCount = completedToday(todayEntry);
+  const allDone = doneCount === DAILY_GOAL_COUNT;
   const streakSubline =
     stats === null
-      ? ' '
+      ? loadFailed
+        ? 'Could not load your practice'
+        : ' '
       : stats.days_tracked === 0
         ? 'Mark your first day to begin'
         : stats.missed_count === 0
@@ -153,14 +252,34 @@ export default function VirtueScreen() {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Guide"
-              hitSlop={12}
-              onPress={() => router.push('/virtue/guide')}
-            >
-              <Question size={24} color={tint} weight="regular" />
-            </Pressable>
+            <View className="flex-row items-center gap-4">
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Preview stages"
+                hitSlop={12}
+                onPress={() =>
+                  setPreview((current) =>
+                    current !== null || stats === null
+                      ? null
+                      : {
+                          body: stats.areas.body.stage,
+                          mind: stats.areas.mind.stage,
+                          spirit: stats.areas.spirit.stage,
+                        },
+                  )
+                }
+              >
+                <Flask size={24} color={tint} weight={preview ? 'fill' : 'regular'} />
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Guide"
+                hitSlop={12}
+                onPress={() => router.push('/virtue/guide')}
+              >
+                <Question size={24} color={tint} weight="regular" />
+              </Pressable>
+            </View>
           ),
         }}
       />
@@ -169,18 +288,139 @@ export default function VirtueScreen() {
         contentInsetAdjustmentBehavior="automatic"
         contentContainerClassName="gap-4 p-4 pb-16"
       >
-        <Card className="items-center gap-1 py-7">
-          <Flame size={30} color={tint} weight="fill" />
-          <Text className="mt-1 text-6xl font-bold text-foreground">{stats?.streak ?? '·'}</Text>
+        <Card className="items-center gap-1 py-6">
+          {scene && !sceneFailed ? (
+            <VirtueScene
+              stages={scene.stages}
+              version={scene.version}
+              onError={() => setFailedScene(sceneKey)}
+            />
+          ) : (
+            <Flame size={30} color={tint} weight="fill" />
+          )}
+          <Text className="mt-2 text-6xl font-bold text-foreground">{stats?.streak ?? '·'}</Text>
           <Text className="text-base font-medium text-foreground">day streak</Text>
           <Text className="text-sm text-muted">{streakSubline}</Text>
+          {stats === null && loadFailed ? (
+            <Button variant="secondary" className="mt-4" onPress={() => void load()}>
+              Try again
+            </Button>
+          ) : null}
         </Card>
 
+        {preview && stats ? (
+          <Card className="gap-4">
+            <View className="gap-0.5">
+              <Text className="text-base font-semibold text-foreground">Preview stages</Text>
+              <Text className="text-sm text-muted">
+                Just for looking around — nothing is saved.
+              </Text>
+            </View>
+            <Stepper
+              label="Body (tierra)"
+              value={preview.body}
+              min={1}
+              max={stats.tree_stage_count}
+              onChange={(body) => setPreview({ ...preview, body })}
+            />
+            <Stepper
+              label="Mind (cielo)"
+              value={preview.mind}
+              min={1}
+              max={stats.tree_stage_count}
+              onChange={(mind) => setPreview({ ...preview, mind })}
+            />
+            <Stepper
+              label="Spirit (árbol)"
+              value={preview.spirit}
+              min={1}
+              max={stats.tree_stage_count}
+              onChange={(spirit) => setPreview({ ...preview, spirit })}
+            />
+            <Button
+              variant="secondary"
+              onPress={() => {
+                const mid = Math.round((preview.body + preview.mind + preview.spirit) / 3);
+                setPreview({ body: mid, mind: mid, spirit: mid });
+              }}
+            >
+              Sync layers to average
+            </Button>
+            <Button variant="secondary" onPress={() => setPreview(null)}>
+              Back to reality
+            </Button>
+          </Card>
+        ) : null}
+
+        {stats ? (
+          <Card className="gap-4">
+            {AREAS.map(({ key, label, Icon }) => {
+              const area = stats.areas[key];
+
+              return (
+                <Pressable
+                  key={key}
+                  accessibilityRole="button"
+                  accessibilityLabel={label}
+                  onPress={() => router.push({ pathname: '/virtue/[area]', params: { area: key } })}
+                  className="gap-2 active:opacity-70"
+                >
+                  <View className="flex-row items-center gap-3">
+                    <View className="size-9 items-center justify-center rounded-xl bg-surface-selected">
+                      <Icon size={18} color={tint} weight="fill" />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-base font-semibold text-foreground">{label}</Text>
+                      <Text className="text-xs text-muted">
+                        {weekCounts[key]} of 7 days this week
+                      </Text>
+                    </View>
+                    {area.streak > 0 ? (
+                      <View className="flex-row items-center gap-1">
+                        <Flame size={14} color={tint} weight="fill" />
+                        <Text className="text-sm font-semibold text-foreground">{area.streak}</Text>
+                      </View>
+                    ) : null}
+                    <Text className="text-xs text-muted">
+                      Stage {area.stage}/{area.stage_count}
+                    </Text>
+                    <CaretRight size={14} color={muted} weight="bold" />
+                  </View>
+                  <View className="h-1.5 w-full overflow-hidden rounded-full bg-surface-selected">
+                    <View
+                      className="h-full rounded-full bg-primary-emphasis"
+                      style={{
+                        width: `${Math.min(100, Math.round((area.points / Math.max(1, area.next_stage_at)) * 100))}%`,
+                      }}
+                    />
+                  </View>
+                </Pressable>
+              );
+            })}
+          </Card>
+        ) : null}
+
         <Card className="gap-4">
-          <View className="gap-0.5">
-            <Text className="text-xs font-semibold uppercase tracking-wider text-muted">Today</Text>
-            <Text className="text-lg font-semibold text-foreground">{todayLabel}</Text>
+          <View className="flex-row items-end justify-between">
+            <View className="gap-0.5">
+              <Text className="text-xs font-semibold uppercase tracking-wider text-muted">
+                Today
+              </Text>
+              <Text className="text-lg font-semibold text-foreground">{todayLabel}</Text>
+            </View>
+            <Text className="text-sm font-semibold text-muted">
+              {doneCount} of {DAILY_GOAL_COUNT}
+            </Text>
           </View>
+
+          {allDone ? (
+            <View className="flex-row items-center gap-2 rounded-2xl bg-primary px-4 py-3">
+              <Sparkle size={18} color={onPrimary} weight="fill" />
+              <Text className="flex-1 text-sm font-semibold text-primary-foreground">
+                All done — enjoy the rest of your day.
+              </Text>
+            </View>
+          ) : null}
 
           <View className="flex-row items-center gap-3">
             <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
@@ -203,23 +443,86 @@ export default function VirtueScreen() {
             )}
           </View>
 
+          <View className="flex-row items-center gap-3">
+            <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
+              <Cross size={22} color={tint} weight="fill" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-foreground">Santo Rosario</Text>
+              <Text className="text-sm text-muted">
+                {stats && stats.rosary.total > 0
+                  ? `${MYSTERY_SETS[mysterySetForWeekday(new Date().getDay())].name} · ${stats.rosary.total} rezados${stats.rosary.streak > 1 ? ` · racha ${stats.rosary.streak}` : ''}`
+                  : MYSTERY_SETS[mysterySetForWeekday(new Date().getDay())].name}
+              </Text>
+            </View>
+            {todayEntry?.rosary_completed ? (
+              <View className="size-9 items-center justify-center rounded-full bg-primary">
+                <Check size={18} color={onPrimary} weight="bold" />
+              </View>
+            ) : (
+              <Button size="sm" onPress={() => router.push('/virtue/rosary')}>
+                Rezar
+              </Button>
+            )}
+          </View>
+
+          {ENTRY_HABITS.map(({ key, label, anchor, Icon }) => (
+            <View key={key} className="gap-2">
+              <HabitToggleRow
+                Icon={Icon}
+                label={label}
+                subtitle={
+                  key === 'exercise' && todayEntry?.exercise_big
+                    ? 'Big session · double point'
+                    : key === 'exercise' && todayEntry?.exercise_minutes
+                      ? `${todayEntry.exercise_minutes} min from Health`
+                      : anchor
+                }
+                done={todayEntry?.habits[key] ?? false}
+                disabled={saving}
+                onToggle={() => void toggleHabit(key)}
+              />
+              {key === 'exercise' && todayEntry?.habits.exercise && !todayEntry.exercise_big ? (
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={saving}
+                  onPress={() =>
+                    void (async () => {
+                      setSaving(true);
+
+                      try {
+                        apply(await setHabit(route, today, 'exercise', true, { big: true }));
+                      } catch {
+                        Alert.alert('Could not save', 'Please try again in a moment.');
+                      } finally {
+                        setSaving(false);
+                      }
+                    })()
+                  }
+                  className="self-end active:opacity-70"
+                >
+                  <Text className="text-xs text-muted underline">
+                    ¿Fue sesión grande? Marcar doble
+                  </Text>
+                </Pressable>
+              ) : null}
+            </View>
+          ))}
+
           <View className="h-px bg-border" />
 
           <View className="gap-3">
-            <View className="flex-row items-center gap-3">
-              <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
-                <Target size={22} color={tint} weight="fill" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-base font-semibold text-foreground">Daily resolution</Text>
-                <Text className="text-sm text-muted">
-                  {todayEntry?.resolution === 'kept'
-                    ? 'Kept — well done'
-                    : todayEntry?.resolution === 'missed'
-                      ? 'Missed — tomorrow is a new day'
+            <View className="gap-0.5">
+              <Text className="text-base font-semibold text-foreground">Daily resolution</Text>
+              <Text className="text-sm text-muted">
+                {todayEntry?.resolution === 'kept'
+                  ? 'Kept — well done'
+                  : todayEntry?.resolution === 'missed'
+                    ? 'Missed — tomorrow is a new day'
+                    : yesterdayMissed
+                      ? 'Yesterday slipped; one miss never undoes progress. Today counts.'
                       : 'How did it go today?'}
-                </Text>
-              </View>
+              </Text>
             </View>
             <ResolutionPicker
               value={todayEntry?.resolution ?? null}
@@ -231,14 +534,22 @@ export default function VirtueScreen() {
 
         {yesterdayPending ? (
           <Card className="gap-3">
-            <Text className="text-base font-semibold text-foreground">
-              Yesterday is still unmarked
-            </Text>
+            <View className="gap-0.5">
+              <Text className="text-base font-semibold text-foreground">
+                Yesterday is still unmarked
+              </Text>
+              <Text className="text-sm text-muted">
+                Fill in the whole day, or just settle the resolution here.
+              </Text>
+            </View>
             <ResolutionPicker
               value={null}
               disabled={saving}
               onChange={(next) => void mark(yesterday, next)}
             />
+            <Button variant="secondary" onPress={() => openDay(yesterday)}>
+              Edit the whole day
+            </Button>
           </Card>
         ) : null}
 
@@ -248,13 +559,14 @@ export default function VirtueScreen() {
             onMonthChange={setMonth}
             marks={marks}
             maxDate={today}
-            onPressDay={handlePressDay}
+            onPressDay={openDay}
           />
           <View className="flex-row items-center justify-center gap-5 pt-1">
             <Legend swatch="bg-primary" label="Kept" />
             <Legend swatch="bg-danger/15" label="Missed" />
-            <Legend swatch="bg-primary-emphasis" label="Prayers" small />
+            <Legend swatch="bg-primary-emphasis" label="Habits" small />
           </View>
+          <Text className="text-center text-xs text-muted">Tap any day to fill it in.</Text>
         </Card>
       </ScrollView>
     </>
@@ -274,58 +586,6 @@ function Legend({
     <View className="flex-row items-center gap-1.5">
       <View className={`${small ? 'size-1.5' : 'size-3'} rounded-full ${swatch}`} />
       <Text className="text-xs text-muted">{label}</Text>
-    </View>
-  );
-}
-
-function ResolutionPicker({
-  value,
-  disabled,
-  onChange,
-}: {
-  value: Resolution | null;
-  disabled: boolean;
-  onChange: (next: Resolution | null) => void;
-}) {
-  const success = useThemeColor('success');
-  const danger = useThemeColor('danger');
-  const muted = useThemeColor('muted');
-
-  return (
-    <View className="flex-row gap-2">
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ selected: value === 'kept', disabled }}
-        disabled={disabled}
-        onPress={() => onChange(value === 'kept' ? null : 'kept')}
-        className={`h-11 flex-1 flex-row items-center justify-center gap-1.5 rounded-full ${
-          value === 'kept' ? 'bg-primary' : 'bg-surface-selected'
-        } ${disabled ? 'opacity-50' : 'active:opacity-80'}`}
-      >
-        <Check size={16} color={value === 'kept' ? success : muted} weight="bold" />
-        <Text
-          className={`text-sm font-semibold ${value === 'kept' ? 'text-primary-foreground' : 'text-foreground'}`}
-        >
-          Kept
-        </Text>
-      </Pressable>
-
-      <Pressable
-        accessibilityRole="button"
-        accessibilityState={{ selected: value === 'missed', disabled }}
-        disabled={disabled}
-        onPress={() => onChange(value === 'missed' ? null : 'missed')}
-        className={`h-11 flex-1 flex-row items-center justify-center gap-1.5 rounded-full ${
-          value === 'missed' ? 'bg-danger/15' : 'bg-surface-selected'
-        } ${disabled ? 'opacity-50' : 'active:opacity-80'}`}
-      >
-        <X size={16} color={value === 'missed' ? danger : muted} weight="bold" />
-        <Text
-          className={`text-sm font-semibold ${value === 'missed' ? 'text-danger' : 'text-foreground'}`}
-        >
-          Missed
-        </Text>
-      </Pressable>
     </View>
   );
 }

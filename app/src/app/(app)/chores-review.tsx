@@ -1,16 +1,17 @@
-import { Image } from 'expo-image';
+import { Illustration } from '@/components/ui/Illustration';
 import { Redirect, router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Check, LockKey, Star, X } from 'phosphor-react-native';
 import { useCallback, useState, type ReactNode } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Alert, Pressable, Text, View } from 'react-native';
 
+import { useAuth } from '@/api/auth';
 import { checkChore, fetchChores, reviewChoreLog, type Chore } from '@/api/chores';
 import { getPerson, isKid } from '@/api/family';
-import { useMoods } from '@/api/moods';
+import { MOOD_MAX, MOOD_MIN, useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
+import { Sheet } from '@/components/ui/Sheet';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { isOfflineError } from '@/offline/connectivity';
 import { cacheKeys, readCache } from '@/offline/store';
@@ -22,9 +23,9 @@ import { cacheKeys, readCache } from '@/offline/store';
 // be re-run later to fix a verdict.
 export default function ChoresReviewScreen(): ReactNode {
   const { member } = useLocalSearchParams<{ member?: string }>();
-  const insets = useSafeAreaInsets();
   const route = useApiRouter();
-  const { refresh: refreshMoods } = useMoods();
+  const { user } = useAuth();
+  const { members: moodMembers, refresh: refreshMoods } = useMoods();
 
   const person = member ? getPerson(member) : undefined;
   const kid = person && isKid(person.key) ? person.key : undefined;
@@ -91,6 +92,10 @@ export default function ChoresReviewScreen(): ReactNode {
   async function handleSave(): Promise<void> {
     setSaving(true);
 
+    // Approvals lift the reviewing parent's mood by the chore's points,
+    // revoked ones give them back; mirrored here for the result screen.
+    let moodDelta = 0;
+
     try {
       for (const chore of chores) {
         const approved = verdicts[chore.id] ?? false;
@@ -107,10 +112,40 @@ export default function ChoresReviewScreen(): ReactNode {
         const logId = chore.today?.log_id ?? (await checkChore(route, chore.id)).id;
 
         await reviewChoreLog(route, logId, approved);
+        moodDelta += approved ? chore.points : status === 'approved' ? -chore.points : 0;
       }
 
+      const myMood = moodMembers.find((entry) => entry.family_member === user?.family_member)?.mood;
+
       await refreshMoods();
-      router.back();
+
+      const earned = chores
+        .filter((chore) => verdicts[chore.id])
+        .reduce((total, chore) => total + chore.points, 0);
+
+      // Close this sheet entirely; the small result window takes its place.
+      router.replace({
+        pathname: '/save-result',
+        params: {
+          emoji: '⭐',
+          title: 'Day saved',
+          message:
+            earned > 0
+              ? `${person?.name} earned ${earned} point${earned === 1 ? '' : 's'} today.`
+              : `Nothing approved for ${person?.name} today.`,
+          ...(myMood != null && moodDelta !== 0
+            ? {
+                member: user?.family_member ?? '',
+                before: String(myMood),
+                after: String(Math.min(MOOD_MAX, Math.max(MOOD_MIN, myMood + moodDelta))),
+                note:
+                  moodDelta > 0
+                    ? 'Reviewing lifted your mood'
+                    : 'Fixing the day moved your mood back',
+              }
+            : {}),
+        },
+      });
     } catch (error) {
       setSaving(false);
 
@@ -127,45 +162,43 @@ export default function ChoresReviewScreen(): ReactNode {
   }
 
   return (
-    <View className="flex-1 bg-background px-6 pt-8" style={{ paddingBottom: insets.bottom + 16 }}>
-      <Text className="text-center text-3xl font-semibold text-foreground">
-        {person.name}&apos;s day
-      </Text>
-      <Text className="mt-1 text-center text-lg text-muted">Check what really happened today</Text>
+    <Sheet
+      title={`${person.name}'s day`}
+      subtitle="Check what really happened today"
+      scrollable
+      className="gap-4"
+    >
+      {unlocked ? (
+        <>
+          <View className="gap-3">
+            {chores.map((chore) => (
+              <ReviewRow
+                key={chore.id}
+                chore={chore}
+                approved={verdicts[chore.id] ?? false}
+                onToggle={() =>
+                  setVerdicts((current) => ({ ...current, [chore.id]: !current[chore.id] }))
+                }
+              />
+            ))}
 
-      <View className="mt-6 flex-1">
-        {unlocked ? (
-          <View className="flex-1 gap-4">
-            <ScrollView contentContainerClassName="gap-3">
-              {chores.map((chore) => (
-                <ReviewRow
-                  key={chore.id}
-                  chore={chore}
-                  approved={verdicts[chore.id] ?? false}
-                  onToggle={() =>
-                    setVerdicts((current) => ({ ...current, [chore.id]: !current[chore.id] }))
-                  }
-                />
-              ))}
-
-              {chores.length === 0 && loaded ? (
-                <Text className="py-6 text-center text-sm text-muted">No chores yet.</Text>
-              ) : null}
-            </ScrollView>
-
-            {chores.length > 0 ? (
-              <Button fullWidth loading={saving} onPress={() => void handleSave()}>
-                Save the day
-              </Button>
+            {chores.length === 0 && loaded ? (
+              <Text className="py-6 text-center text-sm text-muted">No chores yet.</Text>
             ) : null}
           </View>
-        ) : (
-          <Button fullWidth icon={LockKey} onPress={() => void handleUnlock()}>
-            Review with Face ID
-          </Button>
-        )}
-      </View>
-    </View>
+
+          {chores.length > 0 ? (
+            <Button fullWidth loading={saving} onPress={() => void handleSave()}>
+              Save the day
+            </Button>
+          ) : null}
+        </>
+      ) : (
+        <Button fullWidth icon={LockKey} onPress={() => void handleUnlock()}>
+          Review with Face ID
+        </Button>
+      )}
+    </Sheet>
   );
 }
 
@@ -192,11 +225,7 @@ function ReviewRow({
     >
       <View className="size-14 items-center justify-center overflow-hidden rounded-xl bg-surface-selected">
         {chore.image_url ? (
-          <Image
-            source={{ uri: chore.image_url }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-          />
+          <Illustration source={{ uri: chore.image_url }} />
         ) : (
           <Star size={24} color={accent} weight="fill" />
         )}

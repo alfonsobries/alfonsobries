@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AiModelController;
 use App\Http\Controllers\AppleAuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AssistantController;
@@ -13,7 +14,10 @@ use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DraftArticleController;
 use App\Http\Controllers\FamilyMoodController;
+use App\Http\Controllers\FavoriteIllustrationController;
+use App\Http\Controllers\KidEmotionController;
 use App\Http\Controllers\LogoutController;
+use App\Http\Controllers\OtaUpdateController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PushTokenController;
 use App\Http\Controllers\ResumeControler;
@@ -30,6 +34,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/status', StatusController::class)->name('status');
 
+// Signed webhook (HMAC, no session) — hit by the publish script after `eas update`.
+Route::post('/ota/published', OtaUpdateController::class)->name('ota.published');
+
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('/apple', AppleAuthController::class)->name('apple');
     Route::post('/logout', LogoutController::class)->middleware('auth:sanctum')->name('logout');
@@ -42,6 +49,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/moods', [FamilyMoodController::class, 'index'])->name('moods.index');
     Route::patch('/moods/{member}', [FamilyMoodController::class, 'update'])->name('moods.update');
+    Route::get('/kid-emotions', [KidEmotionController::class, 'index'])->name('kid-emotions.index');
+    Route::patch('/kid-emotions/{member}', [KidEmotionController::class, 'update'])->name('kid-emotions.update');
 
     Route::post('/push-tokens', [PushTokenController::class, 'store'])->name('push-tokens.store');
     Route::post('/notifications/test', TestNotificationController::class)->name('notifications.test');
@@ -73,7 +82,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/virtue/days', [VirtueDayController::class, 'index'])->name('virtue.days.index');
     Route::put('/virtue/days/{date}/resolution', [VirtueDayController::class, 'updateResolution'])->name('virtue.days.resolution');
+    Route::put('/virtue/days/{date}/habits/{habit}', [VirtueDayController::class, 'updateHabit'])->name('virtue.days.habit');
     Route::post('/virtue/prayers', [VirtueDayController::class, 'completePrayers'])->name('virtue.prayers.store');
+    Route::post('/virtue/rosary', [VirtueDayController::class, 'completeRosary'])->name('virtue.rosary.store');
+    Route::get('/virtue/mascot/{set}/{stage}', [VirtueDayController::class, 'mascot'])->whereNumber('stage')->name('virtue.mascot');
 
     Route::get('/assistants', [AssistantController::class, 'index'])->name('assistants.index');
 
@@ -84,6 +96,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/conversations/{conversation}/messages', [ChatMessageController::class, 'store'])->name('conversations.messages.store');
 
     Route::get('/chat-messages/{chatMessage}', [ChatMessageController::class, 'show'])->name('chat-messages.show');
+
+    Route::get('/ai-models', [AiModelController::class, 'index'])->name('ai-models.index');
+    Route::put('/ai-models', [AiModelController::class, 'update'])->name('ai-models.update');
+
+    Route::get('/illustration-favorites', [FavoriteIllustrationController::class, 'index'])->name('illustration-favorites.index');
+    Route::post('/illustration-favorites', [FavoriteIllustrationController::class, 'store'])->name('illustration-favorites.store');
+    Route::delete('/illustration-favorites/{favoriteIllustration}', [FavoriteIllustrationController::class, 'destroy'])->name('illustration-favorites.destroy');
 
     Route::post('/behavior-illustrations', [BehaviorIllustrationController::class, 'store'])->name('behavior-illustrations.store');
     Route::get('/behavior-illustrations/{behaviorIllustration}', [BehaviorIllustrationController::class, 'show'])->name('behavior-illustrations.show');

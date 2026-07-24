@@ -20,11 +20,16 @@ class Assistant extends Model
 
     use SoftDeletes;
 
+    public const KIND_CHAT = 'chat';
+
+    public const KIND_ILLUSTRATOR = 'illustrator';
+
     /**
      * @var list<string>
      */
     protected $fillable = [
         'slug',
+        'kind',
         'name',
         'emoji',
         'description',
@@ -63,6 +68,11 @@ class Assistant extends Model
         $query->where('is_active', true);
     }
 
+    public function isIllustrator(): bool
+    {
+        return $this->kind === self::KIND_ILLUSTRATOR;
+    }
+
     public function isVisibleTo(?string $member): bool
     {
         return $member !== null
@@ -71,13 +81,14 @@ class Assistant extends Model
     }
 
     /**
-     * @return array{id: int, slug: string, name: string, emoji: string|null, description: string|null, copyable_output: bool}
+     * @return array{id: int, slug: string, kind: string, name: string, emoji: string|null, description: string|null, copyable_output: bool}
      */
     public function toApiPayload(): array
     {
         return [
             'id' => $this->id,
             'slug' => $this->slug,
+            'kind' => $this->kind,
             'name' => $this->name,
             'emoji' => $this->emoji,
             'description' => $this->description,

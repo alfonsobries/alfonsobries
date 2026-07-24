@@ -24,6 +24,14 @@
     "website/**",
     "**/dist/**",
     "**/build/**",
-    "**/CHANGELOG.md"
+    "**/CHANGELOG.md",
+    "api/.ai/**",
+    "api/.agents/**",
+    "api/.claude/**",
+    "api/.codex/**",
+    "api/.cursor/**",
+    "api/.grok/**",
+    "api/CLAUDE.md",
+    "api/AGENTS.md"
   ]
 }

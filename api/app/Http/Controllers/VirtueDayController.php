@@ -3,14 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\VirtueDay;
+use App\Models\VirtueEntry;
+use App\Virtue\JourneyArt;
+use App\Virtue\VirtueHabit;
+use App\Virtue\VirtueStats;
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 
 class VirtueDayController extends Controller
 {
+    public function __construct(private readonly VirtueStats $stats) {}
+
     /**
      * Every tracked day plus the running stats, so the screen renders from a
      * single call. The dataset stays tiny (one row per day), so no paging.
@@ -21,12 +28,16 @@ class VirtueDayController extends Controller
             return $response;
         }
 
+        $entries = VirtueEntry::orderBy('date')
+            ->get()
+            ->groupBy(fn (VirtueEntry $entry): string => $entry->date->toDateString());
+
         $days = VirtueDay::orderBy('date')
             ->get()
-            ->map(fn (VirtueDay $day): array => $this->present($day))
+            ->map(fn (VirtueDay $day): array => $this->present($day, $entries->get($day->date->toDateString(), collect())))
             ->values();
 
-        return response()->json(['data' => $days, 'stats' => $this->stats()]);
+        return response()->json(['data' => $days, 'stats' => $this->stats->summary()]);
     }
 
     /**
@@ -50,14 +61,30 @@ class VirtueDayController extends Controller
         $day = $this->dayFor($date);
         $day->update(['resolution' => $validated['resolution']]);
 
-        return response()->json(['data' => $this->present($day), 'stats' => $this->stats()]);
+        return $this->dayResponse($day);
     }
 
     /**
-     * Record that the daily prayers were completed. Idempotent — repeating
-     * the sequence keeps the first completion time.
+     * Record that the daily prayers were completed — or clear a mistaken
+     * mark. Completing is idempotent: repeating the sequence keeps the first
+     * completion time.
      */
     public function completePrayers(Request $request): JsonResponse
+    {
+        return $this->completeModule($request, 'prayers_completed_at');
+    }
+
+    /**
+     * Record that the rosary was prayed — or clear a mistaken mark.
+     * Completing is idempotent: repeating the rosary keeps the first
+     * completion time.
+     */
+    public function completeRosary(Request $request): JsonResponse
+    {
+        return $this->completeModule($request, 'rosary_completed_at');
+    }
+
+    private function completeModule(Request $request, string $column): JsonResponse
     {
         if ($response = $this->guard($request)) {
             return $response;
@@ -65,6 +92,7 @@ class VirtueDayController extends Controller
 
         $validated = $request->validate([
             'date' => ['required', 'date_format:Y-m-d'],
+            'completed' => ['sometimes', 'boolean'],
         ]);
 
         if ($response = $this->validateDate($validated['date'])) {
@@ -73,11 +101,101 @@ class VirtueDayController extends Controller
 
         $day = $this->dayFor($validated['date']);
 
-        if ($day->prayers_completed_at === null) {
-            $day->update(['prayers_completed_at' => now()]);
+        if (($validated['completed'] ?? true) === false) {
+            $day->update([$column => null]);
+        } elseif ($day->{$column} === null) {
+            $day->update([$column => now()]);
         }
 
-        return response()->json(['data' => $this->present($day), 'stats' => $this->stats()]);
+        return $this->dayResponse($day);
+    }
+
+    /**
+     * Mark or clear one of the entry-tracked habits for a day. Marking is
+     * idempotent (the first completion time wins) but measured minutes can
+     * keep growing as the health sync reports more; clearing deletes the
+     * entry so the day goes back to pending.
+     */
+    public function updateHabit(Request $request, string $date, string $habit): JsonResponse
+    {
+        if ($response = $this->guard($request)) {
+            return $response;
+        }
+
+        if ($response = $this->validateDate($date)) {
+            return $response;
+        }
+
+        if (VirtueHabit::tryFrom($habit) === null) {
+            return response()->json(['message' => 'Unknown habit.'], 422);
+        }
+
+        $validated = $request->validate([
+            'completed' => ['required', 'boolean'],
+            'minutes' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:1440'],
+            'big' => ['sometimes', 'boolean'],
+        ]);
+
+        $day = $this->dayFor($date);
+
+        $entry = VirtueEntry::whereDate('date', $date)->where('habit', $habit)->first();
+
+        if ($validated['completed'] && $entry === null) {
+            VirtueEntry::create([
+                'date' => $date,
+                'habit' => $habit,
+                'minutes' => $validated['minutes'] ?? null,
+                'big' => ($validated['big'] ?? false) || ($validated['minutes'] ?? 0) >= 60,
+                'completed_at' => now(),
+            ]);
+        } elseif ($validated['completed']) {
+            $minutes = array_key_exists('minutes', $validated)
+                ? max($validated['minutes'] ?? 0, $entry->minutes ?? 0)
+                : $entry->minutes;
+
+            $entry->update([
+                'minutes' => $minutes,
+                'big' => array_key_exists('big', $validated)
+                    ? $validated['big']
+                    : ($entry->big || ($minutes ?? 0) >= 60),
+            ]);
+        } elseif (! $validated['completed']) {
+            $entry?->delete();
+        }
+
+        return $this->dayResponse($day);
+    }
+
+    /**
+     * A progression-stage image from the virtue journey art. Layers stack as
+     * cielo (mind) + tierra (body) + arbol (spirit) — one PNG per game stage
+     * (1–30) per set, plus arbol-icon (the tree tight-cropped for compact UI).
+     * Also serves plate and knight. Everything goes through the API so the art
+     * stays private to the authenticated family.
+     */
+    public function mascot(Request $request, string $set, int $stage): mixed
+    {
+        if ($response = $this->guard($request)) {
+            return $response;
+        }
+
+        $totals = [
+            ...array_fill_keys(JourneyArt::SETS, JourneyArt::stageCount()),
+            'plate' => 1,
+            'knight' => 1,
+        ];
+
+        if (! isset($totals[$set]) || $stage < 1 || $stage > $totals[$set]) {
+            return response()->json(['message' => 'Unknown stage.'], 404);
+        }
+
+        $path = resource_path(sprintf('illustrations/%s/%s-%02d.png', $set, $set, $stage));
+
+        if (! file_exists($path)) {
+            return response()->json(['message' => 'Unknown stage.'], 404);
+        }
+
+        return response()->file($path, ['Cache-Control' => 'private, max-age=31536000, immutable']);
     }
 
     /**
@@ -121,46 +239,38 @@ class VirtueDayController extends Controller
         return null;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    private function present(VirtueDay $day): array
+    private function dayResponse(VirtueDay $day): JsonResponse
     {
-        return [
-            'date' => $day->date->toDateString(),
-            'prayers_completed' => $day->prayers_completed_at !== null,
-            'resolution' => $day->resolution,
-        ];
+        $entries = VirtueEntry::whereDate('date', $day->date->toDateString())->get();
+
+        return response()->json([
+            'data' => $this->present($day->refresh(), $entries),
+            'stats' => $this->stats->summary(),
+        ]);
     }
 
     /**
-     * The streak counts calendar days since the last explicit miss (or since
-     * tracking started) — an unmarked day stays pending and doesn't break it.
-     *
-     * @return array<string, int>
+     * @param  Collection<int, VirtueEntry>  $entries
+     * @return array<string, mixed>
      */
-    private function stats(): array
+    private function present(VirtueDay $day, Collection $entries): array
     {
-        $first = VirtueDay::min('date');
-        $lastMissed = VirtueDay::where('resolution', VirtueDay::RESOLUTION_MISSED)->max('date');
-
-        $streak = 0;
-
-        if ($first !== null) {
-            $start = $lastMissed === null
-                ? Carbon::parse((string) $first)
-                : Carbon::parse((string) $lastMissed)->addDay();
-
-            $streak = max(0, (int) $start->startOfDay()->diffInDays(now()->startOfDay()) + 1);
-        }
+        $completed = $entries->map(fn (VirtueEntry $entry): string => $entry->habit->value)->flip();
 
         return [
-            'streak' => $streak,
-            'days_tracked' => $first === null
-                ? 0
-                : (int) Carbon::parse((string) $first)->startOfDay()->diffInDays(now()->startOfDay()) + 1,
-            'kept_count' => VirtueDay::where('resolution', VirtueDay::RESOLUTION_KEPT)->count(),
-            'missed_count' => VirtueDay::where('resolution', VirtueDay::RESOLUTION_MISSED)->count(),
+            'date' => $day->date->toDateString(),
+            'prayers_completed' => $day->prayers_completed_at !== null,
+            'rosary_completed' => $day->rosary_completed_at !== null,
+            'resolution' => $day->resolution,
+            'habits' => collect(VirtueHabit::values())
+                ->mapWithKeys(fn (string $habit): array => [$habit => $completed->has($habit)])
+                ->all(),
+            'exercise_minutes' => $entries
+                ->first(fn (VirtueEntry $entry): bool => $entry->habit === VirtueHabit::Exercise)
+                ?->minutes,
+            'exercise_big' => (bool) $entries
+                ->first(fn (VirtueEntry $entry): bool => $entry->habit === VirtueHabit::Exercise)
+                ?->big,
         ];
     }
 }

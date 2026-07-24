@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Illustration } from '@/components/ui/Illustration';
 import { ArrowsClockwise, ImageSquare, Sparkle } from 'phosphor-react-native';
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
@@ -170,12 +170,7 @@ export const IllustrationField = forwardRef<IllustrationFieldHandle, Illustratio
               </Text>
             </View>
           ) : previewUri ? (
-            <Image
-              source={{ uri: previewUri }}
-              style={{ width: '100%', height: '100%' }}
-              contentFit="cover"
-              transition={200}
-            />
+            <Illustration source={{ uri: previewUri }} transition={200} />
           ) : (
             <View className="items-center gap-2 px-6">
               <Sparkle size={28} color={accent} weight="fill" />

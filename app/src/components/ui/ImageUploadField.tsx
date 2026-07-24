@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Illustration } from '@/components/ui/Illustration';
 import { ImageSquare } from 'phosphor-react-native';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
@@ -71,12 +71,7 @@ export function ImageUploadField({
             <Text className="text-sm text-muted">Uploading…</Text>
           </View>
         ) : previewUri ? (
-          <Image
-            source={{ uri: previewUri }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-            transition={150}
-          />
+          <Illustration source={{ uri: previewUri }} transition={150} />
         ) : (
           <View className="h-full w-full items-center justify-center gap-2 px-4">
             <ImageSquare size={28} color={muted} />

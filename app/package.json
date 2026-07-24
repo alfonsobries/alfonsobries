@@ -1,10 +1,11 @@
 {
   "private": true,
   "packageManager": "pnpm@10.18.3",
-  "main": "expo-router/entry",
+  "main": "./index.js",
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~57.0.1",
+    "@kingstinct/react-native-healthkit": "^14.0.2",
     "@react-native-community/netinfo": "12.0.1",
     "@react-native-segmented-control/segmented-control": "^2.5.7",
     "axios": "^1.18.1",
@@ -18,6 +19,7 @@
     "expo-file-system": "~57.0.0",
     "expo-font": "~57.0.0",
     "expo-glass-effect": "~57.0.0",
+    "expo-haptics": "~57.0.1",
     "expo-image": "~57.0.0",
     "expo-image-picker": "~57.0.2",
     "expo-ios-emoji-picker": "^0.1.0",
@@ -46,12 +48,15 @@
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.2",
     "react-native-svg": "^15.15.5",
+    "react-native-track-player": "^4.1.2",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.0",
     "tailwindcss": "3.4.19",
     "ziggy-js": "^2.6.3"
   },
   "devDependencies": {
+    "@babel/plugin-transform-react-jsx": "^8.0.1",
+    "@bacons/apple-targets": "^5.0.0",
     "@resvg/resvg-js": "^2.6.2",
     "@types/react": "~19.2.2",
     "babel-preset-expo": "57.0.1",
@@ -67,6 +72,8 @@
   },
   "scripts": {
     "start": "expo start",
+    "watch:resources": "node --experimental-strip-types ./scripts/generate-watch-resources.mjs",
+    "eas-build-pre-install": "pnpm watch:resources",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -85,7 +92,7 @@
     "ios:build:production": "eas build --platform ios --local --output ./build/app.ipa --profile production --freeze-credentials --non-interactive",
     "ios:submit": "eas submit --platform ios --path ./build/app.ipa --profile production --non-interactive",
     "ios:release": "pnpm ios:build:production && pnpm ios:submit",
-    "ota:production": "eas update --channel production --environment production --message \"Production release\" --non-interactive"
+    "ota:production": "eas update --channel production --environment production --message \"Production release\" --non-interactive && node scripts/notify-ota.mjs --channel production"
   },
   "name": "app"
 }

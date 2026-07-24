@@ -1,0 +1,23 @@
+/** Illustration per mystery, keyed by `Mystery.key`. Generated sacred art — see assets/rosary/. */
+export const MYSTERY_ART: Record<string, number> = {
+  'gozoso-1': require('../../assets/rosary/gozoso-1.webp'),
+  'gozoso-2': require('../../assets/rosary/gozoso-2.webp'),
+  'gozoso-3': require('../../assets/rosary/gozoso-3.webp'),
+  'gozoso-4': require('../../assets/rosary/gozoso-4.webp'),
+  'gozoso-5': require('../../assets/rosary/gozoso-5.webp'),
+  'luminoso-1': require('../../assets/rosary/luminoso-1.webp'),
+  'luminoso-2': require('../../assets/rosary/luminoso-2.webp'),
+  'luminoso-3': require('../../assets/rosary/luminoso-3.webp'),
+  'luminoso-4': require('../../assets/rosary/luminoso-4.webp'),
+  'luminoso-5': require('../../assets/rosary/luminoso-5.webp'),
+  'doloroso-1': require('../../assets/rosary/doloroso-1.webp'),
+  'doloroso-2': require('../../assets/rosary/doloroso-2.webp'),
+  'doloroso-3': require('../../assets/rosary/doloroso-3.webp'),
+  'doloroso-4': require('../../assets/rosary/doloroso-4.webp'),
+  'doloroso-5': require('../../assets/rosary/doloroso-5.webp'),
+  'glorioso-1': require('../../assets/rosary/glorioso-1.webp'),
+  'glorioso-2': require('../../assets/rosary/glorioso-2.webp'),
+  'glorioso-3': require('../../assets/rosary/glorioso-3.webp'),
+  'glorioso-4': require('../../assets/rosary/glorioso-4.webp'),
+  'glorioso-5': require('../../assets/rosary/glorioso-5.webp'),
+};

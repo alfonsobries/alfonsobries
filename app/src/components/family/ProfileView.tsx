@@ -1,39 +1,54 @@
 import { router } from 'expo-router';
-import { Smiley, Star } from 'phosphor-react-native';
+import { Smiley } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
+import { useAuth } from '@/api/auth';
 import { isKid, type Person } from '@/api/family';
+import { emotionLabel, useKidEmotions } from '@/api/kid-emotions';
 import { moodEmoji, moodLabel, useMoods } from '@/api/moods';
 import { KidBehaviorsSection } from '@/components/behaviors/KidBehaviorsSection';
 import { KidChoresSection } from '@/components/chores/KidChoresSection';
 import { AvatarCircle } from '@/components/family/AvatarCircle';
 import { ActionTile } from '@/components/ui/ActionTile';
+import { GrowthCard } from '@/components/virtue/GrowthCard';
+import { VirtueCover } from '@/components/virtue/VirtueCover';
 
-// The body of a person's profile — avatar, name, mood, and action tiles.
-// Rendered inside a scroll view by both the profile detail screen and the
-// "Profile" tab.
-export function ProfileView({ person }: { person: Person }) {
+// The body of a person's profile — compact avatar header, mood, and their
+// sections. Rendered inside a scroll view by both the profile detail screen
+// and the "Profile" tab. `hideIdentity` drops the avatar/name row for
+// screens that already carry the identity in their chrome (own Home).
+export function ProfileView({
+  person,
+  hideIdentity = false,
+}: {
+  person: Person;
+  hideIdentity?: boolean;
+}) {
+  const { user } = useAuth();
   const { members } = useMoods();
+  const { members: kidEmotions } = useKidEmotions();
+  const kid = isKid(person.key) ? person.key : null;
   const record = person.hasMood
     ? members.find((entry) => entry.family_member === person.key)
     : undefined;
+  const emotionRecord = kid ? kidEmotions.find((entry) => entry.family_member === kid) : undefined;
 
-  const compact = isKid(person.key);
+  // The virtue practice belongs to one person and only shows on their own tab.
+  const ownVirtue = person.key === 'alfonso' && user?.family_member === 'alfonso';
 
   return (
     <>
-      {compact ? (
-        // The kids' profile carries rewards, chores and behaviors, so the
-        // header stays small and out of the way.
-        <View className="flex-row items-center gap-3">
-          <AvatarCircle person={person.key} size={72} />
-          <Text className="text-2xl font-semibold text-foreground">{person.name}</Text>
-        </View>
-      ) : (
-        <View className="items-center gap-3 pt-2">
-          <AvatarCircle person={person.key} mood={record?.mood} size={176} />
+      {ownVirtue ? <VirtueCover /> : null}
 
-          <View className="items-center gap-1">
+      {hideIdentity ? null : (
+        <View className="flex-row items-center gap-4">
+          <AvatarCircle
+            person={person.key}
+            mood={record?.mood}
+            emotion={emotionRecord?.emotion}
+            size={isKid(person.key) ? 72 : 88}
+          />
+          <View className="flex-1 gap-0.5">
             <View className="flex-row items-center gap-2">
               <Text className="text-2xl font-semibold text-foreground">{person.name}</Text>
               {person.hasMood && record ? (
@@ -45,27 +60,42 @@ export function ProfileView({ person }: { person: Person }) {
                 Feels {moodLabel(record.mood).toLowerCase()}
               </Text>
             ) : null}
+            {kid && emotionRecord?.emotion ? (
+              <Text className="text-base text-muted">
+                Se siente {emotionLabel(kid, emotionRecord.emotion).toLowerCase()}
+              </Text>
+            ) : null}
           </View>
         </View>
       )}
 
       {person.hasMood ? (
-        <View className="flex-row flex-wrap">
-          <View className="w-1/2 p-1.5">
-            <ActionTile
-              icon={Smiley}
-              label="Adjust mood"
-              onPress={() => router.push(`/mood?member=${person.key}`)}
-            />
-          </View>
-          <View className="w-1/2 p-1.5">
-            <ActionTile icon={Star} label="Coming soon" disabled />
-          </View>
-        </View>
-      ) : isKid(person.key) ? (
         <>
-          <KidChoresSection member={person.key} />
-          <KidBehaviorsSection member={person.key} />
+          {ownVirtue ? <GrowthCard /> : null}
+
+          <View className="flex-row flex-wrap">
+            <View className="w-1/2 p-1.5">
+              <ActionTile
+                icon={Smiley}
+                label="Adjust mood"
+                onPress={() => router.push(`/mood?member=${person.key}`)}
+              />
+            </View>
+          </View>
+        </>
+      ) : kid ? (
+        <>
+          <View className="flex-row flex-wrap">
+            <View className="w-1/2 p-1.5">
+              <ActionTile
+                icon={Smiley}
+                label="¿Cómo te sientes?"
+                onPress={() => router.push({ pathname: '/emotion', params: { member: kid } })}
+              />
+            </View>
+          </View>
+          <KidChoresSection member={kid} />
+          <KidBehaviorsSection member={kid} />
         </>
       ) : (
         <Text className="text-center text-sm text-muted">Nothing here yet.</Text>

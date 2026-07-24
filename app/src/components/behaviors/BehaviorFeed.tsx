@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Illustration } from '@/components/ui/Illustration';
 import { ClockCounterClockwise, HandPalm } from 'phosphor-react-native';
 import { Alert, Pressable, Text, View } from 'react-native';
 
@@ -83,11 +83,7 @@ function FeedRow({
     >
       <View className="size-16 items-center justify-center overflow-hidden rounded-xl bg-surface-selected">
         {entry.behavior.image_url ? (
-          <Image
-            source={{ uri: entry.behavior.image_url }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-          />
+          <Illustration source={{ uri: entry.behavior.image_url }} />
         ) : (
           <HandPalm size={26} color={accent} weight="fill" />
         )}

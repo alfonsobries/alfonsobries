@@ -40,6 +40,11 @@ return [
         'chat_id' => env('TELEGRAM_CHAT_ID'),
     ],
 
+    'eas' => [
+        // Shared secret that signs the OTA-published webhook (see OtaUpdateController).
+        'notify_secret' => env('EAS_NOTIFY_SECRET'),
+    ],
+
     'apple' => [
         // The iOS bundle identifier, used as the expected `aud` of the identity
         // tokens issued by expo-apple-authentication.

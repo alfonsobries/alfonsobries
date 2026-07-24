@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Assistant;
 use App\Models\ChatMessage;
 use App\Models\Conversation;
+use App\Models\User;
 use App\Services\ChatMessenger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ConversationController extends Controller
 {
@@ -56,6 +58,8 @@ class ConversationController extends Controller
             'content' => ['nullable', 'string', 'max:8000', 'required_without:image_paths'],
             'image_paths' => ['nullable', 'array', 'max:4'],
             'image_paths.*' => ['string', 'starts_with:temp/'],
+            'members' => ['nullable', 'array'],
+            'members.*' => ['string', Rule::in([...User::MOOD_MEMBERS, ...User::KID_MEMBERS])],
         ]);
 
         $assistant = Assistant::findOrFail($validated['assistant_id']);
@@ -68,6 +72,8 @@ class ConversationController extends Controller
             'user_id' => $request->user()->id,
             'assistant_id' => $assistant->id,
             'title' => Str::limit(trim($validated['content'] ?? ''), 60) ?: null,
+            // Who stars in the drawings; only meaningful for the illustrator.
+            'members' => $assistant->isIllustrator() ? array_values(array_unique($validated['members'] ?? [])) : null,
         ]);
 
         $messenger->send($conversation, $validated['content'] ?? null, $validated['image_paths'] ?? []);

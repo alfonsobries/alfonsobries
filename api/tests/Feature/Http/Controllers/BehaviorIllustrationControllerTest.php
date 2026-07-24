@@ -5,12 +5,12 @@ use App\Jobs\GenerateBehaviorIllustration;
 use App\Models\BehaviorIllustration;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Ai\Image;
 
 it('generates an illustration and stores it in temp storage', function () {
     Storage::fake('s3')->buildTemporaryUrlsUsing(fn (string $path): string => "https://s3.test/{$path}");
-    Image::fake();
+    fakeImageGeneration();
     Event::fake([BehaviorIllustrationUpdated::class]);
 
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
@@ -24,12 +24,12 @@ it('generates an illustration and stores it in temp storage', function () {
     expect($response->json('data.path'))->toStartWith('temp/behavior-illustrations/');
     expect($response->json('data.url'))->not->toBeNull();
 
-    Image::assertGenerated(fn ($generation): bool => str_contains($generation->prompt, 'Shouting'));
+    Http::assertSent(fn ($request): bool => str_contains(sentImagePrompt($request), 'Shouting'));
 });
 
 it('draws the kid the behavior belongs to', function () {
     Storage::fake('s3');
-    Image::fake();
+    fakeImageGeneration();
     Event::fake([BehaviorIllustrationUpdated::class]);
 
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
@@ -38,15 +38,15 @@ it('draws the kid the behavior belongs to', function () {
         ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Tantrum', 'family_member' => 'andres'])
         ->assertCreated();
 
-    Image::assertGenerated(
-        fn ($generation): bool => str_contains($generation->prompt, 'Andrés')
-            && str_contains($generation->prompt, 'Main character: Andrés'),
+    Http::assertSent(
+        fn ($request): bool => str_contains(sentImagePrompt($request), 'Andrés')
+            && str_contains(sentImagePrompt($request), 'Main character: Andrés'),
     );
 });
 
 it('broadcasts when the generation completes', function () {
     Storage::fake('s3');
-    Image::fake();
+    fakeImageGeneration();
     Event::fake([BehaviorIllustrationUpdated::class]);
 
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
@@ -76,7 +76,7 @@ it('broadcasts when the generation fails', function () {
 
 it('sends the style guide with every generation', function () {
     Storage::fake('s3');
-    Image::fake();
+    fakeImageGeneration();
     Event::fake([BehaviorIllustrationUpdated::class]);
 
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
@@ -85,7 +85,7 @@ it('sends the style guide with every generation', function () {
         ->postJson(route('api.behavior-illustrations.store'), ['name' => 'Hitting', 'family_member' => 'regina'])
         ->assertCreated();
 
-    Image::assertGenerated(fn ($generation): bool => str_contains($generation->prompt, 'hand-drawn illustration'));
+    Http::assertSent(fn ($request): bool => str_contains(sentImagePrompt($request), 'hand-drawn illustration'));
 });
 
 it('shows a pending illustration while it is still generating', function () {

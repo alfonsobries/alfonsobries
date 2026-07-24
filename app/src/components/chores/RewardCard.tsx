@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Illustration } from '@/components/ui/Illustration';
 import { CheckCircle, CircleDashed, Gift } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
@@ -30,11 +30,7 @@ export function RewardCard({ reward, balance, onRedeem }: RewardCardProperties) 
       <View className="flex-row items-center gap-3">
         <View className="size-16 items-center justify-center overflow-hidden rounded-2xl bg-surface-selected">
           {reward.image_url ? (
-            <Image
-              source={{ uri: reward.image_url }}
-              style={{ width: '100%', height: '100%' }}
-              contentFit="cover"
-            />
+            <Illustration source={{ uri: reward.image_url }} />
           ) : (
             <Gift size={28} color={accent} weight="fill" />
           )}

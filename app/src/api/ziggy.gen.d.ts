@@ -6,11 +6,19 @@ export declare const Ziggy: Config;
 declare module 'ziggy-js' {
   interface RouteList {
     "api.status": [],
+    "api.ota.published": [],
     "api.auth.apple": [],
     "api.auth.logout": [],
     "api.user": [],
     "api.moods.index": [],
     "api.moods.update": [
+        {
+            "name": "member",
+            "required": true
+        }
+    ],
+    "api.kid-emotions.index": [],
+    "api.kid-emotions.update": [
         {
             "name": "member",
             "required": true
@@ -132,7 +140,28 @@ declare module 'ziggy-js' {
             "required": true
         }
     ],
+    "api.virtue.days.habit": [
+        {
+            "name": "date",
+            "required": true
+        },
+        {
+            "name": "habit",
+            "required": true
+        }
+    ],
     "api.virtue.prayers.store": [],
+    "api.virtue.rosary.store": [],
+    "api.virtue.mascot": [
+        {
+            "name": "set",
+            "required": true
+        },
+        {
+            "name": "stage",
+            "required": true
+        }
+    ],
     "api.assistants.index": [],
     "api.conversations.index": [],
     "api.conversations.store": [],
@@ -160,6 +189,17 @@ declare module 'ziggy-js' {
     "api.chat-messages.show": [
         {
             "name": "chatMessage",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.ai-models.index": [],
+    "api.ai-models.update": [],
+    "api.illustration-favorites.index": [],
+    "api.illustration-favorites.store": [],
+    "api.illustration-favorites.destroy": [
+        {
+            "name": "favoriteIllustration",
             "required": true,
             "binding": "id"
         }

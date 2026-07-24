@@ -18,6 +18,25 @@ component once, demo it there, and reuse it everywhere.
   `runtimeVersion` bump + rebuild), that's an acceptable cost — choose it anyway.
   Never settle for a weaker JS-only option just to keep shipping over OTA.
 
+## Screen chrome
+
+A screen's frame — header, title, back button, top safe area — belongs to the
+navigator, not to the screen body. Hand-rolling any of it is what makes two
+screens look like two apps.
+
+- Set the title with `Stack.Screen.Title` and the actions with `headerRight`.
+  Never draw a header row, a back control, or a page title inside the screen.
+  Titles stay compact: `large` reserves an empty navigation bar above itself,
+  which reads as dead space on a screen with nothing to navigate back to.
+- A screen under a native header needs no `SafeAreaView` or `insets.top`; the
+  header already clears it. Only bottom-edge chrome (composers, sheets) reserves
+  an inset of its own.
+- Form sheets have no header, so their body goes in `Sheet` — the grabber
+  clearance, side padding and home-indicator gap live there once. A sheet that
+  scrolls passes `scrollable` rather than nesting a `ScrollView`: iOS resizes a
+  sheet's first descendant scroll view to the whole sheet, and a nested one then
+  paints over everything above it.
+
 ## Structure
 
 - `src/app/design-system/` — the catalog `index` plus one sub-page per category

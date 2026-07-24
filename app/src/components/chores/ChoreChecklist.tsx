@@ -1,4 +1,4 @@
-import { Image } from 'expo-image';
+import { Illustration } from '@/components/ui/Illustration';
 import { Check, CircleDashed, HourglassMedium, Star, X } from 'phosphor-react-native';
 import { Alert, Pressable, Text, View } from 'react-native';
 
@@ -84,11 +84,7 @@ function ChoreRow({
     >
       <View className="size-14 items-center justify-center overflow-hidden rounded-xl bg-surface-selected">
         {chore.image_url ? (
-          <Image
-            source={{ uri: chore.image_url }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-          />
+          <Illustration source={{ uri: chore.image_url }} />
         ) : (
           <Star size={24} color={accent} weight="fill" />
         )}

@@ -6,8 +6,8 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 export type CalendarDayMark = {
   /** Fills the day circle — the primary signal of the day's state. */
   tone?: 'primary' | 'danger' | 'muted';
-  /** A small dot under the number — a secondary, independent signal. */
-  dot?: boolean;
+  /** Small dots under the number — a secondary count signal (capped at four). */
+  dots?: number;
 };
 
 type MonthCalendarProperties = {
@@ -145,10 +145,15 @@ export function MonthCalendar({
                     >
                       {day}
                     </Text>
-                    <View
-                      className="absolute bottom-1 size-1 rounded-full"
-                      style={{ backgroundColor: mark?.dot ? dotColor : 'transparent' }}
-                    />
+                    <View className="absolute bottom-1 flex-row gap-0.5">
+                      {Array.from({ length: Math.min(4, mark?.dots ?? 0) }, (_, index) => (
+                        <View
+                          key={index}
+                          className="size-1 rounded-full"
+                          style={{ backgroundColor: dotColor }}
+                        />
+                      ))}
+                    </View>
                   </Pressable>
                 </View>
               );
