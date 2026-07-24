@@ -119,6 +119,7 @@ export const cacheKeys = {
   /** A kid's profile block: their open rewards, balance and chore progress. */
   routine: (member?: string) => `routine-${member ?? 'none'}`,
   chores: (member?: string) => `chores-${member ?? 'none'}`,
+  rewards: (member?: string) => `rewards-${member ?? 'none'}`,
   choreLogs: (member?: string) => `chore-logs-${member ?? 'all'}`,
   behaviors: (member?: string) => `behaviors-${member ?? 'none'}`,
   behaviorFeed: (member?: string) => `behavior-feed-${member ?? 'none'}`,

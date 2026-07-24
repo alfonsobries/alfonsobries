@@ -10,6 +10,8 @@ import { getPerson, isKid } from '@/api/family';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys, readCache, writeCache } from '@/offline/store';
 
 // The parents' list of a kid's daily chores: add, edit, or retire them.
 // The whole screen sits behind Face ID.
@@ -31,9 +33,16 @@ export default function ManageChoresScreen() {
     }
 
     try {
-      setChores(await fetchChores(route, kid));
-    } catch {
-      // Keep the previous list; the next focus retries.
+      const next = await fetchChores(route, kid);
+      writeCache(cacheKeys.chores(kid), next);
+      setChores(next);
+    } catch (error) {
+      // The list stays readable offline; editing it still needs the API.
+      const cached = isOfflineError(error) ? readCache<Chore[]>(cacheKeys.chores(kid)) : null;
+
+      if (cached) {
+        setChores(cached);
+      }
     }
   }, [route, kid]);
 

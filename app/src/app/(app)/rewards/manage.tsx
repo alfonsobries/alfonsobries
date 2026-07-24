@@ -5,11 +5,13 @@ import { CaretRight, Gift, LockKey, Plus } from 'phosphor-react-native';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { deleteReward, fetchRewards, type Reward } from '@/api/chores';
+import { deleteReward, fetchRewards, type Reward, type RewardsSummary } from '@/api/chores';
 import { getPerson, isKid } from '@/api/family';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys, readCache, writeCache } from '@/offline/store';
 
 // The parents' list of a kid's rewards. The first pending one is what the
 // kid's progress card points at. Face ID gated.
@@ -31,12 +33,24 @@ export default function ManageRewardsScreen() {
       return;
     }
 
-    try {
-      const summary = await fetchRewards(route, kid);
+    function apply(summary: RewardsSummary): void {
       setRewards(summary.rewards);
       setBalance(summary.balance);
-    } catch {
-      // Keep the previous list; the next focus retries.
+    }
+
+    try {
+      const summary = await fetchRewards(route, kid);
+      writeCache(cacheKeys.rewards(kid), summary);
+      apply(summary);
+    } catch (error) {
+      // The list stays readable offline; editing it still needs the API.
+      const cached = isOfflineError(error)
+        ? readCache<RewardsSummary>(cacheKeys.rewards(kid))
+        : null;
+
+      if (cached) {
+        apply(cached);
+      }
     }
   }, [route, kid]);
 
