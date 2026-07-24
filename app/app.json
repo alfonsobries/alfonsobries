@@ -78,7 +78,7 @@
         "@kingstinct/react-native-healthkit",
         {
           "NSHealthShareUsageDescription": "Lee tus minutos de ejercicio para marcar el hábito del día.",
-          "NSHealthUpdateUsageDescription": false,
+          "NSHealthUpdateUsageDescription": "La app no escribe datos de salud; el sistema requiere declarar este permiso.",
           "background": false
         }
       ]
