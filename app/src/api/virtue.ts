@@ -18,6 +18,8 @@ export type VirtueDay = {
   habits: Record<VirtueHabit, boolean>;
   /** Measured exercise for the day (Apple Health); a full hour earns a second point. */
   exercise_minutes: number | null;
+  /** A big session — measured hour or marked by hand — worth a second point. */
+  exercise_big: boolean;
 };
 
 export type RosaryStats = {
@@ -93,11 +95,11 @@ export async function setHabit(
   date: string,
   habit: VirtueHabit,
   completed: boolean,
-  minutes?: number,
+  extras: { minutes?: number; big?: boolean } = {},
 ): Promise<{ day: VirtueDay; stats: VirtueStats }> {
   const { data } = await apiClient.put<{ data: VirtueDay; stats: VirtueStats }>(
     route('api.virtue.days.habit', { date, habit }),
-    minutes === undefined ? { completed } : { completed, minutes },
+    { completed, ...extras },
   );
 
   return { day: data.data, stats: data.stats };

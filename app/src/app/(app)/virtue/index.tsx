@@ -104,7 +104,7 @@ export default function VirtueScreen() {
 
     if (minutes !== null && minutes >= 20 && minutes > (day?.exercise_minutes ?? 0)) {
       try {
-        const result = await setHabit(route, date, 'exercise', true, minutes);
+        const result = await setHabit(route, date, 'exercise', true, { minutes });
         setDays((current) => ({ ...current, [result.day.date]: result.day }));
         setStats(result.stats);
       } catch {
@@ -467,19 +467,46 @@ export default function VirtueScreen() {
           </View>
 
           {ENTRY_HABITS.map(({ key, label, anchor, Icon }) => (
-            <HabitToggleRow
-              key={key}
-              Icon={Icon}
-              label={label}
-              subtitle={
-                key === 'exercise' && todayEntry?.exercise_minutes
-                  ? `${todayEntry.exercise_minutes} min from Health${todayEntry.exercise_minutes >= 60 ? ' · double point' : ''}`
-                  : anchor
-              }
-              done={todayEntry?.habits[key] ?? false}
-              disabled={saving}
-              onToggle={() => void toggleHabit(key)}
-            />
+            <View key={key} className="gap-2">
+              <HabitToggleRow
+                Icon={Icon}
+                label={label}
+                subtitle={
+                  key === 'exercise' && todayEntry?.exercise_big
+                    ? 'Big session · double point'
+                    : key === 'exercise' && todayEntry?.exercise_minutes
+                      ? `${todayEntry.exercise_minutes} min from Health`
+                      : anchor
+                }
+                done={todayEntry?.habits[key] ?? false}
+                disabled={saving}
+                onToggle={() => void toggleHabit(key)}
+              />
+              {key === 'exercise' && todayEntry?.habits.exercise && !todayEntry.exercise_big ? (
+                <Pressable
+                  accessibilityRole="button"
+                  disabled={saving}
+                  onPress={() =>
+                    void (async () => {
+                      setSaving(true);
+
+                      try {
+                        apply(await setHabit(route, today, 'exercise', true, { big: true }));
+                      } catch {
+                        Alert.alert('Could not save', 'Please try again in a moment.');
+                      } finally {
+                        setSaving(false);
+                      }
+                    })()
+                  }
+                  className="self-end active:opacity-70"
+                >
+                  <Text className="text-xs text-muted underline">
+                    ¿Fue sesión grande? Marcar doble
+                  </Text>
+                </Pressable>
+              ) : null}
+            </View>
           ))}
 
           <View className="h-px bg-border" />

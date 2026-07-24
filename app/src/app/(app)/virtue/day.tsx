@@ -29,6 +29,7 @@ const EMPTY_DAY = (date: string): VirtueDay => ({
   resolution: null,
   habits: { exercise: false, diet: false, sun: false, reading: false },
   exercise_minutes: null,
+  exercise_big: false,
 });
 
 // Any day of the practice, editable in one place — today from the checklist,

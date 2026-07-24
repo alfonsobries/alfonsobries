@@ -133,6 +133,7 @@ class VirtueDayController extends Controller
         $validated = $request->validate([
             'completed' => ['required', 'boolean'],
             'minutes' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:1440'],
+            'big' => ['sometimes', 'boolean'],
         ]);
 
         $day = $this->dayFor($date);
@@ -144,10 +145,20 @@ class VirtueDayController extends Controller
                 'date' => $date,
                 'habit' => $habit,
                 'minutes' => $validated['minutes'] ?? null,
+                'big' => ($validated['big'] ?? false) || ($validated['minutes'] ?? 0) >= 60,
                 'completed_at' => now(),
             ]);
-        } elseif ($validated['completed'] && array_key_exists('minutes', $validated)) {
-            $entry->update(['minutes' => max($validated['minutes'] ?? 0, $entry->minutes ?? 0)]);
+        } elseif ($validated['completed']) {
+            $minutes = array_key_exists('minutes', $validated)
+                ? max($validated['minutes'] ?? 0, $entry->minutes ?? 0)
+                : $entry->minutes;
+
+            $entry->update([
+                'minutes' => $minutes,
+                'big' => array_key_exists('big', $validated)
+                    ? $validated['big']
+                    : ($entry->big || ($minutes ?? 0) >= 60),
+            ]);
         } elseif (! $validated['completed']) {
             $entry?->delete();
         }
@@ -257,6 +268,9 @@ class VirtueDayController extends Controller
             'exercise_minutes' => $entries
                 ->first(fn (VirtueEntry $entry): bool => $entry->habit === VirtueHabit::Exercise)
                 ?->minutes,
+            'exercise_big' => (bool) $entries
+                ->first(fn (VirtueEntry $entry): bool => $entry->habit === VirtueHabit::Exercise)
+                ?->big,
         ];
     }
 }
