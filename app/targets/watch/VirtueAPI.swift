@@ -70,6 +70,9 @@ enum VirtueAPI {
 
     private static func localDate() -> String {
         let formatter = DateFormatter()
+        // A fixed locale, so a device set to a non-Gregorian calendar still
+        // sends the date the API validates.
+        formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: Date())
     }
