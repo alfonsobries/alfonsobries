@@ -1,17 +1,13 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { isOfflineError } from './connectivity';
-import { readCacheEntry, writeCache } from './store';
+import { readCache, writeCache } from './store';
 
 export type CachedResourceStatus = 'loading' | 'ready' | 'error';
 
 export type CachedResource<T> = {
   data: T | null;
   status: CachedResourceStatus;
-  /** True while the data on screen came from the cache and not from the API. */
-  isStale: boolean;
-  /** Epoch milliseconds of the copy on screen, or `null` when there is none. */
-  updatedAt: number | null;
   refresh: () => Promise<void>;
   /** Applies a local change and persists it, for optimistic updates. */
   update: (updater: (current: T | null) => T | null) => void;
@@ -25,7 +21,6 @@ type Options = {
 type Local<T> = {
   key: string;
   value: T;
-  updatedAt: number;
 };
 
 /**
@@ -45,7 +40,7 @@ export function useCachedResource<T>(
 
   // Read synchronously so a cold start offline paints real data on the very
   // first render rather than after an effect.
-  const cached = useMemo(() => readCacheEntry<T>(key), [key]);
+  const cached = useMemo(() => readCache<T>(key), [key]);
 
   const [local, setLocal] = useState<Local<T> | null>(null);
   const [failedKey, setFailedKey] = useState<string | null>(null);
@@ -53,8 +48,7 @@ export function useCachedResource<T>(
   const requestedKey = useRef(key);
 
   const current = local?.key === key ? local : null;
-  const data = current ? current.value : (cached?.value ?? null);
-  const updatedAt = current ? current.updatedAt : (cached?.updatedAt ?? null);
+  const data = current ? current.value : cached;
 
   const status: CachedResourceStatus =
     data !== null ? 'ready' : failedKey === key ? 'error' : 'loading';
@@ -74,7 +68,7 @@ export function useCachedResource<T>(
       }
 
       writeCache(key, value);
-      setLocal({ key, value, updatedAt: Date.now() });
+      setLocal({ key, value });
       setFailedKey(null);
     } catch (error) {
       if (requestedKey.current !== key) {
@@ -82,8 +76,8 @@ export function useCachedResource<T>(
       }
 
       // Offline with something cached is a normal state, not a failure: leave
-      // what is on screen and let it read as stale.
-      if (isOfflineError(error) && readCacheEntry<T>(key)) {
+      // what is already on screen rather than replacing it with an error.
+      if (isOfflineError(error) && readCache<T>(key) !== null) {
         return;
       }
 
@@ -94,8 +88,7 @@ export function useCachedResource<T>(
   const update = useCallback(
     (updater: (current: T | null) => T | null) => {
       setLocal((previous) => {
-        const base =
-          previous?.key === key ? previous.value : (readCacheEntry<T>(key)?.value ?? null);
+        const base = previous?.key === key ? previous.value : readCache<T>(key);
         const next = updater(base);
 
         if (next === null) {
@@ -104,12 +97,12 @@ export function useCachedResource<T>(
 
         writeCache(key, next);
 
-        return { key, value: next, updatedAt: Date.now() };
+        return { key, value: next };
       });
       setFailedKey(null);
     },
     [key],
   );
 
-  return { data, status, isStale: current === null, updatedAt, refresh, update };
+  return { data, status, refresh, update };
 }
