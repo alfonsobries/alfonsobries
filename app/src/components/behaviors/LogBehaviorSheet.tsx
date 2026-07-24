@@ -6,12 +6,13 @@ import { useState, type ReactNode } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { logBehavior, type Behavior } from '@/api/behaviors';
+import { logBehavior, queueLogBehavior, type Behavior } from '@/api/behaviors';
 import { getPerson } from '@/api/family';
 import { useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { isOfflineError } from '@/offline/connectivity';
 
 type LogBehaviorSheetProperties = {
   behavior: Behavior;
@@ -56,7 +57,13 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
       // Logging may have lowered the parent's mood on the API side.
       await refreshMoods();
       router.back();
-    } catch {
+    } catch (error) {
+      if (isOfflineError(error)) {
+        queueLogBehavior({ behavior: behavior.id, affected_mood: affectedMood });
+        router.back();
+        return;
+      }
+
       setSaving(false);
       Alert.alert('Could not save', 'Please try again in a moment.');
     }
