@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "alfonsobries",
     "userInterfaceStyle": "automatic",
-    "runtimeVersion": "1.10.0",
+    "runtimeVersion": "1.11.0",
     "updates": {
       "url": "https://u.expo.dev/fbd135b1-6baa-4be2-b789-254386da114d"
     },
@@ -22,7 +22,8 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "UIBackgroundModes": ["audio"]
-      }
+      },
+      "appleTeamId": "TY2LB9Y7DK"
     },
     "android": {
       "package": "com.alfonsobries.app",
@@ -72,7 +73,15 @@
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos to your library."
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "Lee tus minutos de ejercicio para marcar el hábito del día.",
+          "NSHealthUpdateUsageDescription": false,
+          "background-delivery": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

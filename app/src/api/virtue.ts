@@ -8,7 +8,7 @@ export type Resolution = 'kept' | 'missed';
 export type VirtueArea = 'body' | 'mind' | 'spirit';
 
 /** The entry-tracked habits; the prayers and the resolution have flows of their own. */
-export type VirtueHabit = 'exercise' | 'diet' | 'reading';
+export type VirtueHabit = 'exercise' | 'diet' | 'sun' | 'reading';
 
 export type VirtueDay = {
   date: string;
@@ -16,6 +16,8 @@ export type VirtueDay = {
   rosary_completed: boolean;
   resolution: Resolution | null;
   habits: Record<VirtueHabit, boolean>;
+  /** Measured exercise for the day (Apple Health); a full hour earns a second point. */
+  exercise_minutes: number | null;
 };
 
 export type RosaryStats = {
@@ -91,10 +93,11 @@ export async function setHabit(
   date: string,
   habit: VirtueHabit,
   completed: boolean,
+  minutes?: number,
 ): Promise<{ day: VirtueDay; stats: VirtueStats }> {
   const { data } = await apiClient.put<{ data: VirtueDay; stats: VirtueStats }>(
     route('api.virtue.days.habit', { date, habit }),
-    { completed },
+    minutes === undefined ? { completed } : { completed, minutes },
   );
 
   return { day: data.data, stats: data.stats };
