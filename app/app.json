@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "alfonsobries",
     "userInterfaceStyle": "automatic",
-    "runtimeVersion": "1.8.0",
+    "runtimeVersion": "1.9.0",
     "updates": {
       "url": "https://u.expo.dev/fbd135b1-6baa-4be2-b789-254386da114d"
     },
@@ -21,7 +21,9 @@
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "UIBackgroundModes": ["audio"]
+        "UIBackgroundModes": [
+          "audio"
+        ]
       }
     },
     "android": {
