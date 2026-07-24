@@ -5,7 +5,14 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { authImageHeaders } from '@/api/client';
 import { useApiRouter } from '@/api/router';
-import { fetchVirtueSummary, type VirtueDay, type VirtueStats } from '@/api/virtue';
+import {
+  fetchVirtueSummary,
+  type VirtueDay,
+  type VirtueStats,
+  type VirtueSummary,
+} from '@/api/virtue';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys, readCache, writeCache } from '@/offline/store';
 import { Card } from '@/components/ui/Card';
 import { Illustration } from '@/components/ui/Illustration';
 import { WeekStrip, lastSevenDays } from '@/components/virtue/WeekStrip';
@@ -25,12 +32,24 @@ export default function VirtueAreaScreen() {
   const [stats, setStats] = useState<VirtueStats | null>(null);
 
   const load = useCallback(async () => {
-    try {
-      const summary = await fetchVirtueSummary(route);
+    function apply(summary: VirtueSummary): void {
       setDays(summary.days);
       setStats(summary.stats);
-    } catch {
-      // The retry is one focus away.
+    }
+
+    try {
+      const summary = await fetchVirtueSummary(route);
+      writeCache(cacheKeys.virtueSummary, summary);
+      apply(summary);
+    } catch (error) {
+      // The area reads the same cached summary as the rest of the section.
+      if (isOfflineError(error)) {
+        const cached = readCache<VirtueSummary>(cacheKeys.virtueSummary);
+
+        if (cached) {
+          apply(cached);
+        }
+      }
     }
   }, [route]);
 

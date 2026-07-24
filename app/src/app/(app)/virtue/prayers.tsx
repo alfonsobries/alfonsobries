@@ -5,7 +5,14 @@ import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useApiRouter } from '@/api/router';
-import { completePrayers, localDate } from '@/api/virtue';
+import {
+  cacheVirtueDay,
+  completePrayers,
+  localDate,
+  queuePrayers,
+  virtueDedupeKey,
+} from '@/api/virtue';
+import { isOfflineError } from '@/offline/connectivity';
 import { PrayerBlockView } from '@/components/prayers/PrayerBlockView';
 import { Button } from '@/components/ui/Button';
 import { getPrayerSteps } from '@/data/auxilium';
@@ -46,10 +53,22 @@ export default function PrayersScreen() {
   async function handleFinish(): Promise<void> {
     setFinishing(true);
 
+    const date = localDate();
+    // Same as the rosary: the prayers ship with the app, so finishing them is
+    // recorded locally first and reconciled with the API afterwards.
+    cacheVirtueDay(date, { prayers_completed: true });
+
     try {
-      await completePrayers(route, localDate());
+      await completePrayers(route, date);
       router.back();
-    } catch {
+    } catch (error) {
+      if (isOfflineError(error)) {
+        queuePrayers({ date, completed: true }, { dedupeKey: virtueDedupeKey.prayers(date) });
+        router.back();
+        return;
+      }
+
+      cacheVirtueDay(date, { prayers_completed: false });
       setFinishing(false);
       Alert.alert('Could not save', 'Please try again in a moment.');
     }

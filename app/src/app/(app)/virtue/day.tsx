@@ -5,15 +5,22 @@ import { Alert, Pressable, Text, View } from 'react-native';
 
 import { useApiRouter } from '@/api/router';
 import {
+  cacheVirtueDay,
   completePrayers,
   completeRosary,
   fetchVirtueSummary,
   localDate,
+  queueHabit,
+  queuePrayers,
+  queueResolution,
+  queueRosary,
   setHabit,
   setResolution,
+  virtueDedupeKey,
   type Resolution,
   type VirtueDay,
   type VirtueHabit,
+  type VirtueSummary,
 } from '@/api/virtue';
 import { Button } from '@/components/ui/Button';
 import { Sheet } from '@/components/ui/Sheet';
@@ -21,6 +28,10 @@ import { HabitToggleRow } from '@/components/virtue/HabitToggleRow';
 import { ResolutionPicker } from '@/components/virtue/ResolutionPicker';
 import { ENTRY_HABITS } from '@/data/virtue';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys, readCache } from '@/offline/store';
+
+type DayPatch = Partial<Omit<VirtueDay, 'date'>>;
 
 const EMPTY_DAY = (date: string): VirtueDay => ({
   date,
@@ -53,8 +64,18 @@ export default function VirtueDayScreen() {
         if (found) {
           setDay(found);
         }
-      } catch {
-        // The sheet still works from the empty state; saving syncs it.
+      } catch (error) {
+        // Offline, the day opens on whatever the cache last saw, so a mark
+        // never starts from a blank sheet and wipes what was already there.
+        if (isOfflineError(error)) {
+          const cached = readCache<VirtueSummary>(cacheKeys.virtueSummary)?.days.find(
+            (entry) => entry.date === date,
+          );
+
+          if (cached) {
+            setDay(cached);
+          }
+        }
       }
     })();
   }, [route, date]);
@@ -67,25 +88,70 @@ export default function VirtueDayScreen() {
 
   const isToday = date === localDate();
 
-  const save = useCallback(async (action: () => Promise<{ day: VirtueDay }>) => {
-    setSaving(true);
+  // Every mark lands locally first, then tells the API. Without a connection it
+  // is queued instead, so a day filled in on a plane is still a filled-in day.
+  const save = useCallback(
+    async (patch: DayPatch, action: () => Promise<{ day: VirtueDay }>, enqueue: () => void) => {
+      setSaving(true);
 
-    try {
-      const result = await action();
-      setDay(result.day);
-    } catch {
-      Alert.alert('Could not save', 'Please try again in a moment.');
-    } finally {
-      setSaving(false);
-    }
-  }, []);
+      const previous = day;
+      setDay((current) => ({ ...current, ...patch }));
+      cacheVirtueDay(date, patch);
+
+      try {
+        const result = await action();
+        setDay(result.day);
+        cacheVirtueDay(date, result.day);
+      } catch (error) {
+        if (isOfflineError(error)) {
+          enqueue();
+          return;
+        }
+
+        setDay(previous);
+        cacheVirtueDay(date, previous);
+        Alert.alert('Could not save', 'Please try again in a moment.');
+      } finally {
+        setSaving(false);
+      }
+    },
+    [date, day],
+  );
 
   function toggleHabit(habit: VirtueHabit): void {
-    void save(() => setHabit(route, date, habit, !day.habits[habit]));
+    const completed = !day.habits[habit];
+
+    // Measured minutes and a hand-marked big session queue under this same key,
+    // so a manual toggle has to carry what the day already knew about them.
+    const extras =
+      habit === 'exercise' && completed
+        ? {
+            ...(day.exercise_minutes != null ? { minutes: day.exercise_minutes } : {}),
+            ...(day.exercise_big ? { big: true } : {}),
+          }
+        : {};
+
+    void save(
+      { habits: { ...day.habits, [habit]: completed } },
+      () => setHabit(route, date, habit, completed, extras),
+      () =>
+        queueHabit(
+          { date, habit, completed, ...extras },
+          { dedupeKey: virtueDedupeKey.habit(date, habit) },
+        ),
+    );
   }
 
   function markResolution(next: Resolution | null): void {
-    void save(() => setResolution(route, date, next));
+    void save(
+      { resolution: next },
+      () => setResolution(route, date, next),
+      () =>
+        queueResolution(
+          { date, resolution: next },
+          { dedupeKey: virtueDedupeKey.resolution(date) },
+        ),
+    );
   }
 
   function markPrayers(): void {
@@ -95,7 +161,7 @@ export default function VirtueDayScreen() {
       return;
     }
 
-    void save(() => completePrayers(route, date));
+    void setPrayers(true);
   }
 
   function markRosary(): void {
@@ -105,13 +171,29 @@ export default function VirtueDayScreen() {
       return;
     }
 
-    void save(() => completeRosary(route, date));
+    void setRosary(true);
   }
 
-  function unmark(label: string, action: () => Promise<{ day: VirtueDay }>): void {
+  function setPrayers(completed: boolean): Promise<void> {
+    return save(
+      { prayers_completed: completed },
+      () => completePrayers(route, date, completed),
+      () => queuePrayers({ date, completed }, { dedupeKey: virtueDedupeKey.prayers(date) }),
+    );
+  }
+
+  function setRosary(completed: boolean): Promise<void> {
+    return save(
+      { rosary_completed: completed },
+      () => completeRosary(route, date, completed),
+      () => queueRosary({ date, completed }, { dedupeKey: virtueDedupeKey.rosary(date) }),
+    );
+  }
+
+  function unmark(label: string, action: () => Promise<void>): void {
     Alert.alert(`¿Desmarcar ${label}?`, 'Se quitará la marca de este día.', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Desmarcar', style: 'destructive', onPress: () => void save(action) },
+      { text: 'Desmarcar', style: 'destructive', onPress: () => void action() },
     ]);
   }
 
@@ -137,7 +219,7 @@ export default function VirtueDayScreen() {
               accessibilityRole="button"
               accessibilityLabel="Unmark rosary"
               disabled={saving}
-              onPress={() => unmark('el rosario', () => completeRosary(route, date, false))}
+              onPress={() => unmark('el rosario', () => setRosary(false))}
               className="size-9 items-center justify-center rounded-full bg-primary active:opacity-70"
             >
               <Check size={18} color={onPrimary} weight="bold" />
@@ -168,7 +250,7 @@ export default function VirtueDayScreen() {
               accessibilityRole="button"
               accessibilityLabel="Unmark prayers"
               disabled={saving}
-              onPress={() => unmark('los rezos', () => completePrayers(route, date, false))}
+              onPress={() => unmark('los rezos', () => setPrayers(false))}
               className="size-9 items-center justify-center rounded-full bg-primary active:opacity-70"
             >
               <Check size={18} color={onPrimary} weight="bold" />
