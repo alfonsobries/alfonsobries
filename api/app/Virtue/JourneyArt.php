@@ -27,7 +27,7 @@ class JourneyArt
 
     public static function stageCount(): int
     {
-        return count(VirtueDay::STAGE_THRESHOLDS);
+        return VirtueDay::STAGE_COUNT;
     }
 
     public static function version(): string

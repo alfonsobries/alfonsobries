@@ -202,7 +202,7 @@ it('requires authentication', function () {
     $this->getJson(route('api.virtue.days.index'))->assertUnauthorized();
 });
 
-it('earns a point per kept day toward the mascot stage', function () {
+it('earns two points per kept day toward the spirit stage', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
     foreach (range(1, 8) as $offset) {
@@ -215,16 +215,16 @@ it('earns a point per kept day toward the mascot stage', function () {
     $this->actingAs($alfonso)
         ->getJson(route('api.virtue.days.index'))
         ->assertOk()
-        ->assertJsonPath('stats.points', 8)
-        ->assertJsonPath('stats.stage', 5)
-        ->assertJsonPath('stats.next_stage_at', 10)
+        ->assertJsonPath('stats.points', 16)
+        ->assertJsonPath('stats.stage', 3)
+        ->assertJsonPath('stats.next_stage_at', 20)
         ->assertJsonPath('stats.stage_count', 30);
 });
 
-it('costs ten points to miss but never drops below a crossed checkpoint', function () {
+it('costs five points to miss but never drops below a crossed checkpoint', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
-    // Twelve kept days cross the 7-point checkpoint; the miss lands on the floor.
+    // Twelve kept days (24 points) cross the 22-point checkpoint; the miss lands on the floor.
     foreach (range(2, 13) as $offset) {
         VirtueDay::factory()->create([
             'date' => now()->subDays($offset)->toDateString(),
@@ -240,8 +240,49 @@ it('costs ten points to miss but never drops below a crossed checkpoint', functi
     $this->actingAs($alfonso)
         ->getJson(route('api.virtue.days.index'))
         ->assertOk()
-        ->assertJsonPath('stats.points', 7)
-        ->assertJsonPath('stats.stage', 5);
+        ->assertJsonPath('stats.points', 22)
+        ->assertJsonPath('stats.stage', 4);
+});
+
+it('lets a relapse outweigh even a full prayer day', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    foreach (range(2, 3) as $offset) {
+        VirtueDay::factory()->create([
+            'date' => now()->subDays($offset)->toDateString(),
+            'resolution' => VirtueDay::RESOLUTION_KEPT,
+        ]);
+    }
+
+    // Rosary + prayers + relapse = 2 + 1 - 5: the day still ends at -2.
+    VirtueDay::factory()->create([
+        'date' => now()->subDay()->toDateString(),
+        'rosary_completed_at' => now()->subDay(),
+        'prayers_completed_at' => now()->subDay(),
+        'resolution' => VirtueDay::RESOLUTION_MISSED,
+    ]);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.points', 2);
+});
+
+it('drains a point for each past day with no activity at all', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    foreach (range(4, 5) as $offset) {
+        VirtueDay::factory()->create([
+            'date' => now()->subDays($offset)->toDateString(),
+            'resolution' => VirtueDay::RESOLUTION_KEPT,
+        ]);
+    }
+
+    // Three empty days follow the four earned points; today stays in progress.
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.points', 1);
 });
 
 it('never drops the mascot points below zero', function () {
@@ -290,8 +331,11 @@ it('hides the mascot from other family members', function () {
 it('exposes tree stages 1:1 with the game stage arc', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
+    // A full day (rosary + prayers + kept) earns five points — exactly stage 2.
     VirtueDay::factory()->create([
         'date' => now()->subDay()->toDateString(),
+        'rosary_completed_at' => now()->subDay(),
+        'prayers_completed_at' => now()->subDay(),
         'resolution' => VirtueDay::RESOLUTION_KEPT,
     ]);
 
@@ -301,6 +345,94 @@ it('exposes tree stages 1:1 with the game stage arc', function () {
         ->assertJsonPath('stats.stage', 2)
         ->assertJsonPath('stats.tree_stage', 2)
         ->assertJsonPath('stats.tree_stage_count', 30);
+});
+
+it('completes the rosary for a day', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.virtue.rosary.store'), ['date' => now()->toDateString()])
+        ->assertOk()
+        ->assertJsonPath('data.rosary_completed', true)
+        ->assertJsonPath('stats.rosary.total', 1)
+        ->assertJsonPath('stats.rosary.month', 1)
+        ->assertJsonPath('stats.rosary.streak', 1);
+
+    expect(VirtueDay::whereDate('date', now()->toDateString())->first()->rosary_completed_at)->not->toBeNull();
+});
+
+it('keeps the first completion when the rosary repeats', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.virtue.rosary.store'), ['date' => now()->toDateString()])
+        ->assertOk();
+
+    $first = VirtueDay::whereDate('date', now()->toDateString())->first()->rosary_completed_at;
+
+    $this->travel(5)->minutes();
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.virtue.rosary.store'), ['date' => now()->toDateString()])
+        ->assertOk()
+        ->assertJsonPath('stats.rosary.total', 1);
+
+    expect(VirtueDay::whereDate('date', now()->toDateString())->first()->rosary_completed_at)
+        ->toEqual($first);
+});
+
+it('counts consecutive rosary days as a streak', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    foreach (range(1, 3) as $offset) {
+        VirtueDay::factory()->create([
+            'date' => now()->subDays($offset)->toDateString(),
+            'rosary_completed_at' => now()->subDays($offset),
+        ]);
+    }
+
+    // A day in progress doesn't break the streak; the three prayed days count.
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.rosary.total', 3)
+        ->assertJsonPath('stats.rosary.streak', 3);
+});
+
+it('reaches the final stage on a realistic 90-day practice but not by day 60', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    // A solid week, not a flawless one: six full days and one without prayers.
+    $seed = function (int $days): void {
+        foreach (range(0, $days - 1) as $index) {
+            $offset = $days - 1 - $index;
+
+            VirtueDay::factory()->create([
+                'date' => now()->subDays($offset)->toDateString(),
+                'rosary_completed_at' => now()->subDays($offset),
+                'prayers_completed_at' => $index % 7 === 6 ? null : now()->subDays($offset),
+                'resolution' => VirtueDay::RESOLUTION_KEPT,
+            ]);
+        }
+    };
+
+    $seed(60);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.areas.spirit.stage_count', 30);
+
+    expect($this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->json('stats.areas.spirit.stage'))->toBeLessThan(30);
+
+    VirtueDay::query()->delete();
+    $seed(91);
+
+    expect($this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->json('stats.areas.spirit.stage'))->toBe(30);
 });
 
 it('stamps the art version on the stats so cached art can be busted', function () {
@@ -479,7 +611,7 @@ it('scores the body area from the exercise and diet habits', function () {
         ->getJson(route('api.virtue.days.index'))
         ->assertOk()
         ->assertJsonPath('stats.areas.body.points', 4)
-        ->assertJsonPath('stats.areas.body.stage', 3)
+        ->assertJsonPath('stats.areas.body.stage', 2)
         ->assertJsonPath('stats.areas.body.streak', 3)
         ->assertJsonPath('stats.areas.mind.points', 0)
         ->assertJsonPath('stats.areas.mind.streak', 0);
@@ -524,16 +656,16 @@ it('scores the spirit area from the resolution and the prayers', function () {
     $this->actingAs($alfonso)
         ->getJson(route('api.virtue.days.index'))
         ->assertOk()
-        ->assertJsonPath('stats.areas.spirit.points', 5)
-        ->assertJsonPath('stats.areas.spirit.stage', 4)
-        ->assertJsonPath('stats.points', 2);
+        ->assertJsonPath('stats.areas.spirit.points', 7)
+        ->assertJsonPath('stats.areas.spirit.stage', 2)
+        ->assertJsonPath('stats.points', 7);
 });
 
 it('floors the spirit points at a crossed checkpoint', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
-    // Four kept-and-prayed days cross the 7-point checkpoint; the miss lands on the floor.
-    foreach (range(2, 5) as $offset) {
+    // Eight kept-and-prayed days (24 points) cross the 22-point checkpoint; the miss lands on the floor.
+    foreach (range(2, 9) as $offset) {
         VirtueDay::factory()->create([
             'date' => now()->subDays($offset)->toDateString(),
             'prayers_completed_at' => now()->subDays($offset),
@@ -549,6 +681,6 @@ it('floors the spirit points at a crossed checkpoint', function () {
     $this->actingAs($alfonso)
         ->getJson(route('api.virtue.days.index'))
         ->assertOk()
-        ->assertJsonPath('stats.areas.spirit.points', 7)
-        ->assertJsonPath('stats.areas.spirit.stage', 5);
+        ->assertJsonPath('stats.areas.spirit.points', 22)
+        ->assertJsonPath('stats.areas.spirit.stage', 4);
 });

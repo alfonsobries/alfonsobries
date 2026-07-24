@@ -293,6 +293,9 @@ React Native mobile app).
 - Before changing any `.env` value, read `.agents/env.md` - several values must stay in
   sync across projects by hand.
 - Before building or styling UI, read `.agents/guides/design-system.md`.
+- Before changing Virtue scoring, points, or stage curves, read
+  `docs/virtue-philosophy.md` — pacing is calibrated to habit science and
+  covered by tests.
 - Full command reference (quality gates, builds, local dev): `commands.md` at the repo
   root.
 

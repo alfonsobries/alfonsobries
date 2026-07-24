@@ -52,6 +52,17 @@ a scene that builds, area meters, streak counters — sits on top and can change
 without touching the rules. Visual themes are interchangeable; art never leaks
 into the engine.
 
+## Calibrated to habit science
+
+Progression pace is not arbitrary. An area's full journey is calibrated to
+what behavior research says about forming a virtue or breaking a vice:
+roughly 90 days of solid practice (the ~66-day average to automate a habit,
+the ~90-day standard in recovery). When tuning points or stage thresholds,
+validate the curve against the realistic daily maximum — a day actually
+lived well, not the theoretical best — and keep the final stage reachable in
+about 90 such days. A test must assert this, so retuning can never silently
+make the journey unreachable or trivially fast.
+
 ## Progress is kind
 
 A lapse is a setback, never a restart. Crossing a checkpoint sets a floor the

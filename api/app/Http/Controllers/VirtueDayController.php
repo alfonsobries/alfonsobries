@@ -92,6 +92,33 @@ class VirtueDayController extends Controller
     }
 
     /**
+     * Record that the rosary was prayed. Idempotent — repeating the rosary
+     * keeps the first completion time.
+     */
+    public function completeRosary(Request $request): JsonResponse
+    {
+        if ($response = $this->guard($request)) {
+            return $response;
+        }
+
+        $validated = $request->validate([
+            'date' => ['required', 'date_format:Y-m-d'],
+        ]);
+
+        if ($response = $this->validateDate($validated['date'])) {
+            return $response;
+        }
+
+        $day = $this->dayFor($validated['date']);
+
+        if ($day->rosary_completed_at === null) {
+            $day->update(['rosary_completed_at' => now()]);
+        }
+
+        return $this->dayResponse($day);
+    }
+
+    /**
      * Mark or clear one of the entry-tracked habits for a day. Marking is
      * idempotent (the first completion time wins); clearing deletes the
      * entry so the day goes back to pending.
@@ -221,6 +248,7 @@ class VirtueDayController extends Controller
         return [
             'date' => $day->date->toDateString(),
             'prayers_completed' => $day->prayers_completed_at !== null,
+            'rosary_completed' => $day->rosary_completed_at !== null,
             'resolution' => $day->resolution,
             'habits' => collect(VirtueHabit::values())
                 ->mapWithKeys(fn (string $habit): array => [$habit => $completed->has($habit)])

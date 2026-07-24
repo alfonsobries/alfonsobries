@@ -1,11 +1,12 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { Check, HandsPraying } from 'phosphor-react-native';
+import { Check, Cross, HandsPraying } from 'phosphor-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Text, View } from 'react-native';
 
 import { useApiRouter } from '@/api/router';
 import {
   completePrayers,
+  completeRosary,
   fetchVirtueSummary,
   localDate,
   setHabit,
@@ -24,6 +25,7 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 const EMPTY_DAY = (date: string): VirtueDay => ({
   date,
   prayers_completed: false,
+  rosary_completed: false,
   resolution: null,
   habits: { exercise: false, diet: false, reading: false },
 });
@@ -94,9 +96,47 @@ export default function VirtueDayScreen() {
     void save(() => completePrayers(route, date));
   }
 
+  function markRosary(): void {
+    if (isToday) {
+      router.back();
+      router.push('/virtue/rosary');
+      return;
+    }
+
+    void save(() => completeRosary(route, date));
+  }
+
   return (
     <Sheet title={title} subtitle={isToday ? 'Today' : 'Fill in what happened'} scrollable>
       <View className="gap-4 pt-2">
+        <View className="flex-row items-center gap-3">
+          <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
+            <Cross size={22} color={tint} weight="fill" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-base font-semibold text-foreground">Santo Rosario</Text>
+            <Text className="text-sm text-muted">
+              {day.rosary_completed
+                ? 'Completed'
+                : isToday
+                  ? 'Not prayed yet'
+                  : 'Mark it if it happened'}
+            </Text>
+          </View>
+          {day.rosary_completed ? (
+            <View
+              className="size-9 items-center justify-center rounded-full bg-primary"
+              accessibilityLabel="Rosary completed"
+            >
+              <Check size={18} color={onPrimary} weight="bold" />
+            </View>
+          ) : (
+            <Button size="sm" disabled={saving} onPress={markRosary}>
+              {isToday ? 'Pray' : 'Prayed'}
+            </Button>
+          )}
+        </View>
+
         <View className="flex-row items-center gap-3">
           <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
             <HandsPraying size={22} color={tint} weight="fill" />

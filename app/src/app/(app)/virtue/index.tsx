@@ -2,6 +2,7 @@ import { Redirect, router, Stack, useFocusEffect } from 'expo-router';
 import {
   CaretRight,
   Check,
+  Cross,
   Flame,
   Flask,
   HandsPraying,
@@ -31,6 +32,7 @@ import { HabitToggleRow } from '@/components/virtue/HabitToggleRow';
 import { ResolutionPicker } from '@/components/virtue/ResolutionPicker';
 import { VirtueScene } from '@/components/virtue/VirtueScene';
 import { lastSevenDays } from '@/components/virtue/WeekStrip';
+import { MYSTERY_SETS, mysterySetForWeekday } from '@/data/rosary';
 import { AREA_HABITS, AREAS, completedToday, DAILY_GOAL_COUNT, ENTRY_HABITS } from '@/data/virtue';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -100,6 +102,7 @@ export default function VirtueScreen() {
               ? 'danger'
               : undefined,
         dots: [
+          day.rosary_completed,
           day.prayers_completed,
           day.habits.exercise,
           day.habits.diet,
@@ -404,6 +407,29 @@ export default function VirtueScreen() {
             ) : (
               <Button size="sm" onPress={() => router.push('/virtue/prayers')}>
                 Pray
+              </Button>
+            )}
+          </View>
+
+          <View className="flex-row items-center gap-3">
+            <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
+              <Cross size={22} color={tint} weight="fill" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-base font-semibold text-foreground">Santo Rosario</Text>
+              <Text className="text-sm text-muted">
+                {stats && stats.rosary.total > 0
+                  ? `${MYSTERY_SETS[mysterySetForWeekday(new Date().getDay())].name} · ${stats.rosary.total} rezados${stats.rosary.streak > 1 ? ` · racha ${stats.rosary.streak}` : ''}`
+                  : MYSTERY_SETS[mysterySetForWeekday(new Date().getDay())].name}
+              </Text>
+            </View>
+            {todayEntry?.rosary_completed ? (
+              <View className="size-9 items-center justify-center rounded-full bg-primary">
+                <Check size={18} color={onPrimary} weight="bold" />
+              </View>
+            ) : (
+              <Button size="sm" onPress={() => router.push('/virtue/rosary')}>
+                Rezar
               </Button>
             )}
           </View>

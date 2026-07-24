@@ -84,6 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/virtue/days/{date}/resolution', [VirtueDayController::class, 'updateResolution'])->name('virtue.days.resolution');
     Route::put('/virtue/days/{date}/habits/{habit}', [VirtueDayController::class, 'updateHabit'])->name('virtue.days.habit');
     Route::post('/virtue/prayers', [VirtueDayController::class, 'completePrayers'])->name('virtue.prayers.store');
+    Route::post('/virtue/rosary', [VirtueDayController::class, 'completeRosary'])->name('virtue.rosary.store');
     Route::get('/virtue/mascot/{set}/{stage}', [VirtueDayController::class, 'mascot'])->whereNumber('stage')->name('virtue.mascot');
 
     Route::get('/assistants', [AssistantController::class, 'index'])->name('assistants.index');

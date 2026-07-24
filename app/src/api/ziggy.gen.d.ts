@@ -151,6 +151,7 @@ declare module 'ziggy-js' {
         }
     ],
     "api.virtue.prayers.store": [],
+    "api.virtue.rosary.store": [],
     "api.virtue.mascot": [
         {
             "name": "set",
