@@ -11,12 +11,16 @@ import { API_ORIGIN } from '@/constants/env';
 // portal) and still not reach the API. The radio is only used as a fast signal
 // — it can drop us to offline instantly, but it can never declare us online.
 
+declare module 'axios' {
+  interface AxiosRequestConfig {
+    /** Marks the reachability probe, the one request allowed out while offline. */
+    connectivityProbe?: boolean;
+  }
+}
+
 const PROBE_URL = `${API_ORIGIN}/api/status`;
 const PROBE_TIMEOUT = 5000;
 const PROBE_BACKOFF = [3000, 6000, 12000, 30000];
-
-/** Marks the reachability probe, the one request allowed out while offline. */
-const PROBE_HEADER = 'X-Connectivity-Probe';
 
 let online = true;
 let probeTimer: ReturnType<typeof setTimeout> | null = null;
@@ -93,7 +97,7 @@ async function probe(): Promise<boolean> {
   try {
     await apiClient.get(PROBE_URL, {
       timeout: PROBE_TIMEOUT,
-      headers: { [PROBE_HEADER]: '1' },
+      connectivityProbe: true,
     });
     setOnline(true);
     return true;
@@ -161,7 +165,7 @@ export function installConnectivityTracking(): void {
   // letting every screen sit on the 15s timeout before it can fall back to its
   // cache. Only the probe is allowed through, since it is what recovers.
   apiClient.interceptors.request.use((config) => {
-    if (online || config.headers[PROBE_HEADER] === '1') {
+    if (online || config.connectivityProbe === true) {
       return config;
     }
 
