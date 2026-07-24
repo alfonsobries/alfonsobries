@@ -79,7 +79,7 @@
         {
           "NSHealthShareUsageDescription": "Lee tus minutos de ejercicio para marcar el hábito del día.",
           "NSHealthUpdateUsageDescription": false,
-          "background-delivery": false
+          "background": false
         }
       ]
     ],
