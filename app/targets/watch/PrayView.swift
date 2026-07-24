@@ -158,6 +158,8 @@ struct DecadeRing: View {
 }
 
 struct CompletedView: View {
+    @State private var note = ""
+
     var body: some View {
         VStack(spacing: 8) {
             Image(systemName: "checkmark.seal.fill")
@@ -166,10 +168,20 @@ struct CompletedView: View {
             Text("Rosario completado")
                 .font(.headline)
                 .multilineTextAlignment(.center)
-            Text("Márcalo como rezado en tu iPhone.")
+            Text(note)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
+        }
+        .task {
+            guard RosaryAPI.isConfigured else {
+                note = "Abre la app en tu iPhone una vez para conectar el registro."
+                return
+            }
+
+            note = await RosaryAPI.markPrayed()
+                ? "Marcado como rezado."
+                : "Se marcará en cuanto haya conexión."
         }
     }
 }
