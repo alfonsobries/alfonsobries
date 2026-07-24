@@ -1,4 +1,4 @@
-<!-- aikit v0.3.0 - managed file, do not edit -->
+<!-- aikit v0.3.1 - managed file, do not edit -->
 <!-- Local override: CLAUDE.local.md (Claude Code) / AGENTS.override.md (Codex). Per-repo override: below the imports in CLAUDE.md / below the managed block in AGENTS.md. Permanent override: PR to https://github.com/alfonsobries/aikit -->
 
 # Baseline
@@ -17,6 +17,9 @@ Shared rules for every repo. Apply to any stack.
 ## Pull Requests
 
 - Always draft (`gh pr create --draft`)
+- Title in English, same shape as a commit subject: Conventional Commits format (`feat:`, `fix:`, `refactor:`…), ideally under 50 characters. Repos squash-merge, so the title becomes the commit on the default branch
+  - ✅ `refactor: reorganize agent context into .agents/`
+  - ❌ `Reorganize agent context into .agents/ and update Laravel/Boost`
 - Base branch: the repo's default
 - If the repo has a `.github/PULL_REQUEST_TEMPLATE.md`, fill it in as the PR body and check off the items that apply. `gh pr create` ignores the template unless you pass it yourself - write the filled body to a file and use `--body-file`
 - **Never** reference Claude / AI / agents in title, body, branch name, or comments
