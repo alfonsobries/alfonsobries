@@ -7,10 +7,12 @@ use App\Models\VirtueEntry;
 use Illuminate\Support\Carbon;
 
 /**
- * Computes the practice's running stats: the headline streak and mascot
- * progression (kept for the dashboard) plus one score per area. Habits feed
- * an area one point per completed day; only the daily resolution carries a
- * penalty, and checkpoint floors make every lapse a setback, never a restart.
+ * Computes the practice's running stats: the headline streak, one score per
+ * area, and the rosary counters. Spirit scores day by day — the rosary and
+ * the prayers only ever add, a missed resolution outweighs a full prayer
+ * day, an idle day drains one point — with checkpoint floors so every lapse
+ * is a setback, never a restart. Body and mind score one point per completed
+ * habit day, no penalties.
  */
 class VirtueStats
 {
@@ -21,6 +23,7 @@ class VirtueStats
     {
         $first = VirtueDay::min('date');
         $streak = $this->resolutionStreak($first);
+        $spirit = $this->spiritArea($streak);
 
         return [
             'art_version' => JourneyArt::version(),
@@ -30,11 +33,18 @@ class VirtueStats
                 : (int) Carbon::parse((string) $first)->startOfDay()->diffInDays(now()->startOfDay()) + 1,
             'kept_count' => VirtueDay::where('resolution', VirtueDay::RESOLUTION_KEPT)->count(),
             'missed_count' => VirtueDay::where('resolution', VirtueDay::RESOLUTION_MISSED)->count(),
-            ...$this->progress(),
+            // The soul is the headline: the top-level progression mirrors spirit.
+            'points' => $spirit['points'],
+            'stage' => $spirit['stage'],
+            'stage_count' => $spirit['stage_count'],
+            'next_stage_at' => $spirit['next_stage_at'],
+            'tree_stage' => $spirit['stage'],
+            'tree_stage_count' => $spirit['stage_count'],
+            'rosary' => $this->rosary(),
             'areas' => [
                 VirtueArea::Body->value => $this->entryArea(VirtueArea::Body),
                 VirtueArea::Mind->value => $this->entryArea(VirtueArea::Mind),
-                VirtueArea::Spirit->value => $this->spiritArea($streak),
+                VirtueArea::Spirit->value => $spirit,
             ],
         ];
     }
@@ -60,38 +70,21 @@ class VirtueStats
     }
 
     /**
-     * Overall progress: each kept day earns a point, a miss costs ten, and
-     * crossing a checkpoint sets a floor the points can never fall below
-     * again. tree_stage mirrors stage (compact arbol icon).
-     *
      * @return array<string, int>
      */
-    private function progress(): array
+    private function rosary(): array
     {
-        $points = 0;
-        $floor = 0;
-
-        $days = VirtueDay::whereNotNull('resolution')
+        $dates = VirtueDay::whereNotNull('rosary_completed_at')
             ->orderBy('date')
-            ->pluck('resolution');
+            ->pluck('date')
+            ->map(fn ($date): string => Carbon::parse((string) $date)->toDateString());
 
-        foreach ($days as $resolution) {
-            $points = $resolution === VirtueDay::RESOLUTION_KEPT
-                ? $points + 1
-                : max($floor, $points - VirtueDay::MISS_PENALTY);
-
-            $floor = $this->floorFor($points, $floor);
-        }
-
-        $stage = $this->stageFor($points);
+        $month = now()->format('Y-m');
 
         return [
-            'points' => $points,
-            'stage' => $stage,
-            'stage_count' => count(VirtueDay::STAGE_THRESHOLDS),
-            'next_stage_at' => VirtueDay::STAGE_THRESHOLDS[$stage] ?? $points,
-            'tree_stage' => $stage,
-            'tree_stage_count' => count(VirtueDay::STAGE_THRESHOLDS),
+            'total' => $dates->count(),
+            'month' => $dates->filter(fn (string $date): bool => str_starts_with($date, $month))->count(),
+            'streak' => $this->activityStreak($dates->all()),
         ];
     }
 
@@ -111,45 +104,72 @@ class VirtueStats
             ->map(fn ($date): string => Carbon::parse((string) $date)->toDateString());
 
         return [
-            ...$this->stageData(count($dates)),
+            ...$this->stageData($area, count($dates)),
             'streak' => $this->activityStreak($dates->unique()->values()->all()),
         ];
     }
 
     /**
-     * The spirit score folds both of its modules in date order: a kept
-     * resolution and a completed prayer sequence each earn a point, a missed
-     * resolution costs ten, and the shared checkpoint floors apply.
+     * The spirit score walks every calendar day from the first tracked date
+     * through today: the rosary earns two, the prayers one, a kept resolution
+     * two; a missed resolution costs five, and a past day with nothing at all
+     * costs one. Checkpoint floors apply and points never go negative.
      *
      * @return array<string, int>
      */
     private function spiritArea(int $streak): array
     {
+        $days = VirtueDay::orderBy('date')
+            ->get(['date', 'resolution', 'prayers_completed_at', 'rosary_completed_at'])
+            ->keyBy(fn (VirtueDay $day): string => $day->date->toDateString());
+
+        if ($days->isEmpty()) {
+            return [
+                ...$this->stageData(VirtueArea::Spirit, 0),
+                'streak' => $streak,
+            ];
+        }
+
         $points = 0;
         $floor = 0;
 
-        $days = VirtueDay::where(fn ($query) => $query
-            ->whereNotNull('resolution')
-            ->orWhereNotNull('prayers_completed_at'))
-            ->orderBy('date')
-            ->get(['date', 'resolution', 'prayers_completed_at']);
+        $cursor = Carbon::parse($days->keys()->first())->startOfDay();
+        $today = now()->startOfDay();
 
-        foreach ($days as $day) {
-            if ($day->resolution === VirtueDay::RESOLUTION_MISSED) {
-                $points = max($floor, $points - VirtueDay::MISS_PENALTY);
-            } elseif ($day->resolution === VirtueDay::RESOLUTION_KEPT) {
-                $points++;
+        while ($cursor->lte($today)) {
+            $day = $days->get($cursor->toDateString());
+
+            $delta = 0;
+
+            if ($day !== null) {
+                if ($day->rosary_completed_at !== null) {
+                    $delta += VirtueDay::ROSARY_POINTS;
+                }
+
+                if ($day->prayers_completed_at !== null) {
+                    $delta += VirtueDay::PRAYERS_POINTS;
+                }
+
+                if ($day->resolution === VirtueDay::RESOLUTION_KEPT) {
+                    $delta += VirtueDay::RESOLUTION_POINTS;
+                } elseif ($day->resolution === VirtueDay::RESOLUTION_MISSED) {
+                    $delta -= VirtueDay::MISS_PENALTY;
+                }
             }
 
-            if ($day->prayers_completed_at !== null) {
-                $points++;
+            // A past day with no activity at all quietly drains; today still counts as in progress.
+            if ($delta === 0 && ($day === null || $day->resolution === null) && $cursor->lt($today)) {
+                $delta = -VirtueDay::IDLE_PENALTY;
             }
 
+            $points = max($floor, $points + $delta);
             $floor = $this->floorFor($points, $floor);
+
+            $cursor = $cursor->addDay();
         }
 
         return [
-            ...$this->stageData($points),
+            ...$this->stageData(VirtueArea::Spirit, $points),
             'streak' => $streak,
         ];
     }
@@ -182,23 +202,27 @@ class VirtueStats
     /**
      * @return array<string, int>
      */
-    private function stageData(int $points): array
+    private function stageData(VirtueArea $area, int $points): array
     {
-        $stage = $this->stageFor($points);
+        $thresholds = VirtueDay::stageThresholds($area);
+        $stage = $this->stageFor($thresholds, $points);
 
         return [
             'points' => $points,
             'stage' => $stage,
-            'stage_count' => count(VirtueDay::STAGE_THRESHOLDS),
-            'next_stage_at' => VirtueDay::STAGE_THRESHOLDS[$stage] ?? $points,
+            'stage_count' => VirtueDay::STAGE_COUNT,
+            'next_stage_at' => $thresholds[$stage] ?? $points,
         ];
     }
 
-    private function stageFor(int $points): int
+    /**
+     * @param  list<int>  $thresholds
+     */
+    private function stageFor(array $thresholds, int $points): int
     {
         $stage = 1;
 
-        foreach (VirtueDay::STAGE_THRESHOLDS as $index => $threshold) {
+        foreach ($thresholds as $index => $threshold) {
             if ($points >= $threshold) {
                 $stage = $index + 1;
             }
