@@ -55,10 +55,6 @@ export function usePendingMutations(): QueuedMutation[] {
   return useSyncExternalStore(subscribe, getQueue, getQueue);
 }
 
-export function pendingCount(): number {
-  return queue.length;
-}
-
 /**
  * Declares a mutation that survives being offline. Returns the enqueue function
  * for it, typed to the handler's payload: callers hand it a payload and it is
@@ -122,6 +118,13 @@ export async function flushQueue(route: ApiRoute): Promise<void> {
 
   flushing = true;
 
+  // Entries are removed by id, never by position: a mutation enqueued while one
+  // is in flight can have deduped the in-flight entry away, and dropping the
+  // head would then discard the newer change instead of the one that just ran.
+  const drop = (entry: QueuedMutation): void => {
+    persist(queue.filter((item) => item.id !== entry.id));
+  };
+
   try {
     while (queue.length > 0 && getIsOnline()) {
       const [entry] = queue;
@@ -129,13 +132,13 @@ export async function flushQueue(route: ApiRoute): Promise<void> {
 
       if (!handler) {
         // The mutation was defined by a build that is no longer running.
-        persist(queue.slice(1));
+        drop(entry);
         continue;
       }
 
       try {
         await handler(entry.payload as never, route);
-        persist(queue.slice(1));
+        drop(entry);
       } catch (error) {
         if (isOfflineError(error)) {
           return;
@@ -143,12 +146,14 @@ export async function flushQueue(route: ApiRoute): Promise<void> {
 
         const attempts = entry.attempts + 1;
 
+        // The API answered and refused. Give it a couple more passes in case it
+        // was transient, then drop it rather than block everything behind it.
         if (attempts >= 3) {
-          persist(queue.slice(1));
+          drop(entry);
           continue;
         }
 
-        persist([{ ...entry, attempts }, ...queue.slice(1)]);
+        persist(queue.map((item) => (item.id === entry.id ? { ...item, attempts } : item)));
         return;
       }
     }
