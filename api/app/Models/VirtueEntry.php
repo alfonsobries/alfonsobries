@@ -25,16 +25,20 @@ class VirtueEntry extends Model
         'date',
         'habit',
         'minutes',
+        'big',
         'completed_at',
     ];
 
     /**
      * The points this entry emits into its area: a completed day is one, and
-     * a full hour of measured exercise earns a second.
+     * a big exercise session — a measured hour or marked by hand — earns a
+     * second.
      */
     public function points(): int
     {
-        return $this->habit === VirtueHabit::Exercise && ($this->minutes ?? 0) >= 60 ? 2 : 1;
+        return $this->habit === VirtueHabit::Exercise && ($this->big || ($this->minutes ?? 0) >= 60)
+            ? 2
+            : 1;
     }
 
     /**
@@ -44,6 +48,7 @@ class VirtueEntry extends Model
         'date' => 'date',
         'habit' => VirtueHabit::class,
         'minutes' => 'integer',
+        'big' => 'boolean',
         'completed_at' => 'datetime',
     ];
 }

@@ -89,9 +89,10 @@ class VirtueStats
     }
 
     /**
-     * An area scored purely from habit entries — each one emits its points
-     * (a full exercise hour emits two), no penalties: an unmarked day simply
-     * earns nothing.
+     * An area scored from habit entries — each one emits its points (a big
+     * exercise session emits two) — plus the daily resolution, which touches
+     * every area: kept adds one, a relapse takes three. The score never goes
+     * below zero, and an unmarked day simply earns nothing.
      *
      * @return array<string, int>
      */
@@ -101,9 +102,31 @@ class VirtueStats
 
         $entries = VirtueEntry::whereIn('habit', $habits)
             ->orderBy('date')
-            ->get(['date', 'habit', 'minutes']);
+            ->get(['date', 'habit', 'minutes', 'big']);
 
-        $points = $entries->sum(fn (VirtueEntry $entry): int => $entry->points());
+        $deltas = [];
+
+        foreach ($entries as $entry) {
+            $date = $entry->date->toDateString();
+            $deltas[$date] = ($deltas[$date] ?? 0) + $entry->points();
+        }
+
+        $resolutions = VirtueDay::whereNotNull('resolution')->orderBy('date')->get(['date', 'resolution']);
+
+        foreach ($resolutions as $day) {
+            $date = $day->date->toDateString();
+            $deltas[$date] = ($deltas[$date] ?? 0) + ($day->resolution === VirtueDay::RESOLUTION_KEPT
+                ? VirtueDay::RESOLUTION_POINTS
+                : -VirtueDay::MISS_PENALTY);
+        }
+
+        ksort($deltas);
+
+        $points = 0;
+
+        foreach ($deltas as $delta) {
+            $points = max(0, $points + $delta);
+        }
 
         $dates = $entries
             ->map(fn (VirtueEntry $entry): string => $entry->date->toDateString())

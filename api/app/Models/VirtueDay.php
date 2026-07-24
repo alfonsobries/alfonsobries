@@ -22,45 +22,48 @@ class VirtueDay extends Model
     public const RESOLUTION_MISSED = 'missed';
 
     /**
-     * Spirit points per event. The rosary is the main weapon and never
-     * penalizes when skipped; a relapse outweighs any single day's gains
-     * (even a full prayer day ends negative after a miss); a day with
-     * nothing at all quietly drains.
+     * Points per event. The rosary is the main weapon and never penalizes
+     * when skipped. The daily resolution touches the whole person: a kept
+     * day adds one to every area, a relapse takes three from every area,
+     * and an unmarked day moves nothing. A day with nothing at all quietly
+     * drains the spirit.
      */
     public const ROSARY_POINTS = 2;
 
     public const PRAYERS_POINTS = 1;
 
-    public const RESOLUTION_POINTS = 2;
+    public const RESOLUTION_POINTS = 1;
 
-    public const MISS_PENALTY = 5;
+    public const MISS_PENALTY = 3;
 
     public const IDLE_PENALTY = 1;
 
     public const STAGE_COUNT = 30;
 
     /**
-     * Points where progress consolidates: once crossed, misses can never
-     * drag the points below them again. Fractions of the spirit journey.
+     * Points where spirit progress consolidates: once crossed, misses can
+     * never drag the points below them again. Fractions of the spirit
+     * journey; body and mind simply never go below zero.
      *
      * @var list<int>
      */
-    public const CHECKPOINTS = [22, 65, 130, 220, 325];
+    public const CHECKPOINTS = [17, 52, 104, 173, 259];
 
     /**
      * Total points that complete an area's 30-stage journey, calibrated so a
      * realistic solid practice (not a flawless one) finishes in about 90
      * days — the habit-science window for forming a virtue or breaking a
-     * vice. Solid weeks: spirit 6 full days (+5) and one partial (+4) → 34;
-     * body exercise 6 of 7 with one full hour (7), diet 6, sun 5 → 18;
-     * mind reading 6 of 7 (6).
+     * vice. Solid weeks (resolution kept 6 of 7 included): spirit 6 full
+     * days (+4) and one partial (+3) → 27; body exercise 6 with one big
+     * session (7), diet 6, sun 5, resolution 6 → 24; mind reading 6,
+     * resolution 6 → 12.
      *
      * @var array<string, int>
      */
     public const AREA_TOTALS = [
-        'body' => 231,
-        'mind' => 77,
-        'spirit' => 435,
+        'body' => 308,
+        'mind' => 154,
+        'spirit' => 345,
     ];
 
     /**
