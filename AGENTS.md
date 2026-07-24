@@ -16,9 +16,6 @@ Shared rules for every repo. Apply to any stack.
 ### Pull Requests
 
 - Always draft (`gh pr create --draft`)
-- Title in English, same shape as a commit subject: Conventional Commits format (`feat:`, `fix:`, `refactor:`…), ideally under 50 characters. Repos squash-merge, so the title becomes the commit on the default branch
-  - ✅ `refactor: reorganize agent context into .agents/`
-  - ❌ `Reorganize agent context into .agents/ and update Laravel/Boost`
 - Base branch: the repo's default
 - If the repo has a `.github/PULL_REQUEST_TEMPLATE.md`, fill it in as the PR body and check off the items that apply. `gh pr create` ignores the template unless you pass it yourself - write the filled body to a file and use `--body-file`
 - **Never** reference Claude / AI / agents in title, body, branch name, or comments
@@ -293,6 +290,9 @@ React Native mobile app).
 - Before changing any `.env` value, read `.agents/env.md` - several values must stay in
   sync across projects by hand.
 - Before building or styling UI, read `.agents/guides/design-system.md`.
+- Before changing Virtue scoring, points, or stage curves, read
+  `docs/virtue-philosophy.md` — pacing is calibrated to habit science and
+  covered by tests.
 - Full command reference (quality gates, builds, local dev): `commands.md` at the repo
   root.
 
