@@ -5,10 +5,11 @@ import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useApiRouter } from '@/api/router';
-import { completePrayers, localDate } from '@/api/virtue';
+import { cacheVirtueDay, completePrayers, localDate, queuePrayers } from '@/api/virtue';
 import { Button } from '@/components/ui/Button';
 import { getPrayerSteps, type PrayerBlock } from '@/data/auxilium';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { isOfflineError } from '@/offline/connectivity';
 
 // The day's prayer sequence, one step at a time. Deliberately quiet: large
 // type, one prayer per screen, and nothing else competing for attention.
@@ -45,10 +46,22 @@ export default function PrayersScreen() {
   async function handleFinish(): Promise<void> {
     setFinishing(true);
 
+    const date = localDate();
+    // The prayers themselves are bundled with the app, so finishing them must
+    // never depend on a network: record it locally first, then tell the API.
+    cacheVirtueDay(date, { prayers_completed: true });
+
     try {
-      await completePrayers(route, localDate());
+      await completePrayers(route, date);
       router.back();
-    } catch {
+    } catch (error) {
+      if (isOfflineError(error)) {
+        queuePrayers({ date }, { dedupeKey: `virtue.prayers:${date}` });
+        router.back();
+        return;
+      }
+
+      cacheVirtueDay(date, { prayers_completed: false });
       setFinishing(false);
       Alert.alert('Could not save', 'Please try again in a moment.');
     }

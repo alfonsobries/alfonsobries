@@ -8,15 +8,19 @@ import { useApiRouter } from '@/api/router';
 import {
   fetchVirtueSummary,
   localDate,
+  queueResolution,
   setResolution,
+  withVirtueDay,
   type Resolution,
-  type VirtueDay,
-  type VirtueStats,
+  type VirtueSummary,
 } from '@/api/virtue';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { MonthCalendar, type CalendarDayMark } from '@/components/ui/MonthCalendar';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys } from '@/offline/store';
+import { useCachedResource } from '@/offline/use-cached-resource';
 
 function currentDates() {
   const now = new Date();
@@ -36,30 +40,28 @@ export default function VirtueScreen() {
   const tint = useThemeColor('primary-emphasis');
   const onPrimary = useThemeColor('primary-foreground');
 
-  const [days, setDays] = useState<Record<string, VirtueDay>>({});
-  const [stats, setStats] = useState<VirtueStats | null>(null);
   const [month, setMonth] = useState(() => new Date());
   const [saving, setSaving] = useState(false);
 
   const [dates, setDates] = useState(currentDates);
   const { today, yesterday, todayLabel } = dates;
 
-  const load = useCallback(async () => {
-    try {
-      const summary = await fetchVirtueSummary(route);
-      setDays(Object.fromEntries(summary.days.map((day) => [day.date, day])));
-      setStats(summary.stats);
-    } catch {
-      // The retry is one focus away.
-    }
-  }, [route]);
+  const fetcher = useCallback(() => fetchVirtueSummary(route), [route]);
+  const summary = useCachedResource<VirtueSummary>(cacheKeys.virtueSummary, fetcher);
+  const { refresh, update } = summary;
+
+  const days = useMemo(
+    () => Object.fromEntries((summary.data?.days ?? []).map((day) => [day.date, day])),
+    [summary.data],
+  );
+  const stats = summary.data?.stats ?? null;
 
   useFocusEffect(
     useCallback(() => {
       // The screen can sit mounted across midnight, so "today" refreshes on focus.
       setDates(currentDates());
-      void load();
-    }, [load]),
+      void refresh();
+    }, [refresh]),
   );
 
   const marks = useMemo(() => {
@@ -81,8 +83,8 @@ export default function VirtueScreen() {
   }, [days]);
 
   const firstTracked = useMemo(() => {
-    const dates = Object.keys(days);
-    return dates.length > 0 ? dates.reduce((a, b) => (a < b ? a : b)) : undefined;
+    const tracked = Object.keys(days);
+    return tracked.length > 0 ? tracked.reduce((a, b) => (a < b ? a : b)) : undefined;
   }, [days]);
 
   const yesterdayPending =
@@ -94,13 +96,23 @@ export default function VirtueScreen() {
 
   async function mark(date: string, resolution: Resolution | null): Promise<void> {
     setSaving(true);
+    update((current) => withVirtueDay(current, date, { resolution }));
 
     try {
       const result = await setResolution(route, date, resolution);
-      setDays((current) => ({ ...current, [result.day.date]: result.day }));
-      setStats(result.stats);
-    } catch {
-      Alert.alert('Could not save', 'Please try again in a moment.');
+      update((current) => ({
+        ...withVirtueDay(current, result.day.date, result.day),
+        stats: result.stats,
+      }));
+    } catch (error) {
+      if (isOfflineError(error)) {
+        // The optimistic mark stands and replays on reconnect; re-marking the
+        // same day offline replaces the pending one rather than stacking.
+        queueResolution({ date, resolution }, { dedupeKey: `virtue.resolution:${date}` });
+      } else {
+        await refresh();
+        Alert.alert('Could not save', 'Please try again in a moment.');
+      }
     } finally {
       setSaving(false);
     }
