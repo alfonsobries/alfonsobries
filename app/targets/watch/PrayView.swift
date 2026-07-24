@@ -113,8 +113,10 @@ struct PrayView: View {
     }
 }
 
-/// The decade as a ring of beads around the screen edge — the watch's round
-/// face becomes the rosary. The Padre Nuestro bead sits at the top.
+/// The decade as a chain of beads around the screen edge — the watch's round
+/// face becomes the rosary. The chain turns as beads are prayed, so the
+/// current bead always peeks in at the top, like the rosary sliding through
+/// the fingers.
 struct DecadeRing: View {
     let current: Int
     let count: Int
@@ -123,10 +125,11 @@ struct DecadeRing: View {
         GeometryReader { geometry in
             let size = min(geometry.size.width, geometry.size.height)
             let radius = size / 2 - 8
+            let step = 360.0 / Double(count + 1)
 
             ZStack {
                 ForEach(0 ... count, id: \.self) { index in
-                    let angle = Angle.degrees(Double(index) / Double(count + 1) * 360 - 90)
+                    let angle = Angle.degrees(Double(index) * step - 90)
                     let filled = index < current
                     let isCurrent = index == current
 
@@ -142,6 +145,8 @@ struct DecadeRing: View {
                         )
                 }
             }
+            .rotationEffect(.degrees(-Double(current) * step))
+            .animation(.spring(duration: 0.45), value: current)
         }
         .ignoresSafeArea()
     }
