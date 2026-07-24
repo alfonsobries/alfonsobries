@@ -12,7 +12,7 @@ struct AudioPlayView: View {
     var body: some View {
         Group {
             if player.finished {
-                CompletedView()
+                CompletedView(title: "Rosario completado", module: .rosary)
             } else {
                 playerView
             }
@@ -172,7 +172,7 @@ final class RosaryAudioPlayer: NSObject, ObservableObject {
 
     private func playCurrent() {
         guard let session,
-              let url = RosaryLibrary.resourceURL(name: session.step.audio, ext: "mp3")
+              let url = WatchBundle.url(name: session.step.audio, ext: "mp3")
         else {
             return
         }

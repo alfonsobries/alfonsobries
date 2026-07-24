@@ -5,8 +5,12 @@ public class WatchBridgeModule: Module {
   public func definition() -> ModuleDefinition {
     Name("WatchBridge")
 
-    AsyncFunction("syncContext") { (token: String, rosaryUrl: String) in
-      WatchLink.shared.sync(context: ["token": token, "rosaryUrl": rosaryUrl])
+    AsyncFunction("syncContext") { (token: String, rosaryUrl: String, prayersUrl: String) in
+      WatchLink.shared.sync(context: [
+        "token": token,
+        "rosaryUrl": rosaryUrl,
+        "prayersUrl": prayersUrl,
+      ])
     }
   }
 }

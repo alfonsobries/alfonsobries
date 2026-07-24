@@ -14,7 +14,7 @@ struct PrayView: View {
     var body: some View {
         Group {
             if finished {
-                CompletedView()
+                CompletedView(title: "Rosario completado", module: .rosary)
             } else if let bead = session.step.bead {
                 beadView(bead)
             } else {
@@ -157,7 +157,11 @@ struct DecadeRing: View {
     }
 }
 
+/// The closing screen for any module the watch can mark on its own.
 struct CompletedView: View {
+    let title: String
+    let module: VirtueAPI.Module
+
     @State private var note = ""
 
     var body: some View {
@@ -165,7 +169,7 @@ struct CompletedView: View {
             Image(systemName: "checkmark.seal.fill")
                 .font(.largeTitle)
                 .foregroundStyle(Color.accentColor)
-            Text("Rosario completado")
+            Text(title)
                 .font(.headline)
                 .multilineTextAlignment(.center)
             Text(note)
@@ -174,12 +178,12 @@ struct CompletedView: View {
                 .multilineTextAlignment(.center)
         }
         .task {
-            guard RosaryAPI.isConfigured else {
+            guard VirtueAPI.isConfigured(module) else {
                 note = "Abre la app en tu iPhone una vez para conectar el registro."
                 return
             }
 
-            note = await RosaryAPI.markPrayed()
+            note = await VirtueAPI.markCompleted(module)
                 ? "Marcado como rezado."
                 : "Se marcará en cuanto haya conexión."
         }
