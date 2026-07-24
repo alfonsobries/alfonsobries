@@ -13,6 +13,8 @@ import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
 import { Sheet } from '@/components/ui/Sheet';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys, readCache } from '@/offline/store';
 
 // The evening review, as a form sheet: every chore of the day, pre-checked
 // with what the kid marked. A parent unlocks with Face ID, adjusts each
@@ -39,8 +41,7 @@ export default function ChoresReviewScreen(): ReactNode {
       return;
     }
 
-    try {
-      const nextChores = await fetchChores(route, kid);
+    function apply(nextChores: Chore[]): void {
       setChores(nextChores);
       setVerdicts(
         Object.fromEntries(
@@ -51,8 +52,19 @@ export default function ChoresReviewScreen(): ReactNode {
         ),
       );
       setLoaded(true);
-    } catch {
-      // The retry is one focus away.
+    }
+
+    try {
+      apply(await fetchChores(route, kid));
+    } catch (error) {
+      // The day is still worth reading offline even though saving it isn't.
+      if (isOfflineError(error)) {
+        const cached = readCache<Chore[]>(cacheKeys.chores(kid));
+
+        if (cached) {
+          apply(cached);
+        }
+      }
     }
   }, [route, kid]);
 
@@ -134,9 +146,17 @@ export default function ChoresReviewScreen(): ReactNode {
             : {}),
         },
       });
-    } catch {
+    } catch (error) {
       setSaving(false);
-      Alert.alert('Could not save', 'Please try again in a moment.');
+
+      // The review awards points chore by chore, so a half-applied day is worse
+      // than none: it waits for a connection instead of queueing.
+      Alert.alert(
+        'Could not save',
+        isOfflineError(error)
+          ? 'Reviewing the day needs a connection. Try again once you are back online.'
+          : 'Please try again in a moment.',
+      );
       await load();
     }
   }

@@ -10,6 +10,8 @@ type SettingsRowProperties = {
   destructive?: boolean;
   showChevron?: boolean;
   loading?: boolean;
+  /** Trailing status text, for a row that reports a value as well as acting. */
+  detail?: string;
 };
 
 export function SettingsRow({
@@ -19,6 +21,7 @@ export function SettingsRow({
   destructive = false,
   showChevron = false,
   loading = false,
+  detail,
 }: SettingsRowProperties) {
   const iconTint = useThemeColor(destructive ? 'danger' : 'primary-emphasis');
   const muted = useThemeColor('muted');
@@ -38,6 +41,8 @@ export function SettingsRow({
       >
         {label}
       </Text>
+
+      {detail ? <Text className="text-base text-muted">{detail}</Text> : null}
 
       {loading ? (
         <ActivityIndicator size="small" color={muted} />

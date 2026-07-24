@@ -2,11 +2,18 @@ import { Redirect, Stack, useFocusEffect, useLocalSearchParams } from 'expo-rout
 import { useCallback, useRef, useState } from 'react';
 import { FlatList, View } from 'react-native';
 
-import { deleteBehaviorLog, fetchBehaviorLogs, type BehaviorLogEntry } from '@/api/behaviors';
+import {
+  deleteBehaviorLog,
+  fetchBehaviorLogs,
+  type BehaviorLogEntry,
+  type BehaviorLogPage,
+} from '@/api/behaviors';
 import { getPerson, isKid } from '@/api/family';
 import { useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
 import { BehaviorFeed } from '@/components/behaviors/BehaviorFeed';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys, readCache, writeCache } from '@/offline/store';
 
 // The full behavior history for a kid, loading pages as the list reaches the
 // end; skeleton rows stand in while the next page arrives.
@@ -33,10 +40,25 @@ export default function BehaviorFeedScreen() {
       loadingRef.current = true;
       try {
         const result = await fetchBehaviorLogs(route, { member: kid, page });
+
+        if (page === 1) {
+          writeCache(cacheKeys.behaviorFeed(kid), result);
+        }
+
         setEntries((current) => (reset ? result.entries : [...current, ...result.entries]));
         setNextPage(result.nextPage);
-      } catch {
-        // Scrolling again retries.
+      } catch (error) {
+        // Offline, the history is whatever page one left behind — there are no
+        // further pages to reach, so the skeleton stops too.
+        if (isOfflineError(error) && reset) {
+          const cached = readCache<BehaviorLogPage>(cacheKeys.behaviorFeed(kid));
+
+          if (cached) {
+            setEntries(cached.entries);
+          }
+
+          setNextPage(null);
+        }
       } finally {
         loadingRef.current = false;
       }

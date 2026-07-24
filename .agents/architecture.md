@@ -35,8 +35,13 @@ product) - e.g. shared expenses, tools for the kids.
   `app/src/api/ziggy.gen.{js,d.ts}` (committed).
 - Auth: Sign in with Apple only. `AuthProvider` (`app/src/api/auth.tsx`) exchanges the
   Apple identity token at `POST /api/auth/apple` for a Sanctum bearer token, persisted in
-  `expo-secure-store`. The root layout gates routes with `Stack.Protected`. Credential
-  setup: `docs/apple-sign-in.md`.
+  `expo-secure-store`. The root layout gates routes with `Stack.Protected`. The stored
+  token is what "signed in" means and survives a launch with no network - only an API
+  response that rejects it signs the user out. Credential setup: `docs/apple-sign-in.md`.
+- Offline: reads render from an on-disk cache and writes the device can decide on its own
+  are queued and replayed on reconnect (`app/src/offline/`). Before building any app
+  feature, read `app/.claude/agents/offline.md` - it decides which of the three
+  categories the feature falls into.
 
 ## Data flow
 

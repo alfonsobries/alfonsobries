@@ -8,9 +8,13 @@ import { useColorScheme } from 'react-native';
 import { AuthProvider, useAuth } from '@/api/auth';
 import { ApiRouterProvider } from '@/api/router';
 import { EasUpdatePill } from '@/components/ui/EasUpdatePill';
+import { OfflinePill } from '@/components/ui/OfflinePill';
 import { useEasUpdate } from '@/hooks/use-eas-update';
+import { installConnectivityTracking } from '@/offline/connectivity';
+import { OfflineQueueProvider } from '@/offline/queue';
 
 SplashScreen.preventAutoHideAsync();
+installConnectivityTracking();
 
 function RootNavigator() {
   const { status } = useAuth();
@@ -31,7 +35,7 @@ function RootNavigator() {
   const isAuthenticated = status === 'authenticated';
 
   return (
-    <>
+    <OfflineQueueProvider enabled={isAuthenticated}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Protected guard={isAuthenticated}>
           <Stack.Screen name="(app)" />
@@ -46,7 +50,8 @@ function RootNavigator() {
         onDismiss={update.dismissUpdate}
         dismissed={update.dismissed}
       />
-    </>
+      <OfflinePill />
+    </OfflineQueueProvider>
   );
 }
 

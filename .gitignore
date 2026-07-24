@@ -5,6 +5,10 @@
 logs/
 node_modules/
 
+# build output from a tool run at the repo root instead of its own project
+.next/
+tsconfig.tsbuildinfo
+
 # claude
 CLAUDE.local.md
 

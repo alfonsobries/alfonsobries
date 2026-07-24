@@ -15,14 +15,19 @@ import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { useAuth } from '@/api/auth';
 import { useApiRouter } from '@/api/router';
 import {
+  cacheVirtueDay,
   fetchVirtueSummary,
   localDate,
+  queueHabit,
+  queueResolution,
   setHabit,
   setResolution,
+  virtueDedupeKey,
   type Resolution,
   type VirtueDay,
   type VirtueHabit,
   type VirtueStats,
+  type VirtueSummary,
 } from '@/api/virtue';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -36,9 +41,28 @@ import { MYSTERY_SETS, mysterySetForWeekday } from '@/data/rosary';
 import { AREA_HABITS, AREAS, completedToday, DAILY_GOAL_COUNT, ENTRY_HABITS } from '@/data/virtue';
 import { useHealthExercise } from '@/hooks/use-health-exercise';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys, readCache, writeCache } from '@/offline/store';
 
 /** Local-only stage overrides for previewing the art like a game — never saved. */
 type PreviewStages = { body: number; mind: number; spirit: number };
+
+const EMPTY_HABITS: Record<VirtueHabit, boolean> = {
+  exercise: false,
+  diet: false,
+  sun: false,
+  reading: false,
+};
+
+const EMPTY_DAY = (date: string): VirtueDay => ({
+  date,
+  prayers_completed: false,
+  rosary_completed: false,
+  resolution: null,
+  habits: EMPTY_HABITS,
+  exercise_minutes: null,
+  exercise_big: false,
+});
 
 function currentDates() {
   const now = new Date();
@@ -75,14 +99,32 @@ export default function VirtueScreen() {
   const readExerciseMinutes = useHealthExercise();
 
   const load = useCallback(async () => {
-    try {
-      const summary = await fetchVirtueSummary(route);
+    function apply(summary: VirtueSummary): void {
       setDays(Object.fromEntries(summary.days.map((day) => [day.date, day])));
       setStats(summary.stats);
       setLoadFailed(false);
+    }
+
+    try {
+      const summary = await fetchVirtueSummary(route);
+      writeCache(cacheKeys.virtueSummary, summary);
+      apply(summary);
 
       return summary;
-    } catch {
+    } catch (error) {
+      // Offline the journey still shows: the marks are whatever the cache last
+      // saw, and the score is the last one the API computed — it moves again on
+      // the next sync rather than being guessed here.
+      if (isOfflineError(error)) {
+        const cached = readCache<VirtueSummary>(cacheKeys.virtueSummary);
+
+        if (cached) {
+          apply(cached);
+
+          return cached;
+        }
+      }
+
       setLoadFailed(true);
 
       return null;
@@ -107,8 +149,30 @@ export default function VirtueScreen() {
         const result = await setHabit(route, date, 'exercise', true, { minutes });
         setDays((current) => ({ ...current, [result.day.date]: result.day }));
         setStats(result.stats);
-      } catch {
-        // The manual toggle still works; the next focus retries.
+      } catch (error) {
+        // Health lives on the device, so a workout is still known without a
+        // network — the minutes are recorded locally and reported on sync.
+        if (isOfflineError(error)) {
+          const patched = cacheVirtueDay(date, {
+            habits: { ...(day?.habits ?? EMPTY_HABITS), exercise: true },
+            exercise_minutes: minutes,
+          });
+
+          if (patched) {
+            setDays(Object.fromEntries(patched.days.map((entry) => [entry.date, entry])));
+          }
+
+          queueHabit(
+            {
+              date,
+              habit: 'exercise',
+              completed: true,
+              minutes,
+              ...(day?.exercise_big ? { big: true } : {}),
+            },
+            { dedupeKey: virtueDedupeKey.habit(date, 'exercise') },
+          );
+        }
       }
     }
   }, [load, readExerciseMinutes, route]);
@@ -198,14 +262,36 @@ export default function VirtueScreen() {
   function apply(result: { day: VirtueDay; stats: VirtueStats }): void {
     setDays((current) => ({ ...current, [result.day.date]: result.day }));
     setStats(result.stats);
+    cacheVirtueDay(result.day.date, result.day);
+  }
+
+  // Marks land locally first and queue when there is no API to tell — the score
+  // beside them stays at its last synced value until the API recomputes it.
+  function applyLocally(date: string, patch: Partial<Omit<VirtueDay, 'date'>>): void {
+    const patched = cacheVirtueDay(date, patch);
+
+    setDays((current) => ({
+      ...current,
+      [date]: patched?.days.find((entry) => entry.date === date) ?? {
+        ...(current[date] ?? EMPTY_DAY(date)),
+        ...patch,
+      },
+    }));
   }
 
   async function mark(date: string, resolution: Resolution | null): Promise<void> {
     setSaving(true);
+    applyLocally(date, { resolution });
 
     try {
       apply(await setResolution(route, date, resolution));
-    } catch {
+    } catch (error) {
+      if (isOfflineError(error)) {
+        queueResolution({ date, resolution }, { dedupeKey: virtueDedupeKey.resolution(date) });
+        return;
+      }
+
+      await load();
       Alert.alert('Could not save', 'Please try again in a moment.');
     } finally {
       setSaving(false);
@@ -215,10 +301,71 @@ export default function VirtueScreen() {
   async function toggleHabit(habit: VirtueHabit): Promise<void> {
     const completed = !days[today]?.habits[habit];
     setSaving(true);
+    applyLocally(today, {
+      habits: { ...(days[today]?.habits ?? EMPTY_HABITS), [habit]: completed },
+    });
 
     try {
       apply(await setHabit(route, today, habit, completed));
-    } catch {
+    } catch (error) {
+      if (isOfflineError(error)) {
+        queueHabit(
+          { date: today, habit, completed, ...exerciseExtras(habit, completed) },
+          { dedupeKey: virtueDedupeKey.habit(today, habit) },
+        );
+        return;
+      }
+
+      await load();
+      Alert.alert('Could not save', 'Please try again in a moment.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  // Measured minutes and a hand-marked big session are two ways to say the same
+  // thing about one habit, so they queue under one key — which means whichever
+  // goes last has to carry what the other already knew.
+  function exerciseExtras(
+    habit: VirtueHabit,
+    completed: boolean,
+  ): { minutes?: number; big?: boolean } {
+    if (habit !== 'exercise' || !completed) {
+      return {};
+    }
+
+    const entry = days[today];
+
+    return {
+      ...(entry?.exercise_minutes != null ? { minutes: entry.exercise_minutes } : {}),
+      ...(entry?.exercise_big ? { big: true } : {}),
+    };
+  }
+
+  async function markBigSession(): Promise<void> {
+    setSaving(true);
+    applyLocally(today, { exercise_big: true });
+
+    try {
+      apply(await setHabit(route, today, 'exercise', true, { big: true }));
+    } catch (error) {
+      if (isOfflineError(error)) {
+        const minutes = days[today]?.exercise_minutes;
+
+        queueHabit(
+          {
+            date: today,
+            habit: 'exercise',
+            completed: true,
+            big: true,
+            ...(minutes != null ? { minutes } : {}),
+          },
+          { dedupeKey: virtueDedupeKey.habit(today, 'exercise') },
+        );
+        return;
+      }
+
+      await load();
       Alert.alert('Could not save', 'Please try again in a moment.');
     } finally {
       setSaving(false);
@@ -486,19 +633,7 @@ export default function VirtueScreen() {
                 <Pressable
                   accessibilityRole="button"
                   disabled={saving}
-                  onPress={() =>
-                    void (async () => {
-                      setSaving(true);
-
-                      try {
-                        apply(await setHabit(route, today, 'exercise', true, { big: true }));
-                      } catch {
-                        Alert.alert('Could not save', 'Please try again in a moment.');
-                      } finally {
-                        setSaving(false);
-                      }
-                    })()
-                  }
+                  onPress={() => void markBigSession()}
                   className="self-end active:opacity-70"
                 >
                   <Text className="text-xs text-muted underline">

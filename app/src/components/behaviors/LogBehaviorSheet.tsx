@@ -6,13 +6,14 @@ import { useState, type ReactNode } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 
 import { useAuth } from '@/api/auth';
-import { logBehavior, type Behavior } from '@/api/behaviors';
+import { logBehavior, queueLogBehavior, type Behavior } from '@/api/behaviors';
 import { getPerson } from '@/api/family';
 import { MOOD_MIN, useMoods } from '@/api/moods';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
 import { Sheet } from '@/components/ui/Sheet';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { isOfflineError } from '@/offline/connectivity';
 
 type LogBehaviorSheetProperties = {
   behavior: Behavior;
@@ -50,16 +51,10 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
       return;
     }
 
-    setSaving(true);
-    try {
-      await logBehavior(route, behavior.id, {
-        affected_mood: affectedMood,
-      });
-      // Logging may have lowered the parent's mood on the API side.
-      await refreshMoods();
-
-      // Close this sheet entirely; the small result window takes its place.
-      // Mood math mirrors the API so the shift shows without a refetch race.
+    // Close this sheet entirely; the small result window takes its place.
+    // Mood math mirrors the API so the shift shows without a refetch race — and
+    // so the same window can close an offline log, where there is no API to ask.
+    function showResult(): void {
       const moved = affectedMood && myMood != null;
 
       router.replace({
@@ -76,7 +71,23 @@ export function LogBehaviorSheet({ behavior }: LogBehaviorSheetProperties): Reac
             : {}),
         },
       });
-    } catch {
+    }
+
+    setSaving(true);
+    try {
+      await logBehavior(route, behavior.id, {
+        affected_mood: affectedMood,
+      });
+      // Logging may have lowered the parent's mood on the API side.
+      await refreshMoods();
+      showResult();
+    } catch (error) {
+      if (isOfflineError(error)) {
+        queueLogBehavior({ behavior: behavior.id, affected_mood: affectedMood });
+        showResult();
+        return;
+      }
+
       setSaving(false);
       Alert.alert('Could not save', 'Please try again in a moment.');
     }

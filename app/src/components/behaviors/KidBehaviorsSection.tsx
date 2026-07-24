@@ -1,11 +1,12 @@
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { Text, View } from 'react-native';
 
 import {
   deleteBehaviorLog,
   fetchBehaviorLogs,
   type BehaviorLogEntry,
+  type BehaviorLogPage,
   type KidMember,
 } from '@/api/behaviors';
 import { useMoods } from '@/api/moods';
@@ -13,6 +14,8 @@ import { useApiRouter } from '@/api/router';
 import { BehaviorFeed } from '@/components/behaviors/BehaviorFeed';
 import { IllustratedButton } from '@/components/ui/IllustratedButton';
 import { Button } from '@/components/ui/Button';
+import { cacheKeys } from '@/offline/store';
+import { useCachedResource } from '@/offline/use-cached-resource';
 
 const behaviorsArt = require('../../../assets/illustrations/behaviors-button.png');
 
@@ -29,29 +32,25 @@ export function KidBehaviorsSection({ member }: KidBehaviorsSectionProperties) {
   const route = useApiRouter();
   const { refresh: refreshMoods } = useMoods();
 
-  const [entries, setEntries] = useState<BehaviorLogEntry[]>([]);
-  const [hasMore, setHasMore] = useState(false);
+  const fetcher = useCallback(() => fetchBehaviorLogs(route, { member }), [route, member]);
 
-  const load = useCallback(async () => {
-    try {
-      const page = await fetchBehaviorLogs(route, { member });
-      setEntries(page.entries.slice(0, RECENT_LIMIT));
-      setHasMore(page.entries.length > RECENT_LIMIT || page.nextPage !== null);
-    } catch {
-      // A pull refresh happens on the next focus; keep whatever we had.
-    }
-  }, [route, member]);
+  const feed = useCachedResource<BehaviorLogPage>(cacheKeys.behaviorFeed(member), fetcher);
+  const { refresh } = feed;
+
+  const entries = (feed.data?.entries ?? []).slice(0, RECENT_LIMIT);
+  const hasMore =
+    (feed.data?.entries.length ?? 0) > RECENT_LIMIT || (feed.data?.nextPage ?? null) !== null;
 
   useFocusEffect(
     useCallback(() => {
-      void load();
-    }, [load]),
+      void refresh();
+    }, [refresh]),
   );
 
   async function handleUndo(entry: BehaviorLogEntry): Promise<void> {
     try {
       await deleteBehaviorLog(route, entry.id);
-      await Promise.all([load(), refreshMoods()]);
+      await Promise.all([refresh(), refreshMoods()]);
     } catch {
       // The entry stays; a retry is one long-press away.
     }

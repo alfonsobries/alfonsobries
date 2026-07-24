@@ -1,6 +1,6 @@
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { CaretRight } from 'phosphor-react-native';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import {
@@ -13,29 +13,39 @@ import {
 import { useApiRouter } from '@/api/router';
 import { AssistantTile } from '@/components/chat/AssistantTile';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys } from '@/offline/store';
+import { useCachedResource } from '@/offline/use-cached-resource';
+
+type ChatOverview = {
+  assistants: Assistant[];
+  conversations: Conversation[];
+};
 
 export default function ChatScreen() {
   const route = useApiRouter();
-  const [assistants, setAssistants] = useState<Assistant[] | null>(null);
-  const [conversations, setConversations] = useState<Conversation[] | null>(null);
 
-  const load = useCallback(async () => {
-    try {
-      const [nextAssistants, nextConversations] = await Promise.all([
-        fetchAssistants(route),
-        fetchConversations(route),
-      ]);
-      setAssistants(nextAssistants);
-      setConversations(nextConversations);
-    } catch {
-      // Keep whatever is on screen; the next focus retries.
-    }
+  const fetcher = useCallback(async (): Promise<ChatOverview> => {
+    const [assistants, conversations] = await Promise.all([
+      fetchAssistants(route),
+      fetchConversations(route),
+    ]);
+
+    return { assistants, conversations };
   }, [route]);
+
+  const overview = useCachedResource<ChatOverview>(cacheKeys.assistants, fetcher);
+  const { refresh } = overview;
+
+  // Past conversations stay readable offline; only starting or continuing one
+  // needs the network, which the thread screen says for itself.
+  const assistants = overview.data?.assistants ?? null;
+  const conversations = overview.data?.conversations ?? null;
 
   useFocusEffect(
     useCallback(() => {
-      void load();
-    }, [load]),
+      void refresh();
+    }, [refresh]),
   );
 
   const handleDelete = (conversation: Conversation) => {
@@ -48,9 +58,12 @@ export default function ChatScreen() {
           void (async () => {
             try {
               await deleteConversation(route, conversation.id);
-              await load();
-            } catch {
-              Alert.alert('Could not delete', 'Please try again.');
+              await refresh();
+            } catch (error) {
+              Alert.alert(
+                'Could not delete',
+                isOfflineError(error) ? 'You are offline right now.' : 'Please try again.',
+              );
             }
           })();
         },

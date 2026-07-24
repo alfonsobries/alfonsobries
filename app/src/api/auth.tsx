@@ -2,10 +2,19 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import * as SecureStore from 'expo-secure-store';
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 
+import { isOfflineError } from '@/offline/connectivity';
+import { clearQueue } from '@/offline/queue';
+import { cacheKeys, clearCache, readCache, writeCache } from '@/offline/store';
+
 import { apiClient } from './client';
 import { useApiRouter } from './router';
 
 const TOKEN_KEY = 'auth_token';
+
+// The stored token is the source of truth for "signed in". Confirming it with
+// the API is a refresh, not a gate — otherwise a plane with no signal locks the
+// user out of an app whose content is mostly local anyway.
+const BOOTSTRAP_TIMEOUT = 8000;
 
 export type FamilyMember = 'alfonso' | 'saida';
 
@@ -53,28 +62,61 @@ export function AuthProvider({ children }: AuthProviderProperties): ReactNode {
     let active = true;
 
     void (async () => {
+      let token: string | null = null;
+
       try {
-        const token = await SecureStore.getItemAsync(TOKEN_KEY);
+        token = await SecureStore.getItemAsync(TOKEN_KEY);
+      } catch {
+        // A platform without a secure store (web) has no session to restore.
+        token = null;
+      }
 
-        if (!token) {
-          if (active) {
-            setStatus('unauthenticated');
-          }
-          return;
+      if (!token) {
+        if (active) {
+          setStatus('unauthenticated');
         }
+        return;
+      }
 
-        setAuthHeader(token);
-        const { data } = await apiClient.get<AuthUser>(route('api.user'));
+      setAuthHeader(token);
+
+      // Enter on the cached profile first so the app is usable before — and
+      // without — a round trip.
+      const cached = readCache<AuthUser>(cacheKeys.user);
+
+      if (cached && active) {
+        setUser(cached);
+        setStatus('authenticated');
+      }
+
+      try {
+        const { data } = await apiClient.get<AuthUser>(route('api.user'), {
+          timeout: BOOTSTRAP_TIMEOUT,
+        });
+        writeCache(cacheKeys.user, data);
+
         if (active) {
           setUser(data);
           setStatus('authenticated');
         }
-      } catch {
-        // Stale/invalid token, or a platform without a secure store (web):
-        // drop it and fall back to the signed-out state.
+      } catch (error) {
+        if (isOfflineError(error)) {
+          // Unreachable API says nothing about the token's validity, so the
+          // session stands and revalidates whenever the network comes back.
+          if (active) {
+            setStatus('authenticated');
+          }
+          return;
+        }
+
+        // The API answered and rejected the token: it really is stale.
         setAuthHeader(null);
+        clearCache();
+        clearQueue();
         await SecureStore.deleteItemAsync(TOKEN_KEY).catch(() => undefined);
+
         if (active) {
+          setUser(null);
           setStatus('unauthenticated');
         }
       }
@@ -110,6 +152,7 @@ export function AuthProvider({ children }: AuthProviderProperties): ReactNode {
 
     await SecureStore.setItemAsync(TOKEN_KEY, data.token);
     setAuthHeader(data.token);
+    writeCache(cacheKeys.user, data.user);
     setUser(data.user);
     setStatus('authenticated');
   }, [route]);
@@ -123,6 +166,8 @@ export function AuthProvider({ children }: AuthProviderProperties): ReactNode {
 
     await SecureStore.deleteItemAsync(TOKEN_KEY);
     setAuthHeader(null);
+    clearCache();
+    clearQueue();
     setUser(null);
     setStatus('unauthenticated');
   }, [route]);

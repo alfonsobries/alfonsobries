@@ -3,3 +3,4 @@
 @.claude/agents/icons.md
 @.claude/agents/design-system.md
 @.claude/agents/keyboard.md
+@.claude/agents/offline.md
