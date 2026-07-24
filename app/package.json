@@ -55,6 +55,7 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-react-jsx": "^8.0.1",
+    "@bacons/apple-targets": "^5.0.0",
     "@resvg/resvg-js": "^2.6.2",
     "@types/react": "~19.2.2",
     "babel-preset-expo": "57.0.1",
@@ -70,6 +71,8 @@
   },
   "scripts": {
     "start": "expo start",
+    "watch:resources": "node --experimental-strip-types ./scripts/generate-watch-resources.mjs",
+    "eas-build-pre-install": "pnpm watch:resources",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",
