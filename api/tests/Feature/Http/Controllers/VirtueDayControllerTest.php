@@ -381,6 +381,42 @@ it('keeps the first completion when the rosary repeats', function () {
         ->toEqual($first);
 });
 
+it('clears a mistaken rosary mark', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.virtue.rosary.store'), ['date' => now()->toDateString()])
+        ->assertOk();
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.virtue.rosary.store'), [
+            'date' => now()->toDateString(),
+            'completed' => false,
+        ])
+        ->assertOk()
+        ->assertJsonPath('data.rosary_completed', false)
+        ->assertJsonPath('stats.rosary.total', 0);
+
+    expect(VirtueDay::whereDate('date', now()->toDateString())->first()->rosary_completed_at)->toBeNull();
+});
+
+it('clears a mistaken prayers mark', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    VirtueDay::factory()->create([
+        'date' => now()->subDay()->toDateString(),
+        'prayers_completed_at' => now()->subDay(),
+    ]);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.virtue.prayers.store'), [
+            'date' => now()->subDay()->toDateString(),
+            'completed' => false,
+        ])
+        ->assertOk()
+        ->assertJsonPath('data.prayers_completed', false);
+});
+
 it('counts consecutive rosary days as a streak', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
