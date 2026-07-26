@@ -73,30 +73,55 @@ struct PrayView: View {
     }
 
     private var textView: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(session.step.title)
-                    .font(.headline)
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 6) {
+                    // A zero-height anchor, so a long step doesn't leave the
+                    // next one scrolled past its beginning.
+                    Color.clear
+                        .frame(height: 0)
+                        .id(topAnchor)
 
-                if let subtitle = session.step.subtitle {
-                    Text(subtitle)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                    Text(session.step.title)
+                        .font(.headline)
+
+                    if let subtitle = session.step.subtitle {
+                        Text(subtitle)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Text(session.step.text)
+                        .font(.body)
                 }
-
-                Text(session.step.text)
-                    .font(.body)
+                // Clearance for the floating toolbar, so the closing lines of a
+                // step never sit behind it.
+                .padding(.bottom, 28)
+            }
+            .onChange(of: session.index) { _, _ in
+                proxy.scrollTo(topAnchor, anchor: .top)
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .bottomBar) {
+                if session.index > 0 {
+                    Button {
+                        session.goBack()
+                        crown = Double(session.index)
+                    } label: {
+                        Image(systemName: "chevron.left")
+                    }
+                }
 
                 Button(session.isLast ? "Terminar" : "Siguiente") {
                     advance()
                 }
-                .buttonStyle(.borderedProminent)
                 .tint(.accentColor)
-                .foregroundStyle(.black)
-                .padding(.top, 6)
             }
         }
     }
+
+    private var topAnchor: String { "step-top" }
 
     private func advance() {
         if session.isLast {
