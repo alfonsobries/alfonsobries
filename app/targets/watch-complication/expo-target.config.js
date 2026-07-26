@@ -4,7 +4,7 @@ module.exports = {
   name: 'RosarioComplication',
   displayName: 'Oración',
   deploymentTarget: '10.0',
-  bundleIdentifier: '.watch.complication',
+  bundleIdentifier: '.watch.widget',
   colors: {
     $accent: '#ffd78b',
   },
