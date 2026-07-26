@@ -2,7 +2,8 @@ import SwiftUI
 import WatchKit
 
 /// The Auxilium sequence for today, one prayer per screen: scroll the text with
-/// the crown, tap to move on, and the last step marks the day.
+/// the crown, move on from the toolbar without reaching the end, and the last
+/// step marks the day.
 struct PrayersView: View {
     @StateObject private var session = PrayerSession()
     @State private var finished = false
@@ -20,45 +21,54 @@ struct PrayersView: View {
     }
 
     private var stepView: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(session.step.title)
-                    .font(.headline)
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 6) {
+                    // A zero-height anchor: the next prayer opens at its
+                    // beginning instead of keeping the previous scroll offset.
+                    Color.clear
+                        .frame(height: 0)
+                        .id(topAnchor)
 
-                if let subtitle = session.step.subtitle {
-                    Text(subtitle)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                }
+                    Text(session.step.title)
+                        .font(.headline)
 
-                Text(session.step.text)
-                    .font(.body)
-
-                HStack(spacing: 6) {
-                    if session.index > 0 {
-                        Button {
-                            session.goBack()
-                        } label: {
-                            Image(systemName: "chevron.left")
-                        }
-                        .buttonStyle(.bordered)
-                        .fixedSize()
+                    if let subtitle = session.step.subtitle {
+                        Text(subtitle)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
                     }
 
-                    Button(session.isLast ? "Terminar" : "Siguiente") {
-                        advance()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.accentColor)
-                    .foregroundStyle(.black)
+                    Text(session.step.text)
+                        .font(.body)
                 }
-                .padding(.top, 6)
+                // Clearance for the floating toolbar, so the closing lines of a
+                // prayer never sit behind it.
+                .padding(.bottom, 28)
             }
-            // A fresh identity per step so the next prayer opens at its
-            // beginning instead of keeping the previous scroll offset.
-            .id(session.index)
+            .onChange(of: session.index) { _, _ in
+                proxy.scrollTo(topAnchor, anchor: .top)
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .bottomBar) {
+                if session.index > 0 {
+                    Button {
+                        session.goBack()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                    }
+                }
+
+                Button(session.isLast ? "Terminar" : "Siguiente") {
+                    advance()
+                }
+                .tint(.accentColor)
+            }
         }
     }
+
+    private var topAnchor: String { "prayer-top" }
 
     private func advance() {
         if session.isLast {
