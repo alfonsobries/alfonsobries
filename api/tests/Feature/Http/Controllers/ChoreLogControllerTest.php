@@ -2,7 +2,9 @@
 
 use App\Models\Chore;
 use App\Models\ChoreLog;
+use App\Models\Reward;
 use App\Models\User;
+use App\Services\KidPoints;
 
 it('lets a kid check a chore for today', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
@@ -116,6 +118,29 @@ it('re-reviews from rejected to approved and grants the mood', function () {
         ->assertJsonPath('data.status', ChoreLog::STATUS_APPROVED);
 
     expect($alfonso->fresh()->mood)->toBe(7);
+});
+
+it('takes the points back when an approval is undone', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso', 'mood' => 5]);
+    $reward = Reward::factory()->create(['family_member' => 'regina', 'cost' => 20]);
+    $chore = Chore::factory()->create(['family_member' => 'regina']);
+    $log = ChoreLog::factory()->create([
+        'chore_id' => $chore->id,
+        'family_member' => 'regina',
+        'points' => 4,
+    ]);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.chore-logs.review', ['choreLog' => $log]), ['approved' => true])
+        ->assertOk();
+
+    expect(app(KidPoints::class)->savedFor($reward->fresh()))->toBe(4);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.chore-logs.review', ['choreLog' => $log]), ['approved' => false])
+        ->assertOk();
+
+    expect(app(KidPoints::class)->savedFor($reward->fresh()))->toBe(0);
 });
 
 it('re-reviewing with the same verdict changes nothing', function () {

@@ -80,6 +80,8 @@ final class Reward extends NovaResource
 
             Boolean::make('Needs content parents', 'requires_content_parents'),
 
+            Boolean::make('Saving into this', 'is_active')->exceptOnForms(),
+
             Image::make('Illustration', 'illustration')
                 ->rules('image')
                 ->store(function ($request, $model) {

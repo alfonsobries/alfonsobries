@@ -18,6 +18,7 @@ use App\Http\Controllers\FavoriteIllustrationController;
 use App\Http\Controllers\KidEmotionController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\OtaUpdateController;
+use App\Http\Controllers\PointEntryController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PushTokenController;
 use App\Http\Controllers\ResumeControler;
@@ -79,6 +80,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/rewards/{reward}', [RewardController::class, 'update'])->name('rewards.update');
     Route::delete('/rewards/{reward}', [RewardController::class, 'destroy'])->name('rewards.destroy');
     Route::post('/rewards/{reward}/redeem', [RewardController::class, 'redeem'])->name('rewards.redeem');
+    Route::post('/rewards/{reward}/activate', [RewardController::class, 'activate'])->name('rewards.activate');
+
+    Route::get('/kids/{member}/points', [PointEntryController::class, 'index'])->name('kids.points.index');
+    Route::post('/kids/{member}/points', [PointEntryController::class, 'store'])->name('kids.points.store');
 
     Route::get('/virtue/days', [VirtueDayController::class, 'index'])->name('virtue.days.index');
     Route::put('/virtue/days/{date}/resolution', [VirtueDayController::class, 'updateResolution'])->name('virtue.days.resolution');

@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasIllustration;
+use App\Observers\RewardObserver;
 use Database\Factories\RewardFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,9 +13,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 
 /**
- * Something a kid is saving their chore points for. The first unachieved
- * reward is the one their progress bar points at.
+ * Something a kid is saving their chore points for. Each one holds its own
+ * jar of points; the active one is where new points land.
  */
+#[ObservedBy(RewardObserver::class)]
 class Reward extends Model implements HasMedia
 {
     /** @use HasFactory<RewardFactory> */
@@ -31,6 +34,7 @@ class Reward extends Model implements HasMedia
         'cost',
         'available_on',
         'requires_content_parents',
+        'is_active',
         'achieved_at',
     ];
 
@@ -41,6 +45,7 @@ class Reward extends Model implements HasMedia
         'cost' => 'integer',
         'available_on' => 'date',
         'requires_content_parents' => 'boolean',
+        'is_active' => 'boolean',
         'achieved_at' => 'datetime',
     ];
 

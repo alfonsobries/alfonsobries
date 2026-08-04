@@ -7,7 +7,7 @@ use App\Models\User;
 it('lists rewards with the kid points balance', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
     Reward::factory()->create(['family_member' => 'regina', 'name' => 'Ir al cine', 'cost' => 10]);
-    Reward::factory()->achieved()->create(['family_member' => 'regina', 'name' => 'Helado', 'cost' => 3]);
+    Reward::factory()->create(['family_member' => 'regina', 'name' => 'Helado', 'cost' => 3]);
     ChoreLog::factory()->approved()->create(['family_member' => 'regina', 'points' => 5]);
     ChoreLog::factory()->approved()->create(['family_member' => 'regina', 'points' => 4]);
     ChoreLog::factory()->create(['family_member' => 'regina', 'points' => 9]);
@@ -16,11 +16,99 @@ it('lists rewards with the kid points balance', function () {
         ->getJson(route('api.kids.rewards.index', ['member' => 'regina']))
         ->assertOk()
         ->assertJsonCount(2, 'data')
-        // Pending first, so the app's progress card points at it.
-        ->assertJsonPath('data.0.name', 'Ir al cine');
+        // The first goal took over on its own, so it leads the list.
+        ->assertJsonPath('data.0.name', 'Ir al cine')
+        ->assertJsonPath('data.0.is_active', true)
+        // 5 + 4 approved; the unreviewed check earns nothing yet.
+        ->assertJsonPath('data.0.saved', 9)
+        // Each goal keeps its own jar — the second one has saved nothing.
+        ->assertJsonPath('data.1.is_active', false)
+        ->assertJsonPath('data.1.saved', 0);
 
-    // 5 + 4 approved, minus the 3 already spent; unreviewed points don't count.
-    expect($response->json('balance'))->toBe(6);
+    expect($response->json('balance'))->toBe(9);
+});
+
+it('sends new points to the goal the kid switched to, leaving the old jar untouched', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $bike = Reward::factory()->create(['family_member' => 'regina', 'cost' => 20]);
+    $movie = Reward::factory()->create(['family_member' => 'regina', 'cost' => 30]);
+    ChoreLog::factory()->approved()->create(['family_member' => 'regina', 'points' => 7]);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.rewards.activate', ['reward' => $movie]))
+        ->assertOk()
+        ->assertJsonPath('data.is_active', true)
+        ->assertJsonPath('data.saved', 0);
+
+    expect($bike->fresh()->is_active)->toBeFalse();
+
+    ChoreLog::factory()->approved()->create(['family_member' => 'regina', 'points' => 3]);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.kids.rewards.index', ['member' => 'regina']))
+        ->assertOk()
+        ->assertJsonPath('data.0.name', $movie->name)
+        ->assertJsonPath('data.0.saved', 3)
+        ->assertJsonPath('data.1.name', $bike->name)
+        ->assertJsonPath('data.1.saved', 7);
+});
+
+it('hands the leftover points to the next goal after redeeming', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $ice = Reward::factory()->create(['family_member' => 'regina', 'cost' => 4]);
+    $movie = Reward::factory()->create(['family_member' => 'regina', 'cost' => 30]);
+    ChoreLog::factory()->approved()->create(['family_member' => 'regina', 'points' => 10]);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.rewards.redeem', ['reward' => $ice]))
+        ->assertOk();
+
+    expect($movie->fresh()->is_active)->toBeTrue();
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.kids.rewards.index', ['member' => 'regina']))
+        ->assertOk()
+        ->assertJsonPath('data.0.name', $movie->name)
+        ->assertJsonPath('data.0.saved', 6);
+});
+
+it('gives a removed goal its points back', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $bike = Reward::factory()->create(['family_member' => 'regina', 'cost' => 20]);
+    $movie = Reward::factory()->create(['family_member' => 'regina', 'cost' => 30]);
+    ChoreLog::factory()->approved()->create(['family_member' => 'regina', 'points' => 8]);
+
+    $this->actingAs($alfonso)
+        ->deleteJson(route('api.rewards.destroy', ['reward' => $bike]))
+        ->assertOk();
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.kids.rewards.index', ['member' => 'regina']))
+        ->assertOk()
+        ->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.name', $movie->name)
+        ->assertJsonPath('data.0.is_active', true)
+        ->assertJsonPath('data.0.saved', 8);
+});
+
+it('keeps the points until a goal exists to save them into', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    ChoreLog::factory()->approved()->create(['family_member' => 'regina', 'points' => 6]);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.kids.rewards.index', ['member' => 'regina']))
+        ->assertOk()
+        ->assertJsonPath('free', 6);
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.rewards.store'), [
+            'family_member' => 'regina',
+            'name' => 'Ir al cine',
+            'cost' => 15,
+        ])
+        ->assertCreated()
+        ->assertJsonPath('data.is_active', true)
+        ->assertJsonPath('data.saved', 6);
 });
 
 it('creates a reward', function () {
