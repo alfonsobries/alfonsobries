@@ -109,14 +109,12 @@ class FamilyActivityController extends Controller
     }
 
     /**
-     * Days in a row up to today with nothing confirmed — the streak worth
+     * Days in a row up to today with nothing reported — the streak worth
      * keeping.
      */
     private function cleanDays(): int
     {
-        $last = PhoneReport::where('status', PhoneReport::STATUS_CONFIRMED)
-            ->latest('date')
-            ->value('date');
+        $last = PhoneReport::latest('date')->value('date');
 
         if ($last === null) {
             return 0;

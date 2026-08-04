@@ -21,16 +21,6 @@ class PhoneReportFactory extends Factory
         return [
             'family_member' => $this->faker->randomElement(User::KID_MEMBERS),
             'date' => now()->toDateString(),
-            'status' => PhoneReport::STATUS_PENDING,
-            'reviewed_by' => null,
         ];
-    }
-
-    public function confirmed(): static
-    {
-        return $this->state(fn (): array => [
-            'status' => PhoneReport::STATUS_CONFIRMED,
-            'reviewed_by' => User::factory(),
-        ]);
     }
 }

@@ -6,14 +6,11 @@ import { useApiRouter } from './router';
 
 type ApiRoute = ReturnType<typeof useApiRouter>;
 
-export type PhoneReportStatus = 'pending' | 'confirmed' | 'work';
-
 export type PhoneReport = {
   id: number;
   family_member: KidMember;
   date: string;
-  status: PhoneReportStatus;
-  /** What this report added to the bank — zero until it is confirmed. */
+  /** What this report added to the bank. */
   minutes: number;
 };
 
@@ -68,19 +65,6 @@ export async function reportPhone(route: ApiRoute, member: KidMember): Promise<P
   const { data } = await apiClient.post<{ data: PhoneReport }>(route('api.phone-reports.store'), {
     family_member: member,
   });
-
-  return data.data;
-}
-
-export async function reviewPhoneReport(
-  route: ApiRoute,
-  phoneReport: number,
-  confirmed: boolean,
-): Promise<PhoneReport> {
-  const { data } = await apiClient.post<{ data: PhoneReport }>(
-    route('api.phone-reports.review', { phoneReport }),
-    { confirmed },
-  );
 
   return data.data;
 }

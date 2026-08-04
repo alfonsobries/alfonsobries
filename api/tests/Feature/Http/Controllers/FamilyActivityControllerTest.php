@@ -9,7 +9,7 @@ it('lists the activities cheapest first with the minutes saved up', function () 
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
     FamilyActivity::factory()->create(['name' => 'Ir al parque', 'cost_minutes' => 60]);
     FamilyActivity::factory()->create(['name' => 'Leer un cuento', 'cost_minutes' => 5]);
-    PhoneReport::factory()->confirmed()->create();
+    PhoneReport::factory()->create();
 
     $this->actingAs($alfonso)
         ->getJson(route('api.family-activities.index'))
@@ -20,7 +20,7 @@ it('lists the activities cheapest first with the minutes saved up', function () 
 
 it('counts the days since the last confirmed report', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
-    PhoneReport::factory()->confirmed()->create(['date' => now()->subDays(4)->toDateString()]);
+    PhoneReport::factory()->create(['date' => now()->subDays(4)->toDateString()]);
 
     $this->actingAs($alfonso)
         ->getJson(route('api.family-activities.index'))
@@ -43,8 +43,8 @@ it('creates an activity', function () {
 it('spends the minutes when the family cashes an activity in', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
     $activity = FamilyActivity::factory()->create(['cost_minutes' => 30]);
-    PhoneReport::factory()->confirmed()->create(['family_member' => 'regina']);
-    PhoneReport::factory()->confirmed()->create(['family_member' => 'andres']);
+    PhoneReport::factory()->create(['family_member' => 'regina']);
+    PhoneReport::factory()->create(['family_member' => 'andres']);
 
     $this->actingAs($alfonso)
         ->postJson(route('api.family-activities.redeem', ['familyActivity' => $activity]))
@@ -55,7 +55,7 @@ it('spends the minutes when the family cashes an activity in', function () {
 it('will not cash in more minutes than the bank holds', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
     $activity = FamilyActivity::factory()->create(['cost_minutes' => 60]);
-    PhoneReport::factory()->confirmed()->create();
+    PhoneReport::factory()->create();
 
     $this->actingAs($alfonso)
         ->postJson(route('api.family-activities.redeem', ['familyActivity' => $activity]))

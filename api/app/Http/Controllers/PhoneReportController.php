@@ -46,8 +46,8 @@ class PhoneReportController extends Controller
     }
 
     /**
-     * A kid says dad is on his phone. One a day each: pressing again returns
-     * the report they already made.
+     * A kid says dad is on his phone, and the minutes are owed right away.
+     * One a day each: pressing again returns the report they already made.
      */
     public function store(Request $request): JsonResponse
     {
@@ -66,38 +66,12 @@ class PhoneReportController extends Controller
         $report ??= PhoneReport::create([
             'family_member' => $validated['family_member'],
             'date' => PhoneReport::currentDate(),
-            'status' => PhoneReport::STATUS_PENDING,
         ]);
 
         return response()->json(
             ['data' => $this->present($report)],
             $report->wasRecentlyCreated ? 201 : 200,
         );
-    }
-
-    /**
-     * Dad's answer: he agrees, and the family is owed time together — or it
-     * was work, which the kid still gets to see.
-     */
-    public function review(Request $request, PhoneReport $phoneReport): JsonResponse
-    {
-        if ($response = $this->guard($request)) {
-            return $response;
-        }
-
-        $validated = $request->validate([
-            'confirmed' => ['required', 'boolean'],
-        ]);
-
-        $phoneReport->update([
-            'status' => $validated['confirmed'] ? PhoneReport::STATUS_CONFIRMED : PhoneReport::STATUS_WORK,
-            'reviewed_by' => $request->user()->id,
-        ]);
-
-        return response()->json([
-            'data' => $this->present($phoneReport),
-            'minutes' => $this->bank->balance(),
-        ]);
     }
 
     private function guard(Request $request): ?JsonResponse
@@ -118,10 +92,7 @@ class PhoneReportController extends Controller
             'id' => $report->id,
             'family_member' => $report->family_member,
             'date' => $report->date->toDateString(),
-            'status' => $report->status,
-            'minutes' => $report->status === PhoneReport::STATUS_CONFIRMED
-                ? FamilyTimeBank::MINUTES_PER_REPORT
-                : 0,
+            'minutes' => FamilyTimeBank::MINUTES_PER_REPORT,
         ];
     }
 }
