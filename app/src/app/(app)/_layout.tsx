@@ -58,6 +58,10 @@ export default function AppLayout() {
             options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
           />
           <Stack.Screen
+            name="family-time"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
             name="ai-models"
             options={{
               headerShown: true,

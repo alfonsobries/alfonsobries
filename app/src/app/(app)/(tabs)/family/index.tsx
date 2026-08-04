@@ -53,6 +53,15 @@ export default function FamilyScreen() {
             onPress={() => router.push('/illustrations/favorites')}
           />
         </Animated.View>
+
+        <Animated.View entering={FadeIn.duration(500)} className="mt-3 flex-row gap-3 px-1.5">
+          <ToolCard
+            emoji="⏱️"
+            label="Family time"
+            subtitle="Minutes saved up"
+            onPress={() => router.push('/family-time')}
+          />
+        </Animated.View>
       </ScrollView>
     </>
   );
