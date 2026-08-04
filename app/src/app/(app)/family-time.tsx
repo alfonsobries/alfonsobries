@@ -15,6 +15,7 @@ import {
   type PhoneReport,
 } from '@/api/family-time';
 import { useApiRouter } from '@/api/router';
+import { localDate } from '@/api/virtue';
 import { formatMinutes, TimeClock } from '@/components/family-time/TimeClock';
 import { Illustration } from '@/components/ui/Illustration';
 import { useThemeColor } from '@/hooks/use-theme-color';
@@ -55,9 +56,7 @@ export default function FamilyTimeScreen() {
 
   const pending = reports.filter((report) => report.status === 'pending');
   const reportedToday = new Set(
-    reports
-      .filter((report) => report.date === new Date().toISOString().slice(0, 10))
-      .map((report) => report.family_member),
+    reports.filter((report) => report.date === localDate()).map((report) => report.family_member),
   );
 
   async function handleReport(member: 'regina' | 'andres'): Promise<void> {

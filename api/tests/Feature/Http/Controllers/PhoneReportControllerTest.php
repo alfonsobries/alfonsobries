@@ -36,6 +36,27 @@ it('is one report a day each', function () {
     expect(PhoneReport::count())->toBe(2);
 });
 
+it('breaks the day at the family midnight, not the server one', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    // Evening in Mexico is already tomorrow in UTC — still the same day for
+    // the kids, so the second press must not buy a second report.
+    $this->travelTo(now()->parse('2026-08-04 20:00:00', config('family.timezone')));
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.phone-reports.store'), ['family_member' => 'regina'])
+        ->assertCreated();
+
+    $this->travelTo(now()->parse('2026-08-04 22:30:00', config('family.timezone')));
+
+    $this->actingAs($alfonso)
+        ->postJson(route('api.phone-reports.store'), ['family_member' => 'regina'])
+        ->assertOk();
+
+    expect(PhoneReport::count())->toBe(1);
+    expect(PhoneReport::first()->date->toDateString())->toBe('2026-08-04');
+});
+
 it('adds minutes to the family bank when confirmed', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
     $report = PhoneReport::factory()->create();

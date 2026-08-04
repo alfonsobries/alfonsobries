@@ -30,7 +30,9 @@ class PhoneReportController extends Controller
             return $response;
         }
 
-        $reports = PhoneReport::whereDate('date', '>=', now()->subDays(self::HISTORY_DAYS)->toDateString())
+        $since = now()->timezone(config('family.timezone'))->subDays(self::HISTORY_DAYS)->toDateString();
+
+        $reports = PhoneReport::whereDate('date', '>=', $since)
             ->latest('date')
             ->latest('id')
             ->get()
@@ -63,7 +65,7 @@ class PhoneReportController extends Controller
 
         $report ??= PhoneReport::create([
             'family_member' => $validated['family_member'],
-            'date' => now()->toDateString(),
+            'date' => PhoneReport::currentDate(),
             'status' => PhoneReport::STATUS_PENDING,
         ]);
 

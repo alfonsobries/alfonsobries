@@ -60,11 +60,20 @@ class PhoneReport extends Model
     }
 
     /**
+     * Today where the family lives — the one-a-day rule has to break at their
+     * midnight, not at the server's.
+     */
+    public static function currentDate(): string
+    {
+        return now()->timezone(config('family.timezone'))->toDateString();
+    }
+
+    /**
      * @param  Builder<PhoneReport>  $query
      */
     public function scopeToday($query): void
     {
-        $query->whereDate('date', now()->toDateString());
+        $query->whereDate('date', self::currentDate());
     }
 
     public function isReviewed(): bool

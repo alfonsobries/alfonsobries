@@ -122,7 +122,9 @@ class FamilyActivityController extends Controller
             return 0;
         }
 
-        return (int) $last->startOfDay()->diffInDays(now()->startOfDay());
+        $today = now()->timezone(config('family.timezone'))->startOfDay();
+
+        return (int) $last->startOfDay()->diffInDays($today);
     }
 
     private function guard(Request $request): ?JsonResponse
