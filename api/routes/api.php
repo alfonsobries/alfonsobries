@@ -89,7 +89,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/phone-reports', [PhoneReportController::class, 'index'])->name('phone-reports.index');
     Route::post('/phone-reports', [PhoneReportController::class, 'store'])->name('phone-reports.store');
-    Route::post('/phone-reports/{phoneReport}/review', [PhoneReportController::class, 'review'])->name('phone-reports.review');
 
     Route::get('/family-activities', [FamilyActivityController::class, 'index'])->name('family-activities.index');
     Route::post('/family-activities', [FamilyActivityController::class, 'store'])->name('family-activities.store');

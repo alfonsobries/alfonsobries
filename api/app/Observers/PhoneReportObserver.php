@@ -6,7 +6,7 @@ use App\Models\PhoneReport;
 use App\Services\FamilyTimeBank;
 
 /**
- * Keeps the time bank in step with dad's answer, wherever it is given from.
+ * A report is worth its minutes the moment it is made.
  */
 class PhoneReportObserver
 {
@@ -16,22 +16,7 @@ class PhoneReportObserver
 
     public function created(PhoneReport $report): void
     {
-        if ($report->status === PhoneReport::STATUS_CONFIRMED) {
-            $this->bank->credit($report);
-        }
-    }
-
-    public function updated(PhoneReport $report): void
-    {
-        if (! $report->wasChanged('status')) {
-            return;
-        }
-
-        $this->bank->revoke($report);
-
-        if ($report->status === PhoneReport::STATUS_CONFIRMED) {
-            $this->bank->credit($report);
-        }
+        $this->bank->credit($report);
     }
 
     public function deleted(PhoneReport $report): void

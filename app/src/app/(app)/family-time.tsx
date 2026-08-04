@@ -1,6 +1,6 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Stack, useFocusEffect } from 'expo-router';
-import { CheckCircle, CircleDashed, DeviceMobile } from 'phosphor-react-native';
+import { CheckCircle, DeviceMobile, Gift } from 'phosphor-react-native';
 import { useCallback } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -12,13 +12,13 @@ import {
   queuePhoneReport,
   redeemFamilyActivity,
   reportPhone,
-  reviewPhoneReport,
   type FamilyActivity,
   type PhoneReport,
 } from '@/api/family-time';
 import { useApiRouter } from '@/api/router';
 import { localDate } from '@/api/virtue';
-import { formatMinutes, TimeClock } from '@/components/family-time/TimeClock';
+import { formatMinutes, PriceClocks, TimeClock } from '@/components/family-time/TimeClock';
+import { PersonAvatar } from '@/components/family/PersonAvatar';
 import { Illustration } from '@/components/ui/Illustration';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { isOfflineError } from '@/offline/connectivity';
@@ -34,11 +34,13 @@ type FamilyTime = {
   reports: PhoneReport[];
 };
 
-// The family's time bank. The kids press a button when dad is on his phone
-// instead of with them; every report he agrees with buys the family fifteen
-// minutes together, which they spend on something from the list.
+// The family's time bank. The kids press their own face when dad is on his
+// phone instead of with them, and it buys the family fifteen minutes together
+// right away — the phone is in their hands, so pressing it is the whole story.
+// Neither of them reads yet, so the screen leans on faces, art and the clock.
 export default function FamilyTimeScreen() {
   const route = useApiRouter();
+  const accent = useThemeColor('primary-emphasis');
 
   const fetcher = useCallback(async (): Promise<FamilyTime> => {
     const [summary, history] = await Promise.all([
@@ -63,7 +65,6 @@ export default function FamilyTimeScreen() {
     }, [refresh]),
   );
 
-  const pending = reports.filter((report) => report.status === 'pending');
   const reportedToday = new Set(
     reports.filter((report) => report.date === localDate()).map((report) => report.family_member),
   );
@@ -78,7 +79,7 @@ export default function FamilyTimeScreen() {
         : {
             ...current,
             reports: [
-              { id: -Date.now(), family_member: member, date, status: 'pending', minutes: 0 },
+              { id: -Date.now(), family_member: member, date, minutes: 15 },
               ...current.reports,
             ],
           },
@@ -95,21 +96,6 @@ export default function FamilyTimeScreen() {
 
       await refresh();
       Alert.alert('Could not send it', 'Please try again in a moment.');
-    }
-  }
-
-  async function handleReview(report: PhoneReport, confirmed: boolean): Promise<void> {
-    try {
-      await reviewPhoneReport(route, report.id, confirmed);
-      await refresh();
-    } catch (error) {
-      // Minutes are the API's to grant, so the answer waits for a connection.
-      if (isOfflineError(error)) {
-        Alert.alert('No connection', 'Answer it once you are back online.');
-        return;
-      }
-
-      Alert.alert('Could not answer', 'Please try again in a moment.');
     }
   }
 
@@ -159,51 +145,41 @@ export default function FamilyTimeScreen() {
           ) : null}
         </View>
 
-        {pending.length > 0 ? (
-          <View className="gap-3">
-            <Text className="text-xs font-semibold uppercase tracking-wider text-muted">
-              Waiting for an answer
-            </Text>
-            {pending.map((report) => (
-              <PendingReport
-                key={report.id}
-                report={report}
-                onAnswer={(confirmed) => void handleReview(report, confirmed)}
-              />
-            ))}
-          </View>
-        ) : null}
-
         <View className="gap-3">
-          <Text className="text-xs font-semibold uppercase tracking-wider text-muted">
-            Is dad on his phone?
-          </Text>
+          <View className="flex-row items-center gap-2">
+            <DeviceMobile size={18} color={accent} weight="fill" />
+            <Text className="text-xs font-semibold uppercase tracking-wider text-muted">
+              Is dad on his phone?
+            </Text>
+          </View>
           <View className="flex-row gap-3">
             {KIDS.map((kid) => (
               <ReportButton
                 key={kid.key}
-                name={kid.name}
+                person={kid.key as 'regina' | 'andres'}
                 done={reportedToday.has(kid.key as 'regina' | 'andres')}
                 onPress={() => void handleReport(kid.key as 'regina' | 'andres')}
               />
             ))}
           </View>
-          <Text className="px-1 text-xs text-muted">Once a day each.</Text>
+          <Text className="px-1 text-xs text-muted">
+            Once a day each — it counts the moment they press.
+          </Text>
         </View>
 
         <View className="gap-3">
           <Text className="text-xs font-semibold uppercase tracking-wider text-muted">
             Spend it on
           </Text>
-          <View className="overflow-hidden rounded-3xl bg-surface">
-            {activities.map((activity, index) => (
-              <ActivityRow
-                key={activity.id}
-                activity={activity}
-                affordable={minutes >= activity.cost_minutes}
-                divided={index > 0}
-                onPress={() => void handleRedeem(activity)}
-              />
+          <View className="flex-row flex-wrap">
+            {activities.map((activity) => (
+              <View key={activity.id} className="w-1/2 p-1.5">
+                <ActivityCard
+                  activity={activity}
+                  affordable={minutes >= activity.cost_minutes}
+                  onPress={() => void handleRedeem(activity)}
+                />
+              </View>
             ))}
           </View>
         </View>
@@ -212,85 +188,46 @@ export default function FamilyTimeScreen() {
   );
 }
 
-function PendingReport({
-  report,
-  onAnswer,
-}: {
-  report: PhoneReport;
-  onAnswer: (confirmed: boolean) => void;
-}) {
-  const name = getPerson(report.family_member)?.name ?? report.family_member;
-
-  return (
-    <View className="gap-3 rounded-3xl bg-surface p-4">
-      <Text className="text-base text-foreground">{name} says you were on your phone.</Text>
-      <View className="flex-row gap-3">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="They are right"
-          onPress={() => onAnswer(true)}
-          className="flex-1 items-center rounded-2xl bg-primary py-3 active:opacity-80"
-        >
-          <Text className="text-sm font-semibold text-primary-foreground">
-            They&apos;re right · +15 min
-          </Text>
-        </Pressable>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="It was work"
-          onPress={() => onAnswer(false)}
-          className="flex-1 items-center rounded-2xl bg-surface-selected py-3 active:opacity-80"
-        >
-          <Text className="text-sm font-semibold text-foreground">It was work</Text>
-        </Pressable>
-      </View>
-    </View>
-  );
-}
-
 function ReportButton({
-  name,
+  person,
   done,
   onPress,
 }: {
-  name: string;
+  person: 'regina' | 'andres';
   done: boolean;
   onPress: () => void;
 }) {
-  const accent = useThemeColor('primary-emphasis');
-  const muted = useThemeColor('muted');
+  const success = useThemeColor('success');
 
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${name} saw dad on his phone`}
+      accessibilityLabel={`${getPerson(person)?.name} saw dad on his phone`}
       accessibilityState={{ disabled: done }}
       disabled={done}
       onPress={onPress}
       className={`flex-1 items-center gap-2 rounded-3xl bg-surface p-4 ${
-        done ? 'opacity-50' : 'active:opacity-70'
+        done ? 'opacity-40' : 'active:opacity-70'
       }`}
     >
-      <DeviceMobile size={28} color={done ? muted : accent} weight="fill" />
-      <Text className="text-base font-semibold text-foreground">{name}</Text>
-      <Text className="text-xs text-muted">{done ? 'Sent today' : 'Tap to tell him'}</Text>
+      <View className="h-24 items-center justify-center">
+        <PersonAvatar person={person} width={96} height={96} />
+      </View>
+      {done ? <CheckCircle size={28} color={success} weight="fill" /> : null}
     </Pressable>
   );
 }
 
-function ActivityRow({
+function ActivityCard({
   activity,
   affordable,
-  divided,
   onPress,
 }: {
   activity: FamilyActivity;
   affordable: boolean;
-  divided: boolean;
   onPress: () => void;
 }) {
-  const success = useThemeColor('success');
-  const muted = useThemeColor('muted');
+  const accent = useThemeColor('primary-emphasis');
 
   return (
     <Pressable
@@ -299,26 +236,21 @@ function ActivityRow({
       accessibilityState={{ disabled: !affordable }}
       disabled={!affordable}
       onPress={onPress}
-      className={`flex-row items-center gap-3 p-3 ${divided ? 'border-t border-border' : ''} ${
-        affordable ? 'active:opacity-70' : 'opacity-50'
+      className={`items-center gap-2 rounded-3xl bg-surface p-3 ${
+        affordable ? 'active:opacity-70' : 'opacity-40'
       }`}
     >
-      {activity.image_url ? (
-        <View className="size-12 items-center justify-center overflow-hidden rounded-xl bg-surface-selected">
+      <View className="size-24 items-center justify-center overflow-hidden rounded-2xl bg-surface-selected">
+        {activity.image_url ? (
           <Illustration source={{ uri: activity.image_url }} />
-        </View>
-      ) : null}
-      <View className="flex-1 gap-0.5">
-        <Text className="text-base font-medium text-foreground" numberOfLines={1}>
-          {activity.name}
-        </Text>
-        <Text className="text-sm text-muted">{formatMinutes(activity.cost_minutes)}</Text>
+        ) : (
+          <Gift size={32} color={accent} weight="fill" />
+        )}
       </View>
-      {affordable ? (
-        <CheckCircle size={22} color={success} weight="fill" />
-      ) : (
-        <CircleDashed size={22} color={muted} />
-      )}
+      <PriceClocks minutes={activity.cost_minutes} />
+      <Text className="text-center text-sm text-muted" numberOfLines={1}>
+        {activity.name}
+      </Text>
     </Pressable>
   );
 }
