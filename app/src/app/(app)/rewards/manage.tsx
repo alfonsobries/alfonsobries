@@ -1,18 +1,18 @@
 import { Illustration } from '@/components/ui/Illustration';
 import { Redirect, router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { CaretRight, Gift, LockKey, Plus } from 'phosphor-react-native';
+import { CaretRight, Coins, Gift, LockKey, Plus } from 'phosphor-react-native';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { deleteReward, fetchRewards, type Reward } from '@/api/chores';
+import { activateReward, deleteReward, fetchRewards, type Reward } from '@/api/chores';
 import { getPerson, isKid } from '@/api/family';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
-// The parents' list of a kid's rewards. The first pending one is what the
-// kid's progress card points at. Face ID gated.
+// The parents' list of a kid's rewards. Each one saves on its own; the active
+// one is where new points land. Face ID gated.
 export default function ManageRewardsScreen() {
   const { member } = useLocalSearchParams<{ member?: string }>();
   const route = useApiRouter();
@@ -22,6 +22,7 @@ export default function ManageRewardsScreen() {
   const [unlocked, setUnlocked] = useState(false);
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [balance, setBalance] = useState(0);
+  const [free, setFree] = useState(0);
 
   const person = member ? getPerson(member) : undefined;
   const kid = person && isKid(person.key) ? person.key : undefined;
@@ -35,6 +36,7 @@ export default function ManageRewardsScreen() {
       const summary = await fetchRewards(route, kid);
       setRewards(summary.rewards);
       setBalance(summary.balance);
+      setFree(summary.free);
     } catch {
       // Keep the previous list; the next focus retries.
     }
@@ -61,12 +63,31 @@ export default function ManageRewardsScreen() {
     }
   }
 
-  function handleDelete(reward: Reward): void {
-    Alert.alert(`Remove “${reward.name}”?`, undefined, [
+  function handleOptions(reward: Reward): void {
+    const canActivate = reward.achieved_at === null && !reward.is_active;
+
+    Alert.alert(reward.name, undefined, [
       { text: 'Cancel', style: 'cancel' },
+      ...(canActivate
+        ? [
+            {
+              text: 'Save into this one',
+              onPress: () => {
+                void (async () => {
+                  try {
+                    await activateReward(route, reward.id);
+                    await load();
+                  } catch {
+                    Alert.alert('Could not switch', 'Please try again in a moment.');
+                  }
+                })();
+              },
+            },
+          ]
+        : []),
       {
         text: 'Remove',
-        style: 'destructive',
+        style: 'destructive' as const,
         onPress: () => {
           void (async () => {
             try {
@@ -91,9 +112,27 @@ export default function ManageRewardsScreen() {
           contentInsetAdjustmentBehavior="automatic"
           contentContainerClassName="gap-4 p-4"
         >
-          <Text className="px-4 text-center text-sm text-muted">
-            {person.name} has {balance} point{balance === 1 ? '' : 's'} saved up.
-          </Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Adjust ${person.name}'s points`}
+            onPress={() => router.push(`/rewards/points?member=${kid}`)}
+            className="flex-row items-center gap-3 rounded-3xl bg-surface p-4 active:opacity-70"
+          >
+            <View className="size-12 items-center justify-center rounded-xl bg-surface-selected">
+              <Coins size={22} color={accent} weight="fill" />
+            </View>
+            <View className="flex-1 gap-0.5">
+              <Text className="text-base font-medium text-foreground">
+                {balance} point{balance === 1 ? '' : 's'} saved up
+              </Text>
+              <Text className="text-sm text-muted">
+                {free > 0
+                  ? `${free} waiting for a goal · tap to adjust`
+                  : 'Tap to give or take back'}
+              </Text>
+            </View>
+            <CaretRight size={18} color={muted} />
+          </Pressable>
 
           {rewards.length > 0 ? (
             <View className="overflow-hidden rounded-3xl bg-surface">
@@ -116,7 +155,7 @@ export default function ManageRewardsScreen() {
                       },
                     })
                   }
-                  onLongPress={() => handleDelete(reward)}
+                  onLongPress={() => handleOptions(reward)}
                   className={`flex-row items-center gap-3 p-3 active:opacity-70 ${
                     index > 0 ? 'border-t border-border' : ''
                   } ${reward.achieved_at ? 'opacity-50' : ''}`}
@@ -133,9 +172,16 @@ export default function ManageRewardsScreen() {
                       {reward.name}
                     </Text>
                     <Text className="text-sm text-muted">
-                      {reward.achieved_at ? 'Claimed 🎉' : `${reward.cost} points`}
+                      {reward.achieved_at
+                        ? 'Claimed 🎉'
+                        : `${reward.saved} of ${reward.cost} points`}
                     </Text>
                   </View>
+                  {reward.is_active ? (
+                    <View className="rounded-full bg-surface-selected px-2.5 py-1">
+                      <Text className="text-xs font-medium text-muted">Saving</Text>
+                    </View>
+                  ) : null}
                   <CaretRight size={18} color={muted} />
                 </Pressable>
               ))}
@@ -147,7 +193,7 @@ export default function ManageRewardsScreen() {
           )}
 
           <Text className="px-4 text-center text-xs text-muted">
-            Tap to edit · long-press to remove
+            Tap to edit · long-press for options
           </Text>
 
           <Button icon={Plus} onPress={() => router.push(`/rewards/edit?member=${kid}`)}>

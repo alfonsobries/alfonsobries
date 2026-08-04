@@ -133,6 +133,25 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "api.rewards.activate": [
+        {
+            "name": "reward",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.kids.points.index": [
+        {
+            "name": "member",
+            "required": true
+        }
+    ],
+    "api.kids.points.store": [
+        {
+            "name": "member",
+            "required": true
+        }
+    ],
     "api.virtue.days.index": [],
     "api.virtue.days.resolution": [
         {

@@ -22,7 +22,6 @@ export function KidChoresSection({ member }: KidChoresSectionProperties) {
 
   const [chores, setChores] = useState<Chore[]>([]);
   const [rewards, setRewards] = useState<Reward[]>([]);
-  const [balance, setBalance] = useState(0);
 
   const load = useCallback(async () => {
     try {
@@ -32,7 +31,6 @@ export function KidChoresSection({ member }: KidChoresSectionProperties) {
       ]);
       setChores(nextChores);
       setRewards(summary.rewards.filter((entry) => entry.achieved_at === null));
-      setBalance(summary.balance);
     } catch {
       // Keep whatever we had; the next focus retries.
     }
@@ -73,12 +71,7 @@ export function KidChoresSection({ member }: KidChoresSectionProperties) {
             Saving for
           </Text>
           {rewards.map((reward) => (
-            <RewardCard
-              key={reward.id}
-              reward={reward}
-              balance={balance}
-              onRedeem={(r) => void handleRedeem(r)}
-            />
+            <RewardCard key={reward.id} reward={reward} onRedeem={(r) => void handleRedeem(r)} />
           ))}
         </View>
       ) : null}
