@@ -3,11 +3,14 @@ import { Minus, Plus } from 'phosphor-react-native';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { adjustPoints, fetchPointHistory, type PointEntry } from '@/api/chores';
+import { adjustPoints, fetchPointHistory, type PointEntry, type PointHistory } from '@/api/chores';
 import { getPerson, isKid } from '@/api/family';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys } from '@/offline/store';
+import { useCachedResource } from '@/offline/use-cached-resource';
 
 const AMOUNTS = [1, 2, 5, 10];
 
@@ -17,9 +20,6 @@ export default function PointsScreen() {
   const { member } = useLocalSearchParams<{ member?: string }>();
   const route = useApiRouter();
 
-  const [entries, setEntries] = useState<PointEntry[]>([]);
-  const [balance, setBalance] = useState(0);
-  const [free, setFree] = useState(0);
   const [amount, setAmount] = useState(1);
   const [reason, setReason] = useState('');
   const [saving, setSaving] = useState(false);
@@ -27,25 +27,24 @@ export default function PointsScreen() {
   const person = member ? getPerson(member) : undefined;
   const kid = person && isKid(person.key) ? person.key : undefined;
 
-  const load = useCallback(async () => {
-    if (!kid) {
-      return;
-    }
+  const fetcher = useCallback(
+    () =>
+      kid ? fetchPointHistory(route, kid) : Promise.resolve({ entries: [], balance: 0, free: 0 }),
+    [route, kid],
+  );
+  const history = useCachedResource<PointHistory>(cacheKeys.points(kid), fetcher, {
+    enabled: kid !== undefined,
+  });
+  const { refresh } = history;
 
-    try {
-      const history = await fetchPointHistory(route, kid);
-      setEntries(history.entries);
-      setBalance(history.balance);
-      setFree(history.free);
-    } catch {
-      // Keep what we had; the next focus retries.
-    }
-  }, [route, kid]);
+  const entries = history.data?.entries ?? [];
+  const balance = history.data?.balance ?? 0;
+  const free = history.data?.free ?? 0;
 
   useFocusEffect(
     useCallback(() => {
-      void load();
-    }, [load]),
+      void refresh();
+    }, [refresh]),
   );
 
   if (!person || !kid) {
@@ -63,8 +62,15 @@ export default function PointsScreen() {
     try {
       await adjustPoints(route, kid, sign * amount, reason.trim());
       setReason('');
-      await load();
-    } catch {
+      await refresh();
+    } catch (error) {
+      // The API arbitrates the balance — an adjustment can't be guessed on the
+      // device, so it waits for a connection rather than queueing.
+      if (isOfflineError(error)) {
+        Alert.alert('No connection', 'Adjust the points once you are back online.');
+        return;
+      }
+
       Alert.alert('Could not save', 'Check the amount leaves them at zero or above.');
     } finally {
       setSaving(false);

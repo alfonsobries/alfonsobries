@@ -1,3 +1,5 @@
+import { defineOfflineMutation } from '@/offline/queue';
+
 import type { KidMember } from './behaviors';
 import { apiClient } from './client';
 import { useApiRouter } from './router';
@@ -81,4 +83,20 @@ export async function reviewPhoneReport(
   );
 
   return data.data;
+}
+
+/**
+ * Telling dad he is on his phone is exactly the moment there may be no wi-fi —
+ * in the car, at a park — so it records locally and replays later. One a day
+ * each, which the dedupe key mirrors so a second press never queues twice.
+ */
+export const queuePhoneReport = defineOfflineMutation<{ member: KidMember }>(
+  'phone-reports.store',
+  async ({ member }, route) => {
+    await reportPhone(route, member);
+  },
+);
+
+export function phoneReportDedupeKey(member: KidMember, date: string): string {
+  return `phone-reports.store:${member}:${date}`;
 }

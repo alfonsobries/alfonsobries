@@ -1,13 +1,15 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Stack, useFocusEffect } from 'expo-router';
 import { CheckCircle, CircleDashed, DeviceMobile } from 'phosphor-react-native';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { getPerson, isKid, PEOPLE } from '@/api/family';
 import {
   fetchFamilyTime,
   fetchPhoneReports,
+  phoneReportDedupeKey,
+  queuePhoneReport,
   redeemFamilyActivity,
   reportPhone,
   reviewPhoneReport,
@@ -19,8 +21,18 @@ import { localDate } from '@/api/virtue';
 import { formatMinutes, TimeClock } from '@/components/family-time/TimeClock';
 import { Illustration } from '@/components/ui/Illustration';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys } from '@/offline/store';
+import { useCachedResource } from '@/offline/use-cached-resource';
 
 const KIDS = PEOPLE.filter((person) => isKid(person.key));
+
+type FamilyTime = {
+  activities: FamilyActivity[];
+  minutes: number;
+  cleanDays: number;
+  reports: PhoneReport[];
+};
 
 // The family's time bank. The kids press a button when dad is on his phone
 // instead of with them; every report he agrees with buys the family fifteen
@@ -28,30 +40,27 @@ const KIDS = PEOPLE.filter((person) => isKid(person.key));
 export default function FamilyTimeScreen() {
   const route = useApiRouter();
 
-  const [minutes, setMinutes] = useState(0);
-  const [cleanDays, setCleanDays] = useState(0);
-  const [activities, setActivities] = useState<FamilyActivity[]>([]);
-  const [reports, setReports] = useState<PhoneReport[]>([]);
+  const fetcher = useCallback(async (): Promise<FamilyTime> => {
+    const [summary, history] = await Promise.all([
+      fetchFamilyTime(route),
+      fetchPhoneReports(route),
+    ]);
 
-  const load = useCallback(async () => {
-    try {
-      const [summary, history] = await Promise.all([
-        fetchFamilyTime(route),
-        fetchPhoneReports(route),
-      ]);
-      setActivities(summary.activities);
-      setMinutes(summary.minutes);
-      setCleanDays(summary.cleanDays);
-      setReports(history.reports);
-    } catch {
-      // Keep what we had; the next focus retries.
-    }
+    return { ...summary, reports: history.reports };
   }, [route]);
+
+  const bank = useCachedResource<FamilyTime>(cacheKeys.familyTime, fetcher);
+  const { refresh, update } = bank;
+
+  const activities = bank.data?.activities ?? [];
+  const minutes = bank.data?.minutes ?? 0;
+  const cleanDays = bank.data?.cleanDays ?? 0;
+  const reports = bank.data?.reports ?? [];
 
   useFocusEffect(
     useCallback(() => {
-      void load();
-    }, [load]),
+      void refresh();
+    }, [refresh]),
   );
 
   const pending = reports.filter((report) => report.status === 'pending');
@@ -60,10 +69,31 @@ export default function FamilyTimeScreen() {
   );
 
   async function handleReport(member: 'regina' | 'andres'): Promise<void> {
+    const date = localDate();
+
+    // The button reads as sent the moment it is pressed, online or not.
+    update((current) =>
+      current === null
+        ? current
+        : {
+            ...current,
+            reports: [
+              { id: -Date.now(), family_member: member, date, status: 'pending', minutes: 0 },
+              ...current.reports,
+            ],
+          },
+    );
+
     try {
       await reportPhone(route, member);
-      await load();
-    } catch {
+      await refresh();
+    } catch (error) {
+      if (isOfflineError(error)) {
+        queuePhoneReport({ member }, { dedupeKey: phoneReportDedupeKey(member, date) });
+        return;
+      }
+
+      await refresh();
       Alert.alert('Could not send it', 'Please try again in a moment.');
     }
   }
@@ -71,8 +101,14 @@ export default function FamilyTimeScreen() {
   async function handleReview(report: PhoneReport, confirmed: boolean): Promise<void> {
     try {
       await reviewPhoneReport(route, report.id, confirmed);
-      await load();
-    } catch {
+      await refresh();
+    } catch (error) {
+      // Minutes are the API's to grant, so the answer waits for a connection.
+      if (isOfflineError(error)) {
+        Alert.alert('No connection', 'Answer it once you are back online.');
+        return;
+      }
+
       Alert.alert('Could not answer', 'Please try again in a moment.');
     }
   }
@@ -90,8 +126,13 @@ export default function FamilyTimeScreen() {
     try {
       await redeemFamilyActivity(route, activity.id);
       Alert.alert('Time to go 🎉', activity.name);
-      await load();
-    } catch {
+      await refresh();
+    } catch (error) {
+      if (isOfflineError(error)) {
+        Alert.alert('No connection', 'Cash it in once you are back online.');
+        return;
+      }
+
       Alert.alert('Not yet', 'There are not enough minutes saved up.');
     }
   }
