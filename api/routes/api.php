@@ -13,11 +13,13 @@ use App\Http\Controllers\ChoreLogController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DraftArticleController;
+use App\Http\Controllers\FamilyActivityController;
 use App\Http\Controllers\FamilyMoodController;
 use App\Http\Controllers\FavoriteIllustrationController;
 use App\Http\Controllers\KidEmotionController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\OtaUpdateController;
+use App\Http\Controllers\PhoneReportController;
 use App\Http\Controllers\PointEntryController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PushTokenController;
@@ -84,6 +86,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/kids/{member}/points', [PointEntryController::class, 'index'])->name('kids.points.index');
     Route::post('/kids/{member}/points', [PointEntryController::class, 'store'])->name('kids.points.store');
+
+    Route::get('/phone-reports', [PhoneReportController::class, 'index'])->name('phone-reports.index');
+    Route::post('/phone-reports', [PhoneReportController::class, 'store'])->name('phone-reports.store');
+    Route::post('/phone-reports/{phoneReport}/review', [PhoneReportController::class, 'review'])->name('phone-reports.review');
+
+    Route::get('/family-activities', [FamilyActivityController::class, 'index'])->name('family-activities.index');
+    Route::post('/family-activities', [FamilyActivityController::class, 'store'])->name('family-activities.store');
+    Route::patch('/family-activities/{familyActivity}', [FamilyActivityController::class, 'update'])->name('family-activities.update');
+    Route::delete('/family-activities/{familyActivity}', [FamilyActivityController::class, 'destroy'])->name('family-activities.destroy');
+    Route::post('/family-activities/{familyActivity}/redeem', [FamilyActivityController::class, 'redeem'])->name('family-activities.redeem');
 
     Route::get('/virtue/days', [VirtueDayController::class, 'index'])->name('virtue.days.index');
     Route::put('/virtue/days/{date}/resolution', [VirtueDayController::class, 'updateResolution'])->name('virtue.days.resolution');
