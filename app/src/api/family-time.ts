@@ -29,12 +29,6 @@ export type FamilyTimeSummary = {
   cleanDays: number;
 };
 
-export type FamilyActivityPayload = {
-  name: string;
-  cost_minutes: number;
-  image_path?: string | null;
-};
-
 export async function fetchFamilyTime(route: ApiRoute): Promise<FamilyTimeSummary> {
   const { data } = await apiClient.get<{
     data: FamilyActivity[];
@@ -43,35 +37,6 @@ export async function fetchFamilyTime(route: ApiRoute): Promise<FamilyTimeSummar
   }>(route('api.family-activities.index'));
 
   return { activities: data.data, minutes: data.minutes, cleanDays: data.clean_days };
-}
-
-export async function createFamilyActivity(
-  route: ApiRoute,
-  payload: FamilyActivityPayload,
-): Promise<FamilyActivity> {
-  const { data } = await apiClient.post<{ data: FamilyActivity }>(
-    route('api.family-activities.store'),
-    payload,
-  );
-
-  return data.data;
-}
-
-export async function updateFamilyActivity(
-  route: ApiRoute,
-  familyActivity: number,
-  payload: Partial<FamilyActivityPayload>,
-): Promise<FamilyActivity> {
-  const { data } = await apiClient.patch<{ data: FamilyActivity }>(
-    route('api.family-activities.update', { familyActivity }),
-    payload,
-  );
-
-  return data.data;
-}
-
-export async function deleteFamilyActivity(route: ApiRoute, familyActivity: number): Promise<void> {
-  await apiClient.delete(route('api.family-activities.destroy', { familyActivity }));
 }
 
 /** Cash the minutes in — the family is doing this together now. */
