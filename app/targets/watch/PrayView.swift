@@ -14,7 +14,7 @@ struct PrayView: View {
     var body: some View {
         Group {
             if finished {
-                CompletedView()
+                CompletedView(title: "Rosario completado", module: .rosary)
             } else if let bead = session.step.bead {
                 beadView(bead)
             } else {
@@ -73,30 +73,55 @@ struct PrayView: View {
     }
 
     private var textView: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 6) {
-                Text(session.step.title)
-                    .font(.headline)
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 6) {
+                    // A zero-height anchor, so a long step doesn't leave the
+                    // next one scrolled past its beginning.
+                    Color.clear
+                        .frame(height: 0)
+                        .id(topAnchor)
 
-                if let subtitle = session.step.subtitle {
-                    Text(subtitle)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                    Text(session.step.title)
+                        .font(.headline)
+
+                    if let subtitle = session.step.subtitle {
+                        Text(subtitle)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Text(session.step.text)
+                        .font(.body)
                 }
-
-                Text(session.step.text)
-                    .font(.body)
+                // Clearance for the floating toolbar, so the closing lines of a
+                // step never sit behind it.
+                .padding(.bottom, 28)
+            }
+            .onChange(of: session.index) { _, _ in
+                proxy.scrollTo(topAnchor, anchor: .top)
+            }
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .bottomBar) {
+                if session.index > 0 {
+                    Button {
+                        session.goBack()
+                        crown = Double(session.index)
+                    } label: {
+                        Image(systemName: "chevron.left")
+                    }
+                }
 
                 Button(session.isLast ? "Terminar" : "Siguiente") {
                     advance()
                 }
-                .buttonStyle(.borderedProminent)
                 .tint(.accentColor)
-                .foregroundStyle(.black)
-                .padding(.top, 6)
             }
         }
     }
+
+    private var topAnchor: String { "step-top" }
 
     private func advance() {
         if session.isLast {
@@ -157,7 +182,11 @@ struct DecadeRing: View {
     }
 }
 
+/// The closing screen for any module the watch can mark on its own.
 struct CompletedView: View {
+    let title: String
+    let module: VirtueAPI.Module
+
     @State private var note = ""
 
     var body: some View {
@@ -165,7 +194,7 @@ struct CompletedView: View {
             Image(systemName: "checkmark.seal.fill")
                 .font(.largeTitle)
                 .foregroundStyle(Color.accentColor)
-            Text("Rosario completado")
+            Text(title)
                 .font(.headline)
                 .multilineTextAlignment(.center)
             Text(note)
@@ -174,12 +203,12 @@ struct CompletedView: View {
                 .multilineTextAlignment(.center)
         }
         .task {
-            guard RosaryAPI.isConfigured else {
+            guard VirtueAPI.isConfigured(module) else {
                 note = "Abre la app en tu iPhone una vez para conectar el registro."
                 return
             }
 
-            note = await RosaryAPI.markPrayed()
+            note = await VirtueAPI.markCompleted(module)
                 ? "Marcado como rezado."
                 : "Se marcará en cuanto haya conexión."
         }

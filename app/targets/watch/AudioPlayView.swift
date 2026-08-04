@@ -9,10 +9,12 @@ struct AudioPlayView: View {
     @ObservedObject var session: RosarySession
     @StateObject private var player = RosaryAudioPlayer()
 
+    @State private var volume = 1.0
+
     var body: some View {
         Group {
             if player.finished {
-                CompletedView()
+                CompletedView(title: "Rosario completado", module: .rosary)
             } else {
                 playerView
             }
@@ -75,6 +77,35 @@ struct AudioPlayView: View {
             }
             .padding(.horizontal, 24)
         }
+        // The crown has nothing to scroll here, so it does what it does
+        // everywhere else audio plays: the volume.
+        .focusable()
+        .digitalCrownRotation(
+            $volume,
+            from: 0,
+            through: 1,
+            by: 0.05,
+            sensitivity: .low,
+            isContinuous: false,
+            isHapticFeedbackEnabled: true
+        )
+        .digitalCrownAccessory {
+            Image(systemName: volumeSymbol)
+                .foregroundStyle(Color.accentColor)
+        }
+        .onChange(of: volume) { _, value in
+            player.setVolume(value)
+        }
+        .onAppear { volume = player.volume }
+    }
+
+    private var volumeSymbol: String {
+        switch volume {
+        case ..<0.01: return "speaker.slash.fill"
+        case ..<0.35: return "speaker.fill"
+        case ..<0.7: return "speaker.wave.1.fill"
+        default: return "speaker.wave.2.fill"
+        }
     }
 }
 
@@ -89,6 +120,12 @@ final class RosaryAudioPlayer: NSObject, ObservableObject {
     private let player = AVPlayer()
     private var session: RosarySession?
     private var itemObserver: NSObjectProtocol?
+
+    var volume: Double { Double(player.volume) }
+
+    func setVolume(_ value: Double) {
+        player.volume = Float(max(0, min(1, value)))
+    }
 
     func begin(session: RosarySession) {
         guard self.session == nil else { return }
@@ -172,7 +209,7 @@ final class RosaryAudioPlayer: NSObject, ObservableObject {
 
     private func playCurrent() {
         guard let session,
-              let url = RosaryLibrary.resourceURL(name: session.step.audio, ext: "mp3")
+              let url = WatchBundle.url(name: session.step.audio, ext: "mp3")
         else {
             return
         }

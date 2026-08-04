@@ -1,3 +1,5 @@
+import { defineOfflineMutation } from '@/offline/queue';
+
 import { apiClient } from './client';
 import { useApiRouter } from './router';
 
@@ -124,6 +126,18 @@ export async function logBehavior(
 
   return data.data;
 }
+
+/**
+ * Behaviors get logged in the moment they happen, which is rarely a moment with
+ * signal. Each log is its own event — the same behavior twice means two entries
+ * — so these never collapse into one another.
+ */
+export const queueLogBehavior = defineOfflineMutation<{
+  behavior: number;
+  affected_mood: boolean;
+}>('behaviors.log', async ({ behavior, affected_mood }, route) => {
+  await logBehavior(route, behavior, { affected_mood });
+});
 
 export async function deleteBehaviorLog(route: ApiRoute, behaviorLog: number): Promise<void> {
   await apiClient.delete(route('api.behavior-logs.destroy', { behaviorLog }));

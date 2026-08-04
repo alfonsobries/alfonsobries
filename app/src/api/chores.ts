@@ -1,3 +1,5 @@
+import { defineOfflineMutation } from '@/offline/queue';
+
 import type { KidMember } from './behaviors';
 import { apiClient } from './client';
 import { useApiRouter } from './router';
@@ -136,6 +138,22 @@ export async function checkChore(route: ApiRoute, chore: number): Promise<ChoreL
 /** Uncheck an accidental tap — only works while a parent hasn't reviewed. */
 export async function uncheckChore(route: ApiRoute, choreLog: number): Promise<void> {
   await apiClient.delete(route('api.chore-logs.destroy', { choreLog }));
+}
+
+/**
+ * Checking a chore is the one thing a kid does away from wi-fi, so it records
+ * locally and replays later. The log id only exists once the API has seen it,
+ * which is why unchecking an unsynced chore cancels the queued entry instead.
+ */
+export const queueCheckChore = defineOfflineMutation<{ chore: number }>(
+  'chores.check',
+  async ({ chore }, route) => {
+    await checkChore(route, chore);
+  },
+);
+
+export function checkChoreDedupeKey(chore: number): string {
+  return `chores.check:${chore}`;
 }
 
 export async function fetchTodayChoreLogs(

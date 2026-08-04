@@ -1,6 +1,6 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import { router, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { Alert, Text, View } from 'react-native';
 
 import type { KidMember } from '@/api/behaviors';
@@ -8,8 +8,16 @@ import { fetchChores, fetchRewards, redeemReward, type Chore, type Reward } from
 import { useApiRouter } from '@/api/router';
 import { RewardCard } from '@/components/chores/RewardCard';
 import { IllustratedButton } from '@/components/ui/IllustratedButton';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys } from '@/offline/store';
+import { useCachedResource } from '@/offline/use-cached-resource';
 
 const choresArt = require('../../../assets/illustrations/chores-button.png');
+
+type KidRoutine = {
+  chores: Chore[];
+  rewards: Reward[];
+};
 
 type KidChoresSectionProperties = {
   member: KidMember;
@@ -20,26 +28,28 @@ type KidChoresSectionProperties = {
 export function KidChoresSection({ member }: KidChoresSectionProperties) {
   const route = useApiRouter();
 
-  const [chores, setChores] = useState<Chore[]>([]);
-  const [rewards, setRewards] = useState<Reward[]>([]);
+  const fetcher = useCallback(async (): Promise<KidRoutine> => {
+    const [chores, summary] = await Promise.all([
+      fetchChores(route, member),
+      fetchRewards(route, member),
+    ]);
 
-  const load = useCallback(async () => {
-    try {
-      const [nextChores, summary] = await Promise.all([
-        fetchChores(route, member),
-        fetchRewards(route, member),
-      ]);
-      setChores(nextChores);
-      setRewards(summary.rewards.filter((entry) => entry.achieved_at === null));
-    } catch {
-      // Keep whatever we had; the next focus retries.
-    }
+    return {
+      chores,
+      rewards: summary.rewards.filter((entry) => entry.achieved_at === null),
+    };
   }, [route, member]);
+
+  const routine = useCachedResource<KidRoutine>(cacheKeys.routine(member), fetcher);
+  const { refresh } = routine;
+
+  const chores = routine.data?.chores ?? [];
+  const rewards = routine.data?.rewards ?? [];
 
   useFocusEffect(
     useCallback(() => {
-      void load();
-    }, [load]),
+      void refresh();
+    }, [refresh]),
   );
 
   async function handleRedeem(target: Reward): Promise<void> {
@@ -55,8 +65,15 @@ export function KidChoresSection({ member }: KidChoresSectionProperties) {
     try {
       await redeemReward(route, target.id);
       Alert.alert('Reward claimed! 🎉', `Enjoy: ${target.name}`);
-      await load();
-    } catch {
+      await refresh();
+    } catch (error) {
+      // Claiming spends points against the API's balance, so it can't be
+      // guessed offline — it waits for a connection rather than queueing.
+      if (isOfflineError(error)) {
+        Alert.alert('No connection', 'Claim it once you are back online.');
+        return;
+      }
+
       Alert.alert('Not yet', 'Something is still missing to claim it.');
     }
   }

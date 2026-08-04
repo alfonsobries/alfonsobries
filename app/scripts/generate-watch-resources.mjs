@@ -1,6 +1,7 @@
 // Builds the watch target's bundled resources from the app's single source of
-// truth: rosary.json (all four mystery sets with their guided steps) plus the
-// voice clips. Output is gitignored; `eas-build-pre-install` regenerates it in
+// truth: rosary.json (all four mystery sets with their guided steps),
+// prayers.json (the Auxilium sequence for every weekday) plus the voice clips.
+// Output is gitignored; `eas-build-pre-install` regenerates it in
 // the build workspace. Run with: node --experimental-strip-types scripts/generate-watch-resources.mjs
 import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -11,6 +12,7 @@ const out = join(root, 'targets', 'watch', 'Resources');
 
 const { getRosarySteps, MYSTERY_SETS, mysterySetForWeekday } =
   await import('../src/data/rosary.ts');
+const { getPrayerSteps } = await import('../src/data/auxilium.ts');
 
 /** One representative weekday per set, to expand its guided steps. */
 const SAMPLE_WEEKDAYS = { gozosos: 1, dolorosos: 2, luminosos: 4, gloriosos: 0 };
@@ -64,12 +66,32 @@ const sets = Object.fromEntries(
 
 const weekdays = Array.from({ length: 7 }, (_, day) => mysterySetForWeekday(day));
 
+// Six of the seven steps repeat every day, so the days index into a shared step
+// table instead of carrying their own copy of the litany.
+const prayerSteps = {};
+const prayerDays = Array.from({ length: 7 }, (_, day) =>
+  getPrayerSteps(day).map((step) => {
+    const key = step.key === 'day-prayer' ? `day-${day}` : step.key;
+
+    prayerSteps[key] = {
+      title: step.title,
+      subtitle: step.subtitle ?? null,
+      text: flattenBlocks(step.blocks),
+    };
+
+    return key;
+  }),
+);
+
 rmSync(out, { recursive: true, force: true });
 mkdirSync(join(out, 'Audio'), { recursive: true });
 writeFileSync(join(out, 'rosary.json'), JSON.stringify({ weekdays, sets }));
+writeFileSync(join(out, 'prayers.json'), JSON.stringify({ days: prayerDays, steps: prayerSteps }));
 cpSync(join(root, 'assets', 'rosary', 'audio'), join(out, 'Audio'), { recursive: true });
 
-console.log(`watch resources ready: ${Object.keys(sets).length} sets`);
+console.log(
+  `watch resources ready: ${Object.keys(sets).length} sets, ${Object.keys(prayerSteps).length} prayer steps`,
+);
 
 // Sanity: every referenced clip must exist in the copied audio.
 const { readdirSync } = await import('node:fs');

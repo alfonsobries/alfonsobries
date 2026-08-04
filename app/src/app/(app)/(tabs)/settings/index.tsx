@@ -1,5 +1,5 @@
 import { router, Stack } from 'expo-router';
-import { BellRinging, PaintBrush, Robot, SignOut } from 'phosphor-react-native';
+import { ArrowsClockwise, BellRinging, PaintBrush, Robot, SignOut } from 'phosphor-react-native';
 import { useState } from 'react';
 import { Alert, ScrollView } from 'react-native';
 
@@ -8,12 +8,17 @@ import { apiClient } from '@/api/client';
 import { useApiRouter } from '@/api/router';
 import { SettingsRow } from '@/components/settings/SettingsRow';
 import { SettingsSection } from '@/components/settings/SettingsSection';
+import { checkConnectivity, useIsOnline } from '@/offline/connectivity';
+import { flushQueue, usePendingMutations } from '@/offline/queue';
 
 export default function SettingsScreen() {
   const { signOut, user } = useAuth();
   const route = useApiRouter();
+  const isOnline = useIsOnline();
+  const pending = usePendingMutations();
   const [signingOut, setSigningOut] = useState(false);
   const [notifying, setNotifying] = useState(false);
+  const [syncing, setSyncing] = useState(false);
 
   const handleSignOut = async () => {
     setSigningOut(true);
@@ -36,6 +41,28 @@ export default function SettingsScreen() {
     }
   };
 
+  const handleSync = async () => {
+    setSyncing(true);
+    try {
+      const reachable = await checkConnectivity();
+
+      if (!reachable) {
+        Alert.alert('Still offline', 'Your changes are saved and will sync on their own.');
+        return;
+      }
+
+      await flushQueue(route);
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const syncDetail = !isOnline
+    ? 'Offline'
+    : pending.length > 0
+      ? `${pending.length} waiting`
+      : 'Up to date';
+
   return (
     <>
       <Stack.Screen.Title>Settings</Stack.Screen.Title>
@@ -45,6 +72,16 @@ export default function SettingsScreen() {
         contentContainerClassName="gap-7 px-4 pb-16 pt-4"
         contentInsetAdjustmentBehavior="automatic"
       >
+        <SettingsSection title="Sync">
+          <SettingsRow
+            icon={ArrowsClockwise}
+            label="Sync now"
+            detail={syncDetail}
+            loading={syncing}
+            onPress={handleSync}
+          />
+        </SettingsSection>
+
         <SettingsSection title="Notifications">
           <SettingsRow
             icon={BellRinging}

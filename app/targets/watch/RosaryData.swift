@@ -30,16 +30,7 @@ struct RosaryStep: Decodable, Identifiable {
 }
 
 enum RosaryLibrary {
-    static let bundle: RosaryBundle = {
-        guard let url = resourceURL(name: "rosary", ext: "json"),
-              let data = try? Data(contentsOf: url),
-              let decoded = try? JSONDecoder().decode(RosaryBundle.self, from: data)
-        else {
-            fatalError("rosary.json missing from the watch bundle")
-        }
-
-        return decoded
-    }()
+    static let bundle: RosaryBundle = WatchBundle.decode(RosaryBundle.self, from: "rosary")
 
     static var todayKey: String {
         let weekday = Calendar.current.component(.weekday, from: Date()) - 1
@@ -48,15 +39,6 @@ enum RosaryLibrary {
 
     static func set(for key: String) -> RosarySet {
         bundle.sets[key]!
-    }
-
-    /// The synchronized folder may keep the Resources/ hierarchy or flatten
-    /// it depending on how Xcode ingests it — try both.
-    static func resourceURL(name: String, ext: String) -> URL? {
-        Bundle.main.url(forResource: name, withExtension: ext)
-            ?? Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "Resources")
-            ?? Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "Audio")
-            ?? Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "Resources/Audio")
     }
 }
 

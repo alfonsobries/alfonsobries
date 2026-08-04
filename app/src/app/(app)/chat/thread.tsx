@@ -31,6 +31,13 @@ import { MessageBubble } from '@/components/chat/MessageBubble';
 import { useConversationChannel } from '@/hooks/use-conversation-channel';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import type { UploadedImage } from '@/hooks/use-image-upload';
+import { isOfflineError } from '@/offline/connectivity';
+import { cacheKeys, readCache, writeCache } from '@/offline/store';
+
+type CachedThread = {
+  assistant: Assistant;
+  messages: ChatMessage[];
+};
 
 export default function ChatThreadScreen() {
   const params = useLocalSearchParams<{
@@ -70,6 +77,10 @@ export default function ChatThreadScreen() {
       try {
         if (initialConversationId) {
           const detail = await fetchConversation(route, initialConversationId);
+          writeCache<CachedThread>(cacheKeys.conversation(String(initialConversationId)), {
+            assistant: detail.assistant,
+            messages: detail.messages,
+          });
           setAssistant(detail.assistant);
           setMessages(detail.messages);
           setMembers((detail.members ?? []) as PersonKey[]);
@@ -81,8 +92,25 @@ export default function ChatThreadScreen() {
             ) ?? null,
           );
         }
-      } catch {
-        Alert.alert('Could not open the chat', 'Please try again.');
+      } catch (error) {
+        // A thread already read once stays readable offline; only writing to it
+        // needs the network, and the composer says so on the attempt.
+        if (isOfflineError(error) && initialConversationId) {
+          const cached = readCache<CachedThread>(
+            cacheKeys.conversation(String(initialConversationId)),
+          );
+
+          if (cached) {
+            setAssistant(cached.assistant);
+            setMessages(cached.messages);
+            return;
+          }
+        }
+
+        Alert.alert(
+          'Could not open the chat',
+          isOfflineError(error) ? 'You are offline right now.' : 'Please try again.',
+        );
         router.back();
       }
     })();
@@ -147,8 +175,15 @@ export default function ChatThreadScreen() {
         setMessages(detail.messages);
       }
       return true;
-    } catch {
-      Alert.alert('Could not send', 'Please check your connection and try again.');
+    } catch (error) {
+      // A reply has to come from the API, so there is nothing to queue here —
+      // the message stays in the composer for when there's signal again.
+      Alert.alert(
+        'Could not send',
+        isOfflineError(error)
+          ? 'You are offline. Your message is still here — send it once you are back.'
+          : 'Please check your connection and try again.',
+      );
       return false;
     } finally {
       setSending(false);

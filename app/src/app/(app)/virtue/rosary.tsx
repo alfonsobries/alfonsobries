@@ -7,7 +7,14 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useApiRouter } from '@/api/router';
-import { completeRosary, localDate } from '@/api/virtue';
+import {
+  cacheVirtueDay,
+  completeRosary,
+  localDate,
+  queueRosary,
+  virtueDedupeKey,
+} from '@/api/virtue';
+import { isOfflineError } from '@/offline/connectivity';
 import { PrayerBlockView } from '@/components/prayers/PrayerBlockView';
 import { DecadeBeads } from '@/components/rosary/DecadeBeads';
 import { MysteryIntro } from '@/components/rosary/MysteryIntro';
@@ -57,11 +64,24 @@ export default function RosaryScreen() {
     setFinishing(true);
     void autoplay.stop();
 
+    const date = localDate();
+    // The rosary is entirely in the app already, so praying it must never
+    // depend on signal: record it locally, then tell the API when there is one.
+    cacheVirtueDay(date, { rosary_completed: true });
+
     try {
-      await completeRosary(route, localDate());
+      await completeRosary(route, date);
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
-    } catch {
+    } catch (error) {
+      if (isOfflineError(error)) {
+        queueRosary({ date, completed: true }, { dedupeKey: virtueDedupeKey.rosary(date) });
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        router.back();
+        return;
+      }
+
+      cacheVirtueDay(date, { rosary_completed: false });
       setFinishing(false);
       Alert.alert('No se pudo guardar', 'Inténtalo de nuevo en un momento.');
     }

@@ -1,5 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 
+import { isOfflineError } from '@/offline/connectivity';
+import { defineOfflineMutation } from '@/offline/queue';
+import { cacheKeys, readCache, writeCache } from '@/offline/store';
+
 import { useAuth, type FamilyMember } from './auth';
 import { apiClient } from './client';
 import { useApiRouter } from './router';
@@ -59,19 +63,32 @@ type MoodsProviderProperties = {
   children: ReactNode;
 };
 
+const queueMood = defineOfflineMutation<{ member: FamilyMember; mood: MoodLevel }>(
+  'moods.update',
+  async ({ member, mood }, route) => {
+    await apiClient.patch(route('api.moods.update', { member }), { mood });
+  },
+);
+
 export function MoodsProvider({ children }: MoodsProviderProperties): ReactNode {
   const route = useApiRouter();
   const { status: authStatus } = useAuth();
-  const [status, setStatus] = useState<MoodsStatus>('loading');
-  const [members, setMembers] = useState<MoodMember[]>([]);
+  const [members, setMembers] = useState<MoodMember[]>(
+    () => readCache<MoodMember[]>(cacheKeys.moods) ?? [],
+  );
+  const [status, setStatus] = useState<MoodsStatus>(() =>
+    readCache<MoodMember[]>(cacheKeys.moods) ? 'ready' : 'loading',
+  );
 
   const refresh = useCallback(async () => {
     try {
       const { data } = await apiClient.get<{ data: MoodMember[] }>(route('api.moods.index'));
+      writeCache(cacheKeys.moods, data.data);
       setMembers(data.data);
       setStatus('ready');
-    } catch {
-      setStatus('error');
+    } catch (error) {
+      // Offline with a cached copy is a normal state, not a failure.
+      setStatus(isOfflineError(error) && readCache(cacheKeys.moods) ? 'ready' : 'error');
     }
   }, [route]);
 
@@ -88,21 +105,36 @@ export function MoodsProvider({ children }: MoodsProviderProperties): ReactNode 
   const updateMood = useCallback(
     async (member: FamilyMember, mood: MoodLevel) => {
       // Optimistically reflect the change, then reconcile with the API's copy.
-      setMembers((current) =>
-        current.map((entry) => (entry.family_member === member ? { ...entry, mood } : entry)),
-      );
+      setMembers((current) => {
+        const next = current.map((entry) =>
+          entry.family_member === member ? { ...entry, mood } : entry,
+        );
+        writeCache(cacheKeys.moods, next);
+
+        return next;
+      });
 
       try {
         const { data } = await apiClient.patch<{ data: MoodMember }>(
           route('api.moods.update', { member }),
           { mood },
         );
-        setMembers((current) =>
-          current.map((entry) =>
+        setMembers((current) => {
+          const next = current.map((entry) =>
             entry.family_member === data.data.family_member ? data.data : entry,
-          ),
-        );
+          );
+          writeCache(cacheKeys.moods, next);
+
+          return next;
+        });
       } catch (error) {
+        if (isOfflineError(error)) {
+          // Only the latest mood for a person matters, so a newer change
+          // replaces the pending one instead of replaying every step.
+          queueMood({ member, mood }, { dedupeKey: `moods.update:${member}` });
+          return;
+        }
+
         await refresh();
         throw error;
       }
