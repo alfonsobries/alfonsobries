@@ -17,8 +17,8 @@ class RewardController extends Controller
     ) {}
 
     /**
-     * A kid's rewards — pending first, so the app's progress card points at
-     * the first one — together with their current points balance.
+     * A kid's rewards — pending first, active goal at the top of those —
+     * together with what each one has saved and what waits in the free jar.
      */
     public function index(Request $request, string $member): JsonResponse
     {
@@ -32,6 +32,7 @@ class RewardController extends Controller
 
         $rewards = Reward::where('family_member', $member)
             ->orderByRaw('achieved_at is not null')
+            ->orderByDesc('is_active')
             ->orderBy('id')
             ->get()
             ->map(fn (Reward $reward): array => $this->present($reward))
@@ -40,6 +41,7 @@ class RewardController extends Controller
         return response()->json([
             'data' => $rewards,
             'balance' => $this->points->balanceFor($member),
+            'free' => $this->points->freeFor($member),
         ]);
     }
 
@@ -62,7 +64,7 @@ class RewardController extends Controller
 
         $this->attachImage($reward, $validated['image_path'] ?? null);
 
-        return response()->json(['data' => $this->present($reward)], 201);
+        return response()->json(['data' => $this->present($reward->refresh())], 201);
     }
 
     public function update(Request $request, Reward $reward): JsonResponse
@@ -98,8 +100,28 @@ class RewardController extends Controller
     }
 
     /**
+     * Point the kid's saving at this goal. New points land here from now on,
+     * and anything waiting in the free jar moves in.
+     */
+    public function activate(Request $request, Reward $reward): JsonResponse
+    {
+        if ($response = $this->guard($request)) {
+            return $response;
+        }
+
+        if ($reward->isAchieved()) {
+            return response()->json(['message' => 'This reward was already redeemed.'], 422);
+        }
+
+        $this->points->activate($reward);
+
+        return response()->json(['data' => $this->present($reward->refresh())]);
+    }
+
+    /**
      * Cash the points in: the kid reached the goal and the parent hands the
-     * reward over. The cost is deducted from the balance from here on.
+     * reward over. The cost leaves this goal's jar; anything left over waits
+     * for the next goal.
      */
     public function redeem(Request $request, Reward $reward): JsonResponse
     {
@@ -111,7 +133,7 @@ class RewardController extends Controller
             return response()->json(['message' => 'This reward was already redeemed.'], 422);
         }
 
-        if ($this->points->balanceFor($reward->family_member) < $reward->cost) {
+        if ($this->points->savedFor($reward) < $reward->cost) {
             return response()->json(['message' => 'Not enough points yet.'], 422);
         }
 
@@ -125,8 +147,10 @@ class RewardController extends Controller
 
         $reward->update(['achieved_at' => now()]);
 
+        $this->points->spend($reward);
+
         return response()->json([
-            'data' => $this->present($reward),
+            'data' => $this->present($reward->refresh()),
             'balance' => $this->points->balanceFor($reward->family_member),
         ]);
     }
@@ -161,6 +185,8 @@ class RewardController extends Controller
             'family_member' => $reward->family_member,
             'name' => $reward->name,
             'cost' => $reward->cost,
+            'saved' => max(0, $this->points->savedFor($reward)),
+            'is_active' => $reward->is_active,
             'available_on' => $reward->available_on?->toDateString(),
             'requires_content_parents' => $reward->requires_content_parents,
             'parents_are_content' => User::parentsAreContent(),

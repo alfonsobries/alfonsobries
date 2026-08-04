@@ -17,7 +17,6 @@ const choresArt = require('../../../assets/illustrations/chores-button.png');
 type KidRoutine = {
   chores: Chore[];
   rewards: Reward[];
-  balance: number;
 };
 
 type KidChoresSectionProperties = {
@@ -38,7 +37,6 @@ export function KidChoresSection({ member }: KidChoresSectionProperties) {
     return {
       chores,
       rewards: summary.rewards.filter((entry) => entry.achieved_at === null),
-      balance: summary.balance,
     };
   }, [route, member]);
 
@@ -47,7 +45,6 @@ export function KidChoresSection({ member }: KidChoresSectionProperties) {
 
   const chores = routine.data?.chores ?? [];
   const rewards = routine.data?.rewards ?? [];
-  const balance = routine.data?.balance ?? 0;
 
   useFocusEffect(
     useCallback(() => {
@@ -91,12 +88,7 @@ export function KidChoresSection({ member }: KidChoresSectionProperties) {
             Saving for
           </Text>
           {rewards.map((reward) => (
-            <RewardCard
-              key={reward.id}
-              reward={reward}
-              balance={balance}
-              onRedeem={(r) => void handleRedeem(r)}
-            />
+            <RewardCard key={reward.id} reward={reward} onRedeem={(r) => void handleRedeem(r)} />
           ))}
         </View>
       ) : null}

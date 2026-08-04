@@ -91,6 +91,8 @@ const SAMPLE_REWARD: Reward = {
   family_member: 'regina',
   name: 'Ir al cine',
   cost: 10,
+  saved: 6,
+  is_active: true,
   available_on: null,
   requires_content_parents: true,
   parents_are_content: false,
@@ -144,7 +146,7 @@ export default function Media() {
         </Section>
 
         <Section title="Reward progress">
-          <RewardCard reward={SAMPLE_REWARD} balance={6} />
+          <RewardCard reward={SAMPLE_REWARD} />
         </Section>
       </ScrollView>
     </>

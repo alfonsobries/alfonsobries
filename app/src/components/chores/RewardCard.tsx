@@ -8,19 +8,18 @@ import { useThemeColor } from '@/hooks/use-theme-color';
 
 type RewardCardProperties = {
   reward: Reward;
-  balance: number;
   onRedeem?: (reward: Reward) => void;
 };
 
-// A reward the kid is saving for: illustration, progress bar, and each
+// A reward the kid is saving for: illustration, its own progress bar, and each
 // condition as a kid-readable row with a check or a pending mark. The claim
 // button appears only when everything is met (a parent confirms on device).
-export function RewardCard({ reward, balance, onRedeem }: RewardCardProperties) {
+export function RewardCard({ reward, onRedeem }: RewardCardProperties) {
   const accent = useThemeColor('primary-emphasis');
 
-  const progress = Math.min(1, balance / Math.max(1, reward.cost));
+  const progress = Math.min(1, reward.saved / Math.max(1, reward.cost));
 
-  const pointsMet = balance >= reward.cost;
+  const pointsMet = reward.saved >= reward.cost;
   const dateMet = reward.available_on === null || new Date(reward.available_on) <= new Date();
   const parentsMet = !reward.requires_content_parents || reward.parents_are_content;
   const allMet = pointsMet && dateMet && parentsMet;
@@ -40,9 +39,14 @@ export function RewardCard({ reward, balance, onRedeem }: RewardCardProperties) 
             {reward.name}
           </Text>
           <Text className="text-sm text-muted">
-            {Math.min(balance, reward.cost)} of {reward.cost} points
+            {Math.min(reward.saved, reward.cost)} of {reward.cost} points
           </Text>
         </View>
+        {reward.is_active ? (
+          <View className="rounded-full bg-surface-selected px-2.5 py-1">
+            <Text className="text-xs font-medium text-muted">Saving</Text>
+          </View>
+        ) : null}
       </View>
 
       <View className="h-3 overflow-hidden rounded-full bg-surface-selected">

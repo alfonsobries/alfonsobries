@@ -38,6 +38,10 @@ export type Reward = {
   family_member: KidMember;
   name: string;
   cost: number;
+  /** Points saved into this goal alone — each reward keeps its own jar. */
+  saved: number;
+  /** Whether new points land here. */
+  is_active: boolean;
   available_on: string | null;
   requires_content_parents: boolean;
   /** Whether both parents currently sit above the neutral face. */
@@ -48,7 +52,26 @@ export type Reward = {
 
 export type RewardsSummary = {
   rewards: Reward[];
+  /** Everything the kid holds, across every jar. */
   balance: number;
+  /** Points waiting for a goal to be saved into. */
+  free: number;
+};
+
+export type PointEntry = {
+  id: number;
+  delta: number;
+  /** The chore, the reward, or the reason a parent typed in. */
+  label: string;
+  reward: string | null;
+  author: string | null;
+  created_at: string;
+};
+
+export type PointHistory = {
+  entries: PointEntry[];
+  balance: number;
+  free: number;
 };
 
 export type ChorePayload = {
@@ -158,11 +181,11 @@ export async function reviewChoreLog(
 }
 
 export async function fetchRewards(route: ApiRoute, member: KidMember): Promise<RewardsSummary> {
-  const { data } = await apiClient.get<{ data: Reward[]; balance: number }>(
+  const { data } = await apiClient.get<{ data: Reward[]; balance: number; free: number }>(
     route('api.kids.rewards.index', { member }),
   );
 
-  return { rewards: data.data, balance: data.balance };
+  return { rewards: data.data, balance: data.balance, free: data.free };
 }
 
 export async function createReward(
@@ -197,6 +220,38 @@ export async function deleteReward(route: ApiRoute, reward: number): Promise<voi
 
 export async function redeemReward(route: ApiRoute, reward: number): Promise<Reward> {
   const { data } = await apiClient.post<{ data: Reward }>(route('api.rewards.redeem', { reward }));
+
+  return data.data;
+}
+
+/** Point the kid's saving at this goal — new points land here from now on. */
+export async function activateReward(route: ApiRoute, reward: number): Promise<Reward> {
+  const { data } = await apiClient.post<{ data: Reward }>(
+    route('api.rewards.activate', { reward }),
+  );
+
+  return data.data;
+}
+
+export async function fetchPointHistory(route: ApiRoute, member: KidMember): Promise<PointHistory> {
+  const { data } = await apiClient.get<{ data: PointEntry[]; balance: number; free: number }>(
+    route('api.kids.points.index', { member }),
+  );
+
+  return { entries: data.data, balance: data.balance, free: data.free };
+}
+
+/** A parent hands out or takes back points by hand. */
+export async function adjustPoints(
+  route: ApiRoute,
+  member: KidMember,
+  delta: number,
+  reason: string,
+): Promise<PointEntry> {
+  const { data } = await apiClient.post<{ data: PointEntry }>(
+    route('api.kids.points.store', { member }),
+    { delta, reason },
+  );
 
   return data.data;
 }

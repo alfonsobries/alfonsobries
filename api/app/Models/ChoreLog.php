@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Observers\ChoreLogObserver;
 use Database\Factories\ChoreLogFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * One day of one chore: the kid marks it done, then a parent approves or
  * rejects it in the evening review. Approved logs earn the kid's points.
  */
+#[ObservedBy(ChoreLogObserver::class)]
 class ChoreLog extends Model
 {
     /** @use HasFactory<ChoreLogFactory> */

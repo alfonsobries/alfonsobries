@@ -133,6 +133,57 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "api.rewards.activate": [
+        {
+            "name": "reward",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.kids.points.index": [
+        {
+            "name": "member",
+            "required": true
+        }
+    ],
+    "api.kids.points.store": [
+        {
+            "name": "member",
+            "required": true
+        }
+    ],
+    "api.phone-reports.index": [],
+    "api.phone-reports.store": [],
+    "api.phone-reports.review": [
+        {
+            "name": "phoneReport",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.family-activities.index": [],
+    "api.family-activities.store": [],
+    "api.family-activities.update": [
+        {
+            "name": "familyActivity",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.family-activities.destroy": [
+        {
+            "name": "familyActivity",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.family-activities.redeem": [
+        {
+            "name": "familyActivity",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "api.virtue.days.index": [],
     "api.virtue.days.resolution": [
         {

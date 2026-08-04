@@ -4,18 +4,13 @@ declare(strict_types=1);
 
 namespace App\Nova;
 
-use App\Models\Reward as Model;
-use App\Models\User;
+use App\Models\FamilyActivity as Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\MergeValue;
-use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Fields\Date;
-use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Image;
 use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource as NovaResource;
@@ -23,7 +18,7 @@ use Laravel\Nova\Resource as NovaResource;
 /**
  * @extends NovaResource<Model>
  */
-final class Reward extends NovaResource
+final class FamilyActivity extends NovaResource
 {
     /**
      * The model the resource corresponds to.
@@ -45,7 +40,7 @@ final class Reward extends NovaResource
      * @var array<int, string>
      */
     public static $search = [
-        'id', 'name', 'family_member',
+        'id', 'name',
     ];
 
     /**
@@ -58,29 +53,16 @@ final class Reward extends NovaResource
         return [
             ID::make()->sortable(),
 
-            Select::make('Kid', 'family_member')
-                ->options(array_combine(User::KID_MEMBERS, array_map('ucfirst', User::KID_MEMBERS)))
-                ->displayUsingLabels()
-                ->sortable()
-                ->rules('required'),
-
             Text::make('Name')
                 ->sortable()
                 ->rules('required', 'string', 'max:60'),
 
-            Number::make('Cost')
-                ->min(1)
-                ->max(999)
+            Number::make('Cost in minutes', 'cost_minutes')
+                ->min(5)
+                ->max(600)
+                ->step(5)
                 ->sortable()
-                ->rules('required', 'integer', 'between:1,999'),
-
-            Date::make('Available on', 'available_on')
-                ->nullable()
-                ->sortable(),
-
-            Boolean::make('Needs content parents', 'requires_content_parents'),
-
-            Boolean::make('Saving into this', 'is_active')->exceptOnForms(),
+                ->rules('required', 'integer', 'between:5,600'),
 
             Image::make('Illustration', 'illustration')
                 ->rules('image')
@@ -97,10 +79,6 @@ final class Reward extends NovaResource
                 ->thumbnail(fn (mixed $value, string $disk, ?Model $model) => $model?->getFirstMediaUrl('illustration', 'tile'))
                 ->preview(fn (mixed $value, string $disk, ?Model $model) => $model?->getFirstMediaUrl('illustration', 'tile'))
                 ->disableDownload(),
-
-            DateTime::make('Achieved at')
-                ->nullable()
-                ->sortable(),
         ];
     }
 }
