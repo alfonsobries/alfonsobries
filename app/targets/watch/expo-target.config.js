@@ -2,7 +2,7 @@
 module.exports = {
   type: 'watch',
   name: 'RosarioWatch',
-  displayName: 'Rosario',
+  displayName: 'Alfonso',
   deploymentTarget: '10.0',
   bundleIdentifier: '.watch',
   icon: './assets/icon.png',

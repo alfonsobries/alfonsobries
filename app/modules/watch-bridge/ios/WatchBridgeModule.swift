@@ -5,12 +5,8 @@ public class WatchBridgeModule: Module {
   public func definition() -> ModuleDefinition {
     Name("WatchBridge")
 
-    AsyncFunction("syncContext") { (token: String, rosaryUrl: String, prayersUrl: String) in
-      WatchLink.shared.sync(context: [
-        "token": token,
-        "rosaryUrl": rosaryUrl,
-        "prayersUrl": prayersUrl,
-      ])
+    AsyncFunction("syncContext") { (context: [String: String]) in
+      WatchLink.shared.sync(context: context)
     }
   }
 }
@@ -21,9 +17,9 @@ public class WatchBridgeModule: Module {
 final class WatchLink: NSObject, WCSessionDelegate {
   static let shared = WatchLink()
 
-  private var pending: [String: Any]?
+  private var pending: [String: String]?
 
-  func sync(context: [String: Any]) {
+  func sync(context: [String: String]) {
     guard WCSession.isSupported() else {
       return
     }

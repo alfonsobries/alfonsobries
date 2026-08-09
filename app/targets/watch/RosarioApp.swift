@@ -23,11 +23,14 @@ struct RosarioApp: App {
                             PrayersView()
                         case .benedict:
                             BenedictView()
+                        case .exercises:
+                            ExercisesView()
                         }
                     }
             }
             .task {
                 await VirtueAPI.flushPending()
+                await WorkoutAPI.flushPending()
             }
         }
     }
@@ -37,6 +40,7 @@ enum WatchRoute: Hashable {
     case mysterySet(String)
     case prayers
     case benedict
+    case exercises
 }
 
 /// The one place that can push a screen from outside the view tree — today,
@@ -75,8 +79,8 @@ final class WatchDelegate: NSObject, WKApplicationDelegate, UNUserNotificationCe
     }
 }
 
-/// Today's mysteries front and center, the daily prayers beside them, and the
-/// other sets one tap away.
+/// The day on the wrist: today's mysteries, the daily prayers and the exercise
+/// routine, with the other sets one tap away.
 struct HomeView: View {
     private let todayKey = RosaryLibrary.todayKey
 
@@ -91,6 +95,16 @@ struct HomeView: View {
                             .font(.headline)
                             .foregroundStyle(Color.accentColor)
                         Text("Auxilium · \(PrayerLibrary.todayLabel)")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                NavigationLink(value: WatchRoute.exercises) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Ejercicios")
+                            .font(.headline)
+                        Text("\(WorkoutLibrary.setsDone)/\(WorkoutLibrary.totalSets) series")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
@@ -121,7 +135,7 @@ struct HomeView: View {
                 Text("Consulta")
             }
         }
-        .navigationTitle("Oración")
+        .navigationTitle("Alfonso")
     }
 
     private var orderedOtherKeys: [String] {
