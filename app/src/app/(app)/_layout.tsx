@@ -3,12 +3,12 @@ import { Stack } from 'expo-router';
 import { KidEmotionsProvider } from '@/api/kid-emotions';
 import { MoodsProvider } from '@/api/moods';
 import { usePushRegistration } from '@/hooks/use-push-registration';
-import { useVirtueReminder } from '@/hooks/use-virtue-reminder';
+import { useDailyReminders } from '@/hooks/use-daily-reminders';
 import { useWatchSync } from '@/hooks/use-watch-sync';
 
 export default function AppLayout() {
   usePushRegistration();
-  useVirtueReminder();
+  useDailyReminders();
   useWatchSync();
 
   return (
