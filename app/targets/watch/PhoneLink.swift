@@ -43,6 +43,19 @@ final class PhoneLink: NSObject, WCSessionDelegate {
         if let url = context["prayersUrl"] as? String {
             UserDefaults.standard.set(url, forKey: VirtueAPI.Module.prayers.urlKey)
         }
+
+        WorkoutAPI.storeUrls(
+            index: context["workoutIndexUrl"] as? String,
+            update: context["workoutUrl"] as? String
+        )
+
+        if let plan = context["workoutPlan"] as? String {
+            WorkoutLibrary.storePlan(plan)
+        }
+
+        if let today = context["workoutToday"] as? String {
+            WorkoutLibrary.storeToday(today)
+        }
     }
 }
 

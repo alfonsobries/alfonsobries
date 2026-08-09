@@ -38,6 +38,28 @@ spirit. That boundary is what lets a habit get smarter, change its rules or
 be replaced without reshaping anything else, and is what would someday allow
 habits to be installed and configured like small apps of their own.
 
+## A habit lives where it is used
+
+The contract is what makes a habit part of the practice, not its place in the
+navigation. A habit whose daily use has nothing to do with reflection belongs
+where it will actually be opened — the exercise routine sits on the home
+screen and still scores the body area. The section remains where progress is
+_read_; the habit goes where it is _lived_.
+
+## Related habits share a ceiling
+
+When several habits describe the same thing — a measured workout and a
+routine both being exercise — they are capped together per day. Without a
+ceiling a single heroic day outruns weeks of steady ones, which is exactly
+the shape the practice is built to discourage.
+
+## The daily resolution costs each area its own price
+
+The resolution touches the whole person, so it scores in every area, but the
+areas are not charged equally: the fight is fought in the soul, and a relapse
+costs the spirit more than it costs the body. Each area's price is a stated
+number, not a shared constant reused for lack of a reason.
+
 ## Hardcoded first
 
 Habits are built concretely for their one real user, hardcoded where that is
