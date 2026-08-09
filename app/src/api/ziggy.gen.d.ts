@@ -206,6 +206,17 @@ declare module 'ziggy-js' {
             "required": true
         }
     ],
+    "api.workout.index": [],
+    "api.workout.update": [
+        {
+            "name": "date",
+            "required": true
+        },
+        {
+            "name": "exercise",
+            "required": true
+        }
+    ],
     "api.assistants.index": [],
     "api.conversations.index": [],
     "api.conversations.store": [],

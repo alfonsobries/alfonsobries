@@ -3,7 +3,9 @@
 use App\Models\User;
 use App\Models\VirtueDay;
 use App\Models\VirtueEntry;
+use App\Models\WorkoutEntry;
 use App\Virtue\JourneyArt;
+use App\Workout\DailyRoutine;
 
 it('lists the tracked days with stats', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
@@ -750,7 +752,7 @@ it('scores the body area from the exercise and diet habits', function () {
         ->getJson(route('api.virtue.days.index'))
         ->assertOk()
         ->assertJsonPath('stats.areas.body.points', 4)
-        ->assertJsonPath('stats.areas.body.stage', 2)
+        ->assertJsonPath('stats.areas.body.stage', 1)
         ->assertJsonPath('stats.areas.body.streak', 3)
         ->assertJsonPath('stats.areas.mind.points', 0)
         ->assertJsonPath('stats.areas.mind.streak', 0);
@@ -822,4 +824,127 @@ it('floors the spirit points at a crossed checkpoint', function () {
         ->assertOk()
         ->assertJsonPath('stats.areas.spirit.points', 17)
         ->assertJsonPath('stats.areas.spirit.stage', 4);
+});
+
+it('feeds the exercise routine into the body area', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $date = now()->subDay()->toDateString();
+
+    foreach (['pull_ups' => 3, 'push_ups' => 3, 'air_squats' => 3, 'deep_squat' => 5] as $exercise => $sets) {
+        WorkoutEntry::factory()->create(['date' => $date, 'exercise' => $exercise, 'sets' => $sets]);
+    }
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.areas.body.points', DailyRoutine::FULL_POINTS)
+        ->assertJsonPath('stats.areas.body.streak', 1);
+});
+
+it('pays one point for a routine left unfinished', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    WorkoutEntry::factory()->create([
+        'date' => now()->subDay()->toDateString(),
+        'exercise' => 'push_ups',
+        'sets' => 1,
+    ]);
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.areas.body.points', DailyRoutine::PARTIAL_POINTS);
+});
+
+it('caps a day of exercise at five points into the body', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $date = now()->subDay()->toDateString();
+
+    // A big session and the whole routine on the same day: the ceiling exactly.
+    VirtueEntry::factory()->create(['date' => $date, 'habit' => 'exercise', 'big' => true]);
+
+    foreach (['pull_ups' => 3, 'push_ups' => 3, 'air_squats' => 3, 'deep_squat' => 5] as $exercise => $sets) {
+        WorkoutEntry::factory()->create(['date' => $date, 'exercise' => $exercise, 'sets' => $sets]);
+    }
+
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.areas.body.points', VirtueDay::EXERCISE_DAILY_CAP);
+});
+
+it('costs the body two points to miss the resolution', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    foreach (range(2, 5) as $offset) {
+        VirtueEntry::factory()->create([
+            'date' => now()->subDays($offset)->toDateString(),
+            'habit' => 'diet',
+        ]);
+    }
+
+    VirtueDay::factory()->create([
+        'date' => now()->subDay()->toDateString(),
+        'resolution' => VirtueDay::RESOLUTION_MISSED,
+    ]);
+
+    // Body had four points and keeps two; the spirit is charged three.
+    $this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->assertOk()
+        ->assertJsonPath('stats.areas.body.points', 2);
+});
+
+it('reaches the final body stage on a realistic 90-day practice but not by day 60', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+
+    // A solid week, not a flawless one: six exercise days with one big session,
+    // the routine finished four days and started two, diet six, sun five and
+    // the resolution kept six.
+    $seed = function (int $days): void {
+        foreach (range(0, $days - 1) as $index) {
+            $date = now()->subDays($days - 1 - $index)->toDateString();
+            $weekday = $index % 7;
+
+            if ($weekday < 6) {
+                VirtueEntry::factory()->create([
+                    'date' => $date,
+                    'habit' => 'exercise',
+                    'big' => $weekday === 0,
+                ]);
+                VirtueEntry::factory()->create(['date' => $date, 'habit' => 'diet']);
+                VirtueDay::factory()->create([
+                    'date' => $date,
+                    'resolution' => VirtueDay::RESOLUTION_KEPT,
+                ]);
+            }
+
+            if ($weekday < 5) {
+                VirtueEntry::factory()->create(['date' => $date, 'habit' => 'sun']);
+            }
+
+            if ($weekday < 4) {
+                foreach (['pull_ups' => 3, 'push_ups' => 3, 'air_squats' => 3, 'deep_squat' => 5] as $exercise => $sets) {
+                    WorkoutEntry::factory()->create(['date' => $date, 'exercise' => $exercise, 'sets' => $sets]);
+                }
+            } elseif ($weekday < 6) {
+                WorkoutEntry::factory()->create(['date' => $date, 'exercise' => 'pull_ups', 'sets' => 1]);
+            }
+        }
+    };
+
+    $seed(60);
+
+    expect($this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->json('stats.areas.body.stage'))->toBeLessThan(30);
+
+    VirtueDay::query()->delete();
+    VirtueEntry::query()->delete();
+    WorkoutEntry::query()->delete();
+    $seed(91);
+
+    expect($this->actingAs($alfonso)
+        ->getJson(route('api.virtue.days.index'))
+        ->json('stats.areas.body.stage'))->toBe(30);
 });

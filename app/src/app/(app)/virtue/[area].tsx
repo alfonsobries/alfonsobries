@@ -11,6 +11,7 @@ import {
   type VirtueStats,
   type VirtueSummary,
 } from '@/api/virtue';
+import { RoutineAreaCard } from '@/components/exercises/RoutineAreaCard';
 import { isOfflineError } from '@/offline/connectivity';
 import { cacheKeys, readCache, writeCache } from '@/offline/store';
 import { Card } from '@/components/ui/Card';
@@ -118,6 +119,8 @@ export default function VirtueAreaScreen() {
             <Text className="text-base text-muted"> </Text>
           )}
         </Card>
+
+        {definition.key === 'body' ? <RoutineAreaCard /> : null}
 
         {AREA_HABITS[definition.key].map(({ key, label, anchor, Icon, isDone }) => {
           const completed = new Set(days.filter(isDone).map((day) => day.date));

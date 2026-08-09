@@ -24,7 +24,7 @@ class VirtueDay extends Model
     /**
      * Points per event. The rosary is the main weapon and never penalizes
      * when skipped. The daily resolution touches the whole person: a kept
-     * day adds one to every area, a relapse takes three from every area,
+     * day adds one to every area, a relapse takes points from every area,
      * and an unmarked day moves nothing. A day with nothing at all quietly
      * drains the spirit.
      */
@@ -36,7 +36,21 @@ class VirtueDay extends Model
 
     public const MISS_PENALTY = 3;
 
+    /**
+     * A relapse costs the body less than the spirit: the fight is fought in
+     * the soul, and the body pays for it without the day's training being
+     * erased.
+     */
+    public const BODY_MISS_PENALTY = 2;
+
     public const IDLE_PENALTY = 1;
+
+    /**
+     * Everything exercise emits into the body area on one day — the routine
+     * plus the exercise habit — is capped here, so a single heroic day can
+     * never outrun weeks of steady ones.
+     */
+    public const EXERCISE_DAILY_CAP = 5;
 
     public const STAGE_COUNT = 30;
 
@@ -55,16 +69,23 @@ class VirtueDay extends Model
      * days — the habit-science window for forming a virtue or breaking a
      * vice. Solid weeks (resolution kept 6 of 7 included): spirit 6 full
      * days (+4) and one partial (+3) → 27; body exercise 6 with one big
-     * session (7), diet 6, sun 5, resolution 6 → 24; mind reading 6,
+     * session (7) and the routine finished 4 days with 2 partial (14) → 21
+     * under the daily cap, diet 6, sun 5, resolution 6 → 38; mind reading 6,
      * resolution 6 → 12.
      *
      * @var array<string, int>
      */
     public const AREA_TOTALS = [
-        'body' => 308,
+        'body' => 488,
         'mind' => 154,
         'spirit' => 345,
     ];
+
+    /** What a missed resolution costs this area. */
+    public static function missPenalty(VirtueArea $area): int
+    {
+        return $area === VirtueArea::Body ? self::BODY_MISS_PENALTY : self::MISS_PENALTY;
+    }
 
     /**
      * Minimum points for each stage of an area's journey, index 0 = stage 1.

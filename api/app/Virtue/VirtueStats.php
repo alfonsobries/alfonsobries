@@ -4,6 +4,8 @@ namespace App\Virtue;
 
 use App\Models\VirtueDay;
 use App\Models\VirtueEntry;
+use App\Models\WorkoutEntry;
+use App\Workout\DailyRoutine;
 use Illuminate\Support\Carbon;
 
 /**
@@ -11,8 +13,9 @@ use Illuminate\Support\Carbon;
  * area, and the rosary counters. Spirit scores day by day — the rosary and
  * the prayers only ever add, a missed resolution outweighs a full prayer
  * day, an idle day drains one point — with checkpoint floors so every lapse
- * is a setback, never a restart. Body and mind score one point per completed
- * habit day, no penalties.
+ * is a setback, never a restart. Body and mind score from their habit
+ * entries — body also collects the daily exercise routine — and a missed
+ * resolution costs them too.
  */
 class VirtueStats
 {
@@ -91,8 +94,10 @@ class VirtueStats
     /**
      * An area scored from habit entries — each one emits its points (a big
      * exercise session emits two) — plus the daily resolution, which touches
-     * every area: kept adds one, a relapse takes three. The score never goes
-     * below zero, and an unmarked day simply earns nothing.
+     * every area: kept adds one, a relapse takes what the area is charged for
+     * it. Body also collects the daily routine, and everything exercise on a
+     * day is capped together. The score never goes below zero, and an
+     * unmarked day simply earns nothing.
      *
      * @return array<string, int>
      */
@@ -105,10 +110,28 @@ class VirtueStats
             ->get(['date', 'habit', 'minutes', 'big']);
 
         $deltas = [];
+        $exercise = [];
 
         foreach ($entries as $entry) {
             $date = $entry->date->toDateString();
+
+            if ($entry->habit === VirtueHabit::Exercise) {
+                $exercise[$date] = ($exercise[$date] ?? 0) + $entry->points();
+
+                continue;
+            }
+
             $deltas[$date] = ($deltas[$date] ?? 0) + $entry->points();
+        }
+
+        $routine = $area === VirtueArea::Body ? $this->routinePoints() : [];
+
+        foreach ($routine as $date => $points) {
+            $exercise[$date] = ($exercise[$date] ?? 0) + $points;
+        }
+
+        foreach ($exercise as $date => $points) {
+            $deltas[$date] = ($deltas[$date] ?? 0) + min(VirtueDay::EXERCISE_DAILY_CAP, $points);
         }
 
         $resolutions = VirtueDay::whereNotNull('resolution')->orderBy('date')->get(['date', 'resolution']);
@@ -117,7 +140,7 @@ class VirtueStats
             $date = $day->date->toDateString();
             $deltas[$date] = ($deltas[$date] ?? 0) + ($day->resolution === VirtueDay::RESOLUTION_KEPT
                 ? VirtueDay::RESOLUTION_POINTS
-                : -VirtueDay::MISS_PENALTY);
+                : -VirtueDay::missPenalty($area));
         }
 
         ksort($deltas);
@@ -128,21 +151,35 @@ class VirtueStats
             $points = max(0, $points + $delta);
         }
 
-        $dates = $entries
-            ->map(fn (VirtueEntry $entry): string => $entry->date->toDateString())
-            ->unique()
-            ->values();
+        $dates = $entries->map(fn (VirtueEntry $entry): string => $entry->date->toDateString())->all();
 
         return [
             ...$this->stageData($area, $points),
-            'streak' => $this->activityStreak($dates->all()),
+            'streak' => $this->activityStreak(array_values(array_unique([...$dates, ...array_keys($routine)]))),
         ];
+    }
+
+    /**
+     * What each day of the exercise routine emits into the body area.
+     *
+     * @return array<string, int>
+     */
+    private function routinePoints(): array
+    {
+        $sets = [];
+
+        foreach (WorkoutEntry::orderBy('date')->get(['date', 'sets']) as $entry) {
+            $date = $entry->date->toDateString();
+            $sets[$date] = ($sets[$date] ?? 0) + $entry->sets;
+        }
+
+        return array_map(fn (int $done): int => DailyRoutine::pointsFor($done), $sets);
     }
 
     /**
      * The spirit score walks every calendar day from the first tracked date
      * through today: the rosary earns two, the prayers one, a kept resolution
-     * two; a missed resolution costs five, and a past day with nothing at all
+     * one; a missed resolution costs three, and a past day with nothing at all
      * costs one. Checkpoint floors apply and points never go negative.
      *
      * @return array<string, int>

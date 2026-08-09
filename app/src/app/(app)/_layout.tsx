@@ -70,6 +70,14 @@ export default function AppLayout() {
             }}
           />
           <Stack.Screen
+            name="exercises"
+            options={{
+              headerShown: true,
+              headerBackButtonDisplayMode: 'minimal',
+              title: 'Daily exercises',
+            }}
+          />
+          <Stack.Screen
             name="virtue/index"
             options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal', title: 'Virtud' }}
           />

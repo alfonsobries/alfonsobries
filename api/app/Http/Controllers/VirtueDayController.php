@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\TracksPersonalDays;
 use App\Models\VirtueDay;
 use App\Models\VirtueEntry;
 use App\Virtue\JourneyArt;
 use App\Virtue\VirtueHabit;
 use App\Virtue\VirtueStats;
-use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 
 class VirtueDayController extends Controller
 {
+    use TracksPersonalDays;
+
     public function __construct(private readonly VirtueStats $stats) {}
 
     /**
@@ -205,38 +206,6 @@ class VirtueDayController extends Controller
     private function dayFor(string $date): VirtueDay
     {
         return VirtueDay::whereDate('date', $date)->first() ?? VirtueDay::create(['date' => $date]);
-    }
-
-    private function guard(Request $request): ?JsonResponse
-    {
-        if (! $request->user()->isAlfonso()) {
-            return response()->json(['message' => 'Not available.'], 403);
-        }
-
-        return null;
-    }
-
-    /**
-     * The device sends its local date; a day of slack absorbs the timezone
-     * gap between the device and the server.
-     */
-    private function validateDate(string $date): ?JsonResponse
-    {
-        try {
-            $parsed = Carbon::createFromFormat('Y-m-d', $date);
-        } catch (InvalidFormatException) {
-            return response()->json(['message' => 'Invalid date.'], 422);
-        }
-
-        if ($parsed->format('Y-m-d') !== $date) {
-            return response()->json(['message' => 'Invalid date.'], 422);
-        }
-
-        if ($parsed->startOfDay()->gt(now()->addDay()->startOfDay())) {
-            return response()->json(['message' => 'The date cannot be in the future.'], 422);
-        }
-
-        return null;
     }
 
     private function dayResponse(VirtueDay $day): JsonResponse

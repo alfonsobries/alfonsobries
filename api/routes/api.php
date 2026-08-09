@@ -31,6 +31,7 @@ use App\Http\Controllers\TempFileController;
 use App\Http\Controllers\TestNotificationController;
 use App\Http\Controllers\TypoFormController;
 use App\Http\Controllers\VirtueDayController;
+use App\Http\Controllers\WorkoutController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -102,6 +103,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/virtue/prayers', [VirtueDayController::class, 'completePrayers'])->name('virtue.prayers.store');
     Route::post('/virtue/rosary', [VirtueDayController::class, 'completeRosary'])->name('virtue.rosary.store');
     Route::get('/virtue/mascot/{set}/{stage}', [VirtueDayController::class, 'mascot'])->whereNumber('stage')->name('virtue.mascot');
+
+    Route::get('/workout', [WorkoutController::class, 'index'])->name('workout.index');
+    Route::put('/workout/{date}/{exercise}', [WorkoutController::class, 'update'])->name('workout.update');
 
     Route::get('/assistants', [AssistantController::class, 'index'])->name('assistants.index');
 

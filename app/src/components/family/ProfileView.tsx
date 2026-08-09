@@ -8,6 +8,7 @@ import { emotionLabel, useKidEmotions } from '@/api/kid-emotions';
 import { moodEmoji, moodLabel, useMoods } from '@/api/moods';
 import { KidBehaviorsSection } from '@/components/behaviors/KidBehaviorsSection';
 import { KidChoresSection } from '@/components/chores/KidChoresSection';
+import { DailyExercisesCard } from '@/components/exercises/DailyExercisesCard';
 import { AvatarCircle } from '@/components/family/AvatarCircle';
 import { ActionTile } from '@/components/ui/ActionTile';
 import { GrowthCard } from '@/components/virtue/GrowthCard';
@@ -33,12 +34,12 @@ export function ProfileView({
     : undefined;
   const emotionRecord = kid ? kidEmotions.find((entry) => entry.family_member === kid) : undefined;
 
-  // The virtue practice belongs to one person and only shows on their own tab.
-  const ownVirtue = person.key === 'alfonso' && user?.family_member === 'alfonso';
+  // The personal trackers belong to one person and only show on their own tab.
+  const isOwnSpace = person.key === 'alfonso' && user?.family_member === 'alfonso';
 
   return (
     <>
-      {ownVirtue ? <VirtueCover /> : null}
+      {isOwnSpace ? <VirtueCover /> : null}
 
       {hideIdentity ? null : (
         <View className="flex-row items-center gap-4">
@@ -71,7 +72,8 @@ export function ProfileView({
 
       {person.hasMood ? (
         <>
-          {ownVirtue ? <GrowthCard /> : null}
+          {isOwnSpace ? <GrowthCard /> : null}
+          {isOwnSpace ? <DailyExercisesCard /> : null}
 
           <View className="flex-row flex-wrap">
             <View className="w-1/2 p-1.5">

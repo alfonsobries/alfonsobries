@@ -114,6 +114,7 @@ export const cacheKeys = {
   user: 'auth-user',
   mutationQueue: 'mutation-queue',
   virtueSummary: 'virtue-summary',
+  workout: 'workout',
   moods: 'moods',
   family: 'family',
   /** A kid's profile block: their open rewards, balance and chore progress. */
