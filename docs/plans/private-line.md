@@ -29,28 +29,28 @@ Fuente: <https://privacynumber.io/api/> (revisada 2026-08-20).
 
 ### Endpoints
 
-| Recurso | Método y path |
-|---|---|
-| Numbers | `GET /v1/numbers`, `GET /v1/numbers/available`, `POST /v1/numbers`, `GET/PATCH/DELETE /v1/numbers/{id}` |
-| Calls | `POST /v1/calls`, `GET /v1/calls`, `GET /v1/calls/{id}`, `POST /v1/calls/{id}/hangup` |
-| SMS | `POST /v1/sms`, `GET /v1/sms`, `GET /v1/sms/{id}` |
-| Voicemails | `GET /v1/voicemails`, `GET /v1/voicemails/{id}`, `DELETE /v1/voicemails/{id}` |
-| AI | `GET/PATCH /v1/numbers/{id}/ai` |
-| Account | `GET /v1/account`, `GET /v1/account/usage` |
-| Webhooks | `POST/GET /v1/webhook_endpoints`, `DELETE /v1/webhook_endpoints/{id}` |
+| Recurso    | Método y path                                                                                           |
+| ---------- | ------------------------------------------------------------------------------------------------------- |
+| Numbers    | `GET /v1/numbers`, `GET /v1/numbers/available`, `POST /v1/numbers`, `GET/PATCH/DELETE /v1/numbers/{id}` |
+| Calls      | `POST /v1/calls`, `GET /v1/calls`, `GET /v1/calls/{id}`, `POST /v1/calls/{id}/hangup`                   |
+| SMS        | `POST /v1/sms`, `GET /v1/sms`, `GET /v1/sms/{id}`                                                       |
+| Voicemails | `GET /v1/voicemails`, `GET /v1/voicemails/{id}`, `DELETE /v1/voicemails/{id}`                           |
+| AI         | `GET/PATCH /v1/numbers/{id}/ai`                                                                         |
+| Account    | `GET /v1/account`, `GET /v1/account/usage`                                                              |
+| Webhooks   | `POST/GET /v1/webhook_endpoints`, `DELETE /v1/webhook_endpoints/{id}`                                   |
 
 Paginación cursor-based forward-only, `limit` máx 100.
 
 ### Objetos (campos confirmados)
 
 - **Number**: `id, object, number, display, country, type, tier, tier_pattern, status,
-  billing_period, renews_at, auto_renew, addons, ai_enabled, metadata, created_at`.
+billing_period, renews_at, auto_renew, addons, ai_enabled, metadata, created_at`.
   `PATCH` acepta `auto_renew`, `webhook_url`, `addons`, `on_off` (objeto; aparenta ser el
   horario on/off de la línea — confirmar en el spike S4).
 - **Call**: `id, object, from, from_e164, to, direction, status, started_at, answered_at,
-  ended_at, duration_sec, recording_url, cost_usd`.
+ended_at, duration_sec, recording_url, cost_usd`.
 - **SMS**: `id, object, from, from_e164, to, body, media_urls, direction, segments,
-  status, failure_code, created_at, delivered_at, cost_usd`. Hasta 1,600 chars
+status, failure_code, created_at, delivered_at, cost_usd`. Hasta 1,600 chars
   (auto-segmentado), MMS "in supported regions", envío programado (scheduled delivery).
 - **Voicemail**: transcripción y traducción automáticas, resumen IA opcional con
   sentimiento. **Las URLs de audio pre-firmadas expiran en 1 hora** → hay que archivar
@@ -77,8 +77,15 @@ curl https://api.privacynumber.io/v1/sms \
 Error envelope:
 
 ```json
-{"error": {"type": "invalid_request_error", "code": "parameter_missing",
-           "message": "…", "param": "country", "request_id": "req_…"}}
+{
+  "error": {
+    "type": "invalid_request_error",
+    "code": "parameter_missing",
+    "message": "…",
+    "param": "country",
+    "request_id": "req_…"
+  }
+}
 ```
 
 ### Webhooks
@@ -197,25 +204,25 @@ día se comparte, es cambiar un guard.
 ### 4.3 Esquema de datos (migraciones nuevas, proyecto sin DB de producción → crear limpias)
 
 - `line_contacts`: `id, e164 (unique), name nullable, notes nullable, blocked bool,
-  favorite bool, timestamps`. Un contacto se autocrea la primera vez que aparece un
+favorite bool, timestamps`. Un contacto se autocrea la primera vez que aparece un
   número desconocido.
 - `line_messages`: `id, provider_id (unique, nullable hasta confirmar), contact_id FK,
-  direction enum(in|out), body text, media_urls json nullable, segments, status
-  enum(queued|sent|delivered|failed|received), failure_code nullable, cost_usd decimal
-  nullable, scheduled_at nullable, provider_created_at, delivered_at nullable, read_at
-  nullable, timestamps`. Index `(contact_id, provider_created_at)`.
+direction enum(in|out), body text, media_urls json nullable, segments, status
+enum(queued|sent|delivered|failed|received), failure_code nullable, cost_usd decimal
+nullable, scheduled_at nullable, provider_created_at, delivered_at nullable, read_at
+nullable, timestamps`. Index `(contact_id, provider_created_at)`.
 - `line_calls`: `id, provider_id unique, contact_id FK, direction, status
-  enum(ringing|answered|completed|missed|voicemail|failed), started_at, answered_at
-  nullable, ended_at nullable, duration_sec, recording_path nullable (S3 propio),
-  cost_usd nullable, seen_at nullable, timestamps`.
+enum(ringing|answered|completed|missed|voicemail|failed), started_at, answered_at
+nullable, ended_at nullable, duration_sec, recording_path nullable (S3 propio),
+cost_usd nullable, seen_at nullable, timestamps`.
 - `line_voicemails`: `id, provider_id unique, call_id FK nullable, contact_id FK,
-  audio_path (S3 propio), transcript text nullable, translation text nullable, summary
-  text nullable, sentiment nullable, duration_sec nullable, heard_at nullable, timestamps`.
+audio_path (S3 propio), transcript text nullable, translation text nullable, summary
+text nullable, sentiment nullable, duration_sec nullable, heard_at nullable, timestamps`.
 - `line_events`: `id, provider_event_id unique, type, payload json, processed_at
-  nullable, timestamps` — idempotencia de webhooks + debugging. El unique es lo que
+nullable, timestamps` — idempotencia de webhooks + debugging. El unique es lo que
   hace inofensivos los reintentos del proveedor.
 - `line_numbers` (una fila, pero tabla igual): `provider_id, e164, display, status,
-  billing_period, renews_at, auto_renew, ai_enabled, ai_config json, synced_at`.
+billing_period, renews_at, auto_renew, ai_enabled, ai_config json, synced_at`.
 
 Modelos `LineContact`, `LineMessage`, `LineCall`, `LineVoicemail`, `LineNumber` con
 factories realistas (números mexicanos plausibles, cuerpos en español — nunca el número
@@ -314,12 +321,12 @@ Siguiendo el patrón por capas del repo:
   `use-conversation-channel.ts`: canal privado `line`, eventos de mensaje/llamada/
   voicemail; si `createEcho()` da `null`, polling con `refresh` en foco.
 - **Offline** (clasificación del guía `offline.md`):
-  - Historial (hilos, llamadas, voicemails ya archivados): *cache-first* con
+  - Historial (hilos, llamadas, voicemails ya archivados): _cache-first_ con
     `useCachedResource` + `cacheKeys` nuevos.
-  - Enviar SMS: *registra offline y sincroniza* — `defineOfflineMutation('line.send', …)`
+  - Enviar SMS: _registra offline y sincroniza_ — `defineOfflineMutation('line.send', …)`
     con `dedupeKey`; el mensaje aparece como `queued` con su pill, igual que iMessage
     sin señal. La idempotency key server-side hace el replay seguro.
-  - Llamar: *necesita red y lo dice* (botón deshabilitado con `OfflinePill`).
+  - Llamar: _necesita red y lo dice_ (botón deshabilitado con `OfflinePill`).
 - **Formato**: helper compartido `formatPhone` (`app/src/lib/…`) usando
   `libphonenumber-js` (dep JS pura, OTA-safe) para mostrar E.164 bonito; fechas con los
   helpers de fecha existentes.
@@ -343,7 +350,7 @@ buzón/IA** (no hacer nada; si `ai.pickup` llega, la UI lo dice), y **Responder 
 (quick replies "No puedo contestar, ¿todo bien?" → manda SMS real, como iOS). Cuando la
 llamada termina: si hubo voicemail, en segundos llega la notificación con el transcript
 — el flujo real es "no contesté, pero ya leí lo que querían antes de desbloquear el
-teléfono", que es *mejor* que un buzón normal.
+teléfono", que es _mejor_ que un buzón normal.
 
 **6.3 Buzón y grabaciones.** `voicemail.tsx`: lista con play inline
 (`react-native-track-player`, ya instalado — sin cambio nativo), transcript completo,
@@ -423,14 +430,14 @@ de cada push: `composer fix && composer analyse && composer test` en `api/`,
 > de cada push, revisar el diff completo: cero rastro del número real, de `sk_live_…` o
 > del webhook secret (el repo es público).
 
-| Fase | Contenido | Nativo |
-|---|---|---|
-| 0 | Spikes S1-S4 (resultados anotados en este doc, sección §10) | No |
-| 1 | Backend completo: client, migraciones, webhooks+HMAC, jobs, sync, eventos, push, Telegram, Nova, rutas `api.line.*`, tests | No |
-| 2 | App SMS: hilos, burbujas, composer, offline queue, Reverb, OTP, quick reply, badges, `routes:generate` | No (OTA) |
-| 3 | Llamadas + buzón: incoming modal, call log, voicemail player, dialer según S1, settings (IA, renovación, usage) | No (OTA) |
-| 4 | Audio en vivo (WebView) + extras nativos batcheados | **Sí — bump 1.15.0 + rebuild** |
-| 5 | Pulido: búsqueda, export, scheduled send UI, bloqueados, revisión de estados vacíos/error de todas las pantallas | No |
+| Fase | Contenido                                                                                                                  | Nativo                         |
+| ---- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| 0    | Spikes S1-S4 (resultados anotados en este doc, sección §10)                                                                | No                             |
+| 1    | Backend completo: client, migraciones, webhooks+HMAC, jobs, sync, eventos, push, Telegram, Nova, rutas `api.line.*`, tests | No                             |
+| 2    | App SMS: hilos, burbujas, composer, offline queue, Reverb, OTP, quick reply, badges, `routes:generate`                     | No (OTA)                       |
+| 3    | Llamadas + buzón: incoming modal, call log, voicemail player, dialer según S1, settings (IA, renovación, usage)            | No (OTA)                       |
+| 4    | Audio en vivo (WebView) + extras nativos batcheados                                                                        | **Sí — bump 1.15.0 + rebuild** |
+| 5    | Pulido: búsqueda, export, scheduled send UI, bloqueados, revisión de estados vacíos/error de todas las pantallas           | No                             |
 
 Criterio de done por pantalla (no negociable): estados vacío/cargando/error/offline
 resueltos, dark mode con tokens, targets táctiles y labels de accesibilidad, sin N+1 en
