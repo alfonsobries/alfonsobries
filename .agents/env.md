@@ -16,3 +16,6 @@ files when changing one:
 - `EAS_NOTIFY_SECRET` (`app/.env` and `api/.env`) - must match; signs the webhook the
   publish script fires after `eas update` so the API can push an "update ready"
   notification.
+- `PRIVACYNUMBER_API_KEY` and `PRIVACYNUMBER_WEBHOOK_SECRET` (`api/.env` only) - the
+  private line provider. Server-only; never put them in `app/.env` or commit them. The
+  webhook secret is the signing secret returned by `POST /v1/webhook_endpoints`.

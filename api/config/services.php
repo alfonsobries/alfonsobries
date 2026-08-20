@@ -45,6 +45,14 @@ return [
         'notify_secret' => env('EAS_NOTIFY_SECRET'),
     ],
 
+    'privacynumber' => [
+        'key' => env('PRIVACYNUMBER_API_KEY'),
+        // Signing secret of the webhook endpoint registered with the provider
+        // (returned by POST /v1/webhook_endpoints; see LineWebhookController).
+        'webhook_secret' => env('PRIVACYNUMBER_WEBHOOK_SECRET'),
+        'base_url' => env('PRIVACYNUMBER_BASE_URL', 'https://api.privacynumber.io/v1'),
+    ],
+
     'apple' => [
         // The iOS bundle identifier, used as the expected `aud` of the identity
         // tokens issued by expo-apple-authentication.

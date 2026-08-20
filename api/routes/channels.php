@@ -24,6 +24,12 @@ Broadcast::channel('behavior-illustration.{id}', function ($user, $id) {
     return $user->isFamilyMember();
 });
 
+// Live traffic on the private phone line (messages, calls, voicemails).
+// The line is Alfonso's own number, so only he may listen.
+Broadcast::channel('line', function ($user) {
+    return $user->isAlfonso();
+});
+
 // Assistant replies stream here. Conversations are personal, so only the
 // owner may subscribe.
 Broadcast::channel('conversation.{id}', function ($user, $id) {

@@ -17,6 +17,14 @@ use App\Http\Controllers\FamilyActivityController;
 use App\Http\Controllers\FamilyMoodController;
 use App\Http\Controllers\FavoriteIllustrationController;
 use App\Http\Controllers\KidEmotionController;
+use App\Http\Controllers\LineCallController;
+use App\Http\Controllers\LineContactController;
+use App\Http\Controllers\LineMessageController;
+use App\Http\Controllers\LineOverviewController;
+use App\Http\Controllers\LineSettingsController;
+use App\Http\Controllers\LineThreadController;
+use App\Http\Controllers\LineVoicemailController;
+use App\Http\Controllers\LineWebhookController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\OtaUpdateController;
 use App\Http\Controllers\PhoneReportController;
@@ -40,6 +48,9 @@ Route::get('/status', StatusController::class)->name('status');
 
 // Signed webhook (HMAC, no session) — hit by the publish script after `eas update`.
 Route::post('/ota/published', OtaUpdateController::class)->name('ota.published');
+
+// Signed webhook (HMAC, no session) — privacynumber.io events for the private line.
+Route::post('/line/webhook', LineWebhookController::class)->name('line.webhook');
 
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('/apple', AppleAuthController::class)->name('apple');
@@ -126,6 +137,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/behavior-illustrations', [BehaviorIllustrationController::class, 'store'])->name('behavior-illustrations.store');
     Route::get('/behavior-illustrations/{behaviorIllustration}', [BehaviorIllustrationController::class, 'show'])->name('behavior-illustrations.show');
+
+    Route::middleware('alfonso')->prefix('line')->name('line.')->group(function () {
+        Route::get('/overview', LineOverviewController::class)->name('overview');
+        Route::get('/threads', [LineThreadController::class, 'index'])->name('threads.index');
+        Route::get('/threads/{lineContact}', [LineThreadController::class, 'show'])->name('threads.show');
+        Route::post('/messages', [LineMessageController::class, 'store'])->name('messages.store');
+        Route::get('/calls', [LineCallController::class, 'index'])->name('calls.index');
+        Route::post('/calls', [LineCallController::class, 'store'])->name('calls.store');
+        Route::post('/calls/seen', [LineCallController::class, 'seen'])->name('calls.seen');
+        Route::post('/calls/{lineCall}/hangup', [LineCallController::class, 'hangup'])->name('calls.hangup');
+        Route::get('/voicemails', [LineVoicemailController::class, 'index'])->name('voicemails.index');
+        Route::get('/voicemails/{lineVoicemail}/audio', [LineVoicemailController::class, 'audio'])->name('voicemails.audio');
+        Route::post('/voicemails/{lineVoicemail}/heard', [LineVoicemailController::class, 'heard'])->name('voicemails.heard');
+        Route::patch('/contacts/{lineContact}', [LineContactController::class, 'update'])->name('contacts.update');
+        Route::get('/settings', [LineSettingsController::class, 'show'])->name('settings.show');
+        Route::patch('/settings', [LineSettingsController::class, 'update'])->name('settings.update');
+    });
 
     Route::post('/temp-files/presign', [TempFileController::class, 'presign'])->name('temp-files.presign');
 
