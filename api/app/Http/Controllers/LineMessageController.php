@@ -45,6 +45,10 @@ class LineMessageController extends Controller
             return response()->json(['message' => 'The line is not configured yet.'], 422);
         }
 
+        if (! $client->isConfigured()) {
+            return response()->json(['message' => 'The line provider is not configured.'], 422);
+        }
+
         $contact = $sync->contactFor($validated['to']);
         $mediaKeys = $validated['media_keys'] ?? [];
         $body = (string) ($validated['body'] ?? '');
