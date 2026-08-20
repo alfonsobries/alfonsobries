@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('line:sync')->everyFiveMinutes()->withoutOverlapping();
 Schedule::command('line:sync-number')->daily();
+Schedule::command('line:export')->monthly();

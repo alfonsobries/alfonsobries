@@ -47,6 +47,8 @@ PHP (composer):
 - `php artisan …` — the usual Laravel CLI
 - `php artisan illustrate "…" [--member=] [--out=]` — generate art with the family style guides ([docs/illustrations.md](docs/illustrations.md))
 - `php artisan illustrate:moods [regina|andres|all] [--emotion=] [--force]` — generate the children's 24-emotion portrait catalogs
+- `php artisan line:register-webhook https://…/api/line/webhook` — register the private-line webhook; prints the signing secret once (put it in `PRIVACYNUMBER_WEBHOOK_SECRET`). In local, expose Laravel with a tunnel first (`cloudflared tunnel --url https://alfonsobries-api.test`).
+- `php artisan line:sync` / `line:sync-number` / `line:export` — reconcile the line, refresh the number mirror, snapshot history to S3
 
 JS build tooling (pnpm — Vite/Nova components, Puppeteer for the resume PDF):
 

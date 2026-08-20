@@ -10,6 +10,7 @@ use App\Services\Line\PrivacyNumberClient;
 use App\Services\Line\PrivacyNumberException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class LineCallController extends Controller
@@ -38,6 +39,7 @@ class LineCallController extends Controller
         $validated = $request->validate([
             'to' => ['required', 'string', 'regex:/^\+[1-9]\d{6,14}$/'],
             'callerid_mask' => ['required', Rule::in(['own', 'rotate', 'hide'])],
+            'recording_enabled' => ['sometimes', 'boolean'],
         ]);
 
         $number = LineNumber::first() ?? $sync->syncNumber();
@@ -51,6 +53,7 @@ class LineCallController extends Controller
                 from: $number->provider_id,
                 to: $validated['to'],
                 calleridMask: $validated['callerid_mask'] === 'own' ? $number->e164 : $validated['callerid_mask'],
+                recordingEnabled: (bool) ($validated['recording_enabled'] ?? false),
             );
         } catch (PrivacyNumberException $exception) {
             report($exception);
@@ -95,6 +98,17 @@ class LineCallController extends Controller
         LineCallUpdated::dispatch($lineCall->load('contact'));
 
         return response()->json(['data' => $lineCall->toApiPayload()]);
+    }
+
+    public function recording(LineCall $lineCall): JsonResponse
+    {
+        if ($lineCall->recording_path === null) {
+            return response()->json(['message' => 'The recording is still being archived.'], 404);
+        }
+
+        return response()->json(['data' => [
+            'url' => Storage::disk('s3')->temporaryUrl($lineCall->recording_path, now()->addHour()),
+        ]]);
     }
 
     /**

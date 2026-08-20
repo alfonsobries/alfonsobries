@@ -29,7 +29,9 @@ class LineNumber extends Model
         'auto_renew',
         'ai_enabled',
         'ai_config',
+        'on_off',
         'usage',
+        'balance_usd',
         'synced_at',
     ];
 
@@ -41,7 +43,9 @@ class LineNumber extends Model
         'auto_renew' => 'boolean',
         'ai_enabled' => 'boolean',
         'ai_config' => 'array',
+        'on_off' => 'array',
         'usage' => 'array',
+        'balance_usd' => 'float',
         'synced_at' => 'datetime',
     ];
 
@@ -62,7 +66,10 @@ class LineNumber extends Model
             'auto_renew' => $this->auto_renew,
             'ai_enabled' => $this->ai_enabled,
             'ai_config' => $this->ai_config,
+            'on_off' => $this->on_off,
             'usage' => $this->usage,
+            'balance_usd' => $this->balance_usd,
+            'panel_url' => (string) config('services.privacynumber.panel_url'),
             'synced_at' => $this->synced_at?->toIso8601String(),
         ];
     }

@@ -2,6 +2,7 @@
 
 use App\Models\LineVoicemail;
 use App\Models\User;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 it('lists voicemails with their contact', function () {
@@ -37,6 +38,28 @@ it('returns 404 while audio is still being archived', function () {
     $this->actingAs($alfonso)
         ->getJson(route('api.line.voicemails.audio', $voicemail))
         ->assertNotFound();
+});
+
+it('deletes a voicemail at the provider and locally', function () {
+    configurePrivacyNumber();
+    Http::preventStrayRequests();
+    Storage::fake('s3');
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $voicemail = LineVoicemail::factory()->create([
+        'provider_id' => 'vm_del',
+        'audio_path' => 'line/voicemails/9.mp3',
+    ]);
+    Storage::disk('s3')->put($voicemail->audio_path, 'audio');
+
+    Http::fake([
+        "https://api.privacynumber.io/v1/voicemails/{$voicemail->provider_id}" => Http::response(null, 204),
+    ]);
+
+    $this->actingAs($alfonso)
+        ->deleteJson(route('api.line.voicemails.destroy', $voicemail))
+        ->assertOk();
+
+    expect(LineVoicemail::find($voicemail->id))->toBeNull();
 });
 
 it('marks a voicemail as heard', function () {

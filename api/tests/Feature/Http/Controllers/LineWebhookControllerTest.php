@@ -156,6 +156,22 @@ it('marks an unanswered completed inbound call as missed', function () {
     Notification::assertSentTo(User::alfonso(), LineMissedCallNotification::class);
 });
 
+it('treats an inbound no_answer as missed', function () {
+    Notification::fake();
+    User::factory()->create(['family_member' => 'alfonso']);
+
+    postLineWebhook(lineEventPayload('evt_busy', 'call.completed', [
+        'id' => 'call_busy_1',
+        'from_e164' => '+525511110044',
+        'to' => '+525500000000',
+        'direction' => 'inbound',
+        'status' => 'no_answer',
+        'started_at' => now()->toIso8601String(),
+    ]))->assertOk();
+
+    expect(LineCall::first()->status)->toBe(LineCall::STATUS_MISSED);
+});
+
 it('flags a call answered by the ai screening', function () {
     Notification::fake();
     User::factory()->create(['family_member' => 'alfonso']);
@@ -197,14 +213,21 @@ it('archives voicemail audio and notifies with the transcript', function () {
         'from_e164' => '+525511110006',
         'to' => '+525500000000',
         'direction' => 'inbound',
-        'transcript' => 'Call me when you can',
-        'created_at' => now()->toIso8601String(),
+        'received_at' => now()->toIso8601String(),
         'duration_sec' => 12,
+        'transcript' => [
+            'text' => 'Call me when you can',
+            'language' => 'en',
+            'translation_en' => 'Call me when you can',
+            'summary' => 'Asks for a callback.',
+            'sentiment' => 'neutral',
+        ],
     ]))->assertOk();
 
     $voicemail = LineVoicemail::first();
 
     expect($voicemail->transcript)->toBe('Call me when you can')
+        ->and($voicemail->summary)->toBe('Asks for a callback.')
         ->and($voicemail->audio_path)->not->toBeNull();
 
     Storage::disk('s3')->assertExists($voicemail->audio_path);

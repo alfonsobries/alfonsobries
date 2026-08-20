@@ -6,6 +6,7 @@ use App\Events\LineCallUpdated;
 use App\Events\LineMessageUpdated;
 use App\Events\LineVoicemailUpdated;
 use App\Jobs\ArchiveLineAudio;
+use App\Jobs\ArchiveLineMedia;
 use App\Models\LineCall;
 use App\Models\LineContact;
 use App\Models\LineMessage;
@@ -55,7 +56,7 @@ class LineSync
             'line_contact_id' => $contact->id,
             'direction' => $inbound ? LineMessage::DIRECTION_IN : LineMessage::DIRECTION_OUT,
             'body' => (string) ($sms['body'] ?? ''),
-            'media_urls' => $sms['media_urls'] ?? null,
+            'media_urls' => is_array($sms['media_urls'] ?? null) ? $sms['media_urls'] : null,
             'segments' => (int) ($sms['segments'] ?? 1),
             'status' => $inbound ? LineMessage::STATUS_RECEIVED : (string) ($sms['status'] ?? LineMessage::STATUS_SENT),
             'failure_code' => $sms['failure_code'] ?? null,
@@ -67,6 +68,10 @@ class LineSync
         if ($message->wasRecentlyCreated || $message->wasChanged()) {
             $message->loadMissing('contact');
             LineMessageUpdated::dispatch($message);
+        }
+
+        if ($message->wasRecentlyCreated && $message->media_paths === null && ($sms['media_urls'] ?? []) !== []) {
+            ArchiveLineMedia::dispatch($message);
         }
 
         if ($notify && $message->wasRecentlyCreated && $inbound && ! $contact->blocked) {
@@ -143,15 +148,17 @@ class LineSync
             $call->update(['answered_by' => 'voicemail']);
         }
 
+        $copy = $this->voicemailCopy($voicemail);
+
         $record = LineVoicemail::updateOrCreate(['provider_id' => $providerId], [
             'line_call_id' => $call?->id,
             'line_contact_id' => $contact->id,
-            'transcript' => $voicemail['transcript'] ?? $voicemail['transcription'] ?? null,
-            'translation' => $voicemail['translation'] ?? null,
-            'summary' => $voicemail['summary'] ?? null,
-            'sentiment' => $voicemail['sentiment'] ?? null,
+            'transcript' => $copy['transcript'],
+            'translation' => $copy['translation'],
+            'summary' => $copy['summary'],
+            'sentiment' => $copy['sentiment'],
             'duration_sec' => $voicemail['duration_sec'] ?? null,
-            'received_at' => $this->timestamp($voicemail['created_at'] ?? null) ?? now(),
+            'received_at' => $this->timestamp($voicemail['received_at'] ?? $voicemail['created_at'] ?? null) ?? now(),
         ]);
 
         if ($record->wasRecentlyCreated || $record->wasChanged()) {
@@ -182,17 +189,9 @@ class LineSync
             return;
         }
 
-        foreach ($this->client->listSms(['limit' => 100]) as $sms) {
-            $this->applyMessage($sms);
-        }
-
-        foreach ($this->client->listCalls(['limit' => 100]) as $call) {
-            $this->applyCall($call);
-        }
-
-        foreach ($this->client->voicemails(['limit' => 100]) as $voicemail) {
-            $this->applyVoicemail($voicemail);
-        }
+        $this->client->eachPage('/sms', $this->applyMessage(...));
+        $this->client->eachPage('/calls', $this->applyCall(...));
+        $this->client->eachPage('/voicemails', $this->applyVoicemail(...));
     }
 
     /**
@@ -219,6 +218,7 @@ class LineSync
             'renews_at' => $this->timestamp($number['renews_at'] ?? null),
             'auto_renew' => (bool) ($number['auto_renew'] ?? true),
             'ai_enabled' => (bool) ($number['ai_enabled'] ?? false),
+            'on_off' => is_array($number['on_off'] ?? null) ? $number['on_off'] : null,
             'synced_at' => now(),
         ];
 
@@ -230,6 +230,13 @@ class LineSync
 
         try {
             $attributes['usage'] = $this->client->usage();
+        } catch (Throwable $exception) {
+            report($exception);
+        }
+
+        try {
+            $account = $this->client->account();
+            $attributes['balance_usd'] = $account['balance_usd'] ?? null;
         } catch (Throwable $exception) {
             report($exception);
         }
@@ -301,14 +308,48 @@ class LineSync
     {
         $status = (string) ($call['status'] ?? LineCall::STATUS_RINGING);
 
-        $endedUnanswered = $status === LineCall::STATUS_COMPLETED
-            && ($call['answered_at'] ?? null) === null;
+        return match ($status) {
+            'queued' => LineCall::STATUS_RINGING,
+            'in_progress' => LineCall::STATUS_ANSWERED,
+            'no_answer', 'busy' => $inbound ? LineCall::STATUS_MISSED : LineCall::STATUS_FAILED,
+            LineCall::STATUS_COMPLETED => $inbound && ($call['answered_at'] ?? null) === null
+                ? LineCall::STATUS_MISSED
+                : LineCall::STATUS_COMPLETED,
+            default => $status,
+        };
+    }
 
-        if ($inbound && $endedUnanswered) {
-            return LineCall::STATUS_MISSED;
+    /**
+     * @param  array<string, mixed>  $voicemail
+     * @return array{transcript: ?string, translation: ?string, summary: ?string, sentiment: ?string}
+     */
+    private function voicemailCopy(array $voicemail): array
+    {
+        $raw = $voicemail['transcript'] ?? null;
+
+        if (is_array($raw)) {
+            return [
+                'transcript' => isset($raw['text']) && is_string($raw['text']) ? $raw['text'] : null,
+                'translation' => isset($raw['translation_en']) && is_string($raw['translation_en'])
+                    ? $raw['translation_en']
+                    : (isset($raw['translation']) && is_string($raw['translation']) ? $raw['translation'] : null),
+                'summary' => isset($raw['summary']) && is_string($raw['summary']) ? $raw['summary'] : null,
+                'sentiment' => isset($raw['sentiment']) && is_string($raw['sentiment']) ? $raw['sentiment'] : null,
+            ];
         }
 
-        return $status;
+        return [
+            'transcript' => is_string($raw) ? $raw : null,
+            'translation' => isset($voicemail['translation']) && is_string($voicemail['translation'])
+                ? $voicemail['translation']
+                : null,
+            'summary' => isset($voicemail['summary']) && is_string($voicemail['summary'])
+                ? $voicemail['summary']
+                : null,
+            'sentiment' => isset($voicemail['sentiment']) && is_string($voicemail['sentiment'])
+                ? $voicemail['sentiment']
+                : null,
+        ];
     }
 
     private function timestamp(?string $value): ?Carbon

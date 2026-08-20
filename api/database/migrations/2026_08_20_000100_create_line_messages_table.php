@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('direction');
             $table->text('body');
             $table->json('media_urls')->nullable();
+            $table->json('media_paths')->nullable();
             $table->unsignedSmallInteger('segments')->default(1);
             $table->string('status')->index();
             $table->string('failure_code')->nullable();

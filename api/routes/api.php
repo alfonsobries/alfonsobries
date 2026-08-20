@@ -147,9 +147,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/calls', [LineCallController::class, 'store'])->name('calls.store');
         Route::post('/calls/seen', [LineCallController::class, 'seen'])->name('calls.seen');
         Route::post('/calls/{lineCall}/hangup', [LineCallController::class, 'hangup'])->name('calls.hangup');
+        Route::get('/calls/{lineCall}/recording', [LineCallController::class, 'recording'])->name('calls.recording');
         Route::get('/voicemails', [LineVoicemailController::class, 'index'])->name('voicemails.index');
         Route::get('/voicemails/{lineVoicemail}/audio', [LineVoicemailController::class, 'audio'])->name('voicemails.audio');
         Route::post('/voicemails/{lineVoicemail}/heard', [LineVoicemailController::class, 'heard'])->name('voicemails.heard');
+        Route::delete('/voicemails/{lineVoicemail}', [LineVoicemailController::class, 'destroy'])->name('voicemails.destroy');
         Route::patch('/contacts/{lineContact}', [LineContactController::class, 'update'])->name('contacts.update');
         Route::get('/settings', [LineSettingsController::class, 'show'])->name('settings.show');
         Route::patch('/settings', [LineSettingsController::class, 'update'])->name('settings.update');

@@ -34,6 +34,7 @@ it('pushes auto-renew and ai config to the provider', function () {
             'ai_enabled' => true,
         ]]]),
         'https://api.privacynumber.io/v1/account/usage' => Http::response(['sms' => 3]),
+        'https://api.privacynumber.io/v1/account' => Http::response(['balance_usd' => 12.5]),
     ]);
 
     $this->actingAs($alfonso)

@@ -44,9 +44,13 @@ class LineThreadController extends Controller
                     ->whereNull('read_at'),
             ])
             ->get()
-            ->sortByDesc(fn (LineContact $contact): string => max(
-                (string) $contact->getAttribute('last_message_at'),
-                (string) $contact->getAttribute('last_call_at'),
+            ->sortByDesc(fn (LineContact $contact): string => sprintf(
+                '%d-%s',
+                $contact->favorite ? 1 : 0,
+                max(
+                    (string) $contact->getAttribute('last_message_at'),
+                    (string) $contact->getAttribute('last_call_at'),
+                ),
             ))
             ->values();
 

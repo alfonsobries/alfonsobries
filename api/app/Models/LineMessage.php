@@ -7,6 +7,7 @@ use Database\Factories\LineMessageFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class LineMessage extends Model
 {
@@ -37,6 +38,7 @@ class LineMessage extends Model
         'direction',
         'body',
         'media_urls',
+        'media_paths',
         'segments',
         'status',
         'failure_code',
@@ -52,6 +54,7 @@ class LineMessage extends Model
      */
     protected $casts = [
         'media_urls' => 'array',
+        'media_paths' => 'array',
         'segments' => 'integer',
         'cost_usd' => 'float',
         'scheduled_at' => 'datetime',
@@ -87,7 +90,7 @@ class LineMessage extends Model
             'client_key' => $this->client_key,
             'direction' => $this->direction,
             'body' => $this->body,
-            'media_urls' => $this->media_urls ?? [],
+            'media_urls' => $this->publicMediaUrls(),
             'segments' => $this->segments,
             'status' => $this->status,
             'failure_code' => $this->failure_code,
@@ -98,5 +101,27 @@ class LineMessage extends Model
             'delivered_at' => $this->delivered_at?->toIso8601String(),
             'read_at' => $this->read_at?->toIso8601String(),
         ];
+    }
+
+    /**
+     * Prefer our archived copies (signed) over the provider's short-lived URLs.
+     *
+     * @return list<string>
+     */
+    public function publicMediaUrls(): array
+    {
+        $paths = $this->media_paths ?? [];
+
+        if ($paths !== []) {
+            return array_values(array_map(
+                fn (string $path): string => Storage::disk('s3')->temporaryUrl($path, now()->addHour()),
+                $paths,
+            ));
+        }
+
+        return array_values(array_filter(
+            $this->media_urls ?? [],
+            fn (mixed $url): bool => is_string($url) && $url !== '',
+        ));
     }
 }

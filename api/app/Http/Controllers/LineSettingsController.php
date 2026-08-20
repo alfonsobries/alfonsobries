@@ -29,6 +29,10 @@ class LineSettingsController extends Controller
             'auto_renew' => ['sometimes', 'boolean'],
             'ai' => ['sometimes', 'array'],
             'on_off' => ['sometimes', 'array'],
+            'on_off.enabled' => ['sometimes', 'boolean'],
+            'on_off.start' => ['sometimes', 'string', 'regex:/^\d{2}:\d{2}$/'],
+            'on_off.end' => ['sometimes', 'string', 'regex:/^\d{2}:\d{2}$/'],
+            'on_off.timezone' => ['sometimes', 'timezone'],
         ]);
 
         $number = LineNumber::first() ?? $sync->syncNumber();
@@ -58,6 +62,10 @@ class LineSettingsController extends Controller
 
         $number = $sync->syncNumber() ?? $number;
 
-        return response()->json(['data' => ['number' => $number->toApiPayload()]]);
+        if (array_key_exists('on_off', $validated)) {
+            $number->update(['on_off' => $validated['on_off']]);
+        }
+
+        return response()->json(['data' => ['number' => $number->fresh()?->toApiPayload() ?? $number->toApiPayload()]]);
     }
 }

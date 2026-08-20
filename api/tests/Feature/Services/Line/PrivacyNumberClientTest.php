@@ -21,7 +21,7 @@ it('sends the pinned version and idempotency headers', function () {
         from: 'num_1',
         to: '+525511110000',
         body: 'hola',
-        scheduledAt: null,
+        sendAt: null,
         idempotencyKey: 'idem-1',
     );
 

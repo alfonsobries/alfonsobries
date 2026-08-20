@@ -51,6 +51,7 @@ return [
         // (returned by POST /v1/webhook_endpoints; see LineWebhookController).
         'webhook_secret' => env('PRIVACYNUMBER_WEBHOOK_SECRET'),
         'base_url' => env('PRIVACYNUMBER_BASE_URL', 'https://api.privacynumber.io/v1'),
+        'panel_url' => env('PRIVACYNUMBER_PANEL_URL', 'https://privacynumber.io/'),
     ],
 
     'apple' => [

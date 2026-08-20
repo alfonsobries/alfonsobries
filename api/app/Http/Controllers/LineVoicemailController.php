@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\LineVoicemail;
+use App\Services\Line\PrivacyNumberClient;
+use App\Services\Line\PrivacyNumberException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
@@ -44,5 +46,22 @@ class LineVoicemailController extends Controller
         }
 
         return response()->json(['data' => $lineVoicemail->load('contact')->toApiPayload()]);
+    }
+
+    public function destroy(LineVoicemail $lineVoicemail, PrivacyNumberClient $client): JsonResponse
+    {
+        try {
+            $client->deleteVoicemail($lineVoicemail->provider_id);
+        } catch (PrivacyNumberException $exception) {
+            report($exception);
+        }
+
+        if ($lineVoicemail->audio_path !== null) {
+            Storage::disk('s3')->delete($lineVoicemail->audio_path);
+        }
+
+        $lineVoicemail->delete();
+
+        return response()->json(['data' => null]);
     }
 }

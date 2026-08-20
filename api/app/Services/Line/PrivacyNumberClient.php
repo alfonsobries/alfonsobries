@@ -68,16 +68,30 @@ class PrivacyNumberClient
     }
 
     /**
+     * @param  list<string>  $mediaUrls
      * @return array<string, mixed>
      */
-    public function sendSms(string $from, string $to, string $body, ?string $scheduledAt, string $idempotencyKey): array
-    {
-        $payload = array_filter([
+    public function sendSms(
+        string $from,
+        string $to,
+        string $body,
+        ?string $sendAt,
+        string $idempotencyKey,
+        array $mediaUrls = [],
+    ): array {
+        $payload = [
             'from' => $from,
             'to' => $to,
             'body' => $body,
-            'scheduled_at' => $scheduledAt,
-        ], fn (?string $value): bool => $value !== null);
+        ];
+
+        if ($sendAt !== null) {
+            $payload['send_at'] = $sendAt;
+        }
+
+        if ($mediaUrls !== []) {
+            $payload['media_urls'] = $mediaUrls;
+        }
 
         return $this->object(
             $this->request()
@@ -96,14 +110,44 @@ class PrivacyNumberClient
     }
 
     /**
+     * Walks a cursor-paginated list until it runs out.
+     *
+     * @param  callable(array<string, mixed>): void  $each
+     */
+    public function eachPage(string $path, callable $each): void
+    {
+        $cursor = null;
+
+        do {
+            $query = ['limit' => 100];
+            if (is_string($cursor)) {
+                $query['starting_after'] = $cursor;
+            }
+
+            $page = $this->object($this->request()->get($path, $query));
+            $items = $page['data'] ?? [];
+
+            foreach ($items as $item) {
+                if (is_array($item)) {
+                    $each($item);
+                }
+            }
+
+            $cursor = is_string($page['next_cursor'] ?? null) ? $page['next_cursor'] : null;
+            $hasMore = (bool) ($page['has_more'] ?? false);
+        } while ($hasMore && $cursor !== null);
+    }
+
+    /**
      * @return array<string, mixed>
      */
-    public function createCall(string $from, string $to, string $calleridMask): array
+    public function createCall(string $from, string $to, string $calleridMask, bool $recordingEnabled = false): array
     {
         return $this->object($this->request()->post('/calls', [
             'from' => $from,
             'to' => $to,
             'callerid_mask' => $calleridMask,
+            'recording_enabled' => $recordingEnabled,
         ]));
     }
 
@@ -153,6 +197,19 @@ class PrivacyNumberClient
         if ($response->failed()) {
             throw PrivacyNumberException::fromResponse($response);
         }
+    }
+
+    /**
+     * @param  list<string>  $events
+     * @return array<string, mixed>
+     */
+    public function createWebhookEndpoint(string $url, array $events = ['*']): array
+    {
+        return $this->object($this->request()->post('/webhook_endpoints', [
+            'url' => $url,
+            'enabled_events' => $events,
+            'description' => 'alfonsobries private line',
+        ]));
     }
 
     /**
