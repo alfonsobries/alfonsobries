@@ -113,7 +113,11 @@ export default function LineThreadScreen() {
     },
   });
 
-  const handleSend = async (body: string): Promise<boolean> => {
+  const handleSend = async (
+    body: string,
+    attachments: { key: string; localUri: string }[] = [],
+    scheduledAt: string | null = null,
+  ): Promise<boolean> => {
     if (!contact) {
       return false;
     }
@@ -126,13 +130,13 @@ export default function LineThreadScreen() {
       client_key: clientKey,
       direction: 'out',
       body,
-      media_urls: [],
+      media_urls: attachments.map((item) => item.localUri),
       segments: 1,
       status: 'queued',
       failure_code: null,
       cost_usd: null,
       otp_code: null,
-      scheduled_at: null,
+      scheduled_at: scheduledAt,
       sent_at: new Date().toISOString(),
       delivered_at: null,
       read_at: null,
@@ -146,13 +150,21 @@ export default function LineThreadScreen() {
         to: contact.e164,
         body,
         client_key: clientKey,
+        scheduled_at: scheduledAt ?? undefined,
+        media_keys: attachments.map((item) => item.key),
       });
       upsert(sent);
       return true;
     } catch (error) {
       if (isOfflineError(error)) {
         queueLineSend(
-          { to: contact.e164, body, client_key: clientKey },
+          {
+            to: contact.e164,
+            body,
+            client_key: clientKey,
+            scheduled_at: scheduledAt ?? undefined,
+            media_keys: attachments.map((item) => item.key),
+          },
           { dedupeKey: `line.send:${clientKey}` },
         );
         return true;
@@ -217,6 +229,31 @@ export default function LineThreadScreen() {
           data={inverted}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => <MessageBubble message={item} onRetry={handleRetry} />}
+          onEndReached={() => {
+            const oldest = messages?.[messages.length - 1];
+            if (!oldest || !Number.isFinite(contactId) || !cacheKey) {
+              return;
+            }
+
+            void (async () => {
+              try {
+                const older = await fetchLineThread(route, contactId, oldest.id);
+                if (older.messages.length === 0) {
+                  return;
+                }
+
+                setMessages((current) => {
+                  const existing = new Set((current ?? []).map((message) => message.id));
+                  return [
+                    ...(current ?? []),
+                    ...older.messages.filter((message) => !existing.has(message.id)),
+                  ];
+                });
+              } catch {
+                // Older pages can wait.
+              }
+            })();
+          }}
           ListEmptyComponent={
             <View className="items-center py-16">
               <Text className="text-base text-muted">No messages in this thread yet.</Text>

@@ -288,6 +288,13 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "api.line.calls.recording": [
+        {
+            "name": "lineCall",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "api.line.voicemails.index": [],
     "api.line.voicemails.audio": [
         {
@@ -297,6 +304,13 @@ declare module 'ziggy-js' {
         }
     ],
     "api.line.voicemails.heard": [
+        {
+            "name": "lineVoicemail",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.line.voicemails.destroy": [
         {
             "name": "lineVoicemail",
             "required": true,

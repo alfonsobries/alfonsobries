@@ -78,7 +78,12 @@ export function MessageBubble({ message, onRetry }: MessageBubbleProperties) {
       ) : null}
       <View className="mt-1 flex-row items-center gap-1 px-1">
         <StatusIcon message={message} />
-        <Text className="text-xs text-muted">{formatLineTime(message.sent_at)}</Text>
+        <Text className="text-xs text-muted">
+          {message.scheduled_at && message.status === 'queued'
+            ? `Scheduled ${formatLineTime(message.scheduled_at)}`
+            : formatLineTime(message.sent_at)}
+          {message.cost_usd ? ` · $${message.cost_usd.toFixed(3)}` : ''}
+        </Text>
         {message.status === 'failed' && onRetry ? (
           <Pressable
             accessibilityRole="button"

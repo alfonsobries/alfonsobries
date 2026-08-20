@@ -76,9 +76,33 @@ export type LineNumber = {
   renews_at: string | null;
   auto_renew: boolean;
   ai_enabled: boolean;
-  ai_config: Record<string, unknown> | null;
+  ai_config: LineAiConfig | null;
+  on_off: LineQuietHours | null;
   usage: Record<string, unknown> | null;
+  balance_usd: number | null;
+  panel_url: string | null;
   synced_at: string | null;
+};
+
+export type LineQuietHours = {
+  enabled?: boolean;
+  start?: string;
+  end?: string;
+  timezone?: string;
+};
+
+export type LineAiConfig = {
+  addons?: string[];
+  auto_pickup?: {
+    enabled?: boolean;
+    after_rings?: number;
+    script?: string;
+    language?: string;
+    voice?: string;
+  };
+  screening?: { enabled?: boolean };
+  translator?: { enabled?: boolean; target_language?: string };
+  voicemail_summary?: { enabled?: boolean; include_sentiment?: boolean };
 };
 
 export type LineOverview = {
@@ -145,7 +169,13 @@ export async function fetchLineThread(
 
 export async function sendLineMessage(
   route: ApiRoute,
-  payload: { to: string; body: string; client_key?: string; scheduled_at?: string },
+  payload: {
+    to: string;
+    body: string;
+    client_key?: string;
+    scheduled_at?: string;
+    media_keys?: string[];
+  },
 ): Promise<LineMessage> {
   const { data } = await apiClient.post<{ data: LineMessage }>(
     route('api.line.messages.store'),
@@ -159,6 +189,8 @@ export const queueLineSend = defineOfflineMutation<{
   to: string;
   body: string;
   client_key: string;
+  scheduled_at?: string;
+  media_keys?: string[];
 }>('line.send', async (payload, route) => {
   await sendLineMessage(route, payload);
 });
@@ -171,7 +203,7 @@ export async function fetchLineCalls(route: ApiRoute): Promise<LineCall[]> {
 
 export async function placeLineCall(
   route: ApiRoute,
-  payload: { to: string; callerid_mask: 'own' | 'rotate' | 'hide' },
+  payload: { to: string; callerid_mask: 'own' | 'rotate' | 'hide'; recording_enabled?: boolean },
 ): Promise<LineCall> {
   const { data } = await apiClient.post<{ data: LineCall }>(route('api.line.calls.store'), payload);
 
@@ -188,6 +220,14 @@ export async function hangupLineCall(route: ApiRoute, callId: number): Promise<L
 
 export async function markLineCallsSeen(route: ApiRoute): Promise<void> {
   await apiClient.post(route('api.line.calls.seen'));
+}
+
+export async function fetchLineCallRecording(route: ApiRoute, callId: number): Promise<string> {
+  const { data } = await apiClient.get<{ data: { url: string } }>(
+    route('api.line.calls.recording', { lineCall: callId }),
+  );
+
+  return data.data.url;
 }
 
 export async function fetchLineVoicemails(route: ApiRoute): Promise<LineVoicemail[]> {
@@ -207,6 +247,10 @@ export async function fetchLineVoicemailAudio(
   );
 
   return data.data.url;
+}
+
+export async function deleteLineVoicemail(route: ApiRoute, voicemailId: number): Promise<void> {
+  await apiClient.delete(route('api.line.voicemails.destroy', { lineVoicemail: voicemailId }));
 }
 
 export async function markLineVoicemailHeard(
@@ -241,7 +285,7 @@ export async function fetchLineSettings(route: ApiRoute): Promise<LineSettings> 
 
 export async function updateLineSettings(
   route: ApiRoute,
-  payload: { auto_renew?: boolean; ai?: Record<string, unknown>; on_off?: Record<string, unknown> },
+  payload: { auto_renew?: boolean; ai?: LineAiConfig; on_off?: LineQuietHours },
 ): Promise<LineSettings> {
   const { data } = await apiClient.patch<{ data: LineSettings }>(
     route('api.line.settings.update'),

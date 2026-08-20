@@ -1,9 +1,15 @@
 import { Redirect, router, Stack, useFocusEffect, type Href } from 'expo-router';
-import { useCallback } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { useCallback, useState } from 'react';
+import { FlatList, Pressable, Text, View } from 'react-native';
 
 import { useAuth } from '@/api/auth';
-import { fetchLineCalls, markLineCallsSeen, type LineCall } from '@/api/line';
+import {
+  fetchLineCallRecording,
+  fetchLineCalls,
+  markLineCallsSeen,
+  type LineCall,
+} from '@/api/line';
+import { VoicemailPlayer } from '@/components/line/VoicemailPlayer';
 import { useApiRouter } from '@/api/router';
 import { CallLogItem } from '@/components/line/CallLogItem';
 import { useLineChannel } from '@/hooks/use-line-channel';
@@ -15,6 +21,7 @@ export default function LineCallsScreen() {
   const route = useApiRouter();
   const fetcher = useCallback(() => fetchLineCalls(route), [route]);
   const calls = useCachedResource<LineCall[]>(cacheKeys.lineCalls, fetcher);
+  const [recordingUrls, setRecordingUrls] = useState<Record<number, string>>({});
 
   const refreshCalls = calls.refresh;
   const refresh = useCallback(async () => {
@@ -52,14 +59,37 @@ export default function LineCallsScreen() {
         data={calls.data ?? []}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
-          <CallLogItem
-            call={item}
-            onPress={() =>
-              item.contact
-                ? router.push(`/line/thread?contact=${item.contact.id}` as Href)
-                : undefined
-            }
-          />
+          <View className="gap-2">
+            <CallLogItem
+              call={item}
+              onPress={() =>
+                item.contact
+                  ? router.push(`/line/thread?contact=${item.contact.id}` as Href)
+                  : undefined
+              }
+            />
+            {item.has_recording ? (
+              <VoicemailPlayer
+                url={recordingUrls[item.id] ?? null}
+                durationSec={item.duration_sec}
+                loading={false}
+              />
+            ) : null}
+            {item.has_recording && !recordingUrls[item.id] ? (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Load recording"
+                className="px-4"
+                onPress={() => {
+                  void fetchLineCallRecording(route, item.id).then((url) => {
+                    setRecordingUrls((current) => ({ ...current, [item.id]: url }));
+                  });
+                }}
+              >
+                <Text className="text-sm text-primary-emphasis">Load recording</Text>
+              </Pressable>
+            ) : null}
+          </View>
         )}
         ListEmptyComponent={
           calls.status === 'loading' ? (

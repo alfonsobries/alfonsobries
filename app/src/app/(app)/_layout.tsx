@@ -191,6 +191,14 @@ export default function AppLayout() {
             name="line/incoming"
             options={{ presentation: 'fullScreenModal', headerShown: false, gestureEnabled: false }}
           />
+          <Stack.Screen
+            name="line/compose"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="line/live"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
         </Stack>
       </KidEmotionsProvider>
     </MoodsProvider>

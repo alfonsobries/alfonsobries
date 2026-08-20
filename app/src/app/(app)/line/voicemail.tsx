@@ -1,10 +1,11 @@
 import { Redirect, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { Alert, FlatList, Pressable, Text, View } from 'react-native';
 
 import { useAuth } from '@/api/auth';
 import {
   contactLabel,
+  deleteLineVoicemail,
   fetchLineVoicemailAudio,
   fetchLineVoicemails,
   markLineVoicemailHeard,
@@ -104,6 +105,29 @@ export default function LineVoicemailScreen() {
                   <Text className="text-xs text-muted">{formatDuration(item.duration_sec)}</Text>
                 ) : null}
                 <TranscriptCard voicemail={item} />
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Delete voicemail"
+                  onPress={() => {
+                    Alert.alert('Delete voicemail?', 'This removes it here and at the provider.', [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Delete',
+                        style: 'destructive',
+                        onPress: () => {
+                          void (async () => {
+                            await deleteLineVoicemail(route, item.id);
+                            list.update((current) =>
+                              (current ?? []).filter((voicemail) => voicemail.id !== item.id),
+                            );
+                          })();
+                        },
+                      },
+                    ]);
+                  }}
+                >
+                  <Text className="text-sm font-medium text-danger">Delete</Text>
+                </Pressable>
               </View>
             </Card>
           );

@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Redirect, router, Stack, useFocusEffect, type Href } from 'expo-router';
-import { Gear, Phone, Voicemail } from 'phosphor-react-native';
+import { Gear, Headset, Phone, Plus, Voicemail } from 'phosphor-react-native';
 import { useCallback, useState } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 
@@ -17,6 +17,7 @@ import { LineStatusCard } from '@/components/line/LineStatusCard';
 import { ThreadListItem } from '@/components/line/ThreadListItem';
 import { Input } from '@/components/ui/Input';
 import { useLineChannel } from '@/hooks/use-line-channel';
+import { useLineContacts } from '@/hooks/use-line-contacts';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { cacheKeys } from '@/offline/store';
 import { useCachedResource } from '@/offline/use-cached-resource';
@@ -26,6 +27,7 @@ export default function LineHubScreen() {
   const route = useApiRouter();
   const tint = useThemeColor('primary-emphasis');
   const [query, setQuery] = useState('');
+  const resolveContacts = useLineContacts();
 
   const fetchOverview = useCallback(() => fetchLineOverview(route), [route]);
   const fetchThreads = useCallback(() => fetchLineThreads(route), [route]);
@@ -49,7 +51,8 @@ export default function LineHubScreen() {
   useFocusEffect(
     useCallback(() => {
       void refresh();
-    }, [refresh]),
+      void resolveContacts();
+    }, [refresh, resolveContacts]),
   );
 
   useLineChannel({
@@ -87,11 +90,27 @@ export default function LineHubScreen() {
             <View className="flex-row items-center gap-3">
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel="New message"
+                onPress={() => router.push('/line/compose' as Href)}
+                hitSlop={8}
+              >
+                <Plus size={22} color={tint} />
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
                 accessibilityLabel="Dialer"
                 onPress={() => router.push('/line/dialer' as Href)}
                 hitSlop={8}
               >
                 <Phone size={22} color={tint} />
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Live panel"
+                onPress={() => router.push('/line/live' as Href)}
+                hitSlop={8}
+              >
+                <Headset size={22} color={tint} />
               </Pressable>
               <Pressable
                 accessibilityRole="button"

@@ -15,7 +15,11 @@ import { IncomingCallCard } from '@/components/line/IncomingCallCard';
 import { useLineChannel } from '@/hooks/use-line-channel';
 import { isOfflineError } from '@/offline/connectivity';
 
-const QUICK_REPLY = "Can't pick up — everything OK?";
+const QUICK_REPLIES = [
+  "Can't pick up — everything OK?",
+  'In a meeting, text me.',
+  "I'll call you back.",
+];
 
 export default function LineIncomingScreen() {
   const { user } = useAuth();
@@ -63,17 +67,17 @@ export default function LineIncomingScreen() {
     }
   };
 
-  const handleReply = async () => {
+  const sendReply = async (body: string) => {
     if (!call?.contact) {
       return;
     }
 
     try {
-      await sendLineMessage(route, { to: call.contact.e164, body: QUICK_REPLY });
+      await sendLineMessage(route, { to: call.contact.e164, body });
     } catch (error) {
       if (isOfflineError(error)) {
         queueLineSend(
-          { to: call.contact.e164, body: QUICK_REPLY, client_key: crypto.randomUUID() },
+          { to: call.contact.e164, body, client_key: crypto.randomUUID() },
           { dedupeKey: `line.send:incoming:${call.id}` },
         );
       } else {
@@ -83,6 +87,18 @@ export default function LineIncomingScreen() {
     }
 
     router.replace(`/line/thread?contact=${call.contact.id}` as Href);
+  };
+
+  const handleReply = () => {
+    Alert.alert('Reply with SMS', undefined, [
+      ...QUICK_REPLIES.map((body) => ({
+        text: body,
+        onPress: () => {
+          void sendReply(body);
+        },
+      })),
+      { text: 'Cancel', style: 'cancel' as const },
+    ]);
   };
 
   if (user && user.family_member !== 'alfonso') {
@@ -99,10 +115,10 @@ export default function LineIncomingScreen() {
             onHangup={() => {
               void handleHangup();
             }}
-            onIgnore={() => router.back()}
-            onReply={() => {
-              void handleReply();
+            onIgnore={() => {
+              router.push('/line/live' as Href);
             }}
+            onReply={handleReply}
           />
         ) : null}
       </View>
