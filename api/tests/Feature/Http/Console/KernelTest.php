@@ -10,10 +10,15 @@ it('schedules the command for deploy the site every minute', function () {
     $schedule = resolve(Schedule::class);
 
     $events = $schedule->events();
-    expect($events)->toHaveCount(3);
+    $commands = collect($events)
+        ->map(fn ($event): string => (string) ($event->command ?? ''))
+        ->implode("\n");
 
     expect($events[0])->toBeInstanceof(CallbackEvent::class);
-    expect($events[1]->command)->toContain('alfonsobries:deploy');
+    expect($commands)->toContain('alfonsobries:deploy');
+    expect($commands)->toContain('line:sync');
+    expect($commands)->toContain('line:sync-number');
+    expect($commands)->toContain('line:export');
 });
 
 it('the callback defined on the schedule prunes the trix attachemnts', function () {

@@ -7,6 +7,7 @@ declare module 'ziggy-js' {
   interface RouteList {
     "api.status": [],
     "api.ota.published": [],
+    "api.line.webhook": [],
     "api.auth.apple": [],
     "api.auth.logout": [],
     "api.user": [],
@@ -267,6 +268,64 @@ declare module 'ziggy-js' {
             "binding": "id"
         }
     ],
+    "api.line.overview": [],
+    "api.line.threads.index": [],
+    "api.line.threads.show": [
+        {
+            "name": "lineContact",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.line.messages.store": [],
+    "api.line.calls.index": [],
+    "api.line.calls.store": [],
+    "api.line.calls.seen": [],
+    "api.line.calls.hangup": [
+        {
+            "name": "lineCall",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.line.calls.recording": [
+        {
+            "name": "lineCall",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.line.voicemails.index": [],
+    "api.line.voicemails.audio": [
+        {
+            "name": "lineVoicemail",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.line.voicemails.heard": [
+        {
+            "name": "lineVoicemail",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.line.voicemails.destroy": [
+        {
+            "name": "lineVoicemail",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.line.contacts.update": [
+        {
+            "name": "lineContact",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.line.settings.show": [],
+    "api.line.settings.update": [],
     "api.temp-files.presign": [],
     "api.broadcasting.auth": [],
     "api.articles.index": [],

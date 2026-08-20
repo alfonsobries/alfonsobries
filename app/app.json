@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "alfonsobries",
     "userInterfaceStyle": "automatic",
-    "runtimeVersion": "1.14.0",
+    "runtimeVersion": "1.15.0",
     "updates": {
       "url": "https://u.expo.dev/fbd135b1-6baa-4be2-b789-254386da114d"
     },
@@ -21,7 +21,8 @@
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "UIBackgroundModes": ["audio"]
+        "UIBackgroundModes": ["audio"],
+        "NSMicrophoneUsageDescription": "The private line uses the microphone for live calls in the provider panel."
       },
       "appleTeamId": "TY2LB9Y7DK"
     },
@@ -59,6 +60,12 @@
         }
       ],
       "expo-notifications",
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Match names of people who text or call your private line."
+        }
+      ],
       [
         "expo-image-picker",
         {
