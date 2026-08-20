@@ -7,11 +7,20 @@ import { Platform } from 'react-native';
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldPlaySound: true,
-    shouldSetBadge: false,
+    shouldSetBadge: true,
     shouldShowBanner: true,
     shouldShowList: true,
   }),
 });
+
+void Notifications.setNotificationCategoryAsync('line-message', [
+  {
+    identifier: 'reply',
+    buttonTitle: 'Reply',
+    textInput: { submitButtonTitle: 'Send', placeholder: 'Message' },
+    options: { opensAppToForeground: false },
+  },
+]);
 
 /**
  * Ask for permission (if needed) and return the device's Expo push token, or

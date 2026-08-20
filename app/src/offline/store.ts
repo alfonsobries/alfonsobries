@@ -128,4 +128,10 @@ export const cacheKeys = {
   behaviorFeed: (member?: string) => `behavior-feed-${member ?? 'none'}`,
   assistants: 'chat-assistants',
   conversation: (assistant: string) => `chat-conversation-${assistant}`,
+  lineOverview: 'line-overview',
+  lineThreads: 'line-threads',
+  lineThread: (contactId: string) => `line-thread-${contactId}`,
+  lineCalls: 'line-calls',
+  lineVoicemails: 'line-voicemails',
+  lineSettings: 'line-settings',
 } as const;

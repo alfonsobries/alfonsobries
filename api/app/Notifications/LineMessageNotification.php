@@ -45,6 +45,7 @@ class LineMessageNotification extends Notification
             ->data([
                 'url' => '/line/thread?contact='.$contact->id,
                 'contact_id' => $contact->id,
+                'e164' => $contact->e164,
             ])
             ->playSound();
     }
