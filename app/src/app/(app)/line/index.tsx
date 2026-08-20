@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import { Redirect, router, Stack, useFocusEffect, type Href } from 'expo-router';
-import { Gear, Headset, Phone, Plus, Voicemail } from 'phosphor-react-native';
+import { Gear, Phone, Plus, Voicemail } from 'phosphor-react-native';
 import { useCallback, useState } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 
@@ -103,14 +103,6 @@ export default function LineHubScreen() {
                 hitSlop={8}
               >
                 <Phone size={22} color={tint} />
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Live panel"
-                onPress={() => router.push('/line/live' as Href)}
-                hitSlop={8}
-              >
-                <Headset size={22} color={tint} />
               </Pressable>
               <Pressable
                 accessibilityRole="button"

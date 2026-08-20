@@ -1,4 +1,4 @@
-import { ChatTeardropText, PhoneX, Voicemail } from 'phosphor-react-native';
+import { ChatTeardropText, Phone, PhoneX } from 'phosphor-react-native';
 import { type ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
@@ -10,28 +10,27 @@ import { formatPhone } from '@/lib/phone';
 type IncomingCallCardProperties = {
   call: LineCall;
   onHangup: () => void;
-  onIgnore: () => void;
+  onAnswer: () => void;
   onReply: () => void;
 };
 
 export function IncomingCallCard({
   call,
   onHangup,
-  onIgnore,
+  onAnswer,
   onReply,
 }: IncomingCallCardProperties) {
   const contact = call.contact;
   const name = contact ? contactLabel(contact) : 'Unknown';
   const number = contact ? formatPhone(contact.e164) : '';
   const hangupTint = useThemeColor('primary-foreground');
-  const ai = call.answered_by === 'ai';
   const ended = call.status === 'completed' || call.status === 'missed' || call.status === 'failed';
 
   return (
     <View className="flex-1 items-center justify-between px-6 py-10">
       <View className="items-center gap-3 pt-16">
         <Text className="text-sm uppercase tracking-wide text-muted">
-          {ai ? 'AI picked up' : ended ? 'Call ended' : 'Incoming call'}
+          {ended ? 'Call ended' : 'Incoming call'}
         </Text>
         <View className="size-28 items-center justify-center rounded-full bg-surface-selected">
           <Text className="text-4xl font-semibold text-foreground">
@@ -55,16 +54,16 @@ export function IncomingCallCard({
             onPress={onHangup}
           />
           <Action
-            label="SMS"
+            label="Message"
             color="bg-surface-selected"
             icon={<ChatTeardropText size={28} color={hangupTint} weight="fill" />}
             onPress={onReply}
           />
           <Action
-            label="Voicemail"
-            color="bg-surface-selected"
-            icon={<Voicemail size={28} color={hangupTint} weight="fill" />}
-            onPress={onIgnore}
+            label="Answer"
+            color="bg-success"
+            icon={<Phone size={28} color={hangupTint} weight="fill" />}
+            onPress={onAnswer}
           />
         </View>
       )}

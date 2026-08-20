@@ -115,9 +115,7 @@ export default function LineIncomingScreen() {
             onHangup={() => {
               void handleHangup();
             }}
-            onIgnore={() => {
-              router.push('/line/live' as Href);
-            }}
+            onAnswer={() => router.push('/line/live' as Href)}
             onReply={handleReply}
           />
         ) : null}

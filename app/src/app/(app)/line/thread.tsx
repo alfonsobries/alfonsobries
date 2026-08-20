@@ -1,6 +1,6 @@
 import { Redirect, router, Stack, useLocalSearchParams, type Href } from 'expo-router';
 import { useHeaderHeight } from 'expo-router/react-navigation';
-import { User } from 'phosphor-react-native';
+import { Phone, User } from 'phosphor-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
@@ -116,7 +116,6 @@ export default function LineThreadScreen() {
   const handleSend = async (
     body: string,
     attachments: { key: string; localUri: string }[] = [],
-    scheduledAt: string | null = null,
   ): Promise<boolean> => {
     if (!contact) {
       return false;
@@ -136,7 +135,7 @@ export default function LineThreadScreen() {
       failure_code: null,
       cost_usd: null,
       otp_code: null,
-      scheduled_at: scheduledAt,
+      scheduled_at: null,
       sent_at: new Date().toISOString(),
       delivered_at: null,
       read_at: null,
@@ -150,7 +149,6 @@ export default function LineThreadScreen() {
         to: contact.e164,
         body,
         client_key: clientKey,
-        scheduled_at: scheduledAt ?? undefined,
         media_keys: attachments.map((item) => item.key),
       });
       upsert(sent);
@@ -162,7 +160,6 @@ export default function LineThreadScreen() {
             to: contact.e164,
             body,
             client_key: clientKey,
-            scheduled_at: scheduledAt ?? undefined,
             media_keys: attachments.map((item) => item.key),
           },
           { dedupeKey: `line.send:${clientKey}` },
@@ -200,14 +197,26 @@ export default function LineThreadScreen() {
         options={{
           headerRight: () =>
             contact ? (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Contact details"
-                onPress={() => router.push(`/line/contact?contact=${contact.id}` as Href)}
-                hitSlop={8}
-              >
-                <User size={22} color={tint} />
-              </Pressable>
+              <View className="flex-row items-center gap-3">
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Call"
+                  onPress={() =>
+                    router.push(`/line/dialer?to=${encodeURIComponent(contact.e164)}` as Href)
+                  }
+                  hitSlop={8}
+                >
+                  <Phone size={22} color={tint} />
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Contact details"
+                  onPress={() => router.push(`/line/contact?contact=${contact.id}` as Href)}
+                  hitSlop={8}
+                >
+                  <User size={22} color={tint} />
+                </Pressable>
+              </View>
             ) : null,
         }}
       />

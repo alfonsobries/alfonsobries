@@ -1,4 +1,4 @@
-import { Redirect, router, Stack, useLocalSearchParams } from 'expo-router';
+import { Redirect, router, Stack, useLocalSearchParams, type Href } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 
@@ -96,6 +96,29 @@ export default function LineContactScreen() {
         <Text className="text-center text-lg text-muted">
           {contact ? formatPhone(contact.e164) : ''}
         </Text>
+        {contact ? (
+          <View className="flex-row gap-3">
+            <View className="flex-1">
+              <Button
+                onPress={() => router.push(`/line/thread?contact=${contact.id}` as Href)}
+                variant="secondary"
+                fullWidth
+              >
+                Message
+              </Button>
+            </View>
+            <View className="flex-1">
+              <Button
+                onPress={() =>
+                  router.push(`/line/dialer?to=${encodeURIComponent(contact.e164)}` as Href)
+                }
+                fullWidth
+              >
+                Call
+              </Button>
+            </View>
+          </View>
+        ) : null}
         <Input label="Name" value={name} onChangeText={setName} placeholder="Add a name" />
         <Input
           label="Notes"

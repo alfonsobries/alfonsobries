@@ -1,33 +1,36 @@
-import { Redirect, router, Stack, type Href } from 'expo-router';
-import { Phone } from 'phosphor-react-native';
+import { Redirect, router, Stack, useLocalSearchParams, type Href } from 'expo-router';
+import { AddressBook, Phone } from 'phosphor-react-native';
 import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { useAuth } from '@/api/auth';
-import { fetchLineCalls, hangupLineCall, placeLineCall, type LineCall } from '@/api/line';
-import { contactLabel } from '@/api/line';
+import {
+  contactLabel,
+  fetchLineCalls,
+  hangupLineCall,
+  placeLineCall,
+  type LineCall,
+} from '@/api/line';
 import { useApiRouter } from '@/api/router';
 import { Keypad } from '@/components/line/Keypad';
 import { Button } from '@/components/ui/Button';
-import { SegmentedControl } from '@/components/ui/SegmentedControl';
-import { Switch } from '@/components/ui/Switch';
 import { useLineChannel } from '@/hooks/use-line-channel';
 import { useThemeColor } from '@/hooks/use-theme-color';
 import { digitsToE164, formatPhone } from '@/lib/phone';
+import { pickPhoneContact } from '@/lib/phone-contact';
 import { isOfflineError, useIsOnline } from '@/offline/connectivity';
 import { cacheKeys } from '@/offline/store';
 import { useCachedResource } from '@/offline/use-cached-resource';
 
-type CallerId = 'own' | 'rotate' | 'hide';
-
 export default function LineDialerScreen() {
   const { user } = useAuth();
+  const params = useLocalSearchParams<{ to?: string }>();
   const route = useApiRouter();
   const online = useIsOnline();
   const playTint = useThemeColor('primary-foreground');
-  const [digits, setDigits] = useState('');
-  const [mask, setMask] = useState<CallerId>('own');
-  const [record, setRecord] = useState(false);
+  const tint = useThemeColor('primary-emphasis');
+  const initial = params.to ? params.to.replace(/^\+/, '') : '';
+  const [digits, setDigits] = useState(initial);
   const [placing, setPlacing] = useState(false);
   const [active, setActive] = useState<LineCall | null>(null);
   const fetcher = useCallback(() => fetchLineCalls(route), [route]);
@@ -44,6 +47,14 @@ export default function LineDialerScreen() {
     },
   });
 
+  const handlePick = async () => {
+    const picked = await pickPhoneContact();
+
+    if (picked) {
+      setDigits(picked.e164.replace(/^\+/, ''));
+    }
+  };
+
   const handleCall = async (to: string) => {
     if (!online) {
       Alert.alert('You are offline', 'Calling needs a connection.');
@@ -52,11 +63,7 @@ export default function LineDialerScreen() {
 
     setPlacing(true);
     try {
-      const call = await placeLineCall(route, {
-        to,
-        callerid_mask: mask,
-        recording_enabled: record,
-      });
+      const call = await placeLineCall(route, { to, callerid_mask: 'own' });
       setActive(call);
       router.push('/line/live' as Href);
     } catch (error) {
@@ -79,11 +86,27 @@ export default function LineDialerScreen() {
       (call, index, list) =>
         list.findIndex((item) => item.contact_id === call.contact_id) === index,
     )
-    .slice(0, 6);
+    .slice(0, 8);
 
   return (
     <>
       <Stack.Screen.Title>Keypad</Stack.Screen.Title>
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Pick a contact"
+              onPress={() => {
+                void handlePick();
+              }}
+              hitSlop={8}
+            >
+              <AddressBook size={22} color={tint} />
+            </Pressable>
+          ),
+        }}
+      />
       <ScrollView
         className="flex-1 bg-background"
         contentContainerClassName="gap-6 px-4 pb-16 pt-4"
@@ -96,21 +119,6 @@ export default function LineDialerScreen() {
           </Text>
           {active ? <Text className="text-sm capitalize text-muted">{active.status}</Text> : null}
           {!online ? <Text className="text-sm text-muted">Calling needs a connection.</Text> : null}
-        </View>
-
-        <SegmentedControl
-          value={mask}
-          onChange={setMask}
-          options={[
-            { value: 'own', label: 'My number' },
-            { value: 'rotate', label: 'Rotate' },
-            { value: 'hide', label: 'Hide' },
-          ]}
-        />
-
-        <View className="flex-row items-center justify-between rounded-3xl bg-surface px-4 py-3">
-          <Text className="text-base text-foreground">Record this call</Text>
-          <Switch value={record} onValueChange={setRecord} />
         </View>
 
         {recentPeople.length > 0 ? (

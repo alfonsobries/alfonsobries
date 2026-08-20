@@ -1,5 +1,5 @@
 import { Image } from 'expo-image';
-import { Clock, PaperPlaneTilt, Plus, X } from 'phosphor-react-native';
+import { PaperPlaneTilt, Plus, X } from 'phosphor-react-native';
 import { useState } from 'react';
 import { Alert, Pressable, Text, TextInput, View } from 'react-native';
 
@@ -10,31 +10,14 @@ import { useIsOnline } from '@/offline/connectivity';
 
 type MessageComposerProperties = {
   sending: boolean;
-  onSend: (
-    body: string,
-    attachments: UploadedImage[],
-    scheduledAt: string | null,
-  ) => Promise<boolean>;
+  onSend: (body: string, attachments: UploadedImage[]) => Promise<boolean>;
 };
 
 const MAX_ATTACHMENTS = 5;
 
-function tomorrowNine(): string {
-  const date = new Date();
-  date.setDate(date.getDate() + 1);
-  date.setHours(9, 0, 0, 0);
-
-  return date.toISOString();
-}
-
-function inOneHour(): string {
-  return new Date(Date.now() + 60 * 60 * 1000).toISOString();
-}
-
 export function MessageComposer({ sending, onSend }: MessageComposerProperties) {
   const [text, setText] = useState('');
   const [attachments, setAttachments] = useState<UploadedImage[]>([]);
-  const [scheduledAt, setScheduledAt] = useState<string | null>(null);
   const { isUploading, pickAndUpload } = useImageUpload({ allowsEditing: false });
   const muted = useThemeColor('muted');
   const foreground = useThemeColor('foreground');
@@ -59,26 +42,16 @@ export function MessageComposer({ sending, onSend }: MessageComposerProperties) 
     }
   };
 
-  const handleSchedule = () => {
-    Alert.alert('Send when?', undefined, [
-      { text: 'Now', onPress: () => setScheduledAt(null) },
-      { text: 'In 1 hour', onPress: () => setScheduledAt(inOneHour()) },
-      { text: 'Tomorrow 9:00', onPress: () => setScheduledAt(tomorrowNine()) },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-  };
-
   const handleSend = async () => {
     if (!canSend) {
       return;
     }
 
-    const delivered = await onSend(text.trim(), attachments, scheduledAt);
+    const delivered = await onSend(text.trim(), attachments);
 
     if (delivered) {
       setText('');
       setAttachments([]);
-      setScheduledAt(null);
     }
   };
 
@@ -108,11 +81,6 @@ export function MessageComposer({ sending, onSend }: MessageComposerProperties) 
           ))}
         </View>
       ) : null}
-      {scheduledAt ? (
-        <Text className="px-1 text-xs text-muted">
-          Scheduled {new Date(scheduledAt).toLocaleString()}
-        </Text>
-      ) : null}
       <View className="flex-row items-end gap-2">
         <Pressable
           accessibilityRole="button"
@@ -137,14 +105,6 @@ export function MessageComposer({ sending, onSend }: MessageComposerProperties) 
             editable={!sending}
           />
         </View>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Schedule"
-          onPress={handleSchedule}
-          className="size-12 items-center justify-center rounded-full bg-surface-selected"
-        >
-          <Clock size={18} color={scheduledAt ? foreground : muted} />
-        </Pressable>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Send"
