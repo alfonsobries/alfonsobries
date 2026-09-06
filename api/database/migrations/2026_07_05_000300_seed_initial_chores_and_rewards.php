@@ -22,45 +22,45 @@ return new class extends Migration
         // Observers call KidPoints, which needs rewards.is_active from a
         // later migration.
         Model::withoutEvents(function (): void {
-        $chores = [
-            'regina' => [
-                ['Compartir', 'regina-compartir'],
-                ['Comer bien', 'regina-comer-bien'],
-                ['Ser amable', 'regina-ser-amable'],
-                ['Lavarse los dientes', 'regina-lavarse-los-dientes'],
-            ],
-            'andres' => [
-                ['Comer bien', 'andres-comer-bien'],
-                ['Ser ordenado', 'andres-ser-ordenado'],
-                ['Lavarse los dientes', 'andres-lavarse-los-dientes'],
-                ['Jugar en armonía', 'andres-jugar-en-armonia'],
-            ],
-        ];
+            $chores = [
+                'regina' => [
+                    ['Compartir', 'regina-compartir'],
+                    ['Comer bien', 'regina-comer-bien'],
+                    ['Ser amable', 'regina-ser-amable'],
+                    ['Lavarse los dientes', 'regina-lavarse-los-dientes'],
+                ],
+                'andres' => [
+                    ['Comer bien', 'andres-comer-bien'],
+                    ['Ser ordenado', 'andres-ser-ordenado'],
+                    ['Lavarse los dientes', 'andres-lavarse-los-dientes'],
+                    ['Jugar en armonía', 'andres-jugar-en-armonia'],
+                ],
+            ];
 
-        foreach ($chores as $member => $rows) {
-            foreach ($rows as [$name, $slug]) {
-                $chore = Chore::withTrashed()->firstOrCreate(
+            foreach ($chores as $member => $rows) {
+                foreach ($rows as [$name, $slug]) {
+                    $chore = Chore::withTrashed()->firstOrCreate(
+                        ['family_member' => $member, 'name' => $name],
+                        ['points' => 1],
+                    );
+
+                    $this->attachIllustration($chore, $slug);
+                }
+            }
+
+            $rewards = [
+                ['regina', 'Un postre', 15, 'regina-un-postre'],
+                ['andres', 'Un postre', 15, 'andres-un-postre'],
+            ];
+
+            foreach ($rewards as [$member, $name, $cost, $slug]) {
+                $reward = Reward::withTrashed()->firstOrCreate(
                     ['family_member' => $member, 'name' => $name],
-                    ['points' => 1],
+                    ['cost' => $cost],
                 );
 
-                $this->attachIllustration($chore, $slug);
+                $this->attachIllustration($reward, $slug);
             }
-        }
-
-        $rewards = [
-            ['regina', 'Un postre', 15, 'regina-un-postre'],
-            ['andres', 'Un postre', 15, 'andres-un-postre'],
-        ];
-
-        foreach ($rewards as [$member, $name, $cost, $slug]) {
-            $reward = Reward::withTrashed()->firstOrCreate(
-                ['family_member' => $member, 'name' => $name],
-                ['cost' => $cost],
-            );
-
-            $this->attachIllustration($reward, $slug);
-        }
         });
     }
 
