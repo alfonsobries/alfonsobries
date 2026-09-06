@@ -2,6 +2,7 @@
 
 use App\Models\Chore;
 use App\Models\Reward;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
@@ -18,6 +19,9 @@ return new class extends Migration
             return;
         }
 
+        // Observers call KidPoints, which needs rewards.is_active from a
+        // later migration.
+        Model::withoutEvents(function (): void {
         $chores = [
             'regina' => [
                 ['Compartir', 'regina-compartir'],
@@ -57,6 +61,7 @@ return new class extends Migration
 
             $this->attachIllustration($reward, $slug);
         }
+        });
     }
 
     public function down(): void
