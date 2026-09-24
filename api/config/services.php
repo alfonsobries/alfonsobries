@@ -40,6 +40,14 @@ return [
         'chat_id' => env('TELEGRAM_CHAT_ID'),
     ],
 
+    // The home assistant's own bot (separate from the notifications one above):
+    // people text it expenses and it answers through the same home chat.
+    'telegram-home' => [
+        'token' => env('TELEGRAM_HOME_BOT_TOKEN'),
+        // Sent back by Telegram on every webhook call; set by telegram:home-webhook.
+        'webhook_secret' => env('TELEGRAM_HOME_WEBHOOK_SECRET'),
+    ],
+
     'eas' => [
         // Shared secret that signs the OTA-published webhook (see OtaUpdateController).
         'notify_secret' => env('EAS_NOTIFY_SECRET'),

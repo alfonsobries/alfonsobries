@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 class TempFileController extends Controller
 {
     /**
-     * A presigned URL so the app can PUT an image straight to S3; the
+     * A presigned URL so the app can PUT an image (or a voice note) straight to S3; the
      * returned key is later handed to whatever resource attaches the file.
      */
     public function presign(Request $request): JsonResponse
@@ -20,8 +20,8 @@ class TempFileController extends Controller
         }
 
         $validated = $request->validate([
-            'content_type' => ['required', 'string', 'in:image/jpeg,image/png,image/webp'],
-            'extension' => ['required', 'string', 'in:jpg,jpeg,png,webp'],
+            'content_type' => ['required', 'string', 'in:image/jpeg,image/png,image/webp,audio/mp4,audio/m4a,audio/x-m4a'],
+            'extension' => ['required', 'string', 'in:jpg,jpeg,png,webp,m4a'],
         ]);
 
         $key = 'temp/uploads/'.Str::uuid7().'.'.$validated['extension'];

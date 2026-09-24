@@ -36,3 +36,13 @@ Broadcast::channel('conversation.{id}', function ($user, $id) {
     return $user->isFamilyMember()
         && Conversation::whereKey($id)->where('user_id', $user->id)->exists();
 });
+
+// A person's home chat — their own turns and the assistant's answers.
+Broadcast::channel('home.{id}', function ($user, $id) {
+    return $user->hasMood() && (int) $user->id === (int) $id;
+});
+
+// The couple's shared expenses: any change from either partner.
+Broadcast::channel('expenses', function ($user) {
+    return $user->hasMood();
+});
