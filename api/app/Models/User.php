@@ -30,6 +30,8 @@ class User extends Authenticatable
         'password',
         'apple_id',
         'family_member',
+        'telegram_chat_id',
+        'telegram_username',
     ];
 
     /**
@@ -41,6 +43,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'apple_id',
+        'telegram_chat_id',
     ];
 
     /**
@@ -52,6 +55,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'mood' => 'integer',
         'emotion' => KidEmotion::class,
+        'telegram_chat_id' => 'integer',
     ];
 
     /**
@@ -156,6 +160,14 @@ class User extends Authenticatable
         return self::whereIn('family_member', self::MOOD_MEMBERS)
             ->get()
             ->every(fn (self $parent): bool => $parent->mood > self::MOOD_NEUTRAL);
+    }
+
+    /**
+     * @return HasMany<HomeMessage, $this>
+     */
+    public function homeMessages(): HasMany
+    {
+        return $this->hasMany(HomeMessage::class);
     }
 
     /**

@@ -13,9 +13,13 @@ use App\Http\Controllers\ChoreLogController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DraftArticleController;
+use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\ExpenseSummaryController;
 use App\Http\Controllers\FamilyActivityController;
 use App\Http\Controllers\FamilyMoodController;
 use App\Http\Controllers\FavoriteIllustrationController;
+use App\Http\Controllers\HomeMessageController;
 use App\Http\Controllers\KidEmotionController;
 use App\Http\Controllers\LineCallController;
 use App\Http\Controllers\LineContactController;
@@ -27,6 +31,7 @@ use App\Http\Controllers\LineVoicemailController;
 use App\Http\Controllers\LineWebhookController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\OtaUpdateController;
+use App\Http\Controllers\PaymentAccountController;
 use App\Http\Controllers\PhoneReportController;
 use App\Http\Controllers\PointEntryController;
 use App\Http\Controllers\ProjectController;
@@ -35,6 +40,8 @@ use App\Http\Controllers\ResumeControler;
 use App\Http\Controllers\RewardController;
 use App\Http\Controllers\SlugHistoryController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\TelegramHomeWebhookController;
+use App\Http\Controllers\TelegramLinkController;
 use App\Http\Controllers\TempFileController;
 use App\Http\Controllers\TestNotificationController;
 use App\Http\Controllers\TypoFormController;
@@ -51,6 +58,9 @@ Route::post('/ota/published', OtaUpdateController::class)->name('ota.published')
 
 // Signed webhook (HMAC, no session) — privacynumber.io events for the private line.
 Route::post('/line/webhook', LineWebhookController::class)->name('line.webhook');
+
+// Secret-token webhook (no session) — Telegram updates for the home bot.
+Route::post('/telegram/home/webhook', TelegramHomeWebhookController::class)->name('telegram.home.webhook');
 
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('/apple', AppleAuthController::class)->name('apple');
@@ -156,6 +166,33 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/settings', [LineSettingsController::class, 'show'])->name('settings.show');
         Route::patch('/settings', [LineSettingsController::class, 'update'])->name('settings.update');
     });
+
+    Route::get('/home/messages', [HomeMessageController::class, 'index'])->name('home.messages.index');
+    Route::post('/home/messages', [HomeMessageController::class, 'store'])->name('home.messages.store');
+    Route::get('/home/messages/{homeMessage}', [HomeMessageController::class, 'show'])->name('home.messages.show');
+
+    Route::get('/expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+    Route::post('/expenses', [ExpenseController::class, 'store'])->name('expenses.store');
+    Route::get('/expenses/summary', ExpenseSummaryController::class)->name('expenses.summary');
+    Route::get('/expenses/{expense}', [ExpenseController::class, 'show'])->name('expenses.show');
+    Route::patch('/expenses/{expense}', [ExpenseController::class, 'update'])->name('expenses.update');
+    Route::delete('/expenses/{expense}', [ExpenseController::class, 'destroy'])->name('expenses.destroy');
+    Route::post('/expenses/{expense}/restore', [ExpenseController::class, 'restore'])->whereNumber('expense')->name('expenses.restore');
+
+    Route::get('/expense-categories', [ExpenseCategoryController::class, 'index'])->name('expense-categories.index');
+    Route::post('/expense-categories', [ExpenseCategoryController::class, 'store'])->name('expense-categories.store');
+    Route::put('/expense-categories/order', [ExpenseCategoryController::class, 'reorder'])->name('expense-categories.reorder');
+    Route::patch('/expense-categories/{expenseCategory}', [ExpenseCategoryController::class, 'update'])->name('expense-categories.update');
+    Route::delete('/expense-categories/{expenseCategory}', [ExpenseCategoryController::class, 'destroy'])->name('expense-categories.destroy');
+
+    Route::get('/payment-accounts', [PaymentAccountController::class, 'index'])->name('payment-accounts.index');
+    Route::post('/payment-accounts', [PaymentAccountController::class, 'store'])->name('payment-accounts.store');
+    Route::patch('/payment-accounts/{paymentAccount}', [PaymentAccountController::class, 'update'])->name('payment-accounts.update');
+    Route::delete('/payment-accounts/{paymentAccount}', [PaymentAccountController::class, 'destroy'])->name('payment-accounts.destroy');
+
+    Route::get('/telegram', [TelegramLinkController::class, 'show'])->name('telegram.show');
+    Route::post('/telegram', [TelegramLinkController::class, 'store'])->name('telegram.store');
+    Route::delete('/telegram', [TelegramLinkController::class, 'destroy'])->name('telegram.destroy');
 
     Route::post('/temp-files/presign', [TempFileController::class, 'presign'])->name('temp-files.presign');
 

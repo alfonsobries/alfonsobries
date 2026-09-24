@@ -199,6 +199,52 @@ export default function AppLayout() {
             name="line/live"
             options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
           />
+          <Stack.Screen
+            name="expenses/index"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="expenses/stats"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="expenses/edit"
+            options={{ presentation: 'modal', headerShown: true }}
+          />
+          <Stack.Screen
+            name="expenses/categories"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="expenses/category"
+            options={{
+              presentation: 'formSheet',
+              sheetAllowedDetents: [0.6],
+              sheetGrabberVisible: true,
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="expenses/accounts"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="expenses/account"
+            options={{
+              presentation: 'formSheet',
+              sheetAllowedDetents: [0.9],
+              sheetGrabberVisible: true,
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="telegram"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="photo"
+            options={{ presentation: 'fullScreenModal', headerShown: false, animation: 'fade' }}
+          />
         </Stack>
       </KidEmotionsProvider>
     </MoodsProvider>
