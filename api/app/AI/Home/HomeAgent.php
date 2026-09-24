@@ -2,7 +2,6 @@
 
 namespace App\AI\Home;
 
-use App\AI\Home\Tools\CreatePaymentAccount;
 use App\AI\Home\Tools\DeleteExpense;
 use App\AI\Home\Tools\FindExpenses;
 use App\AI\Home\Tools\RecordExpenses;
@@ -10,6 +9,7 @@ use App\AI\Home\Tools\SummarizeSpending;
 use App\AI\Home\Tools\UpdateExpense;
 use App\Expenses\ExpenseEmoji;
 use App\Expenses\ExpenseRecorder;
+use App\Expenses\PaymentAccountResolver;
 use App\Expenses\SpendingReport;
 use App\Models\ExpenseCategory;
 use App\Models\PaymentAccount;
@@ -74,7 +74,7 @@ class HomeAgent implements Agent, Conversational, HasTools
         - Currency is MXN unless they clearly say otherwise (dollars, USD, euros).
         - paid_by is the speaker ({$this->turn->user->family_member}) unless they say the spouse paid ("Saida pagó…").
         - Pick the closest category id. Only use "Otros" when nothing fits.
-        - Payment account: only set it when they mention how they paid or the receipt shows it. "Mi amex" means the speaker's Amex; "la de Saida" means hers. If they name a card or account that is not in the list, call create_payment_account first, then record the expense with the new id.
+        - Payment account: only set it when they mention how they paid or the receipt shows it. "Mi amex" means the speaker's Amex; "la de Saida" means hers. If they name a card or account that is not in the list, pass payment_account_name (plus its kind and owner) instead of an id; it is created on the spot. Never drop a payment method they mentioned.
         - Dates: "ayer", "el sábado", "el 3" are relative to today; pass spent_at as a local date. Leave it out for today.
         - For the emoji, pass a name from the catalog that depicts the item (coffee for a latte, fuel for gas, groceries for the supermarket).
         - Corrections like "no, eran 60" or "era con la de débito" refer to the latest expense unless they say otherwise: call update_expense with its id. "Bórralo" / "me equivoqué" means delete_expense. The ids of recent expenses appear in the conversation in brackets; for older ones, use find_expenses.
@@ -110,10 +110,9 @@ class HomeAgent implements Agent, Conversational, HasTools
         $recorder = app(ExpenseRecorder::class);
 
         return [
-            new RecordExpenses($this->turn, $recorder),
+            new RecordExpenses($this->turn, $recorder, app(PaymentAccountResolver::class)),
             new UpdateExpense($this->turn, $recorder),
             new DeleteExpense($this->turn, $recorder),
-            new CreatePaymentAccount,
             new SummarizeSpending(app(SpendingReport::class)),
             new FindExpenses,
         ];

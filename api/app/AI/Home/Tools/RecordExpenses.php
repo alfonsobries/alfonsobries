@@ -4,6 +4,8 @@ namespace App\AI\Home\Tools;
 
 use App\AI\Home\HomeTurn;
 use App\Expenses\ExpenseRecorder;
+use App\Expenses\PaymentAccountResolver;
+use App\Models\PaymentAccount;
 use App\Models\User;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use InvalidArgumentException;
@@ -16,6 +18,7 @@ class RecordExpenses implements Tool
     public function __construct(
         private readonly HomeTurn $turn,
         private readonly ExpenseRecorder $recorder,
+        private readonly PaymentAccountResolver $accounts,
     ) {}
 
     public function name(): string
@@ -35,8 +38,18 @@ class RecordExpenses implements Tool
 
         foreach ((array) $request->array('items') as $index => $item) {
             try {
+                $item = (array) $item;
+
+                if (empty($item['payment_account_id']) && filled($item['payment_account_name'] ?? null)) {
+                    $item['payment_account_id'] = $this->accounts->resolve(
+                        (string) $item['payment_account_name'],
+                        $item['payment_account_kind'] ?? null,
+                        $item['payment_account_owner'] ?? null,
+                    )->id;
+                }
+
                 $expense = $this->recorder->create(
-                    ExpenseRecorder::only((array) $item),
+                    ExpenseRecorder::only($item),
                     $this->turn->user,
                     $this->turn->reply,
                     $this->turn->source(),
@@ -60,7 +73,10 @@ class RecordExpenses implements Tool
                 'description' => $schema->string()->description('Short, natural label in the person\'s language, e.g. "Café en Starbucks". Max 60 chars.')->required(),
                 'merchant' => $schema->string()->description('Store or business name when known.'),
                 'category_id' => $schema->integer()->description('Id from the category list.')->required(),
-                'payment_account_id' => $schema->integer()->description('Id from the account list, only when the payment method was mentioned or is on the receipt.'),
+                'payment_account_id' => $schema->integer()->description('Id from the account list, when the payment method was mentioned or is on the receipt and it is in the list.'),
+                'payment_account_name' => $schema->string()->description('When they mention a card or account that is NOT in the list (e.g. "Amex", "BBVA débito"): its short name. It gets created.'),
+                'payment_account_kind' => $schema->string()->enum(PaymentAccount::KINDS)->description('Kind of that new account.'),
+                'payment_account_owner' => $schema->string()->enum(User::MOOD_MEMBERS)->description('Whose that new account is ("mi amex" = the speaker). Omit when shared.'),
                 'emoji' => $schema->string()->description('Name from the emoji catalog that best depicts the item.'),
                 'paid_by' => $schema->string()->enum(User::MOOD_MEMBERS)->description('Who paid. Defaults to the speaker.'),
                 'spent_at' => $schema->string()->description('Local date (YYYY-MM-DD) or datetime when it was not today/now.'),

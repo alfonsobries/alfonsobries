@@ -55,6 +55,36 @@ it('records an expense from a chat message and links it to the reply', function 
     Event::assertDispatched(ExpensesChanged::class);
 });
 
+it('creates a card the first time it is mentioned and reuses it after', function () {
+    $alfonso = User::factory()->create(['family_member' => 'alfonso']);
+    $coffee = ExpenseCategory::factory()->create();
+
+    $item = [
+        'amount' => 100,
+        'description' => 'Café',
+        'category_id' => $coffee->id,
+        'payment_account_name' => 'Amex',
+        'payment_account_kind' => PaymentAccount::KIND_CREDIT_CARD,
+        'payment_account_owner' => 'alfonso',
+    ];
+
+    HomeAgent::fake([
+        new ToolCall('call_1', 'record_expenses', ['items' => [$item]]),
+        'Listo',
+        new ToolCall('call_2', 'record_expenses', ['items' => [[...$item, 'payment_account_name' => 'mi amex']]]),
+        'Listo',
+    ]);
+
+    $this->actingAs($alfonso)->postJson(route('api.home.messages.store'), ['content' => '100 con mi amex'])->assertCreated();
+    $this->actingAs($alfonso)->postJson(route('api.home.messages.store'), ['content' => 'otros 100 con mi amex'])->assertCreated();
+
+    $account = PaymentAccount::sole();
+
+    expect($account->name)->toBe('Amex')
+        ->and($account->owner)->toBe('alfonso')
+        ->and(Expense::where('payment_account_id', $account->id)->count())->toBe(2);
+});
+
 it('tells the model which expenses earlier answers touched so it can correct them', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
     $expense = Expense::factory()->create(['description' => 'Café', 'amount' => 50]);
