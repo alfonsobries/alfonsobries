@@ -65,6 +65,7 @@ export const HomeComposer = forwardRef<HomeComposerHandle, HomeComposerPropertie
     const [text, setText] = useState('');
     const [images, setImages] = useState<UploadedImage[]>([]);
     const inputRef = useRef<TextInput>(null);
+    const justSent = useRef(false);
     const { isUploading, pickAndUpload } = useImageUpload({ allowsEditing: false });
     const voice = useVoiceRecorder({ onLimit: () => void handleFinishRecording() });
 
@@ -122,6 +123,14 @@ export const HomeComposer = forwardRef<HomeComposerHandle, HomeComposerPropertie
       onSend({ text, images, voiceNote: null });
       setText('');
       setImages([]);
+      // iOS commits a pending autocorrection right after the tap and writes
+      // the sent text back; ignore edits for a moment and clear the field.
+      justSent.current = true;
+      inputRef.current?.clear();
+      setTimeout(() => {
+        justSent.current = false;
+        inputRef.current?.clear();
+      }, 250);
     };
 
     const handleRecord = async () => {
@@ -241,7 +250,11 @@ export const HomeComposer = forwardRef<HomeComposerHandle, HomeComposerPropertie
                 placeholderTextColor={muted}
                 multiline
                 value={text}
-                onChangeText={setText}
+                onChangeText={(value) => {
+                  if (!justSent.current) {
+                    setText(value);
+                  }
+                }}
                 accessibilityLabel="Mensaje"
               />
             )}

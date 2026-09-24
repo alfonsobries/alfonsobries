@@ -197,7 +197,6 @@ export default function CasaScreen() {
             }
             onEndReached={() => void chat.loadMore()}
             onEndReachedThreshold={0.4}
-            maintainVisibleContentPosition={{ minIndexForVisible: 0 }}
           />
         )}
       </View>
