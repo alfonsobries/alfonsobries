@@ -22,7 +22,8 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 const ICONS = {
-  home: 'House',
+  casa: 'House',
+  home: 'UserCircle',
   chat: 'ChatCircleDots',
   family: 'UsersThree',
   settings: 'GearSix',

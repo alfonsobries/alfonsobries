@@ -15,8 +15,16 @@ export default function AppTabs() {
       iconColor={{ default: muted, selected: label }}
       labelStyle={{ selected: { color: label } }}
     >
+      <NativeTabs.Trigger name="(casa)">
+        <NativeTabs.Trigger.Label>Casa</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon
+          src={require('@/assets/images/tabIcons/casa.png')}
+          renderingMode="template"
+        />
+      </NativeTabs.Trigger>
+
       <NativeTabs.Trigger name="(home)">
-        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Label>Me</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           src={require('@/assets/images/tabIcons/home.png')}
           renderingMode="template"

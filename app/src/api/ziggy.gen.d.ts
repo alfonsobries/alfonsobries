@@ -8,6 +8,7 @@ declare module 'ziggy-js' {
     "api.status": [],
     "api.ota.published": [],
     "api.line.webhook": [],
+    "api.telegram.home.webhook": [],
     "api.auth.apple": [],
     "api.auth.logout": [],
     "api.user": [],
@@ -326,6 +327,81 @@ declare module 'ziggy-js' {
     ],
     "api.line.settings.show": [],
     "api.line.settings.update": [],
+    "api.home.messages.index": [],
+    "api.home.messages.store": [],
+    "api.home.messages.show": [
+        {
+            "name": "homeMessage",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.expenses.index": [],
+    "api.expenses.store": [],
+    "api.expenses.summary": [],
+    "api.expenses.show": [
+        {
+            "name": "expense",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.expenses.update": [
+        {
+            "name": "expense",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.expenses.destroy": [
+        {
+            "name": "expense",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.expenses.restore": [
+        {
+            "name": "expense",
+            "required": true
+        }
+    ],
+    "api.expense-categories.index": [],
+    "api.expense-categories.store": [],
+    "api.expense-categories.reorder": [],
+    "api.expense-categories.update": [
+        {
+            "name": "expenseCategory",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.expense-categories.destroy": [
+        {
+            "name": "expenseCategory",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.payment-accounts.index": [],
+    "api.payment-accounts.store": [],
+    "api.payment-accounts.update": [
+        {
+            "name": "paymentAccount",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.payment-accounts.destroy": [
+        {
+            "name": "paymentAccount",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.telegram.show": [],
+    "api.telegram.store": [],
+    "api.telegram.destroy": [],
     "api.temp-files.presign": [],
     "api.broadcasting.auth": [],
     "api.articles.index": [],

@@ -1,5 +1,14 @@
 import { router, Stack } from 'expo-router';
-import { ArrowsClockwise, BellRinging, PaintBrush, Robot, SignOut } from 'phosphor-react-native';
+import {
+  ArrowsClockwise,
+  BellRinging,
+  CreditCard,
+  PaintBrush,
+  PaperPlaneTilt,
+  Robot,
+  SignOut,
+  SquaresFour,
+} from 'phosphor-react-native';
 import { useState } from 'react';
 import { Alert, ScrollView } from 'react-native';
 
@@ -79,6 +88,27 @@ export default function SettingsScreen() {
             detail={syncDetail}
             loading={syncing}
             onPress={handleSync}
+          />
+        </SettingsSection>
+
+        <SettingsSection title="Casa">
+          <SettingsRow
+            icon={SquaresFour}
+            label="Categorías"
+            showChevron
+            onPress={() => router.push('/expenses/categories')}
+          />
+          <SettingsRow
+            icon={CreditCard}
+            label="Cuentas y tarjetas"
+            showChevron
+            onPress={() => router.push('/expenses/accounts')}
+          />
+          <SettingsRow
+            icon={PaperPlaneTilt}
+            label="Telegram"
+            showChevron
+            onPress={() => router.push('/telegram')}
           />
         </SettingsSection>
 

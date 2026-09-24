@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "alfonsobries",
     "userInterfaceStyle": "automatic",
-    "runtimeVersion": "1.15.0",
+    "runtimeVersion": "1.16.0",
     "updates": {
       "url": "https://u.expo.dev/fbd135b1-6baa-4be2-b789-254386da114d"
     },
@@ -22,7 +22,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "UIBackgroundModes": ["audio"],
-        "NSMicrophoneUsageDescription": "The private line uses the microphone for live calls in the provider panel."
+        "NSMicrophoneUsageDescription": "Records voice notes for the home chat and handles live calls on the private line."
       },
       "appleTeamId": "TY2LB9Y7DK"
     },
@@ -87,6 +87,13 @@
           "NSHealthShareUsageDescription": "Lee tus minutos de ejercicio para marcar el hábito del día.",
           "NSHealthUpdateUsageDescription": "La app no escribe datos de salud; el sistema requiere declarar este permiso.",
           "background": false
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Records voice notes for the home chat and handles live calls on the private line.",
+          "recordAudioAndroid": true
         }
       ]
     ],

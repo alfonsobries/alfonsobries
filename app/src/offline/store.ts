@@ -134,4 +134,11 @@ export const cacheKeys = {
   lineCalls: 'line-calls',
   lineVoicemails: 'line-voicemails',
   lineSettings: 'line-settings',
+  homeChat: 'home-chat',
+  expenseCategories: 'expense-categories',
+  paymentAccounts: 'payment-accounts',
+  telegramLink: 'telegram-link',
+  /** The first page of expenses for a filter set (serialized). */
+  expenses: (filters: string) => `expenses-${filters}`,
+  spendingSummary: (period: string) => `spending-summary-${period}`,
 } as const;
