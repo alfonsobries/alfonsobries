@@ -20,7 +20,7 @@ it('lists the activities cheapest first with the minutes saved up', function () 
 
 it('counts the days since the last confirmed report', function () {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
-    PhoneReport::factory()->create(['date' => now()->subDays(4)->toDateString()]);
+    PhoneReport::factory()->create(['date' => now(config('family.timezone'))->subDays(4)->toDateString()]);
 
     $this->actingAs($alfonso)
         ->getJson(route('api.family-activities.index'))
