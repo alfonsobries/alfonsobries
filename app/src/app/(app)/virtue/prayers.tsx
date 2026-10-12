@@ -54,7 +54,7 @@ export default function PrayersScreen() {
     setFinishing(true);
 
     const date = localDate();
-    // Same as the rosary: the prayers ship with the app, so finishing them is
+    // The prayers ship with the app, so finishing them is
     // recorded locally first and reconciled with the API afterwards.
     cacheVirtueDay(date, { prayers_completed: true });
 

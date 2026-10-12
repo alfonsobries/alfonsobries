@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { Check, Cross, HandsPraying } from 'phosphor-react-native';
+import { Check, HandsPraying } from 'phosphor-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 
@@ -7,13 +7,11 @@ import { useApiRouter } from '@/api/router';
 import {
   cacheVirtueDay,
   completePrayers,
-  completeRosary,
   fetchVirtueSummary,
   localDate,
   queueHabit,
   queuePrayers,
   queueResolution,
-  queueRosary,
   setHabit,
   setResolution,
   virtueDedupeKey,
@@ -36,7 +34,6 @@ type DayPatch = Partial<Omit<VirtueDay, 'date'>>;
 const EMPTY_DAY = (date: string): VirtueDay => ({
   date,
   prayers_completed: false,
-  rosary_completed: false,
   resolution: null,
   habits: { exercise: false, diet: false, sun: false, reading: false },
   exercise_minutes: null,
@@ -164,29 +161,11 @@ export default function VirtueDayScreen() {
     void setPrayers(true);
   }
 
-  function markRosary(): void {
-    if (isToday) {
-      router.back();
-      router.push('/virtue/rosary');
-      return;
-    }
-
-    void setRosary(true);
-  }
-
   function setPrayers(completed: boolean): Promise<void> {
     return save(
       { prayers_completed: completed },
       () => completePrayers(route, date, completed),
       () => queuePrayers({ date, completed }, { dedupeKey: virtueDedupeKey.prayers(date) }),
-    );
-  }
-
-  function setRosary(completed: boolean): Promise<void> {
-    return save(
-      { rosary_completed: completed },
-      () => completeRosary(route, date, completed),
-      () => queueRosary({ date, completed }, { dedupeKey: virtueDedupeKey.rosary(date) }),
     );
   }
 
@@ -200,37 +179,6 @@ export default function VirtueDayScreen() {
   return (
     <Sheet title={title} subtitle={isToday ? 'Today' : 'Fill in what happened'} scrollable>
       <View className="gap-4 pt-2">
-        <View className="flex-row items-center gap-3">
-          <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
-            <Cross size={22} color={tint} weight="fill" />
-          </View>
-          <View className="flex-1">
-            <Text className="text-base font-semibold text-foreground">Santo Rosario</Text>
-            <Text className="text-sm text-muted">
-              {day.rosary_completed
-                ? 'Completed'
-                : isToday
-                  ? 'Not prayed yet'
-                  : 'Mark it if it happened'}
-            </Text>
-          </View>
-          {day.rosary_completed ? (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Unmark rosary"
-              disabled={saving}
-              onPress={() => unmark('el rosario', () => setRosary(false))}
-              className="size-9 items-center justify-center rounded-full bg-primary active:opacity-70"
-            >
-              <Check size={18} color={onPrimary} weight="bold" />
-            </Pressable>
-          ) : (
-            <Button size="sm" disabled={saving} onPress={markRosary}>
-              {isToday ? 'Pray' : 'Prayed'}
-            </Button>
-          )}
-        </View>
-
         <View className="flex-row items-center gap-3">
           <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
             <HandsPraying size={22} color={tint} weight="fill" />

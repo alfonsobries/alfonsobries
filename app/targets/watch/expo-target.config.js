@@ -9,5 +9,5 @@ module.exports = {
   colors: {
     $accent: '#ffd78b',
   },
-  frameworks: ['SwiftUI', 'AVFoundation'],
+  frameworks: ['SwiftUI'],
 };

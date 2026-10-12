@@ -10,8 +10,7 @@ use Illuminate\Support\Carbon;
 
 /**
  * Computes the practice's running stats: the headline streak, one score per
- * area, and the rosary counters. Spirit scores day by day — the rosary and
- * the prayers only ever add, a missed resolution outweighs a full prayer
+ * area. Spirit scores day by day — the prayers only ever add, a missed resolution outweighs a full prayer
  * day, an idle day drains one point — with checkpoint floors so every lapse
  * is a setback, never a restart. Body and mind score from their habit
  * entries — body also collects the daily exercise routine — and a missed
@@ -43,7 +42,6 @@ class VirtueStats
             'next_stage_at' => $spirit['next_stage_at'],
             'tree_stage' => $spirit['stage'],
             'tree_stage_count' => $spirit['stage_count'],
-            'rosary' => $this->rosary(),
             'areas' => [
                 VirtueArea::Body->value => $this->entryArea(VirtueArea::Body),
                 VirtueArea::Mind->value => $this->entryArea(VirtueArea::Mind),
@@ -70,25 +68,6 @@ class VirtueStats
             : Carbon::parse((string) $lastMissed)->addDay();
 
         return max(0, (int) $start->startOfDay()->diffInDays(now()->startOfDay()) + 1);
-    }
-
-    /**
-     * @return array<string, int>
-     */
-    private function rosary(): array
-    {
-        $dates = VirtueDay::whereNotNull('rosary_completed_at')
-            ->orderBy('date')
-            ->pluck('date')
-            ->map(fn ($date): string => Carbon::parse((string) $date)->toDateString());
-
-        $month = now()->format('Y-m');
-
-        return [
-            'total' => $dates->count(),
-            'month' => $dates->filter(fn (string $date): bool => str_starts_with($date, $month))->count(),
-            'streak' => $this->activityStreak($dates->all()),
-        ];
     }
 
     /**
@@ -178,8 +157,7 @@ class VirtueStats
 
     /**
      * The spirit score walks every calendar day from the first tracked date
-     * through today: the rosary earns two, the prayers one, a kept resolution
-     * one; a missed resolution costs three, and a past day with nothing at all
+     * through today: the prayers earn three, a kept resolution one; a missed resolution costs three, and a past day with nothing at all
      * costs one. Checkpoint floors apply and points never go negative.
      *
      * @return array<string, int>
@@ -187,7 +165,7 @@ class VirtueStats
     private function spiritArea(int $streak): array
     {
         $days = VirtueDay::orderBy('date')
-            ->get(['date', 'resolution', 'prayers_completed_at', 'rosary_completed_at'])
+            ->get(['date', 'resolution', 'prayers_completed_at'])
             ->keyBy(fn (VirtueDay $day): string => $day->date->toDateString());
 
         if ($days->isEmpty()) {
@@ -209,10 +187,6 @@ class VirtueStats
             $delta = 0;
 
             if ($day !== null) {
-                if ($day->rosary_completed_at !== null) {
-                    $delta += VirtueDay::ROSARY_POINTS;
-                }
-
                 if ($day->prayers_completed_at !== null) {
                     $delta += VirtueDay::PRAYERS_POINTS;
                 }

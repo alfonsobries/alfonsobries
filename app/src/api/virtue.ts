@@ -16,19 +16,12 @@ export type VirtueHabit = 'exercise' | 'diet' | 'sun' | 'reading';
 export type VirtueDay = {
   date: string;
   prayers_completed: boolean;
-  rosary_completed: boolean;
   resolution: Resolution | null;
   habits: Record<VirtueHabit, boolean>;
   /** Measured exercise for the day (Apple Health); a full hour earns a second point. */
   exercise_minutes: number | null;
   /** A big session — measured hour or marked by hand — worth a second point. */
   exercise_big: boolean;
-};
-
-export type RosaryStats = {
-  total: number;
-  month: number;
-  streak: number;
 };
 
 export type VirtueAreaStats = {
@@ -54,7 +47,6 @@ export type VirtueStats = {
   /** Compact UI icon: the arbol layer at the overall progress stage. */
   tree_stage: number;
   tree_stage_count: number;
-  rosary: RosaryStats;
   areas: Record<VirtueArea, VirtueAreaStats>;
 };
 
@@ -108,19 +100,6 @@ export async function setHabit(
   return { day: data.data, stats: data.stats };
 }
 
-export async function completeRosary(
-  route: ApiRoute,
-  date: string,
-  completed = true,
-): Promise<{ day: VirtueDay; stats: VirtueStats }> {
-  const { data } = await apiClient.post<{ data: VirtueDay; stats: VirtueStats }>(
-    route('api.virtue.rosary.store'),
-    { date, completed },
-  );
-
-  return { day: data.data, stats: data.stats };
-}
-
 export async function completePrayers(
   route: ApiRoute,
   date: string,
@@ -153,13 +132,6 @@ export const queuePrayers = defineOfflineMutation<{ date: string; completed: boo
   },
 );
 
-export const queueRosary = defineOfflineMutation<{ date: string; completed: boolean }>(
-  'virtue.rosary',
-  async ({ date, completed }, route) => {
-    await completeRosary(route, date, completed);
-  },
-);
-
 export const queueHabit = defineOfflineMutation<{
   date: string;
   habit: VirtueHabit;
@@ -173,7 +145,6 @@ export const queueHabit = defineOfflineMutation<{
 export const virtueDedupeKey = {
   resolution: (date: string) => `virtue.resolution:${date}`,
   prayers: (date: string) => `virtue.prayers:${date}`,
-  rosary: (date: string) => `virtue.rosary:${date}`,
   habit: (date: string, habit: VirtueHabit) => `virtue.habit:${date}:${habit}`,
 };
 
@@ -206,7 +177,6 @@ export function withVirtueDay(
   const next: VirtueDay = {
     date,
     prayers_completed: existing?.prayers_completed ?? false,
-    rosary_completed: existing?.rosary_completed ?? false,
     resolution: existing?.resolution ?? null,
     habits: existing?.habits ?? EMPTY_HABITS,
     exercise_minutes: existing?.exercise_minutes ?? null,

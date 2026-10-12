@@ -2,7 +2,6 @@ import {
   Barbell,
   BookOpen,
   Brain,
-  Cross,
   ForkKnife,
   HandsPraying,
   Sun,
@@ -67,16 +66,9 @@ export const AREA_HABITS: Record<VirtueArea, AreaHabitDefinition[]> = {
   mind: [{ ...ENTRY_HABITS[3], isDone: (day) => day.habits.reading }],
   spirit: [
     {
-      key: 'rosary',
-      label: 'Santo Rosario',
-      anchor: 'The main weapon',
-      Icon: Cross,
-      isDone: (day) => day.rosary_completed,
-    },
-    {
       key: 'prayers',
       label: 'Daily prayers',
-      anchor: 'The daily sequence',
+      anchor: 'The main weapon',
       Icon: HandsPraying,
       isDone: (day) => day.prayers_completed,
     },
@@ -91,7 +83,7 @@ export const AREA_HABITS: Record<VirtueArea, AreaHabitDefinition[]> = {
 };
 
 /** Everything markable in a day — the denominator of the daily checklist. */
-export const DAILY_GOAL_COUNT = 7;
+export const DAILY_GOAL_COUNT = 6;
 
 export function completedToday(day: VirtueDay | undefined): number {
   if (!day) {
@@ -99,7 +91,6 @@ export function completedToday(day: VirtueDay | undefined): number {
   }
 
   return [
-    day.rosary_completed,
     day.prayers_completed,
     day.habits.exercise,
     day.habits.diet,

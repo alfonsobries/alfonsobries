@@ -30,7 +30,6 @@ export function useWatchSync(): void {
 
       const context: Record<string, string> = {
         token,
-        rosaryUrl: route('api.virtue.rosary.store'),
         prayersUrl: route('api.virtue.prayers.store'),
         workoutIndexUrl: route('api.workout.index'),
         // The watch fills in the day and the exercise it is marking.
