@@ -2,7 +2,7 @@ import SwiftUI
 import WidgetKit
 
 @main
-struct RosarioComplicationBundle: WidgetBundle {
+struct PrayersComplicationBundle: WidgetBundle {
     var body: some Widget {
         PrayerShortcut()
     }
@@ -12,11 +12,12 @@ struct RosarioComplicationBundle: WidgetBundle {
 /// worth refreshing, it exists so praying is one tap away from the wrist.
 struct PrayerShortcut: Widget {
     var body: some WidgetConfiguration {
+        // The kind is the identity watch faces store; renaming it would drop the complication from them.
         StaticConfiguration(kind: "RosarioShortcut", provider: ShortcutProvider()) { _ in
             ShortcutView()
         }
         .configurationDisplayName("Oración")
-        .description("Abre el rosario y las oraciones del día.")
+        .description("Abre las oraciones del día.")
         .supportedFamilies([
             .accessoryCircular,
             .accessoryCorner,
@@ -72,7 +73,7 @@ struct ShortcutView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     Text("Oración")
                         .font(.headline)
-                    Text("Rosario y Auxilium")
+                    Text("Auxilium")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }

@@ -34,7 +34,7 @@ type VoiceRecorderOptions = {
 /**
  * Records a voice note: m4a, mono, with live levels for a waveform. The audio
  * session only allows recording while a note is being made, so playback
- * elsewhere in the app (the rosary, voicemails) keeps its usual behaviour.
+ * elsewhere in the app (voicemails) keeps its usual behaviour.
  */
 export function useVoiceRecorder({ onLimit }: VoiceRecorderOptions = {}) {
   const recorder = useAudioRecorder(VOICE_PRESET);

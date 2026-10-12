@@ -3,7 +3,7 @@ import UserNotifications
 import WatchKit
 
 @main
-struct RosarioApp: App {
+struct AlfonsoWatchApp: App {
     @WKApplicationDelegateAdaptor(WatchDelegate.self) private var delegate
     @StateObject private var router = WatchRouter.shared
 
@@ -17,8 +17,6 @@ struct RosarioApp: App {
                 HomeView()
                     .navigationDestination(for: WatchRoute.self) { route in
                         switch route {
-                        case let .mysterySet(key):
-                            SetView(setKey: key)
                         case .prayers:
                             PrayersView()
                         case .benedict:
@@ -37,7 +35,6 @@ struct RosarioApp: App {
 }
 
 enum WatchRoute: Hashable {
-    case mysterySet(String)
     case prayers
     case benedict
     case exercises
@@ -79,16 +76,12 @@ final class WatchDelegate: NSObject, WKApplicationDelegate, UNUserNotificationCe
     }
 }
 
-/// The day on the wrist: today's mysteries, the daily prayers and the exercise
-/// routine, with the other sets one tap away.
+/// The day on the wrist: the daily prayers and the exercise routine, with
+/// San Benito one tap away.
 struct HomeView: View {
-    private let todayKey = RosaryLibrary.todayKey
-
     var body: some View {
         List {
             Section {
-                SetRow(setKey: todayKey, isToday: true)
-
                 NavigationLink(value: WatchRoute.prayers) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Oraciones del día")
@@ -114,14 +107,6 @@ struct HomeView: View {
             }
 
             Section {
-                ForEach(orderedOtherKeys, id: \.self) { key in
-                    SetRow(setKey: key, isToday: false)
-                }
-            } header: {
-                Text("Otros misterios")
-            }
-
-            Section {
                 NavigationLink(value: WatchRoute.benedict) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("San Benito")
@@ -137,62 +122,5 @@ struct HomeView: View {
         }
         .navigationTitle("Alfonso")
     }
-
-    private var orderedOtherKeys: [String] {
-        ["gozosos", "luminosos", "dolorosos", "gloriosos"].filter { $0 != todayKey }
-    }
 }
 
-private struct SetRow: View {
-    let setKey: String
-    let isToday: Bool
-
-    var body: some View {
-        let set = RosaryLibrary.set(for: setKey)
-
-        NavigationLink(value: WatchRoute.mysterySet(setKey)) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(set.name)
-                    .font(.headline)
-                    .foregroundStyle(isToday ? Color.accentColor : .primary)
-                Text(set.daysLabel)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
-}
-
-/// One mystery set: pray by hand or with the voice.
-struct SetView: View {
-    let setKey: String
-
-    var body: some View {
-        let set = RosaryLibrary.set(for: setKey)
-
-        ScrollView {
-            VStack(spacing: 10) {
-                Text(set.name)
-                    .font(.headline)
-                    .multilineTextAlignment(.center)
-
-                NavigationLink {
-                    PrayView(session: RosarySession(setKey: setKey))
-                } label: {
-                    Label("Rezar", systemImage: "hands.sparkles.fill")
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(.accentColor)
-                .foregroundStyle(.black)
-
-                NavigationLink {
-                    AudioPlayView(session: RosarySession(setKey: setKey))
-                } label: {
-                    Label("Con audio", systemImage: "airpods.gen3")
-                }
-            }
-            .padding(.horizontal, 4)
-        }
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}

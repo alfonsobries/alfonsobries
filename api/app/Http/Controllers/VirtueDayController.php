@@ -75,16 +75,6 @@ class VirtueDayController extends Controller
         return $this->completeModule($request, 'prayers_completed_at');
     }
 
-    /**
-     * Record that the rosary was prayed — or clear a mistaken mark.
-     * Completing is idempotent: repeating the rosary keeps the first
-     * completion time.
-     */
-    public function completeRosary(Request $request): JsonResponse
-    {
-        return $this->completeModule($request, 'rosary_completed_at');
-    }
-
     private function completeModule(Request $request, string $column): JsonResponse
     {
         if ($response = $this->guard($request)) {
@@ -229,7 +219,6 @@ class VirtueDayController extends Controller
         return [
             'date' => $day->date->toDateString(),
             'prayers_completed' => $day->prayers_completed_at !== null,
-            'rosary_completed' => $day->rosary_completed_at !== null,
             'resolution' => $day->resolution,
             'habits' => collect(VirtueHabit::values())
                 ->mapWithKeys(fn (string $habit): array => [$habit => $completed->has($habit)])

@@ -6,8 +6,6 @@ enum WatchBundle {
     static func url(name: String, ext: String) -> URL? {
         Bundle.main.url(forResource: name, withExtension: ext)
             ?? Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "Resources")
-            ?? Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "Audio")
-            ?? Bundle.main.url(forResource: name, withExtension: ext, subdirectory: "Resources/Audio")
     }
 
     static func decode<T: Decodable>(_ type: T.Type, from name: String) -> T {

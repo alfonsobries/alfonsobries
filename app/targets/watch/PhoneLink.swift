@@ -3,7 +3,7 @@ import Security
 import WatchConnectivity
 
 /// Receives the auth context pushed from the iPhone and keeps it stored, so
-/// the watch can mark the rosary and the daily prayers against the API
+/// the watch can mark the daily prayers against the API
 /// entirely on its own.
 final class PhoneLink: NSObject, WCSessionDelegate {
     static let shared = PhoneLink()
@@ -35,10 +35,6 @@ final class PhoneLink: NSObject, WCSessionDelegate {
         }
 
         Keychain.set(token, for: "api-token")
-
-        if let url = context["rosaryUrl"] as? String {
-            UserDefaults.standard.set(url, forKey: VirtueAPI.Module.rosary.urlKey)
-        }
 
         if let url = context["prayersUrl"] as? String {
             UserDefaults.standard.set(url, forKey: VirtueAPI.Module.prayers.urlKey)

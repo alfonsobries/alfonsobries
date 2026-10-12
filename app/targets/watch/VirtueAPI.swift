@@ -4,7 +4,6 @@ import Foundation
 /// sent (offline, out of pocket) wait in a queue and flush on the next run.
 enum VirtueAPI {
     enum Module: String, CaseIterable {
-        case rosary
         case prayers
 
         var urlKey: String { "\(rawValue)-url" }
