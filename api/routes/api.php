@@ -10,6 +10,7 @@ use App\Http\Controllers\BehaviorLogController;
 use App\Http\Controllers\ChatMessageController;
 use App\Http\Controllers\ChoreController;
 use App\Http\Controllers\ChoreLogController;
+use App\Http\Controllers\ClimateController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\DraftArticleController;
@@ -165,6 +166,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/contacts/{lineContact}', [LineContactController::class, 'update'])->name('contacts.update');
         Route::get('/settings', [LineSettingsController::class, 'show'])->name('settings.show');
         Route::patch('/settings', [LineSettingsController::class, 'update'])->name('settings.update');
+    });
+
+    Route::middleware('parent')->group(function () {
+        Route::get('/climate', [ClimateController::class, 'index'])->name('climate.index');
+        Route::patch('/climate/units/{unit}', [ClimateController::class, 'update'])->whereNumber('unit')->name('climate.units.update');
+        Route::patch('/climate/automation', [ClimateController::class, 'updateAutomation'])->name('climate.automation.update');
+        Route::post('/presence', [ClimateController::class, 'presence'])->name('presence.store');
     });
 
     Route::get('/home/messages', [HomeMessageController::class, 'index'])->name('home.messages.index');

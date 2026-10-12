@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Climate\Presence;
 use App\Family\KidEmotion;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -56,6 +57,8 @@ class User extends Authenticatable
         'mood' => 'integer',
         'emotion' => KidEmotion::class,
         'telegram_chat_id' => 'integer',
+        'presence' => Presence::class,
+        'presence_changed_at' => 'datetime',
     ];
 
     /**
@@ -114,6 +117,11 @@ class User extends Authenticatable
     public static function alfonso(): ?self
     {
         return self::where('family_member', 'alfonso')->first();
+    }
+
+    public function isParent(): bool
+    {
+        return in_array($this->family_member, self::MOOD_MEMBERS, true);
     }
 
     public function isAlfonso(): bool

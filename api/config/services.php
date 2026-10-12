@@ -62,6 +62,14 @@ return [
         'panel_url' => env('PRIVACYNUMBER_PANEL_URL', 'https://privacynumber.io/'),
     ],
 
+    'carrier' => [
+        // A Carrier Air Conditioner app account the units are shared with. Carrier
+        // allows one session per account, so use one no phone signs in with.
+        'email' => env('CARRIER_EMAIL'),
+        'password' => env('CARRIER_PASSWORD'),
+        'base_url' => env('CARRIER_BASE_URL', 'https://mapp.appsmb.com'),
+    ],
+
     'apple' => [
         // The iOS bundle identifier, used as the expected `aud` of the identity
         // tokens issued by expo-apple-authentication.
