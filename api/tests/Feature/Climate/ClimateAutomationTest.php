@@ -150,3 +150,37 @@ it('records presence for the signed in parent', function () {
         ->postJson(route('api.presence.store'), ['state' => 'somewhere'])
         ->assertUnprocessable();
 });
+
+it('tells each parent who else is away when switching off', function () {
+    leave($this->alfonso);
+    leave($this->saida);
+
+    $this->artisan('climate:enforce');
+
+    Notification::assertSentTo($this->alfonso, ClimateAutomationNotification::class, function (ClimateAutomationNotification $notification) {
+        return $notification->title() === 'Aires apagados'
+            && $notification->body($this->alfonso) === 'Ni tú ni Saida están cerca de la casa, así que apagué 2 aires.';
+    });
+
+    Notification::assertSentTo($this->saida, ClimateAutomationNotification::class, function (ClimateAutomationNotification $notification) {
+        return $notification->body($this->saida) === 'Ni tú ni Alfonso están cerca de la casa, así que apagué 2 aires.';
+    });
+});
+
+it('tells who got home when switching back on', function () {
+    leave($this->alfonso);
+    leave($this->saida);
+    $this->artisan('climate:enforce');
+
+    app(ClimateAutomation::class)->recordPresence($this->saida, Presence::Home);
+
+    Notification::assertSentTo($this->alfonso, ClimateAutomationNotification::class, function (ClimateAutomationNotification $notification) {
+        return $notification->switchedOn
+            && $notification->body($this->alfonso) === 'Saida llegó a casa, así que volví a prender 2 aires.';
+    });
+
+    Notification::assertSentTo($this->saida, ClimateAutomationNotification::class, function (ClimateAutomationNotification $notification) {
+        return $notification->switchedOn
+            && $notification->body($this->saida) === 'Llegaste a casa, así que volví a prender 2 aires.';
+    });
+});

@@ -35,7 +35,7 @@ export function ClimateAutomationSection({
     <View className="gap-6">
       <SettingsSection
         title="Cuando no hay nadie en casa"
-        footer="Si los dos llevan 5 minutos fuera, apago los aires que estén prendidos. Cuando uno regresa, prendo esos mismos con su ajuste. Si alguien prende uno mientras están fuera, se queda prendido."
+        footer={`Si los dos están a más de ${automation.home?.radius ?? 150} m de la casa por 5 minutos, apago los aires que estén prendidos y les aviso. Cuando uno regresa, prendo esos mismos con su ajuste. Si alguien prende uno mientras están fuera, se queda prendido.`}
       >
         <View className="flex-row items-center gap-3 px-4 py-3">
           <Text className="flex-1 text-base text-foreground">Apagar y volver a prender solos</Text>
