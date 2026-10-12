@@ -1,4 +1,5 @@
 import Foundation
+import WidgetKit
 
 struct ClimateState: Decodable, Equatable {
     var power: Bool
@@ -154,7 +155,9 @@ final class ClimateStore: ObservableObject {
         case failed(String)
     }
 
-    @Published private(set) var units: [ClimateUnit] = []
+    @Published private(set) var units: [ClimateUnit] = [] {
+        didSet { ClimateGlance.store(onCount: onCount, total: units.count) }
+    }
     @Published private(set) var status: Status = .idle
     @Published var alert: String?
 
@@ -225,6 +228,27 @@ final class ClimateStore: ObservableObject {
             return message
         default:
             return "Intenta de nuevo en un momento."
+        }
+    }
+}
+
+/// What the "Aires" complication shows, shared with the widget extension
+/// through the app group. Written whenever the wrist learns the units' state.
+enum ClimateGlance {
+    static let suite = "group.com.alfonsobries.app"
+    static let kind = "ClimateShortcut"
+
+    static func store(onCount: Int, total: Int) {
+        guard total > 0, let defaults = UserDefaults(suiteName: suite) else {
+            return
+        }
+
+        let previous = defaults.object(forKey: "climate-on-count") as? Int
+        defaults.set(onCount, forKey: "climate-on-count")
+        defaults.set(Date(), forKey: "climate-updated-at")
+
+        if previous != onCount {
+            WidgetCenter.shared.reloadTimelines(ofKind: kind)
         }
     }
 }
