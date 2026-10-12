@@ -26,8 +26,6 @@ class CarrierClient
 
     private const SIGN_KEY = 'xhdiwjnchekd4d512chdjx5d8e4c394D2D7S';
 
-    private const SESSION_CACHE_KEY = 'climate.carrier.session';
-
     public function __construct(private readonly Cache $cache) {}
 
     public function isConfigured(): bool
@@ -59,6 +57,11 @@ class CarrierClient
     public function send(string $applianceId, array $frame): array
     {
         $reply = $this->sendMany([$applianceId => $frame])[$applianceId];
+
+        // The relay sometimes loses a unit's answer ("async reply does not exist"); ask once more.
+        if ($reply instanceof CarrierException && ! $reply->isUnitOffline()) {
+            $reply = $this->sendMany([$applianceId => $frame])[$applianceId];
+        }
 
         if ($reply instanceof CarrierException) {
             throw $reply;
@@ -164,10 +167,18 @@ class CarrierClient
                 throw $exception;
             }
 
-            $this->cache->forget(self::SESSION_CACHE_KEY);
+            $this->cache->forget($this->sessionCacheKey());
 
             return $call($this->session());
         }
+    }
+
+    /**
+     * Scoped to the account, so changing the configured account never reuses another one's session.
+     */
+    private function sessionCacheKey(): string
+    {
+        return 'climate.carrier.session.'.sha1((string) config('services.carrier.email'));
     }
 
     /**
@@ -176,7 +187,7 @@ class CarrierClient
     private function session(): array
     {
         /** @var array{sessionId: string, accessToken: string}|null $session */
-        $session = $this->cache->get(self::SESSION_CACHE_KEY);
+        $session = $this->cache->get($this->sessionCacheKey());
 
         if ($session !== null) {
             return $session;
@@ -203,7 +214,7 @@ class CarrierClient
             throw new CarrierException('Carrier did not return a session.');
         }
 
-        $this->cache->put(self::SESSION_CACHE_KEY, $session, now()->addDays(7));
+        $this->cache->put($this->sessionCacheKey(), $session, now()->addDays(7));
 
         return $session;
     }

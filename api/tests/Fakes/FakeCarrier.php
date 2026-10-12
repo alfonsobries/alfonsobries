@@ -30,6 +30,9 @@ class FakeCarrier
     /** Ends the session on the next relayed command, as a phone signing in would. */
     public bool $endSessionOnce = false;
 
+    /** Drops the next unit answer, as the relay sometimes does. */
+    public bool $loseNextReply = false;
+
     /**
      * @param  array<string, array{name: string, power: bool, temperature: float, mode: int, fan: int, indoor: float}>  $units
      */
@@ -89,6 +92,12 @@ class FakeCarrier
             $this->endSessionOnce = false;
 
             return Http::response(['errorCode' => '3106', 'msg' => 'invalidSession']);
+        }
+
+        if ($this->loseNextReply) {
+            $this->loseNextReply = false;
+
+            return Http::response(['errorCode' => '1001', 'msg' => 'The asyn reply does not exist.']);
         }
 
         if (in_array($unitId, $this->offline, true)) {

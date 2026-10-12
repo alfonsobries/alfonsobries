@@ -125,3 +125,13 @@ it('saves the home location and the switch', function () {
 
     expect(Setting::get(ClimateAutomation::SETTING_KEY)['home']['latitude'])->toBe(20.9674);
 });
+
+it('asks a unit again when the relay loses its answer once', function () {
+    $carrier = FakeCarrier::install(['101' => FakeCarrier::unit('Oficina')]);
+    $carrier->loseNextReply = true;
+
+    $this->actingAs(User::factory()->create(['family_member' => 'alfonso']))
+        ->patchJson(route('api.climate.units.update', ['unit' => '101']), ['power' => true])
+        ->assertOk()
+        ->assertJsonPath('data.state.power', true);
+});
