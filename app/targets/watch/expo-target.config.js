@@ -1,7 +1,7 @@
 /** @type {import('@bacons/apple-targets/app.plugin').Config} */
 module.exports = {
   type: 'watch',
-  name: 'RosarioWatch',
+  name: 'AlfonsoWatch',
   displayName: 'Alfonso',
   deploymentTarget: '10.0',
   bundleIdentifier: '.watch',

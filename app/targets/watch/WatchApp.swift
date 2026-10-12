@@ -23,8 +23,15 @@ struct AlfonsoWatchApp: App {
                             BenedictView()
                         case .exercises:
                             ExercisesView()
+                        case .climate:
+                            ClimateListView()
+                        case let .climateUnit(id):
+                            ClimateUnitView(unitId: id)
                         }
                     }
+            }
+            .onOpenURL { url in
+                router.open(url: url)
             }
             .task {
                 await VirtueAPI.flushPending()
@@ -38,6 +45,8 @@ enum WatchRoute: Hashable {
     case prayers
     case benedict
     case exercises
+    case climate
+    case climateUnit(String)
 }
 
 /// The one place that can push a screen from outside the view tree — today,
@@ -49,6 +58,18 @@ final class WatchRouter: ObservableObject {
 
     func open(_ route: WatchRoute) {
         path = [route]
+    }
+
+    /// Complications open the app with `alfonso://<route>`.
+    func open(url: URL) {
+        switch url.host() {
+        case "climate":
+            open(.climate)
+        case "prayers":
+            open(.prayers)
+        default:
+            path = []
+        }
     }
 }
 
@@ -76,12 +97,33 @@ final class WatchDelegate: NSObject, WKApplicationDelegate, UNUserNotificationCe
     }
 }
 
-/// The day on the wrist: the daily prayers and the exercise routine, with
-/// San Benito one tap away.
+/// The day on the wrist: the air conditioners, the daily prayers and the
+/// exercise routine, with San Benito one tap away.
 struct HomeView: View {
+    @ObservedObject private var climate = ClimateStore.shared
+
+    private var climateSummary: String {
+        switch climate.onCount {
+        case _ where climate.units.isEmpty: "Controla los aires"
+        case 0: "Todos apagados"
+        case 1: "1 encendido"
+        default: "\(climate.onCount) encendidos"
+        }
+    }
+
     var body: some View {
         List {
             Section {
+                NavigationLink(value: WatchRoute.climate) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Aires")
+                            .font(.headline)
+                        Text(climateSummary)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
                 NavigationLink(value: WatchRoute.prayers) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Oraciones del día")
@@ -121,6 +163,7 @@ struct HomeView: View {
             }
         }
         .navigationTitle("Alfonso")
+        .task { await climate.refresh() }
     }
 }
 
