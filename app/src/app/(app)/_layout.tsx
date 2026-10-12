@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 
 import { KidEmotionsProvider } from '@/api/kid-emotions';
 import { MoodsProvider } from '@/api/moods';
+import { useHomePresence } from '@/hooks/use-home-presence';
 import { useLineIncoming } from '@/hooks/use-line-incoming';
 import { usePushRegistration } from '@/hooks/use-push-registration';
 import { useDailyReminders } from '@/hooks/use-daily-reminders';
@@ -12,6 +13,7 @@ export default function AppLayout() {
   useLineIncoming();
   useDailyReminders();
   useWatchSync();
+  useHomePresence();
 
   return (
     <MoodsProvider>
@@ -57,6 +59,10 @@ export default function AppLayout() {
           />
           <Stack.Screen
             name="rewards/points"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="climate"
             options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
           />
           <Stack.Screen

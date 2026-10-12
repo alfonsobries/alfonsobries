@@ -9,7 +9,17 @@ import { cacheKeys, clearCache, readCache, writeCache } from '@/offline/store';
 import { apiClient } from './client';
 import { useApiRouter } from './router';
 
-const TOKEN_KEY = 'auth_token';
+export const AUTH_TOKEN_KEY = 'auth_token';
+
+/**
+ * Readable after the first unlock since boot, so background work (a geofence
+ * event while the phone is locked) can still authenticate.
+ */
+export const AUTH_TOKEN_OPTIONS: SecureStore.SecureStoreOptions = {
+  keychainAccessible: SecureStore.AFTER_FIRST_UNLOCK,
+};
+
+const TOKEN_KEY = AUTH_TOKEN_KEY;
 
 // The stored token is the source of truth for "signed in". Confirming it with
 // the API is a refresh, not a gate — otherwise a plane with no signal locks the
@@ -77,6 +87,12 @@ export function AuthProvider({ children }: AuthProviderProperties): ReactNode {
         }
         return;
       }
+
+      // Re-save under AUTH_TOKEN_OPTIONS: the keychain keeps an item's original
+      // accessibility on update, so it has to be written fresh.
+      await SecureStore.deleteItemAsync(TOKEN_KEY)
+        .then(() => SecureStore.setItemAsync(TOKEN_KEY, token, AUTH_TOKEN_OPTIONS))
+        .catch(() => SecureStore.setItemAsync(TOKEN_KEY, token).catch(() => undefined));
 
       setAuthHeader(token);
 
@@ -150,7 +166,7 @@ export function AuthProvider({ children }: AuthProviderProperties): ReactNode {
       },
     );
 
-    await SecureStore.setItemAsync(TOKEN_KEY, data.token);
+    await SecureStore.setItemAsync(TOKEN_KEY, data.token, AUTH_TOKEN_OPTIONS);
     setAuthHeader(data.token);
     writeCache(cacheKeys.user, data.user);
     setUser(data.user);

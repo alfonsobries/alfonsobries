@@ -5,6 +5,7 @@ namespace App\Http;
 use App\Http\Middleware\Authenticate;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\EnsureUserIsAlfonso;
+use App\Http\Middleware\EnsureUserIsParent;
 use App\Http\Middleware\Localize;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
 use App\Http\Middleware\RedirectIfAuthenticated;
@@ -89,5 +90,6 @@ class Kernel extends HttpKernel
         'throttle' => ThrottleRequests::class,
         'verified' => EnsureEmailIsVerified::class,
         'alfonso' => EnsureUserIsAlfonso::class,
+        'parent' => EnsureUserIsParent::class,
     ];
 }
