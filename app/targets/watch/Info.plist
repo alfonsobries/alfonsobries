@@ -6,9 +6,14 @@
   <true/>
   <key>WKRunsIndependentlyOfCompanionApp</key>
   <true/>
-  <key>UIBackgroundModes</key>
+  <key>CFBundleURLTypes</key>
   <array>
-    <string>audio</string>
+    <dict>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>alfonso</string>
+      </array>
+    </dict>
   </array>
 </dict>
 </plist>

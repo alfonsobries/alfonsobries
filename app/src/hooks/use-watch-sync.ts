@@ -7,6 +7,8 @@ import { localDate } from '@/api/virtue';
 import { fetchWorkoutSummary, workoutDay } from '@/api/workout';
 import { syncWatchContext } from '../../modules/watch-bridge';
 
+const CLIMATE_UNIT_PLACEHOLDER = '9999999999';
+
 /**
  * Keeps the paired watch able to work on its own: the token, the endpoints it
  * writes to, and the daily routine with the sets already done travel over
@@ -34,6 +36,9 @@ export function useWatchSync(): void {
         workoutIndexUrl: route('api.workout.index'),
         // The watch fills in the day and the exercise it is marking.
         workoutUrl: route('api.workout.update', { date: '__date__', exercise: '__exercise__' }),
+        climateUrl: route('api.climate.index'),
+        // The unit route only takes digits; the watch swaps this id for the unit's.
+        climateUnitUrl: route('api.climate.units.update', { unit: CLIMATE_UNIT_PLACEHOLDER }),
       };
 
       try {
