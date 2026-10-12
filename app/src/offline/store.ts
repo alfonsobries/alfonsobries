@@ -135,6 +135,7 @@ export const cacheKeys = {
   lineVoicemails: 'line-voicemails',
   lineSettings: 'line-settings',
   homeChat: 'home-chat',
+  climate: 'climate',
   expenseCategories: 'expense-categories',
   paymentAccounts: 'payment-accounts',
   telegramLink: 'telegram-link',

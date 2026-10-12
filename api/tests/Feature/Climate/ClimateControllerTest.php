@@ -135,3 +135,11 @@ it('asks a unit again when the relay loses its answer once', function () {
         ->assertOk()
         ->assertJsonPath('data.state.power', true);
 });
+
+it('shows the automation without reaching the units', function () {
+    $this->actingAs(User::factory()->create(['family_member' => 'saida']))
+        ->getJson(route('api.climate.automation.show'))
+        ->assertOk()
+        ->assertJsonPath('data.enabled', true)
+        ->assertJsonPath('data.home', null);
+});

@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon.png",
     "scheme": "alfonsobries",
     "userInterfaceStyle": "automatic",
-    "runtimeVersion": "1.16.0",
+    "runtimeVersion": "1.17.0",
     "updates": {
       "url": "https://u.expo.dev/fbd135b1-6baa-4be2-b789-254386da114d"
     },
@@ -94,6 +94,15 @@
         {
           "microphonePermission": "Records voice notes for the home chat and handles live calls on the private line.",
           "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Sabe si estás en casa para apagar los aires cuando no queda nadie y prenderlos cuando regresas.",
+          "locationWhenInUsePermission": "Usa tu ubicación para guardar dónde está la casa.",
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": true
         }
       ]
     ],

@@ -171,6 +171,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('parent')->group(function () {
         Route::get('/climate', [ClimateController::class, 'index'])->name('climate.index');
         Route::patch('/climate/units/{unit}', [ClimateController::class, 'update'])->whereNumber('unit')->name('climate.units.update');
+        Route::get('/climate/automation', [ClimateController::class, 'automation'])->name('climate.automation.show');
         Route::patch('/climate/automation', [ClimateController::class, 'updateAutomation'])->name('climate.automation.update');
         Route::post('/presence', [ClimateController::class, 'presence'])->name('presence.store');
     });

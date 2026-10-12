@@ -1,5 +1,5 @@
 import { router, Stack } from 'expo-router';
-import { ChartPieSlice } from 'phosphor-react-native';
+import { ChartPieSlice, Snowflake } from 'phosphor-react-native';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -131,6 +131,15 @@ export default function CasaScreen() {
         options={{
           headerRight: () => (
             <View className="flex-row items-center">
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Aires"
+                hitSlop={8}
+                onPress={() => router.push('/climate')}
+                className="h-11 w-11 items-center justify-center active:opacity-60"
+              >
+                <Snowflake size={22} color={tint} />
+              </Pressable>
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Estadísticas"

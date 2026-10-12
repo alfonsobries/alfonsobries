@@ -75,6 +75,11 @@ class ClimateController extends Controller
         }
     }
 
+    public function automation(): JsonResponse
+    {
+        return response()->json(['data' => $this->automation->toArray()]);
+    }
+
     public function updateAutomation(Request $request): JsonResponse
     {
         $validated = $request->validate([

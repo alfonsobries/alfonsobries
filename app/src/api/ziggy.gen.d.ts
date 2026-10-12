@@ -327,6 +327,16 @@ declare module 'ziggy-js' {
     ],
     "api.line.settings.show": [],
     "api.line.settings.update": [],
+    "api.climate.index": [],
+    "api.climate.units.update": [
+        {
+            "name": "unit",
+            "required": true
+        }
+    ],
+    "api.climate.automation.show": [],
+    "api.climate.automation.update": [],
+    "api.presence.store": [],
     "api.home.messages.index": [],
     "api.home.messages.store": [],
     "api.home.messages.show": [
