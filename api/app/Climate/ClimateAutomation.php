@@ -30,9 +30,6 @@ class ClimateAutomation
 
     public const DEFAULT_RADIUS = 150;
 
-    /** The language the household reads notifications in. */
-    private const LOCALE = 'es';
-
     public function __construct(private readonly Climate $climate) {}
 
     /**
@@ -144,11 +141,7 @@ class ClimateAutomation
         ]);
 
         if ($result['switched_off'] !== []) {
-            $count = count($result['switched_off']);
-            $this->notifyParents(
-                __('climate.switched_off_title', [], self::LOCALE),
-                trans_choice('climate.switched_off_body', $count, ['count' => $count], self::LOCALE),
-            );
+            $this->notifyParents(new ClimateAutomationNotification(switchedOn: false, count: count($result['switched_off'])));
         }
     }
 
@@ -178,14 +171,7 @@ class ClimateAutomation
         ]);
 
         if ($turnedOn !== []) {
-            $count = count($turnedOn);
-            $this->notifyParents(
-                __('climate.switched_on_title', [], self::LOCALE),
-                trans_choice('climate.switched_on_body', $count, [
-                    'count' => $count,
-                    'name' => $arrived !== null ? strtok((string) $arrived->name, ' ') : 'Alguien',
-                ], self::LOCALE),
-            );
+            $this->notifyParents(new ClimateAutomationNotification(switchedOn: true, count: count($turnedOn), arrived: $arrived));
         }
     }
 
@@ -202,9 +188,9 @@ class ClimateAutomation
         return User::query()->whereIn('family_member', User::MOOD_MEMBERS)->orderBy('family_member')->get();
     }
 
-    private function notifyParents(string $title, string $body): void
+    private function notifyParents(ClimateAutomationNotification $notification): void
     {
-        $this->parents()->each(fn (User $parent) => $parent->notify(new ClimateAutomationNotification($title, $body)));
+        $this->parents()->each(fn (User $parent) => $parent->notify($notification));
     }
 
     /**
