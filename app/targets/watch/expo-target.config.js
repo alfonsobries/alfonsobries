@@ -9,5 +9,8 @@ module.exports = {
   colors: {
     $accent: '#ffd78b',
   },
-  frameworks: ['SwiftUI'],
+  frameworks: ['SwiftUI', 'WidgetKit'],
+  entitlements: {
+    'com.apple.security.application-groups': ['group.com.alfonsobries.app'],
+  },
 };
