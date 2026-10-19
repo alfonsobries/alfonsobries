@@ -79,8 +79,6 @@
   },
   "scripts": {
     "start": "expo start",
-    "watch:resources": "node --experimental-strip-types ./scripts/generate-watch-resources.mjs",
-    "eas-build-pre-install": "pnpm watch:resources",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "ios": "expo run:ios",

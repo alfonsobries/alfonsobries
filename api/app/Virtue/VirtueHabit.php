@@ -5,9 +5,9 @@ namespace App\Virtue;
 /**
  * The entry-tracked habits: each one is a small module with its own rules
  * that talks to the core through one contract — a completed day emits one
- * point into the habit's area. The prayers and the daily resolution predate
- * this registry and keep their own storage on the day row, but follow the
- * same contract into the spirit area.
+ * point into the habit's area. The daily resolution predates this registry
+ * and keeps its own storage on the day row, but follows the same contract into
+ * every area.
  */
 enum VirtueHabit: string
 {

@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * One day of the virtue practice: whether the daily prayers were completed and whether the daily resolution was kept. A day with no
- * resolution mark is simply pending — only an explicit miss breaks the streak.
+ * One day of the virtue practice: whether the daily resolution was kept. A day
+ * with no resolution mark is simply pending — only an explicit miss breaks the
+ * streak.
  */
 class VirtueDay extends Model
 {
@@ -21,14 +22,11 @@ class VirtueDay extends Model
     public const RESOLUTION_MISSED = 'missed';
 
     /**
-     * Points per event. The daily prayers are the main weapon and never
-     * penalize when skipped. The daily resolution touches the whole person: a kept
+     * Points per event. The daily resolution touches the whole person: a kept
      * day adds one to every area, a relapse takes points from every area,
      * and an unmarked day moves nothing. A day with nothing at all quietly
      * drains the spirit.
      */
-    public const PRAYERS_POINTS = 3;
-
     public const RESOLUTION_POINTS = 1;
 
     public const MISS_PENALTY = 3;
@@ -58,14 +56,14 @@ class VirtueDay extends Model
      *
      * @var list<int>
      */
-    public const CHECKPOINTS = [16, 48, 96, 160, 240];
+    public const CHECKPOINTS = [3, 10, 19, 32, 48];
 
     /**
      * Total points that complete an area's 30-stage journey, calibrated so a
      * realistic solid practice (not a flawless one) finishes in about 90
      * days — the habit-science window for forming a virtue or breaking a
-     * vice. Solid weeks (resolution kept 6 of 7 included): spirit 6 full
-     * days (+4) and one without prayers (+1) → 25; body exercise 6 with one big
+     * vice. Solid weeks (resolution kept 6 of 7 included): spirit 6 kept days
+     * and one unmarked day that drains → 5; body exercise 6 with one big
      * session (7) and the routine finished 4 days with 2 partial (14) → 21
      * under the daily cap, diet 6, sun 5, resolution 6 → 38; mind reading 6,
      * resolution 6 → 12.
@@ -75,7 +73,7 @@ class VirtueDay extends Model
     public const AREA_TOTALS = [
         'body' => 488,
         'mind' => 154,
-        'spirit' => 320,
+        'spirit' => 64,
     ];
 
     /** What a missed resolution costs this area. */
@@ -110,7 +108,6 @@ class VirtueDay extends Model
      */
     protected $fillable = [
         'date',
-        'prayers_completed_at',
         'resolution',
     ];
 
@@ -119,6 +116,5 @@ class VirtueDay extends Model
      */
     protected $casts = [
         'date' => 'date',
-        'prayers_completed_at' => 'datetime',
     ];
 }
