@@ -1,10 +1,7 @@
 import SwiftUI
-import UserNotifications
-import WatchKit
 
 @main
 struct AlfonsoWatchApp: App {
-    @WKApplicationDelegateAdaptor(WatchDelegate.self) private var delegate
     @StateObject private var router = WatchRouter.shared
 
     init() {
@@ -17,8 +14,6 @@ struct AlfonsoWatchApp: App {
                 HomeView()
                     .navigationDestination(for: WatchRoute.self) { route in
                         switch route {
-                        case .prayers:
-                            PrayersView()
                         case .benedict:
                             BenedictView()
                         case .exercises:
@@ -34,7 +29,6 @@ struct AlfonsoWatchApp: App {
                 router.open(url: url)
             }
             .task {
-                await VirtueAPI.flushPending()
                 await WorkoutAPI.flushPending()
             }
         }
@@ -42,7 +36,6 @@ struct AlfonsoWatchApp: App {
 }
 
 enum WatchRoute: Hashable {
-    case prayers
     case benedict
     case exercises
     case climate
@@ -50,7 +43,7 @@ enum WatchRoute: Hashable {
 }
 
 /// The one place that can push a screen from outside the view tree — today,
-/// the daily prayers notification arriving from the iPhone.
+/// a complication opening the app.
 final class WatchRouter: ObservableObject {
     static let shared = WatchRouter()
 
@@ -65,40 +58,14 @@ final class WatchRouter: ObservableObject {
         switch url.host() {
         case "climate":
             open(.climate)
-        case "prayers":
-            open(.prayers)
         default:
             path = []
         }
     }
 }
 
-/// The reminder is scheduled by the iPhone app and forwarded here by watchOS;
-/// tapping it on the wrist should land on the prayers themselves.
-final class WatchDelegate: NSObject, WKApplicationDelegate, UNUserNotificationCenterDelegate {
-    static let prayersCategory = "auxilium-prayers"
-
-    func applicationDidFinishLaunching() {
-        UNUserNotificationCenter.current().delegate = self
-    }
-
-    func userNotificationCenter(
-        _ center: UNUserNotificationCenter,
-        didReceive response: UNNotificationResponse,
-        withCompletionHandler completionHandler: @escaping () -> Void
-    ) {
-        if response.notification.request.content.categoryIdentifier == Self.prayersCategory {
-            DispatchQueue.main.async {
-                WatchRouter.shared.open(.prayers)
-            }
-        }
-
-        completionHandler()
-    }
-}
-
-/// The day on the wrist: the air conditioners, the daily prayers and the
-/// exercise routine, with San Benito one tap away.
+/// The day on the wrist: the air conditioners and the exercise routine, with
+/// San Benito one tap away.
 struct HomeView: View {
     @ObservedObject private var climate = ClimateStore.shared
 
@@ -119,17 +86,6 @@ struct HomeView: View {
                         Text("Aires")
                             .font(.headline)
                         Text(climateSummary)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                NavigationLink(value: WatchRoute.prayers) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Oraciones del día")
-                            .font(.headline)
-                            .foregroundStyle(Color.accentColor)
-                        Text("Auxilium · \(PrayerLibrary.todayLabel)")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }

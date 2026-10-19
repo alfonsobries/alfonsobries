@@ -3,7 +3,7 @@ import Security
 import WatchConnectivity
 
 /// Receives the auth context pushed from the iPhone and keeps it stored, so
-/// the watch can mark the daily prayers and control the air conditioners
+/// the watch can track the exercise routine and control the air conditioners
 /// entirely on its own.
 final class PhoneLink: NSObject, WCSessionDelegate {
     static let shared = PhoneLink()
@@ -35,10 +35,6 @@ final class PhoneLink: NSObject, WCSessionDelegate {
         }
 
         Keychain.set(token, for: "api-token")
-
-        if let url = context["prayersUrl"] as? String {
-            UserDefaults.standard.set(url, forKey: VirtueAPI.Module.prayers.urlKey)
-        }
 
         ClimateAPI.storeUrls(
             index: context["climateUrl"] as? String,

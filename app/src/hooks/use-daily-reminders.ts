@@ -4,10 +4,6 @@ import { useEffect } from 'react';
 
 import { useAuth } from '@/api/auth';
 
-// watchOS forwards this notification to the paired watch, where the watch app
-// reads the category to open the prayers on the wrist.
-const PRAYERS_CATEGORY = 'auxilium-prayers';
-
 type Reminder = {
   id: string;
   hour: number;
@@ -15,7 +11,6 @@ type Reminder = {
   title: string;
   body: string;
   url: string;
-  category?: string;
 };
 
 /**
@@ -24,15 +19,6 @@ type Reminder = {
  * that has to check state first is a reminder that arrives late.
  */
 const REMINDERS: Reminder[] = [
-  {
-    id: 'virtue-noon',
-    hour: 12,
-    minute: 0,
-    title: 'Auxilium',
-    body: 'Las oraciones del día te esperan.',
-    url: '/virtue/prayers',
-    category: PRAYERS_CATEGORY,
-  },
   {
     id: 'exercises-evening',
     hour: 19,
@@ -45,8 +31,8 @@ const REMINDERS: Reminder[] = [
 
 /**
  * Schedules the daily reminders and routes the taps. Only Alfonso's device
- * schedules them; they are re-asserted on every launch so edits to the copy or
- * the time ship without any cleanup step.
+ * schedules them; they are re-asserted on every launch so edits to the copy, the
+ * time or the list itself ship without any cleanup step.
  */
 export function useDailyReminders(): void {
   const { status, user } = useAuth();
@@ -59,9 +45,7 @@ export function useDailyReminders(): void {
 
     void (async () => {
       try {
-        for (const reminder of REMINDERS) {
-          await Notifications.cancelScheduledNotificationAsync(reminder.id);
-        }
+        await Notifications.cancelAllScheduledNotificationsAsync();
 
         if (!isOwner) {
           return;
@@ -85,7 +69,6 @@ export function useDailyReminders(): void {
             content: {
               title: reminder.title,
               body: reminder.body,
-              categoryIdentifier: reminder.category,
               data: { url: reminder.url },
             },
             trigger: {

@@ -1,13 +1,5 @@
 import { Redirect, router, Stack, useFocusEffect } from 'expo-router';
-import {
-  CaretRight,
-  Check,
-  Flame,
-  Flask,
-  HandsPraying,
-  Question,
-  Sparkle,
-} from 'phosphor-react-native';
+import { CaretRight, Flame, Flask, Sparkle } from 'phosphor-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -54,7 +46,6 @@ const EMPTY_HABITS: Record<VirtueHabit, boolean> = {
 
 const EMPTY_DAY = (date: string): VirtueDay => ({
   date,
-  prayers_completed: false,
   resolution: null,
   habits: EMPTY_HABITS,
   exercise_minutes: null,
@@ -193,13 +184,9 @@ export default function VirtueScreen() {
             : day.resolution === 'missed'
               ? 'danger'
               : undefined,
-        dots: [
-          day.prayers_completed,
-          day.habits.exercise,
-          day.habits.diet,
-          day.habits.sun,
-          day.habits.reading,
-        ].filter(Boolean).length,
+        dots: [day.habits.exercise, day.habits.diet, day.habits.sun, day.habits.reading].filter(
+          Boolean,
+        ).length,
       };
     }
 
@@ -395,34 +382,24 @@ export default function VirtueScreen() {
       <Stack.Screen
         options={{
           headerRight: () => (
-            <View className="flex-row items-center gap-4">
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Preview stages"
-                hitSlop={12}
-                onPress={() =>
-                  setPreview((current) =>
-                    current !== null || stats === null
-                      ? null
-                      : {
-                          body: stats.areas.body.stage,
-                          mind: stats.areas.mind.stage,
-                          spirit: stats.areas.spirit.stage,
-                        },
-                  )
-                }
-              >
-                <Flask size={24} color={tint} weight={preview ? 'fill' : 'regular'} />
-              </Pressable>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Guide"
-                hitSlop={12}
-                onPress={() => router.push('/virtue/guide')}
-              >
-                <Question size={24} color={tint} weight="regular" />
-              </Pressable>
-            </View>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Preview stages"
+              hitSlop={12}
+              onPress={() =>
+                setPreview((current) =>
+                  current !== null || stats === null
+                    ? null
+                    : {
+                        body: stats.areas.body.stage,
+                        mind: stats.areas.mind.stage,
+                        spirit: stats.areas.spirit.stage,
+                      },
+                )
+              }
+            >
+              <Flask size={24} color={tint} weight={preview ? 'fill' : 'regular'} />
+            </Pressable>
           ),
         }}
       />
@@ -564,27 +541,6 @@ export default function VirtueScreen() {
               </Text>
             </View>
           ) : null}
-
-          <View className="flex-row items-center gap-3">
-            <View className="size-11 items-center justify-center rounded-2xl bg-surface-selected">
-              <HandsPraying size={22} color={tint} weight="fill" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-base font-semibold text-foreground">Daily prayers</Text>
-              <Text className="text-sm text-muted">
-                {todayEntry?.prayers_completed ? 'Completed today' : 'Not prayed yet'}
-              </Text>
-            </View>
-            {todayEntry?.prayers_completed ? (
-              <View className="size-9 items-center justify-center rounded-full bg-primary">
-                <Check size={18} color={onPrimary} weight="bold" />
-              </View>
-            ) : (
-              <Button size="sm" onPress={() => router.push('/virtue/prayers')}>
-                Pray
-              </Button>
-            )}
-          </View>
 
           {ENTRY_HABITS.map(({ key, label, anchor, Icon }) => (
             <View key={key} className="gap-2">

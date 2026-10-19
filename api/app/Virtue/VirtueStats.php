@@ -10,8 +10,8 @@ use Illuminate\Support\Carbon;
 
 /**
  * Computes the practice's running stats: the headline streak, one score per
- * area. Spirit scores day by day — the prayers only ever add, a missed resolution outweighs a full prayer
- * day, an idle day drains one point — with checkpoint floors so every lapse
+ * area. Spirit scores day by day — a kept resolution adds one, a missed one
+ * costs three, an idle day drains one point — with checkpoint floors so every lapse
  * is a setback, never a restart. Body and mind score from their habit
  * entries — body also collects the daily exercise routine — and a missed
  * resolution costs them too.
@@ -157,15 +157,16 @@ class VirtueStats
 
     /**
      * The spirit score walks every calendar day from the first tracked date
-     * through today: the prayers earn three, a kept resolution one; a missed resolution costs three, and a past day with nothing at all
-     * costs one. Checkpoint floors apply and points never go negative.
+     * through today: a kept resolution earns one, a missed one costs three, and
+     * a past day with nothing at all costs one. Checkpoint floors apply and
+     * points never go negative.
      *
      * @return array<string, int>
      */
     private function spiritArea(int $streak): array
     {
         $days = VirtueDay::orderBy('date')
-            ->get(['date', 'resolution', 'prayers_completed_at'])
+            ->get(['date', 'resolution'])
             ->keyBy(fn (VirtueDay $day): string => $day->date->toDateString());
 
         if ($days->isEmpty()) {
@@ -187,10 +188,6 @@ class VirtueStats
             $delta = 0;
 
             if ($day !== null) {
-                if ($day->prayers_completed_at !== null) {
-                    $delta += VirtueDay::PRAYERS_POINTS;
-                }
-
                 if ($day->resolution === VirtueDay::RESOLUTION_KEPT) {
                     $delta += VirtueDay::RESOLUTION_POINTS;
                 } elseif ($day->resolution === VirtueDay::RESOLUTION_MISSED) {

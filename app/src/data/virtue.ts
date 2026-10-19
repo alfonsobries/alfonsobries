@@ -56,7 +56,7 @@ export type AreaHabitDefinition = {
   isDone: (day: VirtueDay) => boolean;
 };
 
-/** Every habit that feeds an area, uniform for display — including the two spirit modules with storage of their own. */
+/** Every habit that feeds an area, uniform for display — including the resolution, with storage of its own. */
 export const AREA_HABITS: Record<VirtueArea, AreaHabitDefinition[]> = {
   body: [
     { ...ENTRY_HABITS[0], isDone: (day) => day.habits.exercise },
@@ -65,13 +65,6 @@ export const AREA_HABITS: Record<VirtueArea, AreaHabitDefinition[]> = {
   ],
   mind: [{ ...ENTRY_HABITS[3], isDone: (day) => day.habits.reading }],
   spirit: [
-    {
-      key: 'prayers',
-      label: 'Daily prayers',
-      anchor: 'The main weapon',
-      Icon: HandsPraying,
-      isDone: (day) => day.prayers_completed,
-    },
     {
       key: 'resolution',
       label: 'Daily resolution',
@@ -83,7 +76,7 @@ export const AREA_HABITS: Record<VirtueArea, AreaHabitDefinition[]> = {
 };
 
 /** Everything markable in a day — the denominator of the daily checklist. */
-export const DAILY_GOAL_COUNT = 6;
+export const DAILY_GOAL_COUNT = 5;
 
 export function completedToday(day: VirtueDay | undefined): number {
   if (!day) {
@@ -91,7 +84,6 @@ export function completedToday(day: VirtueDay | undefined): number {
   }
 
   return [
-    day.prayers_completed,
     day.habits.exercise,
     day.habits.diet,
     day.habits.sun,

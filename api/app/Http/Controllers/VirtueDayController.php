@@ -66,42 +66,6 @@ class VirtueDayController extends Controller
     }
 
     /**
-     * Record that the daily prayers were completed — or clear a mistaken
-     * mark. Completing is idempotent: repeating the sequence keeps the first
-     * completion time.
-     */
-    public function completePrayers(Request $request): JsonResponse
-    {
-        return $this->completeModule($request, 'prayers_completed_at');
-    }
-
-    private function completeModule(Request $request, string $column): JsonResponse
-    {
-        if ($response = $this->guard($request)) {
-            return $response;
-        }
-
-        $validated = $request->validate([
-            'date' => ['required', 'date_format:Y-m-d'],
-            'completed' => ['sometimes', 'boolean'],
-        ]);
-
-        if ($response = $this->validateDate($validated['date'])) {
-            return $response;
-        }
-
-        $day = $this->dayFor($validated['date']);
-
-        if (($validated['completed'] ?? true) === false) {
-            $day->update([$column => null]);
-        } elseif ($day->{$column} === null) {
-            $day->update([$column => now()]);
-        }
-
-        return $this->dayResponse($day);
-    }
-
-    /**
      * Mark or clear one of the entry-tracked habits for a day. Marking is
      * idempotent (the first completion time wins) but measured minutes can
      * keep growing as the health sync reports more; clearing deletes the
@@ -218,7 +182,6 @@ class VirtueDayController extends Controller
 
         return [
             'date' => $day->date->toDateString(),
-            'prayers_completed' => $day->prayers_completed_at !== null,
             'resolution' => $day->resolution,
             'habits' => collect(VirtueHabit::values())
                 ->mapWithKeys(fn (string $habit): array => [$habit => $completed->has($habit)])

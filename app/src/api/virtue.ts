@@ -10,12 +10,11 @@ export type Resolution = 'kept' | 'missed';
 
 export type VirtueArea = 'body' | 'mind' | 'spirit';
 
-/** The entry-tracked habits; the prayers and the resolution have flows of their own. */
+/** The entry-tracked habits; the resolution has a flow of its own. */
 export type VirtueHabit = 'exercise' | 'diet' | 'sun' | 'reading';
 
 export type VirtueDay = {
   date: string;
-  prayers_completed: boolean;
   resolution: Resolution | null;
   habits: Record<VirtueHabit, boolean>;
   /** Measured exercise for the day (Apple Health); a full hour earns a second point. */
@@ -100,19 +99,6 @@ export async function setHabit(
   return { day: data.data, stats: data.stats };
 }
 
-export async function completePrayers(
-  route: ApiRoute,
-  date: string,
-  completed = true,
-): Promise<{ day: VirtueDay; stats: VirtueStats }> {
-  const { data } = await apiClient.post<{ data: VirtueDay; stats: VirtueStats }>(
-    route('api.virtue.prayers.store'),
-    { date, completed },
-  );
-
-  return { day: data.data, stats: data.stats };
-}
-
 // Marking a day is the tap that must never fail — being on a plane is exactly
 // the moment a tracking habit dies. So every mark lands locally first and
 // replays later, keyed per day and per thing so re-tapping replaces the pending
@@ -124,13 +110,6 @@ export const queueResolution = defineOfflineMutation<{
 }>('virtue.resolution', async ({ date, resolution }, route) => {
   await setResolution(route, date, resolution);
 });
-
-export const queuePrayers = defineOfflineMutation<{ date: string; completed: boolean }>(
-  'virtue.prayers',
-  async ({ date, completed }, route) => {
-    await completePrayers(route, date, completed);
-  },
-);
 
 export const queueHabit = defineOfflineMutation<{
   date: string;
@@ -144,7 +123,6 @@ export const queueHabit = defineOfflineMutation<{
 
 export const virtueDedupeKey = {
   resolution: (date: string) => `virtue.resolution:${date}`,
-  prayers: (date: string) => `virtue.prayers:${date}`,
   habit: (date: string, habit: VirtueHabit) => `virtue.habit:${date}:${habit}`,
 };
 
@@ -176,7 +154,6 @@ export function withVirtueDay(
   const existing = summary.days.find((day) => day.date === date);
   const next: VirtueDay = {
     date,
-    prayers_completed: existing?.prayers_completed ?? false,
     resolution: existing?.resolution ?? null,
     habits: existing?.habits ?? EMPTY_HABITS,
     exercise_minutes: existing?.exercise_minutes ?? null,

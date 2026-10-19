@@ -11,10 +11,10 @@ for the third when the network is genuinely what the feature is for.
 ## What that means per feature
 
 - **Works offline** — anything whose content is bundled or already fetched: the
-  daily prayers, the virtue calendar and journey, chore
+  virtue calendar and journey, chore
   checklists, behavior boards, past chat threads, every list read once.
 - **Records offline, syncs later** — a write the device can decide on its own:
-  finishing the daily prayers, marking a habit or a resolution, checking a chore, logging
+  marking a habit or a resolution, checking a chore, logging
   a behavior, setting a mood. Apple Health belongs here too — the workout
   minutes are already on the device, so they're recorded locally and reported on
   sync.
