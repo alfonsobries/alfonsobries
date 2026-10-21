@@ -38,6 +38,12 @@ it('sets a mode until a given time, read in the schedule timezone', function () 
         ->assertOk()
         ->assertJsonPath('data.rules.override.until', '2026-10-20T16:30:00-06:00');
 
+    // One hour from now in Mexico City, still in the past in UTC.
+    $this->actingAs($this->alfonso)
+        ->postJson(route('api.availability.override.store'), ['mode' => 'offline', 'until' => '2026-10-20T11:00'])
+        ->assertOk()
+        ->assertJsonPath('data.rules.override.until', '2026-10-20T11:00:00-06:00');
+
     $this->actingAs($this->alfonso)
         ->postJson(route('api.availability.override.store'), ['mode' => 'offline', 'until' => '2026-10-20T23:00:00Z'])
         ->assertOk()
@@ -102,6 +108,8 @@ it('rejects an invalid override', function (array $input, string $field) {
     'zero hours' => [['mode' => 'bot', 'hours' => 0], 'hours'],
     'over a week' => [['mode' => 'bot', 'hours' => 169], 'hours'],
     'past time' => [['mode' => 'bot', 'until' => '2026-10-20T09:00'], 'until'],
+    'past instant' => [['mode' => 'bot', 'until' => '2026-10-20T15:00:00Z'], 'until'],
+    'not a date' => [['mode' => 'bot', 'until' => 'luego'], 'until'],
     'hours and until' => [['mode' => 'bot', 'hours' => 1, 'until' => '2026-10-21T09:00'], 'hours'],
     'hours and tomorrow' => [['mode' => 'bot', 'hours' => 1, 'tomorrow' => true], 'hours'],
 ]);

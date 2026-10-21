@@ -2,6 +2,7 @@
 
 use App\Availability\AvailabilitySchedule;
 use App\Availability\Mode;
+use App\Availability\PushError;
 use App\Availability\PushStatus;
 use App\Jobs\PushAvailabilityToBrand;
 use App\Models\SupportAvailability;
@@ -34,7 +35,7 @@ it('records an applied push and the mode the brand reports', function () {
     expect($brand->last_push_status)->toBe(PushStatus::Applied)
         ->and($brand->last_pushed_version)->toBe(9)
         ->and($brand->reported_mode)->toBe(Mode::Online)
-        ->and($brand->last_push_message)->toBeNull()
+        ->and($brand->last_push_error)->toBeNull()
         ->and($brand->last_pushed_at?->toIso8601String())->toBe(now()->toIso8601String());
 
     Http::assertSent(fn (Request $request): bool => $request->hasHeader('Content-Type', 'application/json')
@@ -57,7 +58,8 @@ it('records a server error and throws so the queue retries', function () {
     $brand = $this->brand->fresh();
 
     expect($brand->last_push_status)->toBe(PushStatus::Error)
-        ->and($brand->last_push_message)->toBe('Error del servidor (503).');
+        ->and($brand->last_push_error)->toBe(PushError::ServerError)
+        ->and($brand->last_push_http_status)->toBe(503);
 });
 
 it('records a dropped connection and throws so the queue retries', function () {
@@ -65,7 +67,7 @@ it('records a dropped connection and throws so the queue retries', function () {
 
     expect(fn () => pushToBrand($this->brand))->toThrow(ConnectionException::class);
 
-    expect($this->brand->fresh()->last_push_message)->toBe('No se pudo conectar.');
+    expect($this->brand->fresh()->last_push_error)->toBe(PushError::ConnectionFailed);
 });
 
 it('records a rejection without retrying', function () {
@@ -76,7 +78,8 @@ it('records a rejection without retrying', function () {
     $brand = $this->brand->fresh();
 
     expect($brand->last_push_status)->toBe(PushStatus::Error)
-        ->and($brand->last_push_message)->toBe('Rechazado (401).');
+        ->and($brand->last_push_error)->toBe(PushError::Rejected)
+        ->and($brand->last_push_http_status)->toBe(401);
 });
 
 it('records an unexpected answer', function () {
@@ -85,7 +88,7 @@ it('records an unexpected answer', function () {
     pushToBrand($this->brand);
 
     expect($this->brand->fresh()->last_push_status)->toBe(PushStatus::Error)
-        ->and($this->brand->fresh()->last_push_message)->toBe('Respuesta inesperada.');
+        ->and($this->brand->fresh()->last_push_error)->toBe(PushError::UnexpectedResponse);
 });
 
 it('sends the rules as they are when it runs', function () {

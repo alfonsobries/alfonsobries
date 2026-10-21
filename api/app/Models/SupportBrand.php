@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Availability\Mode;
+use App\Availability\PushError;
 use App\Availability\PushStatus;
 use Database\Factories\SupportBrandFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,7 +26,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $last_pushed_at
  * @property int|null $last_pushed_version
  * @property PushStatus|null $last_push_status
- * @property string|null $last_push_message
+ * @property PushError|null $last_push_error
+ * @property int|null $last_push_http_status
  * @property Mode|null $reported_mode
  * @property Carbon|null $last_pulled_at
  */
@@ -46,7 +48,8 @@ class SupportBrand extends Model
         'last_pushed_at',
         'last_pushed_version',
         'last_push_status',
-        'last_push_message',
+        'last_push_error',
+        'last_push_http_status',
         'reported_mode',
         'last_pulled_at',
     ];
@@ -69,6 +72,8 @@ class SupportBrand extends Model
             'last_pushed_at' => 'datetime',
             'last_pushed_version' => 'integer',
             'last_push_status' => PushStatus::class,
+            'last_push_error' => PushError::class,
+            'last_push_http_status' => 'integer',
             'reported_mode' => Mode::class,
             'last_pulled_at' => 'datetime',
         ];
@@ -107,13 +112,19 @@ class SupportBrand extends Model
         return rtrim((string) $this->base_url, '/').'/support/availability';
     }
 
-    public function recordPush(PushStatus $status, int $version, ?string $message = null, ?Mode $reportedMode = null): void
-    {
+    public function recordPush(
+        PushStatus $status,
+        int $version,
+        ?PushError $error = null,
+        ?int $httpStatus = null,
+        ?Mode $reportedMode = null,
+    ): void {
         $this->forceFill([
             'last_pushed_at' => now(),
             'last_pushed_version' => $version,
             'last_push_status' => $status,
-            'last_push_message' => $message === null ? null : mb_substr($message, 0, 255),
+            'last_push_error' => $error,
+            'last_push_http_status' => $httpStatus,
             'reported_mode' => $reportedMode ?? $this->reported_mode,
         ])->save();
     }
@@ -121,7 +132,7 @@ class SupportBrand extends Model
     /**
      * The shape the app receives. The secret never leaves the API.
      *
-     * @return array{name: string, label: string, enabled: bool, configured: bool, last_pushed_at: string|null, last_pushed_version: int|null, last_push_status: string|null, last_push_message: string|null, reported_mode: string|null, last_pulled_at: string|null}
+     * @return array{name: string, label: string, enabled: bool, configured: bool, last_pushed_at: string|null, last_pushed_version: int|null, last_push_status: string|null, last_push_error: string|null, last_push_http_status: int|null, reported_mode: string|null, last_pulled_at: string|null}
      */
     public function toApiPayload(): array
     {
@@ -133,7 +144,8 @@ class SupportBrand extends Model
             'last_pushed_at' => $this->last_pushed_at?->toIso8601String(),
             'last_pushed_version' => $this->last_pushed_version,
             'last_push_status' => $this->last_push_status?->value,
-            'last_push_message' => $this->last_push_message,
+            'last_push_error' => $this->last_push_error?->value,
+            'last_push_http_status' => $this->last_push_http_status,
             'reported_mode' => $this->reported_mode?->value,
             'last_pulled_at' => $this->last_pulled_at?->toIso8601String(),
         ];

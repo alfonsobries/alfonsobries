@@ -6,6 +6,7 @@ namespace App\Jobs;
 
 use App\Availability\AvailabilitySchedule;
 use App\Availability\Mode;
+use App\Availability\PushError;
 use App\Availability\PushStatus;
 use App\Models\SupportBrand;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -61,19 +62,19 @@ class PushAvailabilityToBrand implements ShouldQueue
                 ->withBody($body, 'application/json')
                 ->post($brand->pushUrl());
         } catch (ConnectionException $exception) {
-            $brand->recordPush(PushStatus::Error, $rules['version'], 'No se pudo conectar.');
+            $brand->recordPush(PushStatus::Error, $rules['version'], PushError::ConnectionFailed);
 
             throw $exception;
         }
 
         if ($response->serverError()) {
-            $brand->recordPush(PushStatus::Error, $rules['version'], "Error del servidor ({$response->status()}).");
+            $brand->recordPush(PushStatus::Error, $rules['version'], PushError::ServerError, $response->status());
 
             throw new RequestException($response);
         }
 
         if ($response->failed()) {
-            $brand->recordPush(PushStatus::Error, $rules['version'], "Rechazado ({$response->status()}).");
+            $brand->recordPush(PushStatus::Error, $rules['version'], PushError::Rejected, $response->status());
 
             $this->fail(new RuntimeException("{$brand->name} rejected the availability push with HTTP {$response->status()}."));
 
@@ -83,7 +84,7 @@ class PushAvailabilityToBrand implements ShouldQueue
         $status = PushStatus::tryFrom((string) $response->json('status'));
 
         if ($status === null || $status === PushStatus::Error) {
-            $brand->recordPush(PushStatus::Error, $rules['version'], 'Respuesta inesperada.');
+            $brand->recordPush(PushStatus::Error, $rules['version'], PushError::UnexpectedResponse, $response->status());
 
             return;
         }

@@ -7,6 +7,7 @@ export type AvailabilityMode = 'online' | 'bot' | 'offline';
 export type OutsideHoursMode = Exclude<AvailabilityMode, 'online'>;
 export type AvailabilityReason = 'override' | 'exception' | 'window' | 'outside_hours';
 export type PushStatus = 'applied' | 'stale' | 'error';
+export type PushError = 'connection_failed' | 'server_error' | 'rejected' | 'unexpected_response';
 
 export type WeeklyWindow = {
   /** ISO weekdays: 1 = Monday ... 7 = Sunday. */
@@ -55,7 +56,8 @@ export type SupportBrand = {
   last_pushed_at: string | null;
   last_pushed_version: number | null;
   last_push_status: PushStatus | null;
-  last_push_message: string | null;
+  last_push_error: PushError | null;
+  last_push_http_status: number | null;
   reported_mode: AvailabilityMode | null;
   last_pulled_at: string | null;
 };

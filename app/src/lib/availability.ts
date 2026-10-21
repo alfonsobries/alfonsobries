@@ -3,6 +3,7 @@ import type {
   AvailabilityMode,
   AvailabilityReason,
   AvailabilityStatus,
+  PushError,
   SupportAvailability,
   SupportBrand,
   WeeklyWindow,
@@ -391,4 +392,20 @@ export function deviceTimezone(): string | null {
   } catch {
     return null;
   }
+}
+
+const PUSH_ERROR_LABEL: Record<PushError, string> = {
+  connection_failed: 'No se pudo conectar',
+  server_error: 'Su servidor falló',
+  rejected: 'Rechazó el cambio; revisa el secreto',
+  unexpected_response: 'Respondió algo inesperado',
+};
+
+/** "Su servidor falló (503)", for a brand whose last push failed. */
+export function describePushError(brand: SupportBrand): string {
+  const label = brand.last_push_error
+    ? PUSH_ERROR_LABEL[brand.last_push_error]
+    : 'No se pudo enviar';
+
+  return brand.last_push_http_status ? `${label} (${brand.last_push_http_status})` : label;
 }

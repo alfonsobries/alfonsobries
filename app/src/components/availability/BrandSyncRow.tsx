@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import type { SupportBrand } from '@/api/support-availability';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { brandSyncState, formatAgo, MODE_LABEL } from '@/lib/availability';
+import { brandSyncState, describePushError, formatAgo, MODE_LABEL } from '@/lib/availability';
 
 type BrandSyncRowProperties = {
   brand: SupportBrand;
@@ -46,7 +46,7 @@ export function BrandSyncRow({
         ? 'Guarda tu horario para compartirlo'
         : 'Al día',
     pending: 'Enviando la versión nueva…',
-    error: brand.last_push_message ?? 'No se pudo enviar',
+    error: describePushError(brand),
     unconfigured: 'Sin configurar en el servidor',
   }[state];
   const pulledAgo = brand.last_pulled_at

@@ -39,7 +39,8 @@ return new class extends Migration
             $table->timestamp('last_pushed_at')->nullable();
             $table->unsignedInteger('last_pushed_version')->nullable();
             $table->string('last_push_status')->nullable();
-            $table->string('last_push_message')->nullable();
+            $table->string('last_push_error')->nullable();
+            $table->unsignedSmallInteger('last_push_http_status')->nullable();
             $table->string('reported_mode')->nullable();
             $table->timestamp('last_pulled_at')->nullable();
             $table->timestamps();

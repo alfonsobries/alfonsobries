@@ -47,9 +47,9 @@ class AvailabilityExceptionRequest extends FormRequest
                 }
 
                 if ($this->endsAt()->lessThanOrEqualTo($this->startsAt())) {
-                    $validator->errors()->add('ends_at', 'El final debe ser después del inicio.');
+                    $validator->errors()->add('ends_at', __('availability.exception_end_before_start'));
                 } elseif ($this->endsAt()->isPast()) {
-                    $validator->errors()->add('ends_at', 'Esa fecha ya pasó.');
+                    $validator->errors()->add('ends_at', __('availability.exception_in_the_past'));
                 }
             },
         ];

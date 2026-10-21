@@ -56,7 +56,7 @@ class UpdateAvailabilityRequest extends FormRequest
 
                 foreach ((array) $this->input('weekly', []) as $index => $window) {
                     if (WeeklyWindow::minuteOfDay($window['from']) >= WeeklyWindow::minuteOfDay($window['to'])) {
-                        $validator->errors()->add("weekly.{$index}.to", 'La hora final debe ser después de la inicial.');
+                        $validator->errors()->add("weekly.{$index}.to", __('availability.window_end_before_start'));
                     }
                 }
             },

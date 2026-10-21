@@ -62,7 +62,8 @@ it('starts from an unshared office-hours default', function () {
         ->assertJsonCount(3, 'data.brands')
         ->assertJsonPath('data.brands.0.name', 'zebrasnap')
         ->assertJsonPath('data.brands.0.configured', false)
-        ->assertJsonMissingPath('data.brands.0.secret');
+        ->assertJsonMissingPath('data.brands.0.secret')
+        ->assertJsonPath('data.brands.0.last_push_error', null);
 
     Http::assertNothingSent();
 });
