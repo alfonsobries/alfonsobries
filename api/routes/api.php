@@ -4,6 +4,10 @@ use App\Http\Controllers\AiModelController;
 use App\Http\Controllers\AppleAuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AssistantController;
+use App\Http\Controllers\AvailabilityController;
+use App\Http\Controllers\AvailabilityExceptionController;
+use App\Http\Controllers\AvailabilityOverrideController;
+use App\Http\Controllers\AvailabilityRulesController;
 use App\Http\Controllers\BehaviorController;
 use App\Http\Controllers\BehaviorIllustrationController;
 use App\Http\Controllers\BehaviorLogController;
@@ -62,6 +66,9 @@ Route::post('/line/webhook', LineWebhookController::class)->name('line.webhook')
 
 // Secret-token webhook (no session) — Telegram updates for the home bot.
 Route::post('/telegram/home/webhook', TelegramHomeWebhookController::class)->name('telegram.home.webhook');
+
+// Bearer secret per brand (no session) - the support brands pull the availability rules.
+Route::get('/availability/rules', AvailabilityRulesController::class)->middleware('throttle:30,1')->name('availability.rules');
 
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::post('/apple', AppleAuthController::class)->name('apple');
@@ -164,6 +171,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/contacts/{lineContact}', [LineContactController::class, 'update'])->name('contacts.update');
         Route::get('/settings', [LineSettingsController::class, 'show'])->name('settings.show');
         Route::patch('/settings', [LineSettingsController::class, 'update'])->name('settings.update');
+    });
+
+    Route::middleware('alfonso')->prefix('availability')->name('availability.')->group(function () {
+        Route::get('/', [AvailabilityController::class, 'show'])->name('show');
+        Route::put('/', [AvailabilityController::class, 'update'])->name('update');
+        Route::post('/resync', [AvailabilityController::class, 'resync'])->name('resync');
+        Route::post('/override', [AvailabilityOverrideController::class, 'store'])->name('override.store');
+        Route::delete('/override', [AvailabilityOverrideController::class, 'destroy'])->name('override.destroy');
+        Route::post('/exceptions', [AvailabilityExceptionController::class, 'store'])->name('exceptions.store');
+        Route::patch('/exceptions/{exception}', [AvailabilityExceptionController::class, 'update'])->name('exceptions.update');
+        Route::delete('/exceptions/{exception}', [AvailabilityExceptionController::class, 'destroy'])->name('exceptions.destroy');
     });
 
     Route::middleware('parent')->group(function () {

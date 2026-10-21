@@ -25,7 +25,7 @@ final readonly class WeeklyWindow
      */
     public static function fromArray(array $window): self
     {
-        return new self(array_values(array_map(intval(...), $window['days'])), $window['from'], $window['to']);
+        return new self(array_map(intval(...), $window['days']), $window['from'], $window['to']);
     }
 
     public function coversDay(int $isoWeekday): bool

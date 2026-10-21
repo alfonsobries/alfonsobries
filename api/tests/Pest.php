@@ -3,6 +3,7 @@
 use App\Events\LineCallUpdated;
 use App\Events\LineMessageUpdated;
 use App\Events\LineVoicemailUpdated;
+use App\Models\SupportBrand;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
@@ -111,4 +112,34 @@ function sentImagePrompt(Request $request): string
     $part = collect($data)->firstWhere('name', 'prompt');
 
     return (string) ($part['contents'] ?? '');
+}
+
+/**
+ * Configures the three support brands with test URLs and secrets and copies
+ * them into the database, like `availability:sync-brands` does.
+ *
+ * @param  list<string>  $names
+ */
+function enableSupportBrands(array $names = ['zebrasnap', 'kondable', 'vexilo']): void
+{
+    foreach ($names as $name) {
+        config([
+            "support.brands.{$name}.url" => "https://{$name}.test/api",
+            "support.brands.{$name}.secret" => "secret-{$name}",
+        ]);
+    }
+
+    SupportBrand::syncFromConfig();
+}
+
+/**
+ * Whether a recorded push carries the contract signature for its own
+ * timestamp and raw body.
+ */
+function availabilityPushIsSigned(Request $request, string $secret): bool
+{
+    $timestamp = $request->header('X-Availability-Timestamp')[0] ?? '';
+    $signature = $request->header('X-Availability-Signature')[0] ?? '';
+
+    return $signature === 'sha256='.hash_hmac('sha256', "{$timestamp}.{$request->body()}", $secret);
 }
