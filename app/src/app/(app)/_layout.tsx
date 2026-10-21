@@ -66,6 +66,27 @@ export default function AppLayout() {
             options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
           />
           <Stack.Screen
+            name="availability/index"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="availability/override"
+            options={{
+              presentation: 'formSheet',
+              sheetAllowedDetents: [0.7],
+              sheetGrabberVisible: true,
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="availability/schedule"
+            options={{ presentation: 'modal', headerShown: true }}
+          />
+          <Stack.Screen
+            name="availability/exception"
+            options={{ presentation: 'modal', headerShown: true }}
+          />
+          <Stack.Screen
             name="family-time"
             options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
           />

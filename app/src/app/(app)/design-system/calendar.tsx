@@ -4,6 +4,7 @@ import { ScrollView, Text, View } from 'react-native';
 
 import { localDate } from '@/api/virtue';
 import { Card } from '@/components/ui/Card';
+import { type DateRange, DateRangeCalendar } from '@/components/ui/DateRangeCalendar';
 import { MonthCalendar, type CalendarDayMark } from '@/components/ui/MonthCalendar';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -32,6 +33,7 @@ function sampleMarks(): Record<string, CalendarDayMark> {
 
 export default function Calendar() {
   const [month, setMonth] = useState(() => new Date());
+  const [range, setRange] = useState<DateRange>({ start: null, end: null });
 
   return (
     <>
@@ -54,6 +56,23 @@ export default function Calendar() {
           <Text className="text-sm text-muted">
             Day tones (primary, danger) fill the circle; the dots are an independent secondary
             count. Days after `maxDate` are dimmed and inert.
+          </Text>
+        </Section>
+
+        <Section title="Date range">
+          <Card>
+            <DateRangeCalendar
+              value={range}
+              onChange={setRange}
+              minDate={localDate()}
+              locale="es-MX"
+              weekdayLabels={['D', 'L', 'M', 'M', 'J', 'V', 'S']}
+            />
+          </Card>
+          <Text className="text-sm text-muted">
+            {range.start
+              ? `${range.start} - ${range.end ?? 'elige el final'}`
+              : 'Tap a start day, then an end day. Days before `minDate` are inert.'}
           </Text>
         </Section>
       </ScrollView>

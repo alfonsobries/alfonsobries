@@ -2,6 +2,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import * as SecureStore from 'expo-secure-store';
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 
+import { resetSupportAvailability } from '@/hooks/use-support-availability';
 import { isOfflineError } from '@/offline/connectivity';
 import { clearQueue } from '@/offline/queue';
 import { cacheKeys, clearCache, readCache, writeCache } from '@/offline/store';
@@ -128,6 +129,7 @@ export function AuthProvider({ children }: AuthProviderProperties): ReactNode {
         // The API answered and rejected the token: it really is stale.
         setAuthHeader(null);
         clearCache();
+        resetSupportAvailability();
         clearQueue();
         await SecureStore.deleteItemAsync(TOKEN_KEY).catch(() => undefined);
 
@@ -183,6 +185,7 @@ export function AuthProvider({ children }: AuthProviderProperties): ReactNode {
     await SecureStore.deleteItemAsync(TOKEN_KEY);
     setAuthHeader(null);
     clearCache();
+    resetSupportAvailability();
     clearQueue();
     setUser(null);
     setStatus('unauthenticated');

@@ -19,3 +19,10 @@ files when changing one:
 - `PRIVACYNUMBER_API_KEY` and `PRIVACYNUMBER_WEBHOOK_SECRET` (`api/.env` only) - the
   private line provider. Server-only; never put them in `app/.env` or commit them. The
   webhook secret is the signing secret returned by `POST /v1/webhook_endpoints`.
+- `SUPPORT_SYNC_{ZEBRASNAP,KONDABLE,VEXILO}_URL` and `SUPPORT_SYNC_{BRAND}_SECRET`
+  (`api/.env` only) - each support brand's API base URL (including `/api`, e.g.
+  `https://zebrasnap.com/api`) and the secret shared with that brand. The secret must
+  match the one configured on the brand: it signs the availability pushes
+  (`X-Availability-Signature`) and is the bearer token the brand pulls with. A brand is
+  enabled once both are set; run `php artisan availability:sync-brands --push` after
+  changing them. `SUPPORT_TIMEZONE` sets the schedule's initial timezone.

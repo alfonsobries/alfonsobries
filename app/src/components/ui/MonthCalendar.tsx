@@ -18,6 +18,12 @@ type MonthCalendarProperties = {
   marks: Record<string, CalendarDayMark>;
   /** Days after this ISO date render dimmed and can't be pressed. */
   maxDate?: string;
+  /** Days before this ISO date render dimmed and can't be pressed. */
+  minDate?: string;
+  /** BCP 47 locale for the month title. */
+  locale?: string;
+  /** Single-letter weekday headers, Sunday first. */
+  weekdayLabels?: string[];
   onPressDay?: (date: string) => void;
 };
 
@@ -46,6 +52,9 @@ export function MonthCalendar({
   onMonthChange,
   marks,
   maxDate,
+  minDate,
+  locale = 'en-US',
+  weekdayLabels = WEEKDAYS,
   onPressDay,
 }: MonthCalendarProperties) {
   const tint = useThemeColor('primary-emphasis');
@@ -59,8 +68,16 @@ export function MonthCalendar({
   const today = new Date();
   const todayIso = isoDate(today.getFullYear(), today.getMonth(), today.getDate());
 
-  const title = month.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const title = month.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
   const nextMonth = new Date(year, monthIndex + 1, 1);
+  const previousMonthEnd = new Date(year, monthIndex, 0);
+  const atBackwardEdge =
+    minDate !== undefined &&
+    isoDate(
+      previousMonthEnd.getFullYear(),
+      previousMonthEnd.getMonth(),
+      previousMonthEnd.getDate(),
+    ) < minDate;
   const atForwardEdge =
     maxDate !== undefined && isoDate(nextMonth.getFullYear(), nextMonth.getMonth(), 1) > maxDate;
 
@@ -84,10 +101,11 @@ export function MonthCalendar({
           accessibilityRole="button"
           accessibilityLabel="Previous month"
           hitSlop={12}
+          disabled={atBackwardEdge}
           onPress={() => onMonthChange(new Date(year, monthIndex - 1, 1))}
-          className="size-9 items-center justify-center rounded-full active:bg-surface-selected"
+          className={`size-9 items-center justify-center rounded-full ${atBackwardEdge ? 'opacity-30' : 'active:bg-surface-selected'}`}
         >
-          <CaretLeft size={18} color={tint} weight="bold" />
+          <CaretLeft size={18} color={atBackwardEdge ? mutedTint : tint} weight="bold" />
         </Pressable>
 
         <Text className="text-base font-semibold text-foreground">{title}</Text>
@@ -105,7 +123,7 @@ export function MonthCalendar({
       </View>
 
       <View className="flex-row">
-        {WEEKDAYS.map((label, index) => (
+        {weekdayLabels.map((label, index) => (
           <View key={`${label}-${index}`} className="flex-1 items-center py-1">
             <Text className="text-xs font-medium text-muted">{label}</Text>
           </View>
@@ -122,7 +140,9 @@ export function MonthCalendar({
 
               const iso = isoDate(year, monthIndex, day);
               const mark = marks[iso];
-              const isFuture = maxDate !== undefined && iso > maxDate;
+              const isOutOfRange =
+                (maxDate !== undefined && iso > maxDate) ||
+                (minDate !== undefined && iso < minDate);
               const isToday = iso === todayIso;
 
               return (
@@ -130,18 +150,18 @@ export function MonthCalendar({
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel={iso}
-                    disabled={isFuture || !onPressDay}
+                    disabled={isOutOfRange || !onPressDay}
                     onPress={() => onPressDay?.(iso)}
                     className={`size-10 items-center justify-center rounded-full ${
                       mark?.tone ? TONE_FILL[mark.tone] : ''
                     } ${isToday && !mark?.tone ? 'border border-border' : ''} ${
-                      onPressDay && !isFuture ? 'active:opacity-70' : ''
+                      onPressDay && !isOutOfRange ? 'active:opacity-70' : ''
                     }`}
                   >
                     <Text
                       className={`text-sm ${
                         mark?.tone ? TONE_LABEL[mark.tone] : 'text-foreground'
-                      } ${isFuture ? 'opacity-30' : ''}`}
+                      } ${isOutOfRange ? 'opacity-30' : ''}`}
                     >
                       {day}
                     </Text>
