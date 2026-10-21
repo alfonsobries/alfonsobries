@@ -9,6 +9,7 @@ import { moodEmoji, moodLabel, useMoods } from '@/api/moods';
 import { KidBehaviorsSection } from '@/components/behaviors/KidBehaviorsSection';
 import { KidChoresSection } from '@/components/chores/KidChoresSection';
 import { DailyExercisesCard } from '@/components/exercises/DailyExercisesCard';
+import { AvailabilityCard } from '@/components/availability/AvailabilityCard';
 import { AvatarCircle } from '@/components/family/AvatarCircle';
 import { ActionTile } from '@/components/ui/ActionTile';
 import { GrowthCard } from '@/components/virtue/GrowthCard';
@@ -74,6 +75,7 @@ export function ProfileView({
         <>
           {isOwnSpace ? <GrowthCard /> : null}
           {isOwnSpace ? <DailyExercisesCard /> : null}
+          {isOwnSpace ? <AvailabilityCard /> : null}
 
           <View className="flex-row flex-wrap">
             <View className="w-1/2 p-1.5">
