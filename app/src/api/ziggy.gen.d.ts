@@ -9,6 +9,7 @@ declare module 'ziggy-js' {
     "api.ota.published": [],
     "api.line.webhook": [],
     "api.telegram.home.webhook": [],
+    "api.availability.rules": [],
     "api.auth.apple": [],
     "api.auth.logout": [],
     "api.user": [],
@@ -325,6 +326,26 @@ declare module 'ziggy-js' {
     ],
     "api.line.settings.show": [],
     "api.line.settings.update": [],
+    "api.availability.show": [],
+    "api.availability.update": [],
+    "api.availability.resync": [],
+    "api.availability.override.store": [],
+    "api.availability.override.destroy": [],
+    "api.availability.exceptions.store": [],
+    "api.availability.exceptions.update": [
+        {
+            "name": "exception",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.availability.exceptions.destroy": [
+        {
+            "name": "exception",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "api.climate.index": [],
     "api.climate.units.update": [
         {
