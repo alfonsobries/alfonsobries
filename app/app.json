@@ -7,13 +7,14 @@
     "icon": "./assets/images/icon.png",
     "scheme": "alfonsobries",
     "userInterfaceStyle": "automatic",
-    "runtimeVersion": "1.21.0",
+    "runtimeVersion": "1.22.0",
     "updates": {
       "url": "https://u.expo.dev/fbd135b1-6baa-4be2-b789-254386da114d"
     },
     "ios": {
       "bundleIdentifier": "com.alfonsobries.app",
       "usesAppleSignIn": true,
+      "associatedDomains": ["applinks:api.alfonsobries.com"],
       "icon": {
         "light": "./assets/images/icon.png",
         "dark": "./assets/images/icon-dark.png",

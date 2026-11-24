@@ -237,6 +237,28 @@ export default function AppLayout() {
             options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
           />
           <Stack.Screen
+            name="boxes/index"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="b/[token]"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="boxes/edit"
+            options={{
+              presentation: 'formSheet',
+              sheetAllowedDetents: [0.75],
+              sheetGrabberVisible: true,
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen name="boxes/item" options={{ presentation: 'modal', headerShown: true }} />
+          <Stack.Screen
+            name="boxes/label"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
             name="photo"
             options={{ presentation: 'fullScreenModal', headerShown: false, animation: 'fade' }}
           />

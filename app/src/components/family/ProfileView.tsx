@@ -1,5 +1,5 @@
 import { router, type Href } from 'expo-router';
-import { Phone, Smiley } from 'phosphor-react-native';
+import { Package, Phone, Smiley } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
 import { useAuth } from '@/api/auth';
@@ -36,6 +36,7 @@ export function ProfileView({
 
   // The personal trackers belong to one person and only show on their own tab.
   const isOwnSpace = person.key === 'alfonso' && user?.family_member === 'alfonso';
+  const isOwnProfile = person.hasMood && user?.family_member === person.key;
 
   return (
     <>
@@ -83,6 +84,11 @@ export function ProfileView({
                 onPress={() => router.push(`/mood?member=${person.key}`)}
               />
             </View>
+            {isOwnProfile ? (
+              <View className="w-1/2 p-1.5">
+                <ActionTile icon={Package} label="Cajas" onPress={() => router.push('/boxes')} />
+              </View>
+            ) : null}
             {isOwnSpace ? (
               <View className="w-1/2 p-1.5">
                 <ActionTile

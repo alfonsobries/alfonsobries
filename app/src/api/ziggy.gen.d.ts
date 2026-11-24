@@ -335,6 +335,50 @@ declare module 'ziggy-js' {
     "api.climate.automation.show": [],
     "api.climate.automation.update": [],
     "api.presence.store": [],
+    "api.boxes.index": [],
+    "api.boxes.store": [],
+    "api.boxes.show": [
+        {
+            "name": "box",
+            "required": true,
+            "binding": "token"
+        }
+    ],
+    "api.boxes.update": [
+        {
+            "name": "box",
+            "required": true,
+            "binding": "token"
+        }
+    ],
+    "api.boxes.destroy": [
+        {
+            "name": "box",
+            "required": true,
+            "binding": "token"
+        }
+    ],
+    "api.boxes.items.store": [
+        {
+            "name": "box",
+            "required": true,
+            "binding": "token"
+        }
+    ],
+    "api.box-items.update": [
+        {
+            "name": "boxItem",
+            "required": true,
+            "binding": "id"
+        }
+    ],
+    "api.box-items.destroy": [
+        {
+            "name": "boxItem",
+            "required": true,
+            "binding": "id"
+        }
+    ],
     "api.home.messages.index": [],
     "api.home.messages.store": [],
     "api.home.messages.show": [
@@ -414,14 +458,6 @@ declare module 'ziggy-js' {
     "api.broadcasting.auth": [],
     "api.articles.index": [],
     "api.articles.show": [
-        {
-            "name": "article",
-            "required": true,
-            "binding": "slug"
-        }
-    ],
-    "api.draft_articles.slugs": [],
-    "api.draft_articles.show": [
         {
             "name": "article",
             "required": true,
