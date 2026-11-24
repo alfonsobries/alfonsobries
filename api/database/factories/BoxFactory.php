@@ -18,6 +18,7 @@ class BoxFactory extends Factory
     {
         return [
             'name' => $this->faker->randomElement(['Navidad', 'Ropa de bebé', 'Herramientas', 'Juguetes viejos', 'Papeles']),
+            'emoji' => $this->faker->randomElement(['📦', '🎄', '🧸', '🧰', '👶']),
             'location' => $this->faker->randomElement(['Bodega', 'Closet de visitas', 'Cochera', null]),
         ];
     }

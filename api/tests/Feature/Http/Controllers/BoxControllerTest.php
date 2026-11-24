@@ -36,25 +36,26 @@ it('creates a box with a permanent, unguessable token', function (): void {
     $alfonso = User::factory()->create(['family_member' => 'alfonso']);
 
     $response = $this->actingAs($alfonso)
-        ->postJson(route('api.boxes.store'), ['name' => 'Herramientas', 'location' => null])
+        ->postJson(route('api.boxes.store'), ['name' => 'Herramientas', 'emoji' => '🧰', 'location' => null])
         ->assertCreated()
         ->assertJsonPath('data.name', 'Herramientas')
+        ->assertJsonPath('data.emoji', '🧰')
         ->assertJsonPath('data.items', []);
 
     $token = $response->json('data.token');
     expect($token)->toMatch('/^[a-z0-9]{12}$/');
 
     $this->actingAs($alfonso)
-        ->patchJson(route('api.boxes.update', ['box' => $token]), ['name' => 'Herramientas del coche'])
+        ->patchJson(route('api.boxes.update', ['box' => $token]), ['name' => 'Herramientas del coche', 'emoji' => '🚗'])
         ->assertOk()
         ->assertJsonPath('data.token', $token);
 });
 
-it('requires a name for a box', function (): void {
+it('requires a name and an emoji for a box', function (): void {
     $this->actingAs(User::factory()->create(['family_member' => 'alfonso']))
-        ->postJson(route('api.boxes.store'), ['name' => ''])
+        ->postJson(route('api.boxes.store'), ['name' => '', 'emoji' => ''])
         ->assertUnprocessable()
-        ->assertJsonValidationErrors('name');
+        ->assertJsonValidationErrors(['name', 'emoji']);
 });
 
 it('shows a box with the QR that points at its public page', function (): void {

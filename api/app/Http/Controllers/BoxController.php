@@ -59,13 +59,14 @@ class BoxController extends Controller
     }
 
     /**
-     * @return array{name: string, location?: string|null}
+     * @return array{name: string, emoji: string, location?: string|null}
      */
     private function validated(Request $request): array
     {
-        /** @var array{name: string, location?: string|null} */
+        /** @var array{name: string, emoji: string, location?: string|null} */
         return $request->validate([
             'name' => ['required', 'string', 'max:60'],
+            'emoji' => ['required', 'string', 'max:16'],
             'location' => ['nullable', 'string', 'max:60'],
         ]);
     }
@@ -78,6 +79,7 @@ class BoxController extends Controller
         return [
             'token' => $box->token,
             'name' => $box->name,
+            'emoji' => $box->emoji,
             'location' => $box->location,
             'public_url' => $box->publicUrl(),
             'items' => $box->items->map(fn ($item): array => BoxItemController::present($item))->values(),

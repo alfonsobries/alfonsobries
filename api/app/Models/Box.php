@@ -26,6 +26,7 @@ class Box extends Model
      */
     protected $fillable = [
         'name',
+        'emoji',
         'location',
     ];
 

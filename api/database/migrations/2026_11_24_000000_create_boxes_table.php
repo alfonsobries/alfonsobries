@@ -15,6 +15,7 @@ return new class extends Migration
             // Printed into the box's QR label, so it never changes.
             $table->string('token', 16)->unique();
             $table->string('name', 60);
+            $table->string('emoji', 16)->default('📦');
             $table->string('location', 60)->nullable();
             $table->timestamps();
         });

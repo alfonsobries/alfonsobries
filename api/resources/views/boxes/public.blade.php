@@ -7,7 +7,7 @@
     <meta name="color-scheme" content="light dark">
     <meta name="theme-color" content="#fbf1de" media="(prefers-color-scheme: light)">
     <meta name="theme-color" content="#1c1813" media="(prefers-color-scheme: dark)">
-    <title>{{ $box->name }} · {{ __('boxes.box') }}</title>
+    <title>{{ $box->emoji }} {{ $box->name }} · {{ __('boxes.box') }}</title>
     <style>
         :root {
             --background: #fbf1de;
@@ -62,6 +62,27 @@
             border-radius: 24px;
             padding: 20px 22px;
             box-shadow: 0 10px 30px -18px var(--shadow);
+        }
+
+        .heading {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .heading > div { min-width: 0; }
+
+        .emoji {
+            flex: none;
+            width: 72px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 22px;
+            background: var(--placeholder);
+            font-size: 42px;
+            line-height: 1;
         }
 
         .eyebrow {
@@ -225,8 +246,13 @@
 <body>
 <main>
     <header class="label">
-        <p class="eyebrow">{{ __('boxes.box') }}</p>
-        <h1>{{ $box->name }}</h1>
+        <div class="heading">
+            <span class="emoji" aria-hidden="true">{{ $box->emoji }}</span>
+            <div>
+                <p class="eyebrow">{{ __('boxes.box') }}</p>
+                <h1>{{ $box->name }}</h1>
+            </div>
+        </div>
         <div class="meta">
             @if ($box->location)
                 <span class="chip">

@@ -4,7 +4,7 @@ use App\Models\Box;
 use App\Models\BoxItem;
 
 it('shows what is inside a box to anyone with its label', function (): void {
-    $box = Box::factory()->create(['name' => 'Navidad', 'location' => 'Bodega']);
+    $box = Box::factory()->create(['name' => 'Navidad', 'emoji' => '🎄', 'location' => 'Bodega']);
     BoxItem::factory()->for($box)->create(['name' => 'Esferas rojas', 'quantity' => 12, 'notes' => 'Las de vidrio']);
 
     $this->withHeader('Accept-Language', 'es-MX,es;q=0.9')
@@ -12,6 +12,7 @@ it('shows what is inside a box to anyone with its label', function (): void {
         ->assertOk()
         ->assertHeader('X-Robots-Tag', 'noindex, nofollow')
         ->assertSee('Navidad')
+        ->assertSee('🎄')
         ->assertSee('Bodega')
         ->assertSee('Esferas rojas')
         ->assertSee('×12')
