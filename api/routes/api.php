@@ -7,6 +7,8 @@ use App\Http\Controllers\AssistantController;
 use App\Http\Controllers\BehaviorController;
 use App\Http\Controllers\BehaviorIllustrationController;
 use App\Http\Controllers\BehaviorLogController;
+use App\Http\Controllers\BoxController;
+use App\Http\Controllers\BoxItemController;
 use App\Http\Controllers\ChatMessageController;
 use App\Http\Controllers\ChoreController;
 use App\Http\Controllers\ChoreLogController;
@@ -172,6 +174,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/climate/automation', [ClimateController::class, 'automation'])->name('climate.automation.show');
         Route::patch('/climate/automation', [ClimateController::class, 'updateAutomation'])->name('climate.automation.update');
         Route::post('/presence', [ClimateController::class, 'presence'])->name('presence.store');
+
+        Route::get('/boxes', [BoxController::class, 'index'])->name('boxes.index');
+        Route::post('/boxes', [BoxController::class, 'store'])->name('boxes.store');
+        Route::get('/boxes/{box}', [BoxController::class, 'show'])->name('boxes.show');
+        Route::patch('/boxes/{box}', [BoxController::class, 'update'])->name('boxes.update');
+        Route::delete('/boxes/{box}', [BoxController::class, 'destroy'])->name('boxes.destroy');
+        Route::post('/boxes/{box}/items', [BoxItemController::class, 'store'])->name('boxes.items.store');
+        Route::patch('/box-items/{boxItem}', [BoxItemController::class, 'update'])->name('box-items.update');
+        Route::delete('/box-items/{boxItem}', [BoxItemController::class, 'destroy'])->name('box-items.destroy');
     });
 
     Route::get('/home/messages', [HomeMessageController::class, 'index'])->name('home.messages.index');

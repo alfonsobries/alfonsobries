@@ -142,4 +142,8 @@ export const cacheKeys = {
   /** The first page of expenses for a filter set (serialized). */
   expenses: (filters: string) => `expenses-${filters}`,
   spendingSummary: (period: string) => `spending-summary-${period}`,
+  /** Every storage box with its items. */
+  boxes: 'boxes',
+  /** A box's printable label (its QR), kept so it can be shown offline. */
+  boxLabel: (token: string) => `box-label-${token}`,
 } as const;

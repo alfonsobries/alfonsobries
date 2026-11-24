@@ -8,6 +8,12 @@ import { usePushRegistration } from '@/hooks/use-push-registration';
 import { useDailyReminders } from '@/hooks/use-daily-reminders';
 import { useWatchSync } from '@/hooks/use-watch-sync';
 
+// A link that opens a screen directly (a scanned box label) still gets the
+// tabs underneath, so back always leads somewhere.
+export const unstable_settings = {
+  anchor: '(tabs)',
+};
+
 export default function AppLayout() {
   usePushRegistration();
   useLineIncoming();
@@ -234,6 +240,28 @@ export default function AppLayout() {
           />
           <Stack.Screen
             name="telegram"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="boxes/index"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="b/[token]"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
+            name="boxes/edit"
+            options={{
+              presentation: 'formSheet',
+              sheetAllowedDetents: [0.75],
+              sheetGrabberVisible: true,
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen name="boxes/item" options={{ presentation: 'modal', headerShown: true }} />
+          <Stack.Screen
+            name="boxes/label"
             options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
           />
           <Stack.Screen

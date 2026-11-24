@@ -76,6 +76,8 @@ return [
         'client_id' => env('APPLE_CLIENT_ID', 'com.alfonsobries.app'),
         // Optional Services ID for a future web/Android sign-in flow.
         'services_id' => env('APPLE_SERVICES_ID'),
+        // The developer team that owns the app, for universal links.
+        'team_id' => env('APPLE_TEAM_ID', 'TY2LB9Y7DK'),
     ],
 
 ];

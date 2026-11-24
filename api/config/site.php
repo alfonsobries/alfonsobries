@@ -3,6 +3,11 @@
 return [
     'site_url' => env('FRONT_URL', 'https://www.alfonsobries.com'),
     'secret_prefix' => env('SECRET_PREFIX', false),
+    // The family app's URL scheme, for links that hand off to the app.
+    'app_scheme' => env('APP_SCHEME', 'alfonsobries'),
+    // Host printed into box QR labels. Labels are permanent, so this never
+    // follows the request host and must keep serving /b/{token} forever.
+    'labels_url' => env('LABELS_URL', 'https://api.alfonsobries.com'),
     'expireCacheKey' => 'frontend-expired',
     'expireResumeKey' => 'resume-expired',
     'admin' => [
