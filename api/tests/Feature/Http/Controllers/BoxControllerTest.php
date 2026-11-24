@@ -18,7 +18,7 @@ it('lists every box with what is inside, for both parents', function (string $pa
         ->assertJsonPath('data.0.name', 'Navidad')
         ->assertJsonPath('data.0.location', 'Bodega')
         ->assertJsonPath('data.0.token', $box->token)
-        ->assertJsonPath('data.0.public_url', url('/b/'.$box->token))
+        ->assertJsonPath('data.0.public_url', 'https://api.alfonsobries.com/b/'.$box->token)
         ->assertJsonCount(2, 'data.0.items')
         // Newest first, so what was just stored shows on top.
         ->assertJsonPath('data.0.items.0.name', 'Luces')

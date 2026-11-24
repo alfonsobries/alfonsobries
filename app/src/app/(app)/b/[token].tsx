@@ -1,6 +1,6 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Camera, MapPin, PencilSimple, QrCode } from 'phosphor-react-native';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -95,22 +95,22 @@ export default function BoxScreen() {
   const box = boxes.data?.find((entry) => entry.token === token) ?? null;
   const tileSize = Math.floor((width - SIDE_PADDING * 2 - COLUMN_GAP) / 2);
 
+  // "Not found" is only decided after this screen's own fetch settles: a box
+  // just scanned may simply be missing from an older cached list.
   const { refresh } = boxes;
+  const [fetched, setFetched] = useState(false);
   useEffect(() => {
-    // A freshly created or scanned box may not be in the cached list yet.
-    if (boxes.data !== null && box === null) {
-      void refresh();
-    }
-  }, [box, boxes.data, refresh]);
+    void refresh().finally(() => setFetched(true));
+  }, [refresh]);
 
   if (box === null) {
-    const missing = boxes.status === 'ready';
+    const missing = fetched && boxes.status === 'ready';
 
     return (
       <>
         <Stack.Screen options={{ title: 'Caja' }} />
         <View className="flex-1 items-center justify-center gap-2 bg-background px-8">
-          {missing || boxes.status === 'error' ? (
+          {missing || (fetched && boxes.status === 'error') ? (
             <>
               <Text className="text-center text-lg font-semibold text-foreground">
                 {boxes.status === 'error' ? 'Sin conexión' : 'Esta caja ya no existe'}

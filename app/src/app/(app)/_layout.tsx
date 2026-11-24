@@ -8,6 +8,12 @@ import { usePushRegistration } from '@/hooks/use-push-registration';
 import { useDailyReminders } from '@/hooks/use-daily-reminders';
 import { useWatchSync } from '@/hooks/use-watch-sync';
 
+// A link that opens a screen directly (a scanned box label) still gets the
+// tabs underneath, so back always leads somewhere.
+export const unstable_settings = {
+  anchor: '(tabs)',
+};
+
 export default function AppLayout() {
   usePushRegistration();
   useLineIncoming();

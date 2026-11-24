@@ -56,7 +56,7 @@ class Box extends Model
      */
     public function publicUrl(): string
     {
-        return route('boxes.public', ['token' => $this->token]);
+        return rtrim((string) config('site.labels_url'), '/').'/b/'.$this->token;
     }
 
     private static function newToken(): string

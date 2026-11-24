@@ -151,7 +151,20 @@
         .item:nth-child(4n + 3) .sticker { --tilt: 3.5deg; }
         .item:nth-child(4n + 4) .sticker { --tilt: -1.5deg; }
 
+        .sticker::before {
+            content: "";
+            position: absolute;
+            inset: 11%;
+            border-radius: 28px;
+            background: var(--placeholder);
+            transition: opacity 0.2s;
+        }
+
+        .sticker.loaded::before,
+        .sticker.bare::before { opacity: 0; }
+
         .sticker img {
+            position: relative;
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
@@ -273,9 +286,9 @@
         <ul class="grid">
             @foreach ($box->items as $item)
                 <li class="item">
-                    <div class="sticker">
+                    <div class="sticker{{ $item->stickerUrl() ? '' : ' bare' }}">
                         @if ($url = $item->stickerUrl())
-                            <img src="{{ $url }}" alt="" loading="lazy" decoding="async">
+                            <img src="{{ $url }}" alt="" width="512" height="512" loading="lazy" decoding="async" onload="this.parentNode.classList.add('loaded')">
                         @else
                             <span class="initial" aria-hidden="true">{{ mb_strtoupper(mb_substr($item->name, 0, 1)) }}</span>
                         @endif

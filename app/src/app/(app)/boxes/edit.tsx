@@ -53,6 +53,11 @@ export default function EditBoxScreen() {
         token,
       );
 
+      boxes.update((current) => [
+        box,
+        ...(current ?? []).filter((entry) => entry.token !== box.token),
+      ]);
+
       if (token) {
         router.back();
       } else {
