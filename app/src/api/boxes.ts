@@ -100,9 +100,11 @@ export async function deleteBoxItem(route: ApiRoute, id: number): Promise<void> 
   await apiClient.delete(route('api.box-items.destroy', { boxItem: id }));
 }
 
-/** Total pieces in a box, counting each item's quantity. */
-export function piecesIn(box: Box): number {
-  return box.items.reduce((total, item) => total + item.quantity, 0);
+/** "3 cosas": distinct things in a box, the same count the public page shows. */
+export function describeCount(box: Box): string {
+  const count = box.items.length;
+
+  return count === 0 ? 'Vacía' : count === 1 ? '1 cosa' : `${count} cosas`;
 }
 
 function normalized(text: string): string {

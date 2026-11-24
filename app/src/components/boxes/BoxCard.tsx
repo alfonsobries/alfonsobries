@@ -1,7 +1,7 @@
 import { CaretRight } from 'phosphor-react-native';
 import { Pressable, Text, View } from 'react-native';
 
-import { piecesIn, type Box } from '@/api/boxes';
+import { describeCount, type Box } from '@/api/boxes';
 import { Sticker } from '@/components/boxes/Sticker';
 import { useThemeColor } from '@/hooks/use-theme-color';
 
@@ -14,8 +14,7 @@ type BoxCardProperties = {
 };
 
 export function describeBox(box: Box): string {
-  const pieces = piecesIn(box);
-  const count = pieces === 0 ? 'Vacía' : pieces === 1 ? '1 cosa' : `${pieces} cosas`;
+  const count = describeCount(box);
 
   return box.location ? `${box.location} · ${count}` : count;
 }

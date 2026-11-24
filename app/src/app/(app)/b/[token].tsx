@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 
-import { piecesIn, type Box, type BoxItem } from '@/api/boxes';
+import { describeCount, type Box, type BoxItem } from '@/api/boxes';
 import { BoxItemTile } from '@/components/boxes/BoxItemTile';
 import { Button } from '@/components/ui/Button';
 import { useBoxes } from '@/hooks/use-boxes';
@@ -37,7 +37,6 @@ function openItem(box: Box, item?: BoxItem) {
 
 function BoxSummary({ box }: { box: Box }) {
   const muted = useThemeColor('muted');
-  const pieces = piecesIn(box);
 
   return (
     <View className="gap-4 pb-4">
@@ -49,9 +48,7 @@ function BoxSummary({ box }: { box: Box }) {
           </View>
         ) : null}
         <View className="h-8 justify-center rounded-full bg-surface px-3">
-          <Text className="text-sm font-medium text-foreground">
-            {pieces === 1 ? '1 cosa' : `${pieces} cosas`}
-          </Text>
+          <Text className="text-sm font-medium text-foreground">{describeCount(box)}</Text>
         </View>
       </View>
       {box.items.length > 0 ? (
