@@ -10,7 +10,7 @@ import { fetchBoxLabel, type BoxWithLabel } from '@/api/boxes';
 import { useApiRouter } from '@/api/router';
 import { Button } from '@/components/ui/Button';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { boxLabelHtml } from '@/lib/box-label-html';
+import { boxLabelsHtml } from '@/lib/box-label-html';
 import { cacheKeys } from '@/offline/store';
 import { useCachedResource } from '@/offline/use-cached-resource';
 
@@ -45,7 +45,7 @@ export default function BoxLabelScreen() {
 
     setBusy('print');
     try {
-      await Print.printAsync({ html: boxLabelHtml(box) });
+      await Print.printAsync({ html: boxLabelsHtml([box], { size: 'large', cutLines: true }) });
     } catch {
       // Dismissing the print dialog rejects too; nothing to report.
     } finally {
@@ -60,7 +60,9 @@ export default function BoxLabelScreen() {
 
     setBusy('share');
     try {
-      const { uri } = await Print.printToFileAsync({ html: boxLabelHtml(box) });
+      const { uri } = await Print.printToFileAsync({
+        html: boxLabelsHtml([box], { size: 'large', cutLines: true }),
+      });
       await Share.share({ url: uri, title: `Etiqueta: ${box.name}` });
     } catch {
       Alert.alert('No se pudo preparar la etiqueta', 'Intenta de nuevo en un momento.');

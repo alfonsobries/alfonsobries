@@ -24,9 +24,12 @@ export type Box = {
   updated_at: string;
 };
 
-export type BoxWithLabel = Box & {
+/** What a printed label needs: who the box is and its QR. */
+export type BoxLabel = Pick<Box, 'token' | 'name' | 'emoji' | 'location'> & {
   qr_svg: string;
 };
+
+export type BoxWithLabel = Box & BoxLabel;
 
 export type BoxInput = {
   name: string;
@@ -54,6 +57,14 @@ export async function fetchBoxLabel(route: ApiRoute, token: string): Promise<Box
   const { data } = await apiClient.get<{ data: BoxWithLabel }>(
     route('api.boxes.show', { box: token }),
   );
+
+  return data.data;
+}
+
+export async function fetchBoxLabels(route: ApiRoute, tokens: string[]): Promise<BoxLabel[]> {
+  const { data } = await apiClient.get<{ data: BoxLabel[] }>(route('api.boxes.labels'), {
+    params: { tokens },
+  });
 
   return data.data;
 }

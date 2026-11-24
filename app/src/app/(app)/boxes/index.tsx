@@ -1,5 +1,5 @@
 import { router, Stack } from 'expo-router';
-import { Package, Plus } from 'phosphor-react-native';
+import { Package, Plus, Printer } from 'phosphor-react-native';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 
@@ -67,15 +67,28 @@ export default function BoxesScreen() {
             onCancelButtonPress: () => setQuery(''),
           },
           headerRight: () => (
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Nueva caja"
-              hitSlop={8}
-              onPress={handleNewBox}
-              className="h-11 w-11 items-center justify-center active:opacity-60"
-            >
-              <Plus size={22} color={tint} />
-            </Pressable>
+            <View className="flex-row items-center">
+              {(boxes.data?.length ?? 0) > 0 ? (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Hoja de etiquetas"
+                  hitSlop={8}
+                  onPress={() => router.push('/boxes/labels')}
+                  className="h-11 w-11 items-center justify-center active:opacity-60"
+                >
+                  <Printer size={22} color={tint} />
+                </Pressable>
+              ) : null}
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Nueva caja"
+                hitSlop={8}
+                onPress={handleNewBox}
+                className="h-11 w-11 items-center justify-center active:opacity-60"
+              >
+                <Plus size={22} color={tint} />
+              </Pressable>
+            </View>
           ),
         }}
       />
