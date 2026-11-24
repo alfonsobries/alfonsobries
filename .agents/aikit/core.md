@@ -1,4 +1,4 @@
-<!-- aikit v0.3.1 - managed file, do not edit -->
+<!-- aikit v0.16.1 - managed file, do not edit -->
 <!-- Local override: CLAUDE.local.md (Claude Code) / AGENTS.override.md (Codex). Per-repo override: below the imports in CLAUDE.md / below the managed block in AGENTS.md. Permanent override: PR to https://github.com/alfonsobries/aikit -->
 
 # Baseline
@@ -26,6 +26,7 @@ Shared rules for every repo. Apply to any stack.
 - The description states only what the PR does in its final form. Leave out the history, the decisions behind it, planned follow-ups, and any term that needs outside context. A stranger reading it should get what it does, nothing else
 - When new commits change what the PR does, update the title and description to match
 - Add a brief **How to test** note when the steps are easy to state; if they aren't clear, ask instead of guessing
+- When a PR's base branch is another (unmerged) PR's branch, register the chain as a native GitHub stack: `gh stack link <bottom-pr> ... <top-pr>` (bottom to top; include any already-stacked ancestor PRs or the command refuses to update)
 
 ## Pre-push checks
 

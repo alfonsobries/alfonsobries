@@ -1,4 +1,6 @@
 @.agents/aikit/core.md
+@.agents/aikit/ui.md
+@.agents/aikit/public-web.md
 @.agents/aikit/php.md
 @.agents/aikit/laravel.md
 @.agents/aikit/pest.md

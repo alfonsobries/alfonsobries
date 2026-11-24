@@ -25,6 +25,7 @@ Shared rules for every repo. Apply to any stack.
 - The description states only what the PR does in its final form. Leave out the history, the decisions behind it, planned follow-ups, and any term that needs outside context. A stranger reading it should get what it does, nothing else
 - When new commits change what the PR does, update the title and description to match
 - Add a brief **How to test** note when the steps are easy to state; if they aren't clear, ask instead of guessing
+- When a PR's base branch is another (unmerged) PR's branch, register the chain as a native GitHub stack: `gh stack link <bottom-pr> ... <top-pr>` (bottom to top; include any already-stacked ancestor PRs or the command refuses to update)
 
 ### Pre-push checks
 
@@ -161,11 +162,7 @@ Conventions for Laravel apps, on top of whatever `laravel/boost` provides.
 
 ### Dates
 
-- Serialize dates as ISO 8601 with offset (`$model->created_at?->toIso8601String()`); store UTC. Never pre-format for display (`->format('Y-m-d')`, `->toDateString()`) - the frontend formats through its shared helpers.
-
-### Migrations
-
-- While the project has no production database, keep migrations clean: edit the original create migration and reset, instead of stacking alter-table migrations.
+- Serialize dates as ISO 8601 with offset (`$model->created_at?->toIso8601String()`); store UTC. Never pre-format for display (`->format('Y-m-d')`, `->toDateString()`) - the frontend formats through its shared helpers. Exception: output the backend itself renders (PDFs, emails) - there the backend is the presentation layer and formats with the recipient's locale.
 
 ### i18n
 
@@ -179,6 +176,10 @@ Conventions for Laravel apps, on top of whatever `laravel/boost` provides.
 ### Seeders and factories
 
 - Realistic data in the product's locale (real cities, plausible names and prices), not lorem ipsum.
+
+### Public HTTP API
+
+When the API is reachable without a human in the loop, agent-readiness is part of the design. Load the audit-agentic skill.
 
 ---
 
@@ -228,6 +229,16 @@ Code-writing rules for JS/TS files. Apply when writing or editing JS/TS code.
 
 ---
 
+## Public web
+
+Skip when the work is not a public site (native app, authenticated-only app, private API).
+
+Public pages are real HTML a person would read. Agents fetch them too. A change for agents has to work for a person.
+
+When you add a public URL, change how the site is fetched, or score the site, load the audit-agentic skill.
+
+---
+
 ## React
 
 React/TSX conventions. Tiers run from **Essential** (non-negotiable) to **Use with caution** (judgment calls).
@@ -263,9 +274,42 @@ React/TSX conventions. Tiers run from **Essential** (non-negotiable) to **Use wi
 
 ---
 
+## UI
+
+Universal UI rules for any stack that renders an interface, web or native.
+
+### Images
+
+- An image never sits on a blank box while loading or after failing. Give its container a placeholder that fits the context: a background color token (or the image's dominant color when known), an image icon or subtle texture for content images, or a skeleton when the surrounding UI already uses them.
+- Reserve the space (fixed dimensions or aspect ratio) so the layout doesn't shift when the image lands.
+- Prefer the stack's dedicated image component with placeholder support (e.g. `expo-image` with a blurhash/thumbhash `placeholder` and a short `transition`) over a bare image tag.
+
+---
+
 ## Expo / React Native
 
 Conventions for Expo and React Native apps.
+
+### Platform fidelity
+
+- Platform-native first: follow the [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines) on iOS and [Material 3](https://m3.material.io) on Android. One codebase, two native feels - when the platforms disagree, diverge per platform instead of shipping a compromise.
+- Reach for the primitive that carries the system behavior before building anything: native stack and native tabs from expo-router, native search bars, form sheets with detents, @expo/ui (SwiftUI / Jetpack Compose) controls, expo-symbols, expo-haptics, platform colors.
+- Imitating a native component or system transition in JS is a last resort. Preference order: built-in primitive > @expo/ui > maintained native wrapper > write an Expo Module (Swift/Kotlin). Fall back to a JS imitation only when none of those is viable, and say so explicitly instead of deciding it silently.
+- Native in behavior, the app's tokens in color: keep the native control but paint its chrome through the design tokens where the platform exposes it (e.g. Android tab bar background/indicator/tint) - never ship the platform's default theme colors. On iOS, system bars stay unpainted (Liquid Glass owns them).
+- Preserve the system behaviors people expect: back edge-swipe and large-title morph on iOS; predictive back, edge-to-edge and ripple (`android_ripple`, never opacity) on Android; haptics through the platform's semantic constants on both.
+- Track the current design languages: Liquid Glass on iOS (no custom bar backgrounds or tints, content scrolls edge-to-edge under bars, concentric corners) and M3 Expressive on Android (color roles - never hardcoded color pairs, spring motion, 48dp touch targets).
+- App icons come from the platform pipelines: layered Icon Composer icons on iOS, adaptive icons with a monochrome layer on Android.
+
+### Styling - NativeWind
+
+- Style with Tailwind utilities via `className` (NativeWind). Prefer semantic role tokens (`bg-background`, `text-muted-foreground`) over raw Tailwind colors or hex; an arbitrary value is fine for a deliberate one-off.
+- Design tokens have one source of truth, are named by role - not by place or caller - and carry light + dark. Dark mode follows the system; a recurring color role gets a token, a one-off can use `dark:`, a data-driven color belongs in `vars()`.
+- When a component won't take `className`, stop at the first that fits: forward it to the inner primitive > [`remapProps`](https://www.nativewind.dev/docs/api/remap-props) > [`cssInterop`](https://www.nativewind.dev/docs/api/css-interop) > plain `style`/`StyleSheet` (fine when none fit, or the value is computed at runtime).
+- Screen-edge spacing uses the safe-area utilities (`pt-safe`, `px-safe`, `*-safe-or-[n]`), not hand-wired inset math.
+- On `TextInput`, avoid line-height-bearing text classes (`text-base`, `text-sm`) - their `lineHeight` mis-positions the text vertically on iOS; use a font-size-only value (`text-[16px]`).
+- `useColorScheme` comes from `nativewind`, not `react-native`.
+
+### Plumbing
 
 - Never hardcode API URLs or endpoints - resolve them through the project's route helpers / generated routes.
 - App-side API types come from the backend's generated types; regenerate and commit them when the API changes, never hand-edit.

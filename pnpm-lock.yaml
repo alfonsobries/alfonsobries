@@ -9,8 +9,8 @@ importers:
   .:
     devDependencies:
       '@alfonsobries/aikit':
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.16.1
+        version: 0.16.1
       markdownlint-cli2:
         specifier: ^0.18.1
         version: 0.18.1
@@ -20,8 +20,8 @@ importers:
 
 packages:
 
-  '@alfonsobries/aikit@0.3.1':
-    resolution: {integrity: sha512-hUNFPs3SCU/eYo2H+6xr0/LhxxlwMbvaU1SkeGiyzCauFmtJR5yJ7edA1NOtFoeZm3P9zWJmXwBpJrYIzxqtew==}
+  '@alfonsobries/aikit@0.16.1':
+    resolution: {integrity: sha512-+zuTHyO8kCaYXb9raYH21NySUeWALPd4rO9AgcxB6uck4p1jNF+DNdDASMPalJDaAkEkN5+gGQcgkZwksYBwYg==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -311,7 +311,7 @@ packages:
 
 snapshots:
 
-  '@alfonsobries/aikit@0.3.1': {}
+  '@alfonsobries/aikit@0.16.1': {}
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
