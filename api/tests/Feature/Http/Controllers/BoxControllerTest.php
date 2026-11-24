@@ -135,3 +135,25 @@ it('removes an item', function (): void {
 
     expect(BoxItem::count())->toBe(0);
 });
+
+it('hands over the labels of the chosen boxes in the order asked for', function (): void {
+    $kitchen = Box::factory()->create(['name' => 'Cocina']);
+    $garage = Box::factory()->create(['name' => 'Cochera']);
+    Box::factory()->create(['name' => 'No elegida']);
+
+    $response = $this->actingAs(User::factory()->create(['family_member' => 'saida']))
+        ->getJson(route('api.boxes.labels', ['tokens' => [$garage->token, $kitchen->token, 'missing']]))
+        ->assertOk()
+        ->assertJsonCount(2, 'data')
+        ->assertJsonPath('data.0.name', 'Cochera')
+        ->assertJsonPath('data.1.name', 'Cocina');
+
+    expect($response->json('data.0.qr_svg'))->toStartWith('<svg');
+});
+
+it('asks for at least one box to label', function (): void {
+    $this->actingAs(User::factory()->create(['family_member' => 'alfonso']))
+        ->getJson(route('api.boxes.labels'))
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('tokens');
+});

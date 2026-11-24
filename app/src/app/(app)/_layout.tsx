@@ -265,6 +265,10 @@ export default function AppLayout() {
             options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
           />
           <Stack.Screen
+            name="boxes/labels"
+            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
+          />
+          <Stack.Screen
             name="photo"
             options={{ presentation: 'fullScreenModal', headerShown: false, animation: 'fade' }}
           />

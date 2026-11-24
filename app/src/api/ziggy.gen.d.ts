@@ -337,6 +337,7 @@ declare module 'ziggy-js' {
     "api.presence.store": [],
     "api.boxes.index": [],
     "api.boxes.store": [],
+    "api.boxes.labels": [],
     "api.boxes.show": [
         {
             "name": "box",

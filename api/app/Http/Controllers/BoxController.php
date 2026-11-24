@@ -43,6 +43,35 @@ class BoxController extends Controller
         return response()->json(['data' => $this->present($box->load('items.media'), withQr: true)]);
     }
 
+    /**
+     * The QR labels of several boxes at once, in the order asked for, to lay
+     * out together on one printable sheet.
+     */
+    public function labels(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'tokens' => ['required', 'array', 'min:1', 'max:100'],
+            'tokens.*' => ['string', 'distinct'],
+        ]);
+
+        $order = array_flip($validated['tokens']);
+
+        $labels = Box::query()
+            ->whereIn('token', $validated['tokens'])
+            ->get()
+            ->sortBy(fn (Box $box): int => $order[$box->token])
+            ->map(fn (Box $box): array => [
+                'token' => $box->token,
+                'name' => $box->name,
+                'emoji' => $box->emoji,
+                'location' => $box->location,
+                'qr_svg' => $this->label->qrSvg($box),
+            ])
+            ->values();
+
+        return response()->json(['data' => $labels]);
+    }
+
     public function update(Request $request, Box $box): JsonResponse
     {
         $box->update($this->validated($request));
