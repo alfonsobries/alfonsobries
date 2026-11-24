@@ -3,6 +3,8 @@
 return [
     'site_url' => env('FRONT_URL', 'https://www.alfonsobries.com'),
     'secret_prefix' => env('SECRET_PREFIX', false),
+    // The family app's URL scheme, for links that hand off to the app.
+    'app_scheme' => env('APP_SCHEME', 'alfonsobries'),
     'expireCacheKey' => 'frontend-expired',
     'expireResumeKey' => 'resume-expired',
     'admin' => [
