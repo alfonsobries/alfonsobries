@@ -30,7 +30,7 @@ it('generates an anchored transparent emotion portrait', function () {
         $quality = collect($data)->firstWhere('name', 'quality');
 
         return $images->count() === 2
-            && ($model['contents'] ?? null) === 'gpt-image-2'
+            && ($model['contents'] ?? null) === 'gpt-image-2.6-flare'
             && ($quality['contents'] ?? null) === 'low'
             && str_contains($prompt, 'SECOND attached image is the existing app avatar')
             && str_contains($prompt, 'Emotion: Feliz')

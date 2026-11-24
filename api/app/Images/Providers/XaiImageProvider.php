@@ -45,6 +45,10 @@ class XaiImageProvider implements ImageProviderContract
             'response_format' => 'b64_json',
         ];
 
+        if (isset($options['quality'])) {
+            $payload['quality'] = (string) $options['quality'];
+        }
+
         if (count($images) === 1) {
             $payload['image'] = ['url' => $this->toDataUrl($images[0])];
         } elseif (count($images) > 1) {

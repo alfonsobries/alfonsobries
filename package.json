@@ -9,7 +9,7 @@
     "postinstall": "aikit update"
   },
   "devDependencies": {
-    "@alfonsobries/aikit": "^0.3.1",
+    "@alfonsobries/aikit": "^0.16.1",
     "markdownlint-cli2": "^0.18.1",
     "prettier": "^3.9.4"
   }

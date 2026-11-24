@@ -1,4 +1,4 @@
-<!-- aikit v0.3.1 - managed file, do not edit -->
+<!-- aikit v0.16.1 - managed file, do not edit -->
 
 # Laravel
 
@@ -21,11 +21,7 @@ Conventions for Laravel apps, on top of whatever `laravel/boost` provides.
 
 ## Dates
 
-- Serialize dates as ISO 8601 with offset (`$model->created_at?->toIso8601String()`); store UTC. Never pre-format for display (`->format('Y-m-d')`, `->toDateString()`) - the frontend formats through its shared helpers.
-
-## Migrations
-
-- While the project has no production database, keep migrations clean: edit the original create migration and reset, instead of stacking alter-table migrations.
+- Serialize dates as ISO 8601 with offset (`$model->created_at?->toIso8601String()`); store UTC. Never pre-format for display (`->format('Y-m-d')`, `->toDateString()`) - the frontend formats through its shared helpers. Exception: output the backend itself renders (PDFs, emails) - there the backend is the presentation layer and formats with the recipient's locale.
 
 ## i18n
 
@@ -39,3 +35,7 @@ Conventions for Laravel apps, on top of whatever `laravel/boost` provides.
 ## Seeders and factories
 
 - Realistic data in the product's locale (real cities, plausible names and prices), not lorem ipsum.
+
+## Public HTTP API
+
+When the API is reachable without a human in the loop, agent-readiness is part of the design. Load the audit-agentic skill.
