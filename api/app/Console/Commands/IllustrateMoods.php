@@ -32,7 +32,7 @@ class IllustrateMoods extends Command
      */
     protected $description = 'Generate Regina and Andrés emotion-catalog portraits from their canonical references';
 
-    private const IMAGE_OPTIONS = ['model' => 'gpt-image-2', 'quality' => 'low'];
+    private const IMAGE_OPTIONS = ['model' => 'gpt-image-2.6-flare', 'quality' => 'low'];
 
     private const REVIEWER_MODEL = 'gpt-5-mini';
 

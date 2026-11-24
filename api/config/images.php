@@ -5,19 +5,19 @@ return [
      * The catalog entry used when no runtime selection has been made yet
      * (see App\Images\ModelCatalog and the `illustrator_model` setting).
      */
-    'default_model' => env('ILLUSTRATOR_MODEL', 'gpt-image-2-low'),
+    'default_model' => env('ILLUSTRATOR_MODEL', 'flare-low'),
 
     'providers' => [
         'openai' => [
             'api_key' => env('OPENAI_API_KEY'),
             'base_url' => env('OPENAI_URL', 'https://api.openai.com/v1'),
-            'model' => env('OPENAI_IMAGE_MODEL', 'gpt-image-2'),
+            'model' => env('OPENAI_IMAGE_MODEL', 'gpt-image-2.6-flare'),
             'quality' => env('OPENAI_IMAGE_QUALITY', 'low'),
         ],
         'xai' => [
             'api_key' => env('XAI_API_KEY'),
             'base_url' => env('XAI_BASE_URL', 'https://api.x.ai'),
-            'model' => env('XAI_IMAGE_MODEL', 'grok-imagine-image-quality'),
+            'model' => env('XAI_IMAGE_MODEL', 'grok-imagine-image-2.0'),
             'resolution' => env('XAI_IMAGE_RESOLUTION', '1k'),
         ],
     ],
@@ -29,44 +29,44 @@ return [
      * human-readable comparison shown in the picker.
      */
     'models' => [
-        'gpt-image-2-low' => [
+        'flare-low' => [
             'provider' => 'openai',
-            'model' => 'gpt-image-2',
-            'label' => 'GPT Image 2 · low',
+            'model' => 'gpt-image-2.6-flare',
+            'label' => 'Images 2.6 Flare · low',
             'options' => ['quality' => 'low'],
             'price' => 0.011,
             'cost' => '$',
-            'blurb' => 'Cheapest and fastest — plenty for kid-friendly illustrations.',
+            'blurb' => 'Cheapest and fastest - plenty for kid-friendly illustrations.',
             'recommended' => true,
         ],
-        'gpt-image-2-medium' => [
+        'grok-imagine-2' => [
+            'provider' => 'xai',
+            'model' => 'grok-imagine-image-2.0',
+            'label' => 'Grok Imagine 2.0',
+            'options' => ['resolution' => '1k', 'quality' => 'low'],
+            'price' => 0.04,
+            'cost' => '$$',
+            'blurb' => 'xAI\'s image model - a different look, worth comparing.',
+            'recommended' => false,
+        ],
+        'flare-medium' => [
             'provider' => 'openai',
-            'model' => 'gpt-image-2',
-            'label' => 'GPT Image 2 · medium',
+            'model' => 'gpt-image-2.6-flare',
+            'label' => 'Images 2.6 Flare · medium',
             'options' => ['quality' => 'medium'],
             'price' => 0.042,
             'cost' => '$$',
-            'blurb' => 'Sharper lines, a bit slower and ~4× the price.',
+            'blurb' => 'Sharper lines, a bit slower and ~4x the price.',
             'recommended' => false,
         ],
-        'grok-imagine' => [
-            'provider' => 'xai',
-            'model' => 'grok-imagine-image-quality',
-            'label' => 'Grok Imagine',
-            'options' => ['resolution' => '1k'],
-            'price' => 0.07,
-            'cost' => '$$',
-            'blurb' => 'xAI\'s image model — different look, worth comparing.',
-            'recommended' => false,
-        ],
-        'gpt-image-2-high' => [
+        'sunburst-high' => [
             'provider' => 'openai',
-            'model' => 'gpt-image-2',
-            'label' => 'GPT Image 2 · high',
+            'model' => 'gpt-image-2.6-sunburst',
+            'label' => 'Images 2.6 Sunburst · high',
             'options' => ['quality' => 'high'],
             'price' => 0.167,
             'cost' => '$$$',
-            'blurb' => 'Most detailed but slow and ~15× the cheapest — overkill here.',
+            'blurb' => 'Most detailed and precise on edits, but slow and ~15x the cheapest.',
             'recommended' => false,
         ],
     ],
