@@ -8,7 +8,4 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('line:sync')->everyFiveMinutes()->withoutOverlapping();
-Schedule::command('line:sync-number')->daily();
-Schedule::command('line:export')->monthly();
 Schedule::command('climate:enforce')->everyMinute()->withoutOverlapping();

@@ -5,7 +5,6 @@ import { Platform } from 'react-native';
 
 import { useAuth } from '@/api/auth';
 import { apiClient } from '@/api/client';
-import { fetchLineOverview, lineUnreadTotal, sendLineMessage } from '@/api/line';
 import { getExpoPushToken } from '@/api/push';
 import { useApiRouter } from '@/api/router';
 
@@ -18,29 +17,15 @@ function asPath(value: unknown): string | null {
  * API so the backend can send this device notifications. Best-effort: failures
  * (no permission, simulator, offline) are swallowed.
  *
- * Taps follow `data.url` when present, and a reply action on a line SMS
- * sends without opening the thread.
+ * Taps follow `data.url` when present.
  */
 export function usePushRegistration(): void {
   const route = useApiRouter();
-  const { status, user } = useAuth();
+  const { status } = useAuth();
 
   useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
       const data = response.notification.request.content.data ?? {};
-      const action = response.actionIdentifier;
-
-      if (action === 'reply') {
-        const e164 = data.e164;
-        const text = response.userText?.trim();
-
-        if (typeof e164 === 'string' && text) {
-          void sendLineMessage(route, { to: e164, body: text }).catch(() => undefined);
-        }
-
-        return;
-      }
-
       const url = asPath(data.url);
 
       if (url) {
@@ -82,17 +67,11 @@ export function usePushRegistration(): void {
   }, [status, route]);
 
   useEffect(() => {
-    if (status !== 'authenticated' || user?.family_member !== 'alfonso') {
+    if (status !== 'authenticated') {
       return;
     }
 
-    void (async () => {
-      try {
-        const overview = await fetchLineOverview(route);
-        await Notifications.setBadgeCountAsync(lineUnreadTotal(overview));
-      } catch {
-        // Badge can wait for the next open.
-      }
-    })();
-  }, [status, user?.family_member, route]);
+    // Nothing in the app keeps an unread count, so a leftover badge is stale.
+    void Notifications.setBadgeCountAsync(0).catch(() => undefined);
+  }, [status]);
 }

@@ -111,14 +111,6 @@ class User extends Authenticatable
         $query->whereNotNull('family_member');
     }
 
-    /**
-     * The person behind the private line and its notifications.
-     */
-    public static function alfonso(): ?self
-    {
-        return self::where('family_member', 'alfonso')->first();
-    }
-
     public function isParent(): bool
     {
         return in_array($this->family_member, self::MOOD_MEMBERS, true);

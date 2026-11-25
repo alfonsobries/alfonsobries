@@ -3,7 +3,7 @@ import { Pause, Play } from 'phosphor-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { formatDuration } from '@/lib/line-time';
+import { formatDuration } from '@/lib/duration';
 
 type VoiceNotePlayerProperties = {
   url: string;

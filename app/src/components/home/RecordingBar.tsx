@@ -8,7 +8,7 @@ import Animated, {
 import { useEffect } from 'react';
 
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { formatDuration } from '@/lib/line-time';
+import { formatDuration } from '@/lib/duration';
 
 type RecordingBarProperties = {
   durationMillis: number;
