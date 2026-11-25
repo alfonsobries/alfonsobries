@@ -6,4 +6,5 @@ return [
     'empty' => 'This box is empty.',
     'open_in_app' => 'Open in the app',
     'quantity' => ':count pieces',
+    'describe_failed' => 'Could not recognize the photo.',
 ];

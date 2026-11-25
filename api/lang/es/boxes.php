@@ -6,4 +6,5 @@ return [
     'empty' => 'Esta caja está vacía.',
     'open_in_app' => 'Abrir en la app',
     'quantity' => ':count piezas',
+    'describe_failed' => 'No pude reconocer la foto.',
 ];

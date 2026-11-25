@@ -107,6 +107,19 @@ export async function updateBoxItem(
   return data.data;
 }
 
+/**
+ * A short name for what an uploaded item photo shows, from a fast vision
+ * model; null when nothing in it is recognizable.
+ */
+export async function describeBoxItem(route: ApiRoute, imagePath: string): Promise<string | null> {
+  const { data } = await apiClient.post<{ data: { name: string | null } }>(
+    route('api.box-items.describe'),
+    { image_path: imagePath },
+  );
+
+  return data.data.name;
+}
+
 export async function deleteBoxItem(route: ApiRoute, id: number): Promise<void> {
   await apiClient.delete(route('api.box-items.destroy', { boxItem: id }));
 }

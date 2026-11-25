@@ -1,10 +1,16 @@
 import * as ImagePicker from 'expo-image-picker';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Camera, Images, Package } from 'phosphor-react-native';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { createBoxItem, deleteBoxItem, updateBoxItem, type BoxItemInput } from '@/api/boxes';
+import {
+  createBoxItem,
+  deleteBoxItem,
+  describeBoxItem,
+  updateBoxItem,
+  type BoxItemInput,
+} from '@/api/boxes';
 import { useApiRouter } from '@/api/router';
 import { uploadTempFile } from '@/api/uploads';
 import { Sticker } from '@/components/boxes/Sticker';
@@ -30,6 +36,18 @@ type Picture = {
   uri: string;
   lifted: boolean;
 };
+
+/** Uploads a picture to temp storage, as the PNG sticker or the photo itself. */
+function uploadPicture(route: ReturnType<typeof useApiRouter>, picture: Picture): Promise<string> {
+  const isPng = picture.uri !== picture.photoUri || picture.uri.toLowerCase().endsWith('.png');
+
+  return uploadTempFile(
+    route,
+    picture.uri,
+    isPng ? 'image/png' : 'image/jpeg',
+    isPng ? 'png' : 'jpg',
+  );
+}
 
 async function pickPhoto(source: Source): Promise<string | null> {
   const permission =
@@ -89,6 +107,12 @@ export default function BoxItemScreen() {
   const [notes, setNotes] = useState(params.notes ?? '');
   const [boxToken, setBoxToken] = useState(params.box);
   const [saving, setSaving] = useState(false);
+  const [describing, setDescribing] = useState(false);
+  // Once the person types a name, a late suggestion must never replace it.
+  const nameEditedRef = useRef(Boolean(params.name));
+  // The picture's upload starts as soon as it exists, so the suggestion can
+  // read it and saving reuses it instead of uploading twice.
+  const uploadRef = useRef<{ uri: string; key: Promise<string> } | null>(null);
 
   const currentSticker = picture?.uri ?? (params.sticker || null);
   const boxOptions = (boxes.data ?? []).map((box) => ({
@@ -96,33 +120,67 @@ export default function BoxItemScreen() {
     label: `${box.emoji} ${box.name}`,
   }));
 
-  const process = async (photoUri: string, lift: boolean) => {
+  const startUpload = (next: Picture): Promise<string> => {
+    const key = uploadPicture(route, next);
+    uploadRef.current = { uri: next.uri, key };
+    // Saving retries the upload if this one fails; nothing to report here.
+    key.catch(() => undefined);
+
+    return key;
+  };
+
+  const suggestName = async (key: Promise<string>) => {
+    setDescribing(true);
+    try {
+      const suggestion = await describeBoxItem(route, await key);
+      if (suggestion && !nameEditedRef.current) {
+        setName(suggestion);
+      }
+    } catch {
+      // A suggestion is a convenience; the name can always be typed.
+    } finally {
+      setDescribing(false);
+    }
+  };
+
+  const process = async (photoUri: string, lift: boolean): Promise<Picture> => {
     setProcessing(true);
+    let next: Picture;
     try {
       const sticker = await makeSticker(photoUri, lift);
-      setPicture({
-        photoUri,
-        uri: sticker?.uri ?? photoUri,
-        lifted: sticker?.lifted ?? false,
-      });
+      next = { photoUri, uri: sticker?.uri ?? photoUri, lifted: sticker?.lifted ?? false };
     } catch {
-      setPicture({ photoUri, uri: photoUri, lifted: false });
-    } finally {
-      setProcessing(false);
+      next = { photoUri, uri: photoUri, lifted: false };
     }
+    setPicture(next);
+    setProcessing(false);
+
+    return next;
   };
 
   const handlePick = async (source: Source) => {
     const photoUri = await pickPhoto(source);
-    if (photoUri) {
-      await process(photoUri, liftSubject);
+    if (!photoUri) {
+      return;
     }
+
+    const next = await process(photoUri, liftSubject);
+    const key = startUpload(next);
+
+    if (!nameEditedRef.current) {
+      void suggestName(key);
+    }
+  };
+
+  const handleChangeName = (value: string) => {
+    nameEditedRef.current = true;
+    setName(value);
   };
 
   const handleToggleLift = (value: boolean) => {
     setLiftSubject(value);
     if (picture) {
-      void process(picture.photoUri, value);
+      void process(picture.photoUri, value).then(startUpload);
     }
   };
 
@@ -136,13 +194,9 @@ export default function BoxItemScreen() {
       };
 
       if (picture) {
-        const isPng =
-          picture.uri !== picture.photoUri || picture.uri.toLowerCase().endsWith('.png');
-        input.sticker_path = await uploadTempFile(
-          route,
-          picture.uri,
-          isPng ? 'image/png' : 'image/jpeg',
-          isPng ? 'png' : 'jpg',
+        const pending = uploadRef.current?.uri === picture.uri ? uploadRef.current.key : null;
+        input.sticker_path = await (pending ?? uploadPicture(route, picture)).catch(() =>
+          uploadPicture(route, picture),
         );
       }
 
@@ -283,14 +337,26 @@ export default function BoxItemScreen() {
           ) : null}
         </View>
 
-        <Input
-          label="Qué es"
-          placeholder="Esferas rojas"
-          value={name}
-          onChangeText={setName}
-          maxLength={80}
-          returnKeyType="done"
-        />
+        <View className="gap-1.5">
+          <Input
+            label="Qué es"
+            placeholder={describing ? 'Reconociendo la foto…' : 'Esferas rojas'}
+            value={name}
+            onChangeText={handleChangeName}
+            maxLength={80}
+            returnKeyType="done"
+          />
+          {describing ? (
+            <View
+              className="flex-row items-center gap-2 px-1"
+              accessibilityLiveRegion="polite"
+              accessibilityLabel="Reconociendo la foto"
+            >
+              <ActivityIndicator size="small" color={muted} />
+              <Text className="text-sm text-muted">Reconociendo la foto…</Text>
+            </View>
+          ) : null}
+        </View>
 
         <Stepper
           label="Cuántos"
