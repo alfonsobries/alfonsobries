@@ -9,6 +9,7 @@ use App\Http\Controllers\BehaviorIllustrationController;
 use App\Http\Controllers\BehaviorLogController;
 use App\Http\Controllers\BoxController;
 use App\Http\Controllers\BoxItemController;
+use App\Http\Controllers\BoxItemDescriptionController;
 use App\Http\Controllers\ChatMessageController;
 use App\Http\Controllers\ChoreController;
 use App\Http\Controllers\ChoreLogController;
@@ -182,6 +183,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/boxes/{box}', [BoxController::class, 'update'])->name('boxes.update');
         Route::delete('/boxes/{box}', [BoxController::class, 'destroy'])->name('boxes.destroy');
         Route::post('/boxes/{box}/items', [BoxItemController::class, 'store'])->name('boxes.items.store');
+        Route::post('/box-items/describe', BoxItemDescriptionController::class)->name('box-items.describe');
         Route::patch('/box-items/{boxItem}', [BoxItemController::class, 'update'])->name('box-items.update');
         Route::delete('/box-items/{boxItem}', [BoxItemController::class, 'destroy'])->name('box-items.destroy');
     });

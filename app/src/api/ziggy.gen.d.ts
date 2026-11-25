@@ -366,6 +366,7 @@ declare module 'ziggy-js' {
             "binding": "token"
         }
     ],
+    "api.box-items.describe": [],
     "api.box-items.update": [
         {
             "name": "boxItem",

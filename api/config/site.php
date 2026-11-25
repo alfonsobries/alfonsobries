@@ -8,6 +8,13 @@ return [
     // Host printed into box QR labels. Labels are permanent, so this never
     // follows the request host and must keep serving /b/{token} forever.
     'labels_url' => env('LABELS_URL', 'https://api.alfonsobries.com'),
+
+    // Names what a box item photo shows. The fastest vision model, since the
+    // person is waiting on the form for the suggestion.
+    'box_item_describer' => [
+        'provider' => env('BOX_DESCRIBER_PROVIDER', 'anthropic'),
+        'model' => env('BOX_DESCRIBER_MODEL', 'claude-haiku-5-5'),
+    ],
     'expireCacheKey' => 'frontend-expired',
     'expireResumeKey' => 'resume-expired',
     'admin' => [
