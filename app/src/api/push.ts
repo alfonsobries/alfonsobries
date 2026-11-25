@@ -13,15 +13,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-void Notifications.setNotificationCategoryAsync('line-message', [
-  {
-    identifier: 'reply',
-    buttonTitle: 'Reply',
-    textInput: { submitButtonTitle: 'Send', placeholder: 'Message' },
-    options: { opensAppToForeground: false },
-  },
-]);
-
 /**
  * Ask for permission (if needed) and return the device's Expo push token, or
  * null when it isn't available — a simulator, denied permission, or no EAS

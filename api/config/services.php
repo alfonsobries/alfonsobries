@@ -53,15 +53,6 @@ return [
         'notify_secret' => env('EAS_NOTIFY_SECRET'),
     ],
 
-    'privacynumber' => [
-        'key' => env('PRIVACYNUMBER_API_KEY'),
-        // Signing secret of the webhook endpoint registered with the provider
-        // (returned by POST /v1/webhook_endpoints; see LineWebhookController).
-        'webhook_secret' => env('PRIVACYNUMBER_WEBHOOK_SECRET'),
-        'base_url' => env('PRIVACYNUMBER_BASE_URL', 'https://api.privacynumber.io/v1'),
-        'panel_url' => env('PRIVACYNUMBER_PANEL_URL', 'https://privacynumber.io/'),
-    ],
-
     'carrier' => [
         // A Carrier Air Conditioner app account the units are shared with. Carrier
         // allows one session per account, so use one no phone signs in with.

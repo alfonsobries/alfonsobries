@@ -16,9 +16,6 @@ it('schedules the command for deploy the site every minute', function () {
 
     expect($events[0])->toBeInstanceof(CallbackEvent::class);
     expect($commands)->toContain('alfonsobries:deploy');
-    expect($commands)->toContain('line:sync');
-    expect($commands)->toContain('line:sync-number');
-    expect($commands)->toContain('line:export');
 });
 
 it('the callback defined on the schedule prunes the trix attachemnts', function () {

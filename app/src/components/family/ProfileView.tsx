@@ -1,5 +1,5 @@
-import { router, type Href } from 'expo-router';
-import { Package, Phone, Smiley } from 'phosphor-react-native';
+import { router } from 'expo-router';
+import { Package, Smiley } from 'phosphor-react-native';
 import { Text, View } from 'react-native';
 
 import { useAuth } from '@/api/auth';
@@ -87,15 +87,6 @@ export function ProfileView({
             {isOwnProfile ? (
               <View className="w-1/2 p-1.5">
                 <ActionTile icon={Package} label="Cajas" onPress={() => router.push('/boxes')} />
-              </View>
-            ) : null}
-            {isOwnSpace ? (
-              <View className="w-1/2 p-1.5">
-                <ActionTile
-                  icon={Phone}
-                  label="Private line"
-                  onPress={() => router.push('/line' as Href)}
-                />
               </View>
             ) : null}
           </View>

@@ -3,7 +3,6 @@ import { Stack } from 'expo-router';
 import { KidEmotionsProvider } from '@/api/kid-emotions';
 import { MoodsProvider } from '@/api/moods';
 import { useHomePresence } from '@/hooks/use-home-presence';
-import { useLineIncoming } from '@/hooks/use-line-incoming';
 import { usePushRegistration } from '@/hooks/use-push-registration';
 import { useDailyReminders } from '@/hooks/use-daily-reminders';
 import { useWatchSync } from '@/hooks/use-watch-sync';
@@ -16,7 +15,6 @@ export const unstable_settings = {
 
 export default function AppLayout() {
   usePushRegistration();
-  useLineIncoming();
   useDailyReminders();
   useWatchSync();
   useHomePresence();
@@ -159,46 +157,6 @@ export default function AppLayout() {
               sheetGrabberVisible: true,
               headerShown: false,
             }}
-          />
-          <Stack.Screen
-            name="line/index"
-            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
-          />
-          <Stack.Screen
-            name="line/thread"
-            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
-          />
-          <Stack.Screen
-            name="line/calls"
-            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
-          />
-          <Stack.Screen
-            name="line/voicemail"
-            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
-          />
-          <Stack.Screen
-            name="line/dialer"
-            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
-          />
-          <Stack.Screen
-            name="line/contact"
-            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
-          />
-          <Stack.Screen
-            name="line/settings"
-            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
-          />
-          <Stack.Screen
-            name="line/incoming"
-            options={{ presentation: 'fullScreenModal', headerShown: false, gestureEnabled: false }}
-          />
-          <Stack.Screen
-            name="line/compose"
-            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
-          />
-          <Stack.Screen
-            name="line/live"
-            options={{ headerShown: true, headerBackButtonDisplayMode: 'minimal' }}
           />
           <Stack.Screen
             name="expenses/index"
